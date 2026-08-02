@@ -35,6 +35,7 @@
                                 <th class="px-4 py-2">{{ __('Duration') }}</th>
                                 <th class="px-4 py-2">{{ __('Fee') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructors') }}</th>
+                                <th class="px-4 py-2">{{ __('Students') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
@@ -47,6 +48,7 @@
                                     <td class="px-4 py-2">{{ $course->duration_hours }}h</td>
                                     <td class="px-4 py-2">{{ number_format($course->fee, 2) }}</td>
                                     <td class="px-4 py-2">{{ $course->instructors->pluck('name')->join(', ') ?: '—' }}</td>
+                                    <td class="px-4 py-2">{{ $course->students->count() }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $course->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('courses.show', $course) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
@@ -60,7 +62,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No courses created yet.') }}
                                     </td>
                                 </tr>

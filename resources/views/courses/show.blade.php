@@ -43,6 +43,16 @@
                             @endforelse
                         </dd>
                     </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Students') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            @forelse ($course->students as $enrolledStudent)
+                                <div>{{ $enrolledStudent->name }}</div>
+                            @empty
+                                —
+                            @endforelse
+                        </dd>
+                    </div>
                 </dl>
 
                 <div class="flex items-center gap-4">

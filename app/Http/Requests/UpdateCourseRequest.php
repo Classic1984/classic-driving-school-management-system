@@ -31,6 +31,8 @@ class UpdateCourseRequest extends FormRequest
             'status' => ['required', 'in:active,inactive'],
             'instructors' => ['nullable', 'array'],
             'instructors.*' => ['integer', 'exists:instructors,id'],
+            'students' => ['nullable', 'array'],
+            'students.*' => ['integer', 'exists:students,id'],
         ];
     }
 }

@@ -45,6 +45,16 @@
                         <dt class="text-sm font-medium text-gray-500">{{ __('Status') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->status }}</dd>
                     </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Enrolled Courses') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            @forelse ($student->courses as $enrolledCourse)
+                                <div>{{ $enrolledCourse->name }}</div>
+                            @empty
+                                —
+                            @endforelse
+                        </dd>
+                    </div>
                 </dl>
 
                 <div class="flex items-center gap-4">

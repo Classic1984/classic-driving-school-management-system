@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
 use App\Models\Instructor;
+use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -17,7 +18,7 @@ class CourseController extends Controller
      */
     public function index(): View
     {
-        $courses = Course::with('instructors')->latest()->paginate(10);
+        $courses = Course::with(['instructors', 'students'])->latest()->paginate(10);
 
         return view('courses.index', compact('courses'));
     }
@@ -28,8 +29,9 @@ class CourseController extends Controller
     public function create(): View
     {
         $instructors = Instructor::orderBy('name')->get();
+        $students = Student::orderBy('name')->get();
 
-        return view('courses.create', compact('instructors'));
+        return view('courses.create', compact('instructors', 'students'));
     }
 
     /**
@@ -37,9 +39,10 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request): RedirectResponse
     {
-        $course = Course::create($request->safe()->except('instructors'));
+        $course = Course::create($request->safe()->except(['instructors', 'students']));
 
         $course->instructors()->sync($request->validated('instructors', []));
+        $course->students()->sync($request->validated('students', []));
 
         return Redirect::route('courses.index')->with('status', 'course-created');
     }
@@ -49,7 +52,7 @@ class CourseController extends Controller
      */
     public function show(Course $course): View
     {
-        $course->load('instructors');
+        $course->load(['instructors', 'students']);
 
         return view('courses.show', compact('course'));
     }
@@ -59,10 +62,11 @@ class CourseController extends Controller
      */
     public function edit(Course $course): View
     {
-        $course->load('instructors');
+        $course->load(['instructors', 'students']);
         $instructors = Instructor::orderBy('name')->get();
+        $students = Student::orderBy('name')->get();
 
-        return view('courses.edit', compact('course', 'instructors'));
+        return view('courses.edit', compact('course', 'instructors', 'students'));
     }
 
     /**
@@ -70,9 +74,10 @@ class CourseController extends Controller
      */
     public function update(UpdateCourseRequest $request, Course $course): RedirectResponse
     {
-        $course->update($request->safe()->except('instructors'));
+        $course->update($request->safe()->except(['instructors', 'students']));
 
         $course->instructors()->sync($request->validated('instructors', []));
+        $course->students()->sync($request->validated('students', []));
 
         return Redirect::route('courses.index')->with('status', 'course-updated');
     }

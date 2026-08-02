@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\Instructor;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -127,6 +128,56 @@ class CourseTest extends TestCase
         $this->assertSame('inactive', $course->status);
         $this->assertTrue($course->instructors->contains($newInstructor));
         $this->assertFalse($course->instructors->contains($oldInstructor));
+    }
+
+    public function test_authenticated_user_can_store_a_course_with_students(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+
+        $data = [
+            'name' => 'Beginner Driving',
+            'description' => 'An introductory course.',
+            'course_type' => 'manual',
+            'duration_hours' => 20,
+            'fee' => 199.99,
+            'status' => 'active',
+            'students' => [$student->id],
+        ];
+
+        $response = $this->actingAs($user)->post('/courses', $data);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/courses');
+
+        $course = Course::where('name', 'Beginner Driving')->firstOrFail();
+        $this->assertTrue($course->students->contains($student));
+    }
+
+    public function test_authenticated_user_can_update_a_course_and_its_students(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+        $oldStudent = Student::factory()->create();
+        $newStudent = Student::factory()->create();
+        $course->students()->attach($oldStudent);
+
+        $response = $this->actingAs($user)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'duration_hours' => $course->duration_hours,
+            'fee' => $course->fee,
+            'status' => $course->status,
+            'students' => [$newStudent->id],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/courses');
+
+        $course->refresh();
+        $this->assertTrue($course->students->contains($newStudent));
+        $this->assertFalse($course->students->contains($oldStudent));
     }
 
     public function test_authenticated_user_can_delete_a_course(): void
