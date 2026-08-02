@@ -21,7 +21,7 @@ class EnrollmentNotificationTest extends TestCase
         Notification::fake();
 
         $admin = User::factory()->create(['role' => 'admin']);
-        $staff = User::factory()->create(['role' => 'staff']);
+        $secretary = User::factory()->create(['role' => 'secretary']);
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
         $student = Student::factory()->create();
         $course->students()->attach($student->id, [
@@ -34,7 +34,7 @@ class EnrollmentNotificationTest extends TestCase
         $enrollment->refreshStatus();
 
         Notification::assertSentTo($admin, EnrollmentLockedNotification::class);
-        Notification::assertNotSentTo($staff, EnrollmentLockedNotification::class);
+        Notification::assertNotSentTo($secretary, EnrollmentLockedNotification::class);
     }
 
     public function test_locking_notification_is_not_resent_on_every_refresh(): void

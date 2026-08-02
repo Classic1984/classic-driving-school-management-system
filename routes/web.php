@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
 
     // Finance is exclusively for the Director: not just delete-restricted like the
     // admin-only actions above, the whole section (including viewing it) is hidden
-    // from Admin and Staff alike.
+    // from Admin and Secretary alike.
     Route::middleware('director')->group(function () {
         Route::resource('expenses', ExpenseController::class);
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');

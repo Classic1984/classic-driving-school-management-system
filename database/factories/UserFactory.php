@@ -30,7 +30,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'role' => 'admin',
+            'role' => 'director',
         ];
     }
 
@@ -45,17 +45,32 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user has the restricted "staff" role.
+     * Indicate that the user has the restricted "admin" role: can view
+     * everything and create/edit students, attendance, payments, and
+     * tickets, but cannot manage courses/instructors, delete anything, or
+     * access Finance.
      */
-    public function staff(): static
+    public function admin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'role' => 'staff',
+            'role' => 'admin',
         ]);
     }
 
     /**
-     * Indicate that the user has the "director" role (full admin access,
+     * Indicate that the user has the "secretary" role — the same
+     * restricted access as Admin (this is the role that used to be
+     * called "staff" before the rename; its access never changed).
+     */
+    public function secretary(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'secretary',
+        ]);
+    }
+
+    /**
+     * Indicate that the user has the "director" role (elevated access,
      * plus exclusive access to the Finance section).
      */
     public function director(): static

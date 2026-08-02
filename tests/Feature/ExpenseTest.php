@@ -26,12 +26,12 @@ class ExpenseTest extends TestCase
 
     public function test_non_directors_are_forbidden_from_expense_routes(): void
     {
-        $admin = User::factory()->create();
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
+        $secretary = User::factory()->secretary()->create();
         $expense = Expense::factory()->create();
 
         $this->actingAs($admin)->get('/expenses')->assertForbidden();
-        $this->actingAs($staff)->get('/expenses')->assertForbidden();
+        $this->actingAs($secretary)->get('/expenses')->assertForbidden();
         $this->actingAs($admin)->delete("/expenses/{$expense->id}")->assertForbidden();
     }
 

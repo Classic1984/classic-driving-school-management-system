@@ -50,12 +50,16 @@ class User extends Authenticatable
     }
 
     /**
-     * Directors have all admin capabilities, plus exclusive access to the
-     * Finance section (income/expenses).
+     * Whether this user has elevated (manager-level) access: managing
+     * courses/instructors and deleting records across every resource.
+     * Only Director has this. Admin and Secretary share the same
+     * restricted access: viewing everything and creating/editing
+     * students, attendance, payments, and tickets, with no deletion
+     * rights and no course or instructor management.
      */
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['admin', 'director'], true);
+        return $this->isDirector();
     }
 
     public function isDirector(): bool
