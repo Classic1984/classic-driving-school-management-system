@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -33,6 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+        Route::delete('certificates/{certificate}', [CertificateController::class, 'destroy'])->name('certificates.destroy');
     });
 
     Route::resource('students', StudentController::class)->except(['destroy']);
@@ -41,5 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('attendances', AttendanceController::class)->except(['destroy']);
     Route::resource('payments', PaymentController::class)->except(['destroy']);
     Route::resource('tickets', TicketController::class)->except(['destroy']);
+    Route::resource('certificates', CertificateController::class)->except(['destroy']);
+    Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });
 require __DIR__.'/auth.php';
