@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Attendance') }}
+            {{ __('Training Tickets') }}
         </h2>
     </x-slot>
 
@@ -10,47 +10,47 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">
-                        {{ __('Attendance Records') }}
+                        {{ __('Tickets') }}
                     </h3>
 
-                    <a href="{{ route('attendances.create') }}">
-                        <x-primary-button type="button">{{ __('Record Attendance') }}</x-primary-button>
+                    <a href="{{ route('tickets.create') }}">
+                        <x-primary-button type="button">{{ __('Issue Ticket') }}</x-primary-button>
                     </a>
                 </div>
 
-                @if (session('status') === 'attendance-created')
-                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Attendance recorded successfully.') }}</p>
-                @elseif (session('status') === 'attendance-updated')
-                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Attendance updated successfully.') }}</p>
-                @elseif (session('status') === 'attendance-deleted')
-                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Attendance record removed successfully.') }}</p>
+                @if (session('status') === 'ticket-created')
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Ticket issued successfully.') }}</p>
+                @elseif (session('status') === 'ticket-updated')
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Ticket updated successfully.') }}</p>
+                @elseif (session('status') === 'ticket-deleted')
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Ticket removed successfully.') }}</p>
                 @endif
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
                             <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 py-2">{{ __('Ticket #') }}</th>
                                 <th class="px-4 py-2">{{ __('Date') }}</th>
                                 <th class="px-4 py-2">{{ __('Student') }}</th>
                                 <th class="px-4 py-2">{{ __('Course') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructor') }}</th>
-                                <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @forelse ($attendances as $attendance)
+                            @forelse ($tickets as $ticket)
                                 <tr>
-                                    <td class="px-4 py-2">{{ $attendance->date->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-2">{{ $attendance->student->name }}</td>
-                                    <td class="px-4 py-2">{{ $attendance->course->name }}</td>
-                                    <td class="px-4 py-2">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                    <td class="px-4 py-2 capitalize">{{ $attendance->status }}</td>
+                                    <td class="px-4 py-2 font-mono text-xs">{{ $ticket->ticket_number }}</td>
+                                    <td class="px-4 py-2">{{ $ticket->date->format('Y-m-d') }}</td>
+                                    <td class="px-4 py-2">{{ $ticket->student->name }}</td>
+                                    <td class="px-4 py-2">{{ $ticket->course->name }}</td>
+                                    <td class="px-4 py-2">{{ $ticket->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('attendances.show', $attendance) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                        <a href="{{ route('tickets.show', $ticket) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
+                                        <a href="{{ route('tickets.edit', $ticket) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
                                         @if (auth()->user()->isAdmin())
-                                            <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this attendance record?') }}');">
+                                            <form method="post" action="{{ route('tickets.destroy', $ticket) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this ticket?') }}');">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
@@ -61,7 +61,7 @@
                             @empty
                                 <tr>
                                     <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
-                                        {{ __('No attendance records yet.') }}
+                                        {{ __('No tickets issued yet.') }}
                                     </td>
                                 </tr>
                             @endforelse
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="mt-4">
-                    {{ $attendances->links() }}
+                    {{ $tickets->links() }}
                 </div>
             </div>
         </div>

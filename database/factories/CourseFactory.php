@@ -21,6 +21,7 @@ class CourseFactory extends Factory
             'description' => fake()->sentence(),
             'course_type' => fake()->randomElement(['manual', 'automatic', 'both']),
             'duration_hours' => fake()->numberBetween(5, 40),
+            'duration_weeks' => fake()->randomElement([1, 2, 3, 4]),
             'fee' => fake()->randomFloat(2, 50, 500),
             'status' => 'active',
         ];

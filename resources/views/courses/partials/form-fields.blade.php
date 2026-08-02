@@ -31,6 +31,13 @@
 </div>
 
 <div>
+    <x-input-label for="duration_weeks" :value="__('Duration (weeks)')" />
+    <x-text-input id="duration_weeks" name="duration_weeks" type="number" min="1" class="mt-1 block w-full" :value="old('duration_weeks', $course?->duration_weeks ?? 4)" required />
+    <p class="mt-1 text-xs text-gray-500">{{ __('Determines the payment grace period: 4 days for 3-4 week courses, 2 days for 1-2 week courses.') }}</p>
+    <x-input-error class="mt-2" :messages="$errors->get('duration_weeks')" />
+</div>
+
+<div>
     <x-input-label for="fee" :value="__('Fee')" />
     <x-text-input id="fee" name="fee" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('fee', $course?->fee)" required />
     <x-input-error class="mt-2" :messages="$errors->get('fee')" />

@@ -48,7 +48,10 @@ class Student extends Model
      */
     public function courses(): BelongsToMany
     {
-        return $this->belongsToMany(Course::class);
+        return $this->belongsToMany(Course::class)
+            ->using(Enrollment::class)
+            ->withPivot(['enrolled_at', 'due_date', 'status', 'locked_reason'])
+            ->withTimestamps();
     }
 
     /**

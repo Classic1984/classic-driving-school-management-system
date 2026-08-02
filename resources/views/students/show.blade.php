@@ -45,17 +45,39 @@
                         <dt class="text-sm font-medium text-gray-500">{{ __('Status') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->status }}</dd>
                     </div>
-                    <div class="py-2 grid grid-cols-3 gap-4">
-                        <dt class="text-sm font-medium text-gray-500">{{ __('Enrolled Courses') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">
-                            @forelse ($student->courses as $enrolledCourse)
-                                <div>{{ $enrolledCourse->name }}</div>
-                            @empty
-                                —
-                            @endforelse
-                        </dd>
-                    </div>
                 </dl>
+
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Enrollments') }}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-2 py-1">{{ __('Course') }}</th>
+                                    <th class="px-2 py-1">{{ __('Balance') }}</th>
+                                    <th class="px-2 py-1">{{ __('Due Date') }}</th>
+                                    <th class="px-2 py-1">{{ __('Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($student->courses as $enrolledCourse)
+                                    <tr>
+                                        <td class="px-2 py-1 text-sm">{{ $enrolledCourse->name }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ optional($enrolledCourse->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm font-semibold capitalize {{ $enrolledCourse->pivot->status === 'locked' ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $enrolledCourse->pivot->status }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-2 py-2 text-sm text-gray-500">{{ __('Not enrolled in any courses yet.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Payments') }}</h3>

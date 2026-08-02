@@ -56,6 +56,7 @@ class CourseTest extends TestCase
             'description' => 'An introductory course.',
             'course_type' => 'manual',
             'duration_hours' => 20,
+            'duration_weeks' => 4,
             'fee' => 199.99,
             'status' => 'active',
             'instructors' => [$instructor->id],
@@ -80,12 +81,13 @@ class CourseTest extends TestCase
             'name' => '',
             'course_type' => 'invalid-type',
             'duration_hours' => 0,
+            'duration_weeks' => 0,
             'fee' => -10,
             'status' => 'invalid-status',
         ]);
 
         $response->assertSessionHasErrors([
-            'name', 'course_type', 'duration_hours', 'fee', 'status',
+            'name', 'course_type', 'duration_hours', 'duration_weeks', 'fee', 'status',
         ]);
 
         $this->assertDatabaseCount('courses', 0);
@@ -115,6 +117,7 @@ class CourseTest extends TestCase
             'description' => $course->description,
             'course_type' => $course->course_type,
             'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
             'fee' => $course->fee,
             'status' => 'inactive',
             'instructors' => [$newInstructor->id],
@@ -140,6 +143,7 @@ class CourseTest extends TestCase
             'description' => 'An introductory course.',
             'course_type' => 'manual',
             'duration_hours' => 20,
+            'duration_weeks' => 4,
             'fee' => 199.99,
             'status' => 'active',
             'students' => [$student->id],
@@ -167,6 +171,7 @@ class CourseTest extends TestCase
             'description' => $course->description,
             'course_type' => $course->course_type,
             'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
             'fee' => $course->fee,
             'status' => $course->status,
             'students' => [$newStudent->id],

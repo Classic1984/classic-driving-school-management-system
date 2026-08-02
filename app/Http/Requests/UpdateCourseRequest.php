@@ -27,6 +27,7 @@ class UpdateCourseRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'course_type' => ['required', 'in:manual,automatic,both'],
             'duration_hours' => ['required', 'integer', 'min:1'],
+            'duration_weeks' => ['required', 'integer', 'min:1'],
             'fee' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:active,inactive'],
             'instructors' => ['nullable', 'array'],

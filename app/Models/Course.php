@@ -23,6 +23,7 @@ class Course extends Model
         'description',
         'course_type',
         'duration_hours',
+        'duration_weeks',
         'fee',
         'status',
     ];
@@ -37,7 +38,18 @@ class Course extends Model
         return [
             'fee' => 'decimal:2',
             'duration_hours' => 'integer',
+            'duration_weeks' => 'integer',
         ];
+    }
+
+    /**
+     * The number of days a student has to clear their balance before this
+     * course's enrollment is locked: 4 days for 3-4 week courses, 2 days
+     * for 1-2 week courses.
+     */
+    public function gracePeriodDays(): int
+    {
+        return $this->duration_weeks >= 3 ? 4 : 2;
     }
 
     /**
@@ -53,7 +65,10 @@ class Course extends Model
      */
     public function students(): BelongsToMany
     {
-        return $this->belongsToMany(Student::class);
+        return $this->belongsToMany(Student::class)
+            ->using(Enrollment::class)
+            ->withPivot(['enrolled_at', 'due_date', 'status', 'locked_reason'])
+            ->withTimestamps();
     }
 
     /**
