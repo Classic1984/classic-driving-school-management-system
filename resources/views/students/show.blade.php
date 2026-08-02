@@ -57,6 +57,44 @@
                     </div>
                 </dl>
 
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Payments') }}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-2 py-1">{{ __('Date') }}</th>
+                                    <th class="px-2 py-1">{{ __('Course') }}</th>
+                                    <th class="px-2 py-1">{{ __('Amount') }}</th>
+                                    <th class="px-2 py-1">{{ __('Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($student->payments as $payment)
+                                    <tr>
+                                        <td class="px-2 py-1 text-sm">{{ $payment->payment_date->format('Y-m-d') }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $payment->course->name }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($payment->amount, 2) }}</td>
+                                        <td class="px-2 py-1 text-sm capitalize">{{ $payment->status }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-2 py-2 text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                            @if ($student->payments->where('status', 'paid')->isNotEmpty())
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" class="px-2 py-1 text-sm font-medium text-right">{{ __('Total paid') }}</td>
+                                        <td colspan="2" class="px-2 py-1 text-sm font-medium">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
+                                    </tr>
+                                </tfoot>
+                            @endif
+                        </table>
+                    </div>
+                </div>
+
                 <div class="flex items-center gap-4">
                     <a href="{{ route('students.edit', $student) }}">
                         <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
