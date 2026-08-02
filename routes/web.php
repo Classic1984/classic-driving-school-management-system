@@ -4,6 +4,8 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -36,6 +38,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
         Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
         Route::delete('certificates/{certificate}', [CertificateController::class, 'destroy'])->name('certificates.destroy');
+    });
+
+    // Finance is exclusively for the Director: not just delete-restricted like the
+    // admin-only actions above, the whole section (including viewing it) is hidden
+    // from Admin and Staff alike.
+    Route::middleware('director')->group(function () {
+        Route::resource('expenses', ExpenseController::class);
+        Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
     });
 
     Route::resource('students', StudentController::class)->except(['destroy']);

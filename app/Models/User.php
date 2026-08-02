@@ -48,8 +48,17 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Directors have all admin capabilities, plus exclusive access to the
+     * Finance section (income/expenses).
+     */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'director'], true);
+    }
+
+    public function isDirector(): bool
+    {
+        return $this->role === 'director';
     }
 }
