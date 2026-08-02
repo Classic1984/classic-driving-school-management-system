@@ -36,6 +36,17 @@ class StudentTest extends TestCase
         $response->assertSee('Jane Doe');
     }
 
+    public function test_student_index_shows_the_student_id_number(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Doe']);
+
+        $response = $this->actingAs($user)->get('/students');
+
+        $response->assertOk();
+        $response->assertSee($student->student_id_number);
+    }
+
     public function test_student_index_can_be_filtered_by_search_term(): void
     {
         $user = User::factory()->create();
@@ -129,6 +140,24 @@ class StudentTest extends TestCase
             'name' => 'John Smith',
             'email' => 'john.smith@example.com',
         ]);
+
+        $student = Student::where('email', 'john.smith@example.com')->firstOrFail();
+        $this->assertMatchesRegularExpression('/^CDS-\d{5}$/', $student->student_id_number);
+    }
+
+    public function test_each_student_gets_a_unique_sequential_id_number(): void
+    {
+        $first = Student::factory()->create();
+        $second = Student::factory()->create();
+
+        $this->assertNotSame($first->student_id_number, $second->student_id_number);
+        $this->assertSame("CDS-{$this->pad($first->id)}", $first->student_id_number);
+        $this->assertSame("CDS-{$this->pad($second->id)}", $second->student_id_number);
+    }
+
+    protected function pad(int $id): string
+    {
+        return str_pad((string) $id, 5, '0', STR_PAD_LEFT);
     }
 
     public function test_storing_a_student_requires_valid_data(): void

@@ -31,6 +31,11 @@
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Payment record removed successfully.') }}</p>
                 @endif
 
+                <div class="mb-4 bg-black text-amber-400 rounded-lg p-4 inline-flex items-baseline gap-2">
+                    <span class="text-sm font-medium">{{ __("Today's Total") }}</span>
+                    <span class="text-2xl font-bold">₦{{ number_format($todayTotal, 2) }}</span>
+                </div>
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>

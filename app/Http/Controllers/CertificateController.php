@@ -10,7 +10,6 @@ use App\Models\Instructor;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CertificateController extends Controller
@@ -38,9 +37,12 @@ class CertificateController extends Controller
      */
     public function store(StoreCertificateRequest $request): RedirectResponse
     {
+        $validated = $request->validated();
+        $student = Student::findOrFail($validated['student_id']);
+
         Certificate::create([
-            ...$request->validated(),
-            'certificate_number' => $this->generateCertificateNumber(),
+            ...$validated,
+            'certificate_number' => $this->generateCertificateNumber($student, $validated['course_id']),
         ]);
 
         return Redirect::route('certificates.index')->with('status', 'certificate-created');
@@ -99,14 +101,13 @@ class CertificateController extends Controller
     }
 
     /**
-     * Generate a unique, human-readable certificate number.
+     * Build the certificate number from the student's permanent ID number,
+     * so every certificate issued to a student is traceable back to them.
+     * Unique because StoreCertificateRequest already enforces one
+     * certificate per student/course before this runs.
      */
-    protected function generateCertificateNumber(): string
+    protected function generateCertificateNumber(Student $student, int $courseId): string
     {
-        do {
-            $number = 'CERT-'.strtoupper(Str::random(8));
-        } while (Certificate::where('certificate_number', $number)->exists());
-
-        return $number;
+        return "{$student->student_id_number}-CERT-{$courseId}";
     }
 }
