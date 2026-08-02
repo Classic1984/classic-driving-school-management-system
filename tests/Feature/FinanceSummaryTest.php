@@ -35,6 +35,23 @@ class FinanceSummaryTest extends TestCase
         $response->assertSeeInOrder(['March', '800.00', '250.00', '550.00']);
     }
 
+    public function test_summary_shows_todays_automatically_deducted_balance(): void
+    {
+        $director = User::factory()->director()->create();
+
+        Payment::factory()->create(['amount' => 1000, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+        Expense::factory()->create(['amount' => 400, 'expense_date' => now()->toDateString(), 'category' => 'fuel']);
+        // Not counted: paid yesterday, expensed yesterday.
+        Payment::factory()->create(['amount' => 999, 'status' => 'paid', 'payment_date' => now()->subDay()->toDateString()]);
+        Expense::factory()->create(['amount' => 999, 'expense_date' => now()->subDay()->toDateString(), 'category' => 'fuel']);
+
+        $response = $this->actingAs($director)->get('/finance');
+
+        $response->assertOk();
+        // Today: income 1000, expenses 400, balance 600.
+        $response->assertSeeInOrder(["Today's Balance", '1,000.00', '400.00', '600.00']);
+    }
+
     public function test_summary_defaults_to_the_current_year(): void
     {
         $director = User::factory()->director()->create();

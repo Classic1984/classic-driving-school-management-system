@@ -9,8 +9,8 @@ use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\Ticket;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class TicketController extends Controller
@@ -38,9 +38,12 @@ class TicketController extends Controller
      */
     public function store(StoreTicketRequest $request): RedirectResponse
     {
+        $validated = $request->validated();
+        $student = Student::findOrFail($validated['student_id']);
+
         Ticket::create([
-            ...$request->validated(),
-            'ticket_number' => $this->generateTicketNumber(),
+            ...$validated,
+            'ticket_number' => $this->generateTicketNumber($student, $validated['course_id'], $validated['date']),
             'payment_status' => 'cleared',
         ]);
 
@@ -100,14 +103,15 @@ class TicketController extends Controller
     }
 
     /**
-     * Generate a unique, human-readable ticket number.
+     * Build the ticket number from the student's permanent ID number, so
+     * every ticket issued to a student is traceable back to them. Unique
+     * because StoreTicketRequest already enforces one ticket per
+     * student/course/date before this runs.
      */
-    protected function generateTicketNumber(): string
+    protected function generateTicketNumber(Student $student, int $courseId, string $date): string
     {
-        do {
-            $number = 'TCK-'.strtoupper(Str::random(8));
-        } while (Ticket::where('ticket_number', $number)->exists());
+        $formattedDate = Carbon::parse($date)->format('Ymd');
 
-        return $number;
+        return "{$student->student_id_number}-{$courseId}-{$formattedDate}";
     }
 }

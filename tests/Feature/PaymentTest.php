@@ -38,6 +38,21 @@ class PaymentTest extends TestCase
         $response->assertSee('Paying Student');
     }
 
+    public function test_payment_index_shows_the_automatically_calculated_total_for_today(): void
+    {
+        $user = User::factory()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+        Payment::factory()->create(['amount' => 300, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+        // Not counted: a pending payment today, and a paid payment from yesterday.
+        Payment::factory()->create(['amount' => 999, 'status' => 'pending', 'payment_date' => now()->toDateString()]);
+        Payment::factory()->create(['amount' => 999, 'status' => 'paid', 'payment_date' => now()->subDay()->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/payments');
+
+        $response->assertOk();
+        $response->assertSee('800.00');
+    }
+
     public function test_authenticated_user_can_view_create_form(): void
     {
         $user = User::factory()->create();

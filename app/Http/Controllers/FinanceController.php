@@ -19,8 +19,9 @@ class FinanceController extends Controller
     public function summary(Request $request): View
     {
         [$year, $months, $totals] = $this->computeSummary($request);
+        $today = $this->computeToday();
 
-        return view('finance.summary', compact('year', 'months', 'totals'));
+        return view('finance.summary', compact('year', 'months', 'totals', 'today'));
     }
 
     /**
@@ -87,5 +88,23 @@ class FinanceController extends Controller
         ];
 
         return [$year, $months, $totals];
+    }
+
+    /**
+     * Today's income, expenses incurred, and the resulting balance —
+     * automatically deducted with no extra entry required.
+     *
+     * @return array<string, float>
+     */
+    protected function computeToday(): array
+    {
+        $income = Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount');
+        $expenses = Expense::whereDate('expense_date', today())->sum('amount');
+
+        return [
+            'income' => $income,
+            'expenses' => $expenses,
+            'balance' => $income - $expenses,
+        ];
     }
 }

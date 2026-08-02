@@ -22,7 +22,11 @@ class PaymentController extends Controller
     {
         $payments = Payment::with(['student', 'course'])->latest('payment_date')->paginate(10);
 
-        return view('payments.index', compact('payments'));
+        $todayTotal = Payment::where('status', 'paid')
+            ->whereDate('payment_date', today())
+            ->sum('amount');
+
+        return view('payments.index', compact('payments', 'todayTotal'));
     }
 
     /**

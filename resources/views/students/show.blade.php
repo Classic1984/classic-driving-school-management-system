@@ -10,6 +10,10 @@
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg space-y-4">
                 <dl class="divide-y divide-gray-100">
                     <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Student ID') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 font-mono">{{ $student->student_id_number }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Name') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $student->name }}</dd>
                     </div>

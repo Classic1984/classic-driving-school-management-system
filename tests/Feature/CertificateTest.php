@@ -75,7 +75,7 @@ class CertificateTest extends TestCase
         $response->assertRedirect('/certificates');
 
         $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
-        $this->assertStringStartsWith('CERT-', $certificate->certificate_number);
+        $this->assertStringStartsWith($student->fresh()->student_id_number, $certificate->certificate_number);
     }
 
     public function test_certificate_cannot_be_issued_when_course_is_not_completed(): void

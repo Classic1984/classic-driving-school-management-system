@@ -83,7 +83,7 @@ class TicketTest extends TestCase
         $response->assertRedirect('/tickets');
 
         $ticket = Ticket::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
-        $this->assertStringStartsWith('TCK-', $ticket->ticket_number);
+        $this->assertStringStartsWith($student->fresh()->student_id_number, $ticket->ticket_number);
         $this->assertSame('cleared', $ticket->payment_status);
     }
 
