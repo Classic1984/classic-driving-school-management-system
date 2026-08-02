@@ -29,22 +29,22 @@
 
                     <div class="bg-black text-amber-400 p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Students</h3>
-                        <p class="text-3xl mt-3">0</p>
+                        <p class="text-3xl mt-3">{{ number_format($stats['students']) }}</p>
                     </div>
 
                     <div class="bg-amber-500 text-black p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Payments</h3>
-                        <p class="text-3xl mt-3">₦0</p>
+                        <p class="text-3xl mt-3">₦{{ number_format($stats['payments'], 2) }}</p>
                     </div>
 
                     <div class="bg-black text-amber-400 p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Instructors</h3>
-                        <p class="text-3xl mt-3">0</p>
+                        <p class="text-3xl mt-3">{{ number_format($stats['instructors']) }}</p>
                     </div>
 
                     <div class="bg-amber-500 text-black p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Certificates</h3>
-                        <p class="text-3xl mt-3">0</p>
+                        <p class="text-3xl mt-3">{{ number_format($stats['certificates']) }}</p>
                     </div>
 
                 </div>
