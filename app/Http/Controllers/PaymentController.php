@@ -11,6 +11,7 @@ use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PaymentController extends Controller
 {
@@ -22,6 +23,34 @@ class PaymentController extends Controller
         $payments = Payment::with(['student', 'course'])->latest('payment_date')->paginate(10);
 
         return view('payments.index', compact('payments'));
+    }
+
+    /**
+     * Download a CSV export of every payment record.
+     */
+    public function export(): StreamedResponse
+    {
+        $payments = Payment::with(['student', 'course'])->latest('payment_date')->get();
+
+        return response()->streamDownload(function () use ($payments) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Date', 'Student', 'Course', 'Amount', 'Method', 'Status', 'Reference Number']);
+
+            foreach ($payments as $payment) {
+                fputcsv($handle, [
+                    $payment->payment_date->format('Y-m-d'),
+                    $payment->student->name,
+                    $payment->course->name,
+                    number_format((float) $payment->amount, 2, '.', ''),
+                    $payment->payment_method,
+                    $payment->status,
+                    $payment->reference_number,
+                ]);
+            }
+
+            fclose($handle);
+        }, 'payments.csv', ['Content-Type' => 'text/csv']);
     }
 
     /**

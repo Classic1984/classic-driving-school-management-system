@@ -162,6 +162,31 @@ class PaymentTest extends TestCase
         $this->assertDatabaseMissing('payments', ['id' => $payment->id]);
     }
 
+    public function test_authenticated_user_can_export_payments_as_csv(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'CSV Student']);
+        $course = Course::factory()->create(['name' => 'CSV Course']);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 250,
+            'status' => 'paid',
+            'reference_number' => 'PAY-CSV-1',
+        ]);
+
+        $response = $this->actingAs($user)->get('/payments/export');
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+        $content = $response->streamedContent();
+
+        $this->assertStringContainsString('CSV Student', $content);
+        $this->assertStringContainsString('CSV Course', $content);
+        $this->assertStringContainsString('250.00', $content);
+        $this->assertStringContainsString('PAY-CSV-1', $content);
+    }
+
     public function test_student_page_shows_payments_and_total_paid(): void
     {
         $user = User::factory()->create();

@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\Enrollment;
+use App\Models\User;
+use App\Notifications\GracePeriodEndingSoonNotification;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Notification;
 
 class RefreshEnrollmentLocks extends Command
 {
@@ -29,6 +32,10 @@ class RefreshEnrollmentLocks extends Command
         $enrollments = Enrollment::where('status', '!=', 'completed')->get();
 
         foreach ($enrollments as $enrollment) {
+            if ($enrollment->status === 'active' && $enrollment->due_date?->isTomorrow() && $enrollment->balance() > 0) {
+                Notification::send(User::admins()->get(), new GracePeriodEndingSoonNotification($enrollment));
+            }
+
             $enrollment->refreshStatus();
         }
 

@@ -45,4 +45,31 @@ class FinanceSummaryTest extends TestCase
         $response->assertOk();
         $response->assertSee((string) now()->year);
     }
+
+    public function test_director_can_export_the_summary_as_csv(): void
+    {
+        $director = User::factory()->director()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => '2026-03-10']);
+        Expense::factory()->create(['amount' => 200, 'expense_date' => '2026-03-05', 'category' => 'fuel']);
+
+        $response = $this->actingAs($director)->get('/finance/export?year=2026');
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
+
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('March', $content);
+        $this->assertStringContainsString('500.00', $content);
+        $this->assertStringContainsString('200.00', $content);
+        $this->assertStringContainsString('Year Total', $content);
+    }
+
+    public function test_admin_cannot_export_the_finance_summary(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get('/finance/export');
+
+        $response->assertForbidden();
+    }
 }

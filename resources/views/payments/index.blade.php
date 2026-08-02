@@ -13,9 +13,14 @@
                         {{ __('Payment Records') }}
                     </h3>
 
-                    <a href="{{ route('payments.create') }}">
-                        <x-primary-button type="button">{{ __('Record Payment') }}</x-primary-button>
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('payments.export') }}">
+                            <x-secondary-button type="button">{{ __('Export CSV') }}</x-secondary-button>
+                        </a>
+                        <a href="{{ route('payments.create') }}">
+                            <x-primary-button type="button">{{ __('Record Payment') }}</x-primary-button>
+                        </a>
+                    </div>
                 </div>
 
                 @if (session('status') === 'payment-created')

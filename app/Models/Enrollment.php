@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Notifications\EnrollmentLockedNotification;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\Notification;
 
 class Enrollment extends Pivot
 {
@@ -86,6 +88,8 @@ class Enrollment extends Pivot
             return;
         }
 
+        $wasLockedForOverdueBalance = $this->status === 'locked' && $this->locked_reason === 'overdue_balance';
+
         if ($this->isOverdue()) {
             $newStatus = 'locked';
             $newReason = 'overdue_balance';
@@ -99,6 +103,10 @@ class Enrollment extends Pivot
 
         if ($newStatus !== $this->status || $newReason !== $this->locked_reason) {
             $this->forceFill(['status' => $newStatus, 'locked_reason' => $newReason])->save();
+
+            if ($newStatus === 'locked' && $newReason === 'overdue_balance' && ! $wasLockedForOverdueBalance) {
+                Notification::send(User::admins()->get(), new EnrollmentLockedNotification($this));
+            }
         }
     }
 }

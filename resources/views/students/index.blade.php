@@ -37,6 +37,47 @@
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Student removed successfully.') }}</p>
                 @endif
 
+                <form method="get" action="{{ route('students.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <x-input-label for="search" :value="__('Search')" />
+                        <x-text-input id="search" name="search" type="text" class="mt-1 block w-full" placeholder="{{ __('Name, email, or phone') }}" :value="request('search')" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="status" :value="__('Status')" />
+                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                            <option value="">{{ __('All') }}</option>
+                            @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
+                                <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <x-input-label for="course_id" :value="__('Course')" />
+                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                            <option value="">{{ __('All') }}</option>
+                            @foreach ($courses as $course)
+                                <option value="{{ $course->id }}" @selected((string) request('course_id') === (string) $course->id)>{{ $course->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <x-input-label for="payment" :value="__('Payment')" />
+                        <select id="payment" name="payment" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                            <option value="">{{ __('All') }}</option>
+                            <option value="clear" @selected(request('payment') === 'clear')>{{ __('Clear') }}</option>
+                            <option value="locked" @selected(request('payment') === 'locked')>{{ __('Locked') }}</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-4 flex items-center gap-3">
+                        <x-primary-button type="submit">{{ __('Filter') }}</x-primary-button>
+                        <a href="{{ route('students.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Reset') }}</a>
+                    </div>
+                </form>
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
