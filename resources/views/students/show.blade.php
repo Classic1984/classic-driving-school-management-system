@@ -49,6 +49,12 @@
 
                 <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Enrollments') }}</h3>
+
+                    @if (session('status') === 'enrollment-completed')
+                        <p class="mb-2 text-sm font-medium text-green-600">{{ __('Course marked as completed.') }}</p>
+                    @endif
+                    <x-input-error class="mb-2" :messages="$errors->get('enrollment')" />
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
@@ -57,6 +63,7 @@
                                     <th class="px-2 py-1">{{ __('Balance') }}</th>
                                     <th class="px-2 py-1">{{ __('Due Date') }}</th>
                                     <th class="px-2 py-1">{{ __('Status') }}</th>
+                                    <th class="px-2 py-1"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -65,13 +72,26 @@
                                         <td class="px-2 py-1 text-sm">{{ $enrolledCourse->name }}</td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ optional($enrolledCourse->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
-                                        <td class="px-2 py-1 text-sm font-semibold capitalize {{ $enrolledCourse->pivot->status === 'locked' ? 'text-red-600' : 'text-green-600' }}">
+                                        <td class="px-2 py-1 text-sm font-semibold capitalize
+                                            @if ($enrolledCourse->pivot->status === 'locked') text-red-600
+                                            @elseif ($enrolledCourse->pivot->status === 'completed') text-blue-600
+                                            @else text-green-600
+                                            @endif">
                                             {{ $enrolledCourse->pivot->status }}
+                                        </td>
+                                        <td class="px-2 py-1 text-sm">
+                                            @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->balance() <= 0)
+                                                <form method="post" action="{{ route('enrollments.complete', $enrolledCourse->pivot->id) }}" class="inline">
+                                                    @csrf
+                                                    @method('patch')
+                                                    <button type="submit" class="text-sm text-indigo-600 hover:underline">{{ __('Mark Complete') }}</button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-2 py-2 text-sm text-gray-500">{{ __('Not enrolled in any courses yet.') }}</td>
+                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('Not enrolled in any courses yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

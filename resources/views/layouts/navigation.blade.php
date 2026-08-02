@@ -33,6 +33,9 @@
                     <x-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
                         {{ __('Tickets') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+                        {{ __('Certificates') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -105,6 +108,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('tickets.index')" :active="request()->routeIs('tickets.*')">
                 {{ __('Tickets') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+                {{ __('Certificates') }}
             </x-responsive-nav-link>
         </div>
 
