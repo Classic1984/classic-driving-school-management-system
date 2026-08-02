@@ -1,0 +1,7 @@
+# Railway (and any other Nixpacks-based host) builds this app using its
+# built-in PHP + Node providers (composer install, npm ci, npm run build
+# all happen automatically since both composer.json and package.json are
+# present). This file only overrides the start command: run pending
+# migrations, then serve on the port Railway assigns via $PORT.
+[start]
+cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
