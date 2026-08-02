@@ -23,7 +23,11 @@
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Duration') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">{{ $course->duration_hours }} {{ __('hours') }}</dd>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $course->duration_hours }} {{ __('hours') }} ({{ $course->duration_weeks }} {{ __('weeks') }})</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Payment Grace Period') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $course->gracePeriodDays() }} {{ __('days') }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Fee') }}</dt>
@@ -43,17 +47,39 @@
                             @endforelse
                         </dd>
                     </div>
-                    <div class="py-2 grid grid-cols-3 gap-4">
-                        <dt class="text-sm font-medium text-gray-500">{{ __('Students') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">
-                            @forelse ($course->students as $enrolledStudent)
-                                <div>{{ $enrolledStudent->name }}</div>
-                            @empty
-                                —
-                            @endforelse
-                        </dd>
-                    </div>
                 </dl>
+
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Students') }}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-2 py-1">{{ __('Name') }}</th>
+                                    <th class="px-2 py-1">{{ __('Balance') }}</th>
+                                    <th class="px-2 py-1">{{ __('Due Date') }}</th>
+                                    <th class="px-2 py-1">{{ __('Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($course->students as $enrolledStudent)
+                                    <tr>
+                                        <td class="px-2 py-1 text-sm">{{ $enrolledStudent->name }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($enrolledStudent->pivot->balance(), 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ optional($enrolledStudent->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm font-semibold capitalize {{ $enrolledStudent->pivot->status === 'locked' ? 'text-red-600' : 'text-green-600' }}">
+                                            {{ $enrolledStudent->pivot->status }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-2 py-2 text-sm text-gray-500">{{ __('No students enrolled yet.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
                 <div class="flex items-center gap-4">
                     @if (auth()->user()->isAdmin())

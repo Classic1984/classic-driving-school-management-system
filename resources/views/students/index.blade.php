@@ -46,6 +46,7 @@
                                 <th class="px-4 py-2">{{ __('Phone') }}</th>
                                 <th class="px-4 py-2">{{ __('Course') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
+                                <th class="px-4 py-2">{{ __('Payment') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                         </thead>
@@ -57,6 +58,13 @@
                                     <td class="px-4 py-2">{{ $student->phone }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $student->course_type }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $student->status }}</td>
+                                    <td class="px-4 py-2">
+                                        @if ($student->courses->contains(fn ($enrolledCourse) => $enrolledCourse->pivot->status === 'locked'))
+                                            <span class="font-semibold text-red-600">{{ __('Locked') }}</span>
+                                        @else
+                                            <span class="text-green-600">{{ __('Clear') }}</span>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('students.show', $student) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('students.edit', $student) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
@@ -71,7 +79,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No students registered yet.') }}
                                     </td>
                                 </tr>

@@ -6,6 +6,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,6 +32,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+        Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
     });
 
     Route::resource('students', StudentController::class)->except(['destroy']);
@@ -38,5 +40,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
     Route::resource('attendances', AttendanceController::class)->except(['destroy']);
     Route::resource('payments', PaymentController::class)->except(['destroy']);
+    Route::resource('tickets', TicketController::class)->except(['destroy']);
 });
 require __DIR__.'/auth.php';

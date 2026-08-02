@@ -42,7 +42,7 @@ class CourseController extends Controller
         $course = Course::create($request->safe()->except(['instructors', 'students']));
 
         $course->instructors()->sync($request->validated('instructors', []));
-        $course->students()->sync($request->validated('students', []));
+        $this->syncStudentEnrollments($course, $request->validated('students', []));
 
         return Redirect::route('courses.index')->with('status', 'course-created');
     }
@@ -77,7 +77,7 @@ class CourseController extends Controller
         $course->update($request->safe()->except(['instructors', 'students']));
 
         $course->instructors()->sync($request->validated('instructors', []));
-        $course->students()->sync($request->validated('students', []));
+        $this->syncStudentEnrollments($course, $request->validated('students', []));
 
         return Redirect::route('courses.index')->with('status', 'course-updated');
     }
@@ -90,5 +90,32 @@ class CourseController extends Controller
         $course->delete();
 
         return Redirect::route('courses.index')->with('status', 'course-deleted');
+    }
+
+    /**
+     * Attach newly selected students as fresh enrollments (with a due date
+     * computed from the course's grace period) and detach deselected ones,
+     * without disturbing the enrollment data of students who remain selected.
+     *
+     * @param  array<int, int>  $selectedStudentIds
+     */
+    protected function syncStudentEnrollments(Course $course, array $selectedStudentIds): void
+    {
+        $currentStudentIds = $course->students()->pluck('students.id')->all();
+
+        $toDetach = array_diff($currentStudentIds, $selectedStudentIds);
+        $toAttach = array_diff($selectedStudentIds, $currentStudentIds);
+
+        if (! empty($toDetach)) {
+            $course->students()->detach($toDetach);
+        }
+
+        foreach ($toAttach as $studentId) {
+            $course->students()->attach($studentId, [
+                'enrolled_at' => now()->toDateString(),
+                'due_date' => now()->addDays($course->gracePeriodDays())->toDateString(),
+                'status' => 'active',
+            ]);
+        }
     }
 }
