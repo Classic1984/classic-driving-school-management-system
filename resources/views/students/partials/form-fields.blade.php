@@ -38,7 +38,7 @@
 
 <div>
     <x-input-label for="course_type" :value="__('Course Type')" />
-    <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
             <option value="{{ $value }}" @selected(old('course_type', $student?->course_type) === $value)>{{ __($label) }}</option>
         @endforeach
@@ -54,7 +54,7 @@
 
 <div>
     <x-input-label for="status" :value="__('Status')" />
-    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
             <option value="{{ $value }}" @selected(old('status', $student?->status ?? 'active') === $value)>{{ __($label) }}</option>
         @endforeach

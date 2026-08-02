@@ -53,9 +53,9 @@
                                     <td class="px-4 py-2">{{ $course->students->count() }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $course->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('courses.show', $course) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
+                                        <a href="{{ route('courses.show', $course) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         @if (auth()->user()->isAdmin())
-                                            <a href="{{ route('courses.edit', $course) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                            <a href="{{ route('courses.edit', $course) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                             <form method="post" action="{{ route('courses.destroy', $course) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this course?') }}');">
                                                 @csrf
                                                 @method('delete')

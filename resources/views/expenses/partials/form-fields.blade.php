@@ -2,7 +2,7 @@
 
 <div>
     <x-input-label for="category" :value="__('Category')" />
-    <select id="category" name="category" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="category" name="category" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         <option value="">{{ __('Select a category') }}</option>
         @foreach (\App\Models\Expense::CATEGORIES as $value => $label)
             <option value="{{ $value }}" @selected(old('category', $expense?->category) === $value)>{{ __($label) }}</option>
@@ -25,6 +25,6 @@
 
 <div>
     <x-input-label for="description" :value="__('Description')" />
-    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('description', $expense?->description) }}</textarea>
+    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('description', $expense?->description) }}</textarea>
     <x-input-error class="mt-2" :messages="$errors->get('description')" />
 </div>

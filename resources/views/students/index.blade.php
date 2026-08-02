@@ -66,8 +66,8 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('students.show', $student) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('students.edit', $student) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                        <a href="{{ route('students.show', $student) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
+                                        <a href="{{ route('students.edit', $student) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                         @if (auth()->user()->isAdmin())
                                             <form method="post" action="{{ route('students.destroy', $student) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this student?') }}');">
                                                 @csrf

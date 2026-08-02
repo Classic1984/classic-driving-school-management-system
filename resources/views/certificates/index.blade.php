@@ -47,8 +47,8 @@
                                     <td class="px-4 py-2">{{ $certificate->course->name }}</td>
                                     <td class="px-4 py-2">{{ $certificate->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('certificates.show', $certificate) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('certificates.edit', $certificate) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                        <a href="{{ route('certificates.show', $certificate) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
+                                        <a href="{{ route('certificates.edit', $certificate) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                         @if (auth()->user()->isAdmin())
                                             <form method="post" action="{{ route('certificates.destroy', $certificate) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to revoke this certificate?') }}');">
                                                 @csrf

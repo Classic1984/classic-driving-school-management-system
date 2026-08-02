@@ -10,13 +10,13 @@
 
 <div>
     <x-input-label for="description" :value="__('Description')" />
-    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">{{ old('description', $course?->description) }}</textarea>
+    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('description', $course?->description) }}</textarea>
     <x-input-error class="mt-2" :messages="$errors->get('description')" />
 </div>
 
 <div>
     <x-input-label for="course_type" :value="__('Course Type')" />
-    <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
             <option value="{{ $value }}" @selected(old('course_type', $course?->course_type) === $value)>{{ __($label) }}</option>
         @endforeach
@@ -45,7 +45,7 @@
 
 <div>
     <x-input-label for="status" :value="__('Status')" />
-    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)
             <option value="{{ $value }}" @selected(old('status', $course?->status ?? 'active') === $value)>{{ __($label) }}</option>
         @endforeach
@@ -58,7 +58,7 @@
     <div class="mt-1 space-y-1 border border-gray-200 rounded-md p-3 max-h-48 overflow-y-auto">
         @forelse ($instructors as $availableInstructor)
             <label class="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" name="instructors[]" value="{{ $availableInstructor->id }}" @checked(in_array($availableInstructor->id, $selectedInstructors)) class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                <input type="checkbox" name="instructors[]" value="{{ $availableInstructor->id }}" @checked(in_array($availableInstructor->id, $selectedInstructors)) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
                 {{ $availableInstructor->name }}
             </label>
         @empty
@@ -73,7 +73,7 @@
     <div class="mt-1 space-y-1 border border-gray-200 rounded-md p-3 max-h-48 overflow-y-auto">
         @forelse ($students as $availableStudent)
             <label class="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" name="students[]" value="{{ $availableStudent->id }}" @checked(in_array($availableStudent->id, $selectedStudents)) class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                <input type="checkbox" name="students[]" value="{{ $availableStudent->id }}" @checked(in_array($availableStudent->id, $selectedStudents)) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
                 {{ $availableStudent->name }}
             </label>
         @empty

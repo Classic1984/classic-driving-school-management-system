@@ -15,7 +15,7 @@
 
                     <div class="flex items-center gap-4">
                         <form method="get" action="{{ route('finance.summary') }}" class="flex items-center gap-2">
-                            <select name="year" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
+                            <select name="year" class="border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
                                 @foreach (range(now()->year, now()->year - 5) as $selectableYear)
                                     <option value="{{ $selectableYear }}" @selected($selectableYear === $year)>{{ $selectableYear }}</option>
                                 @endforeach

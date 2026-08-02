@@ -84,7 +84,7 @@
                                                 <form method="post" action="{{ route('enrollments.complete', $enrolledCourse->pivot->id) }}" class="inline">
                                                     @csrf
                                                     @method('patch')
-                                                    <button type="submit" class="text-sm text-indigo-600 hover:underline">{{ __('Mark Complete') }}</button>
+                                                    <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Mark Complete') }}</button>
                                                 </form>
                                             @endif
                                         </td>
