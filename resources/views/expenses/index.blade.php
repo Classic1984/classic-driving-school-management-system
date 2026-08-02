@@ -48,8 +48,8 @@
                                     <td class="px-4 py-2">{{ number_format($expense->amount, 2) }}</td>
                                     <td class="px-4 py-2">{{ \Illuminate\Support\Str::limit($expense->description, 40) ?: '—' }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('expenses.show', $expense) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('expenses.edit', $expense) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                        <a href="{{ route('expenses.show', $expense) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
+                                        <a href="{{ route('expenses.edit', $expense) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                         <form method="post" action="{{ route('expenses.destroy', $expense) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this expense?') }}');">
                                             @csrf
                                             @method('delete')

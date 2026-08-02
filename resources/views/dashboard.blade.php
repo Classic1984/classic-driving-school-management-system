@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-2xl text-yellow-600">
+            <h2 class="font-semibold text-2xl text-amber-500">
                 Classic Driving School & Son Nigeria Limited
             </h2>
             <span class="text-gray-500">
@@ -27,22 +27,22 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    <div class="bg-yellow-500 text-white p-6 rounded-lg">
+                    <div class="bg-black text-amber-400 p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Students</h3>
                         <p class="text-3xl mt-3">0</p>
                     </div>
 
-                    <div class="bg-green-600 text-white p-6 rounded-lg">
+                    <div class="bg-amber-500 text-black p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Payments</h3>
                         <p class="text-3xl mt-3">₦0</p>
                     </div>
 
-                    <div class="bg-blue-600 text-white p-6 rounded-lg">
+                    <div class="bg-black text-amber-400 p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Instructors</h3>
                         <p class="text-3xl mt-3">0</p>
                     </div>
 
-                    <div class="bg-red-600 text-white p-6 rounded-lg">
+                    <div class="bg-amber-500 text-black p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Certificates</h3>
                         <p class="text-3xl mt-3">0</p>
                     </div>

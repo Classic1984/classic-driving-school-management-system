@@ -47,8 +47,8 @@
                                     <td class="px-4 py-2">{{ $attendance->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $attendance->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('attendances.show', $attendance) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                        <a href="{{ route('attendances.show', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
+                                        <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                         @if (auth()->user()->isAdmin())
                                             <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this attendance record?') }}');">
                                                 @csrf

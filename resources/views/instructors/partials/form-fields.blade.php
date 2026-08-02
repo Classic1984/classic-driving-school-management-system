@@ -26,7 +26,7 @@
 
 <div>
     <x-input-label for="specialization" :value="__('Specialization')" />
-    <select id="specialization" name="specialization" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="specialization" name="specialization" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
             <option value="{{ $value }}" @selected(old('specialization', $instructor?->specialization) === $value)>{{ __($label) }}</option>
         @endforeach
@@ -42,7 +42,7 @@
 
 <div>
     <x-input-label for="status" :value="__('Status')" />
-    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)
             <option value="{{ $value }}" @selected(old('status', $instructor?->status ?? 'active') === $value)>{{ __($label) }}</option>
         @endforeach
