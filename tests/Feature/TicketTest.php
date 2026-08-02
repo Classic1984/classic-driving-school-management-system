@@ -154,16 +154,20 @@ class TicketTest extends TestCase
         $response->assertSee($ticket->ticket_number);
     }
 
-    public function test_staff_cannot_delete_a_ticket_but_admin_can(): void
+    public function test_admin_and_secretary_cannot_delete_a_ticket_but_director_can(): void
     {
-        $staff = User::factory()->staff()->create();
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
+        $secretary = User::factory()->secretary()->create();
+        $director = User::factory()->director()->create();
         $ticket = Ticket::factory()->create();
 
-        $this->actingAs($staff)->delete("/tickets/{$ticket->id}")->assertForbidden();
+        $this->actingAs($admin)->delete("/tickets/{$ticket->id}")->assertForbidden();
         $this->assertDatabaseHas('tickets', ['id' => $ticket->id]);
 
-        $this->actingAs($admin)->delete("/tickets/{$ticket->id}")->assertRedirect('/tickets');
+        $this->actingAs($secretary)->delete("/tickets/{$ticket->id}")->assertForbidden();
+        $this->assertDatabaseHas('tickets', ['id' => $ticket->id]);
+
+        $this->actingAs($director)->delete("/tickets/{$ticket->id}")->assertRedirect('/tickets');
         $this->assertDatabaseMissing('tickets', ['id' => $ticket->id]);
     }
 }

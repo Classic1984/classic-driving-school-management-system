@@ -15,100 +15,178 @@ class RolePermissionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_staff_cannot_manage_courses(): void
+    public function test_admin_cannot_manage_courses(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $course = Course::factory()->create();
 
-        $this->actingAs($staff)->get('/courses/create')->assertForbidden();
-        $this->actingAs($staff)->post('/courses', [])->assertForbidden();
-        $this->actingAs($staff)->get("/courses/{$course->id}/edit")->assertForbidden();
-        $this->actingAs($staff)->put("/courses/{$course->id}", [])->assertForbidden();
-        $this->actingAs($staff)->delete("/courses/{$course->id}")->assertForbidden();
+        $this->actingAs($admin)->get('/courses/create')->assertForbidden();
+        $this->actingAs($admin)->post('/courses', [])->assertForbidden();
+        $this->actingAs($admin)->get("/courses/{$course->id}/edit")->assertForbidden();
+        $this->actingAs($admin)->put("/courses/{$course->id}", [])->assertForbidden();
+        $this->actingAs($admin)->delete("/courses/{$course->id}")->assertForbidden();
     }
 
-    public function test_staff_can_view_courses(): void
+    public function test_admin_can_view_courses(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $course = Course::factory()->create();
 
-        $this->actingAs($staff)->get('/courses')->assertOk();
-        $this->actingAs($staff)->get("/courses/{$course->id}")->assertOk();
+        $this->actingAs($admin)->get('/courses')->assertOk();
+        $this->actingAs($admin)->get("/courses/{$course->id}")->assertOk();
     }
 
-    public function test_staff_cannot_manage_instructors(): void
+    public function test_admin_cannot_manage_instructors(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $instructor = Instructor::factory()->create();
 
-        $this->actingAs($staff)->get('/instructors/create')->assertForbidden();
-        $this->actingAs($staff)->post('/instructors', [])->assertForbidden();
-        $this->actingAs($staff)->get("/instructors/{$instructor->id}/edit")->assertForbidden();
-        $this->actingAs($staff)->put("/instructors/{$instructor->id}", [])->assertForbidden();
-        $this->actingAs($staff)->delete("/instructors/{$instructor->id}")->assertForbidden();
+        $this->actingAs($admin)->get('/instructors/create')->assertForbidden();
+        $this->actingAs($admin)->post('/instructors', [])->assertForbidden();
+        $this->actingAs($admin)->get("/instructors/{$instructor->id}/edit")->assertForbidden();
+        $this->actingAs($admin)->put("/instructors/{$instructor->id}", [])->assertForbidden();
+        $this->actingAs($admin)->delete("/instructors/{$instructor->id}")->assertForbidden();
     }
 
-    public function test_staff_can_view_instructors(): void
+    public function test_admin_can_view_instructors(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $instructor = Instructor::factory()->create();
 
-        $this->actingAs($staff)->get('/instructors')->assertOk();
-        $this->actingAs($staff)->get("/instructors/{$instructor->id}")->assertOk();
+        $this->actingAs($admin)->get('/instructors')->assertOk();
+        $this->actingAs($admin)->get("/instructors/{$instructor->id}")->assertOk();
     }
 
-    public function test_staff_cannot_delete_students_but_can_manage_them(): void
+    public function test_admin_cannot_delete_students_but_can_manage_them(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $student = Student::factory()->create();
 
-        $this->actingAs($staff)->delete("/students/{$student->id}")->assertForbidden();
+        $this->actingAs($admin)->delete("/students/{$student->id}")->assertForbidden();
         $this->assertDatabaseHas('students', ['id' => $student->id]);
 
-        $this->actingAs($staff)->get('/students/create')->assertOk();
-        $this->actingAs($staff)->get("/students/{$student->id}/edit")->assertOk();
+        $this->actingAs($admin)->get('/students/create')->assertOk();
+        $this->actingAs($admin)->get("/students/{$student->id}/edit")->assertOk();
     }
 
-    public function test_staff_cannot_delete_attendance_but_can_manage_it(): void
+    public function test_admin_cannot_delete_attendance_but_can_manage_it(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $attendance = Attendance::factory()->create();
 
-        $this->actingAs($staff)->delete("/attendances/{$attendance->id}")->assertForbidden();
+        $this->actingAs($admin)->delete("/attendances/{$attendance->id}")->assertForbidden();
         $this->assertDatabaseHas('attendances', ['id' => $attendance->id]);
 
-        $this->actingAs($staff)->get('/attendances/create')->assertOk();
-        $this->actingAs($staff)->get("/attendances/{$attendance->id}/edit")->assertOk();
+        $this->actingAs($admin)->get('/attendances/create')->assertOk();
+        $this->actingAs($admin)->get("/attendances/{$attendance->id}/edit")->assertOk();
     }
 
-    public function test_staff_cannot_delete_payments_but_can_manage_them(): void
+    public function test_admin_cannot_delete_payments_but_can_manage_them(): void
     {
-        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
         $payment = Payment::factory()->create();
 
-        $this->actingAs($staff)->delete("/payments/{$payment->id}")->assertForbidden();
+        $this->actingAs($admin)->delete("/payments/{$payment->id}")->assertForbidden();
         $this->assertDatabaseHas('payments', ['id' => $payment->id]);
 
-        $this->actingAs($staff)->get('/payments/create')->assertOk();
-        $this->actingAs($staff)->get("/payments/{$payment->id}/edit")->assertOk();
+        $this->actingAs($admin)->get('/payments/create')->assertOk();
+        $this->actingAs($admin)->get("/payments/{$payment->id}/edit")->assertOk();
     }
 
-    public function test_admin_can_manage_courses_instructors_and_delete_everything(): void
+    public function test_secretary_cannot_manage_courses(): void
     {
-        $admin = User::factory()->create();
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create();
+
+        $this->actingAs($secretary)->get('/courses/create')->assertForbidden();
+        $this->actingAs($secretary)->post('/courses', [])->assertForbidden();
+        $this->actingAs($secretary)->get("/courses/{$course->id}/edit")->assertForbidden();
+        $this->actingAs($secretary)->put("/courses/{$course->id}", [])->assertForbidden();
+        $this->actingAs($secretary)->delete("/courses/{$course->id}")->assertForbidden();
+    }
+
+    public function test_secretary_can_view_courses(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create();
+
+        $this->actingAs($secretary)->get('/courses')->assertOk();
+        $this->actingAs($secretary)->get("/courses/{$course->id}")->assertOk();
+    }
+
+    public function test_secretary_cannot_manage_instructors(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $instructor = Instructor::factory()->create();
+
+        $this->actingAs($secretary)->get('/instructors/create')->assertForbidden();
+        $this->actingAs($secretary)->post('/instructors', [])->assertForbidden();
+        $this->actingAs($secretary)->get("/instructors/{$instructor->id}/edit")->assertForbidden();
+        $this->actingAs($secretary)->put("/instructors/{$instructor->id}", [])->assertForbidden();
+        $this->actingAs($secretary)->delete("/instructors/{$instructor->id}")->assertForbidden();
+    }
+
+    public function test_secretary_can_view_instructors(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $instructor = Instructor::factory()->create();
+
+        $this->actingAs($secretary)->get('/instructors')->assertOk();
+        $this->actingAs($secretary)->get("/instructors/{$instructor->id}")->assertOk();
+    }
+
+    public function test_secretary_cannot_delete_students_but_can_manage_them(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+
+        $this->actingAs($secretary)->delete("/students/{$student->id}")->assertForbidden();
+        $this->assertDatabaseHas('students', ['id' => $student->id]);
+
+        $this->actingAs($secretary)->get('/students/create')->assertOk();
+        $this->actingAs($secretary)->get("/students/{$student->id}/edit")->assertOk();
+    }
+
+    public function test_secretary_cannot_delete_attendance_but_can_manage_it(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $attendance = Attendance::factory()->create();
+
+        $this->actingAs($secretary)->delete("/attendances/{$attendance->id}")->assertForbidden();
+        $this->assertDatabaseHas('attendances', ['id' => $attendance->id]);
+
+        $this->actingAs($secretary)->get('/attendances/create')->assertOk();
+        $this->actingAs($secretary)->get("/attendances/{$attendance->id}/edit")->assertOk();
+    }
+
+    public function test_secretary_cannot_delete_payments_but_can_manage_them(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $payment = Payment::factory()->create();
+
+        $this->actingAs($secretary)->delete("/payments/{$payment->id}")->assertForbidden();
+        $this->assertDatabaseHas('payments', ['id' => $payment->id]);
+
+        $this->actingAs($secretary)->get('/payments/create')->assertOk();
+        $this->actingAs($secretary)->get("/payments/{$payment->id}/edit")->assertOk();
+    }
+
+    public function test_director_can_manage_courses_instructors_and_delete_everything(): void
+    {
+        $director = User::factory()->director()->create();
         $course = Course::factory()->create();
         $instructor = Instructor::factory()->create();
         $student = Student::factory()->create();
         $attendance = Attendance::factory()->create();
         $payment = Payment::factory()->create();
 
-        $this->actingAs($admin)->get('/courses/create')->assertOk();
-        $this->actingAs($admin)->get('/instructors/create')->assertOk();
-        $this->actingAs($admin)->delete("/courses/{$course->id}")->assertRedirect('/courses');
-        $this->actingAs($admin)->delete("/instructors/{$instructor->id}")->assertRedirect('/instructors');
-        $this->actingAs($admin)->delete("/students/{$student->id}")->assertRedirect('/students');
-        $this->actingAs($admin)->delete("/attendances/{$attendance->id}")->assertRedirect('/attendances');
-        $this->actingAs($admin)->delete("/payments/{$payment->id}")->assertRedirect('/payments');
+        $this->actingAs($director)->get('/courses/create')->assertOk();
+        $this->actingAs($director)->get('/instructors/create')->assertOk();
+        $this->actingAs($director)->delete("/courses/{$course->id}")->assertRedirect('/courses');
+        $this->actingAs($director)->delete("/instructors/{$instructor->id}")->assertRedirect('/instructors');
+        $this->actingAs($director)->delete("/students/{$student->id}")->assertRedirect('/students');
+        $this->actingAs($director)->delete("/attendances/{$attendance->id}")->assertRedirect('/attendances');
+        $this->actingAs($director)->delete("/payments/{$payment->id}")->assertRedirect('/payments');
     }
 
     public function test_guests_are_redirected_to_login_from_finance_routes(): void
@@ -117,22 +195,22 @@ class RolePermissionTest extends TestCase
         $this->get('/finance')->assertRedirect('/login');
     }
 
-    public function test_staff_cannot_access_finance_section(): void
-    {
-        $staff = User::factory()->staff()->create();
-
-        $this->actingAs($staff)->get('/expenses')->assertForbidden();
-        $this->actingAs($staff)->get('/expenses/create')->assertForbidden();
-        $this->actingAs($staff)->get('/finance')->assertForbidden();
-    }
-
     public function test_admin_cannot_access_finance_section(): void
     {
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
 
         $this->actingAs($admin)->get('/expenses')->assertForbidden();
         $this->actingAs($admin)->get('/expenses/create')->assertForbidden();
         $this->actingAs($admin)->get('/finance')->assertForbidden();
+    }
+
+    public function test_secretary_cannot_access_finance_section(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+
+        $this->actingAs($secretary)->get('/expenses')->assertForbidden();
+        $this->actingAs($secretary)->get('/expenses/create')->assertForbidden();
+        $this->actingAs($secretary)->get('/finance')->assertForbidden();
     }
 
     public function test_director_can_access_finance_section(): void
@@ -153,7 +231,7 @@ class RolePermissionTest extends TestCase
         $this->actingAs($director)->delete("/courses/{$course->id}")->assertRedirect('/courses');
     }
 
-    public function test_newly_registered_users_default_to_the_staff_role(): void
+    public function test_newly_registered_users_default_to_the_restricted_admin_role(): void
     {
         $response = $this->post('/register', [
             'name' => 'New User',
@@ -165,7 +243,8 @@ class RolePermissionTest extends TestCase
         $response->assertRedirect('/dashboard');
 
         $user = User::where('email', 'newuser@example.com')->firstOrFail();
+        $this->assertSame('admin', $user->role);
         $this->assertFalse($user->isAdmin());
-        $this->assertSame('staff', $user->role);
+        $this->assertFalse($user->isDirector());
     }
 }

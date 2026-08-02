@@ -145,16 +145,20 @@ class CertificateTest extends TestCase
         $response->assertSee($certificate->student->name);
     }
 
-    public function test_staff_cannot_delete_a_certificate_but_admin_can(): void
+    public function test_admin_and_secretary_cannot_delete_a_certificate_but_director_can(): void
     {
-        $staff = User::factory()->staff()->create();
-        $admin = User::factory()->create();
+        $admin = User::factory()->admin()->create();
+        $secretary = User::factory()->secretary()->create();
+        $director = User::factory()->director()->create();
         $certificate = Certificate::factory()->create();
 
-        $this->actingAs($staff)->delete("/certificates/{$certificate->id}")->assertForbidden();
+        $this->actingAs($admin)->delete("/certificates/{$certificate->id}")->assertForbidden();
         $this->assertDatabaseHas('certificates', ['id' => $certificate->id]);
 
-        $this->actingAs($admin)->delete("/certificates/{$certificate->id}")->assertRedirect('/certificates');
+        $this->actingAs($secretary)->delete("/certificates/{$certificate->id}")->assertForbidden();
+        $this->assertDatabaseHas('certificates', ['id' => $certificate->id]);
+
+        $this->actingAs($director)->delete("/certificates/{$certificate->id}")->assertRedirect('/certificates');
         $this->assertDatabaseMissing('certificates', ['id' => $certificate->id]);
     }
 }

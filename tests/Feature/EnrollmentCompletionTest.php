@@ -102,9 +102,9 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertSame($enrollment->id, $viaStudent);
     }
 
-    public function test_staff_can_mark_an_enrollment_complete(): void
+    public function test_secretary_can_mark_an_enrollment_complete(): void
     {
-        $staff = User::factory()->staff()->create();
+        $secretary = User::factory()->secretary()->create();
         $course = Course::factory()->create(['fee' => 100]);
         $student = Student::factory()->create();
         $enrollment = $this->enroll($student, $course);
@@ -115,7 +115,7 @@ class EnrollmentCompletionTest extends TestCase
             'status' => 'paid',
         ]);
 
-        $response = $this->actingAs($staff)->patch("/enrollments/{$enrollment->id}/complete");
+        $response = $this->actingAs($secretary)->patch("/enrollments/{$enrollment->id}/complete");
 
         $response->assertSessionHasNoErrors();
         $this->assertSame('completed', $enrollment->fresh()->status);
