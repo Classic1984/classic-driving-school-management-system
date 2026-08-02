@@ -111,6 +111,48 @@ class RolePermissionTest extends TestCase
         $this->actingAs($admin)->delete("/payments/{$payment->id}")->assertRedirect('/payments');
     }
 
+    public function test_guests_are_redirected_to_login_from_finance_routes(): void
+    {
+        $this->get('/expenses')->assertRedirect('/login');
+        $this->get('/finance')->assertRedirect('/login');
+    }
+
+    public function test_staff_cannot_access_finance_section(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        $this->actingAs($staff)->get('/expenses')->assertForbidden();
+        $this->actingAs($staff)->get('/expenses/create')->assertForbidden();
+        $this->actingAs($staff)->get('/finance')->assertForbidden();
+    }
+
+    public function test_admin_cannot_access_finance_section(): void
+    {
+        $admin = User::factory()->create();
+
+        $this->actingAs($admin)->get('/expenses')->assertForbidden();
+        $this->actingAs($admin)->get('/expenses/create')->assertForbidden();
+        $this->actingAs($admin)->get('/finance')->assertForbidden();
+    }
+
+    public function test_director_can_access_finance_section(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)->get('/expenses')->assertOk();
+        $this->actingAs($director)->get('/expenses/create')->assertOk();
+        $this->actingAs($director)->get('/finance')->assertOk();
+    }
+
+    public function test_director_also_has_full_admin_capabilities(): void
+    {
+        $director = User::factory()->director()->create();
+        $course = Course::factory()->create();
+
+        $this->actingAs($director)->get('/courses/create')->assertOk();
+        $this->actingAs($director)->delete("/courses/{$course->id}")->assertRedirect('/courses');
+    }
+
     public function test_newly_registered_users_default_to_the_staff_role(): void
     {
         $response = $this->post('/register', [

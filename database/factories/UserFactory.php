@@ -53,4 +53,15 @@ class UserFactory extends Factory
             'role' => 'staff',
         ]);
     }
+
+    /**
+     * Indicate that the user has the "director" role (full admin access,
+     * plus exclusive access to the Finance section).
+     */
+    public function director(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'director',
+        ]);
+    }
 }

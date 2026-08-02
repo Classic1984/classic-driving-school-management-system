@@ -36,6 +36,11 @@
                     <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
                         {{ __('Certificates') }}
                     </x-nav-link>
+                    @if (auth()->user()->isDirector())
+                        <x-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
+                            {{ __('Finance') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -112,6 +117,11 @@
             <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
                 {{ __('Certificates') }}
             </x-responsive-nav-link>
+            @if (auth()->user()->isDirector())
+                <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
+                    {{ __('Finance') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
