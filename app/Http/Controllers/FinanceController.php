@@ -7,6 +7,7 @@ use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FinanceController extends Controller
 {
@@ -16,6 +17,48 @@ class FinanceController extends Controller
      * are the Director's recorded expenses for the school.
      */
     public function summary(Request $request): View
+    {
+        [$year, $months, $totals] = $this->computeSummary($request);
+
+        return view('finance.summary', compact('year', 'months', 'totals'));
+    }
+
+    /**
+     * Download a CSV export of the same month-by-month summary.
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        [$year, $months, $totals] = $this->computeSummary($request);
+
+        return response()->streamDownload(function () use ($months, $totals) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Month', 'Income', 'Expenses', 'Balance']);
+
+            foreach ($months as $month) {
+                fputcsv($handle, [
+                    $month['label'],
+                    number_format($month['income'], 2, '.', ''),
+                    number_format($month['expenses'], 2, '.', ''),
+                    number_format($month['balance'], 2, '.', ''),
+                ]);
+            }
+
+            fputcsv($handle, [
+                'Year Total',
+                number_format($totals['income'], 2, '.', ''),
+                number_format($totals['expenses'], 2, '.', ''),
+                number_format($totals['balance'], 2, '.', ''),
+            ]);
+
+            fclose($handle);
+        }, "finance-summary-{$year}.csv", ['Content-Type' => 'text/csv']);
+    }
+
+    /**
+     * @return array{0: int, 1: \Illuminate\Support\Collection, 2: array<string, float>}
+     */
+    protected function computeSummary(Request $request): array
     {
         $year = (int) $request->query('year', now()->year);
 
@@ -43,6 +86,6 @@ class FinanceController extends Controller
             'balance' => $months->sum('balance'),
         ];
 
-        return view('finance.summary', compact('year', 'months', 'totals'));
+        return [$year, $months, $totals];
     }
 }

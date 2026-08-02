@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -14,11 +16,38 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $students = Student::with('courses')->latest()->paginate(10);
+        $query = Student::with('courses');
 
-        return view('students.index', compact('students'));
+        if ($search = $request->query('search')) {
+            $query->where(function ($inner) use ($search) {
+                $inner->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status = $request->query('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($courseId = $request->query('course_id')) {
+            $query->whereHas('courses', fn ($inner) => $inner->where('courses.id', $courseId));
+        }
+
+        if ($payment = $request->query('payment')) {
+            if ($payment === 'locked') {
+                $query->whereHas('courses', fn ($inner) => $inner->where('course_student.status', 'locked'));
+            } elseif ($payment === 'clear') {
+                $query->whereDoesntHave('courses', fn ($inner) => $inner->where('course_student.status', 'locked'));
+            }
+        }
+
+        $students = $query->latest()->paginate(10)->appends($request->query());
+        $courses = Course::orderBy('name')->get();
+
+        return view('students.index', compact('students', 'courses'));
     }
 
     /**

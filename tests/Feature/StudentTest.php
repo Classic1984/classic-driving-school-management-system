@@ -36,6 +36,65 @@ class StudentTest extends TestCase
         $response->assertSee('Jane Doe');
     }
 
+    public function test_student_index_can_be_filtered_by_search_term(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create(['name' => 'Jane Doe', 'email' => 'jane@example.com']);
+        Student::factory()->create(['name' => 'John Smith', 'email' => 'john@example.com']);
+
+        $response = $this->actingAs($user)->get('/students?search=Jane');
+
+        $response->assertOk();
+        $response->assertSee('Jane Doe');
+        $response->assertDontSee('John Smith');
+    }
+
+    public function test_student_index_can_be_filtered_by_status(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create(['name' => 'Active Student', 'status' => 'active']);
+        Student::factory()->create(['name' => 'Withdrawn Student', 'status' => 'withdrawn']);
+
+        $response = $this->actingAs($user)->get('/students?status=withdrawn');
+
+        $response->assertOk();
+        $response->assertSee('Withdrawn Student');
+        $response->assertDontSee('Active Student');
+    }
+
+    public function test_student_index_can_be_filtered_by_course(): void
+    {
+        $user = User::factory()->create();
+        $courseA = Course::factory()->create(['name' => 'Course A']);
+        $courseB = Course::factory()->create(['name' => 'Course B']);
+        $studentA = Student::factory()->create(['name' => 'In Course A']);
+        $studentB = Student::factory()->create(['name' => 'In Course B']);
+        $studentA->courses()->attach($courseA->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $studentB->courses()->attach($courseB->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get("/students?course_id={$courseA->id}");
+
+        $response->assertOk();
+        $response->assertSee('In Course A');
+        $response->assertDontSee('In Course B');
+    }
+
+    public function test_student_index_can_be_filtered_by_payment_lock_status(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+        $lockedStudent = Student::factory()->create(['name' => 'Locked Student']);
+        $clearStudent = Student::factory()->create(['name' => 'Clear Student']);
+        $lockedStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'locked', 'locked_reason' => 'overdue_balance']);
+        $clearStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get('/students?payment=locked');
+
+        $response->assertOk();
+        $response->assertSee('Locked Student');
+        $response->assertDontSee('Clear Student');
+    }
+
     public function test_authenticated_user_can_view_create_form(): void
     {
         $user = User::factory()->create();

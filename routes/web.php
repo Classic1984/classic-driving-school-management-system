@@ -47,12 +47,16 @@ Route::middleware('auth')->group(function () {
     Route::middleware('director')->group(function () {
         Route::resource('expenses', ExpenseController::class);
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
+        Route::get('finance/export', [FinanceController::class, 'export'])->name('finance.export');
     });
 
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
     Route::resource('attendances', AttendanceController::class)->except(['destroy']);
+    // Registered before the resource below for the same reason as the admin-only group
+    // above: "payments/export" would otherwise be swallowed by "payments/{payment}".
+    Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
     Route::resource('payments', PaymentController::class)->except(['destroy']);
     Route::resource('tickets', TicketController::class)->except(['destroy']);
     Route::resource('certificates', CertificateController::class)->except(['destroy']);

@@ -21,6 +21,9 @@
                                 @endforeach
                             </select>
                         </form>
+                        <a href="{{ route('finance.export', ['year' => $year]) }}">
+                            <x-secondary-button type="button">{{ __('Export CSV') }}</x-secondary-button>
+                        </a>
                         <a href="{{ route('expenses.index') }}">
                             <x-primary-button type="button">{{ __('Manage Expenses') }}</x-primary-button>
                         </a>
