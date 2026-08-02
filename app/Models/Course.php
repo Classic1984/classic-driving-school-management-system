@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Database\Factories\StudentFactory;
+use Database\Factories\CourseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Student extends Model
+class Course extends Model
 {
-    /** @use HasFactory<StudentFactory> */
+    /** @use HasFactory<CourseFactory> */
     use HasFactory;
 
     /**
@@ -19,13 +19,10 @@ class Student extends Model
      */
     protected $fillable = [
         'name',
-        'email',
-        'phone',
-        'address',
-        'date_of_birth',
-        'license_number',
+        'description',
         'course_type',
-        'enrollment_date',
+        'duration_hours',
+        'fee',
         'status',
     ];
 
@@ -37,16 +34,24 @@ class Student extends Model
     protected function casts(): array
     {
         return [
-            'date_of_birth' => 'date',
-            'enrollment_date' => 'date',
+            'fee' => 'decimal:2',
+            'duration_hours' => 'integer',
         ];
     }
 
     /**
-     * The courses this student is enrolled in.
+     * The instructors assigned to teach this course.
      */
-    public function courses(): BelongsToMany
+    public function instructors(): BelongsToMany
     {
-        return $this->belongsToMany(Course::class);
+        return $this->belongsToMany(Instructor::class);
+    }
+
+    /**
+     * The students enrolled in this course.
+     */
+    public function students(): BelongsToMany
+    {
+        return $this->belongsToMany(Student::class);
     }
 }

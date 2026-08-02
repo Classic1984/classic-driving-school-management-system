@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Course;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -120,6 +121,19 @@ class StudentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee($student->name);
+    }
+
+    public function test_student_page_shows_enrolled_courses(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Defensive Driving 101']);
+        $student->courses()->attach($course);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Defensive Driving 101');
     }
 
     public function test_authenticated_user_can_view_edit_form(): void

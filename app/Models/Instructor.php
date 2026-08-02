@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Database\Factories\StudentFactory;
+use Database\Factories\InstructorFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Student extends Model
+class Instructor extends Model
 {
-    /** @use HasFactory<StudentFactory> */
+    /** @use HasFactory<InstructorFactory> */
     use HasFactory;
 
     /**
@@ -21,11 +21,9 @@ class Student extends Model
         'name',
         'email',
         'phone',
-        'address',
-        'date_of_birth',
         'license_number',
-        'course_type',
-        'enrollment_date',
+        'specialization',
+        'hire_date',
         'status',
     ];
 
@@ -37,13 +35,12 @@ class Student extends Model
     protected function casts(): array
     {
         return [
-            'date_of_birth' => 'date',
-            'enrollment_date' => 'date',
+            'hire_date' => 'date',
         ];
     }
 
     /**
-     * The courses this student is enrolled in.
+     * The courses this instructor is assigned to teach.
      */
     public function courses(): BelongsToMany
     {
