@@ -6,6 +6,7 @@ use Database\Factories\CourseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
@@ -53,5 +54,13 @@ class Course extends Model
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class);
+    }
+
+    /**
+     * The attendance records for this course.
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
     }
 }
