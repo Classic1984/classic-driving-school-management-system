@@ -3,6 +3,7 @@
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
@@ -24,5 +25,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('courses', CourseController::class);
     Route::resource('instructors', InstructorController::class);
     Route::resource('attendances', AttendanceController::class);
+    Route::resource('payments', PaymentController::class);
 });
 require __DIR__.'/auth.php';

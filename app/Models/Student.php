@@ -58,4 +58,12 @@ class Student extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    /**
+     * The payment records for this student.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
 }
