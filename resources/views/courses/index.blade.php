@@ -13,9 +13,11 @@
                         {{ __('Courses') }}
                     </h3>
 
-                    <a href="{{ route('courses.create') }}">
-                        <x-primary-button type="button">{{ __('Add Course') }}</x-primary-button>
-                    </a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('courses.create') }}">
+                            <x-primary-button type="button">{{ __('Add Course') }}</x-primary-button>
+                        </a>
+                    @endif
                 </div>
 
                 @if (session('status') === 'course-created')
@@ -52,12 +54,14 @@
                                     <td class="px-4 py-2 capitalize">{{ $course->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('courses.show', $course) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('courses.edit', $course) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
-                                        <form method="post" action="{{ route('courses.destroy', $course) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this course?') }}');">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
-                                        </form>
+                                        @if (auth()->user()->isAdmin())
+                                            <a href="{{ route('courses.edit', $course) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                            <form method="post" action="{{ route('courses.destroy', $course) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this course?') }}');">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

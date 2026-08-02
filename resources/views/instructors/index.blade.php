@@ -13,9 +13,11 @@
                         {{ __('Instructors') }}
                     </h3>
 
-                    <a href="{{ route('instructors.create') }}">
-                        <x-primary-button type="button">{{ __('Add Instructor') }}</x-primary-button>
-                    </a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('instructors.create') }}">
+                            <x-primary-button type="button">{{ __('Add Instructor') }}</x-primary-button>
+                        </a>
+                    @endif
                 </div>
 
                 @if (session('status') === 'instructor-created')
@@ -48,12 +50,14 @@
                                     <td class="px-4 py-2 capitalize">{{ $instructor->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('instructors.show', $instructor) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('instructors.edit', $instructor) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
-                                        <form method="post" action="{{ route('instructors.destroy', $instructor) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this instructor?') }}');">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
-                                        </form>
+                                        @if (auth()->user()->isAdmin())
+                                            <a href="{{ route('instructors.edit', $instructor) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
+                                            <form method="post" action="{{ route('instructors.destroy', $instructor) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this instructor?') }}');">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

@@ -21,10 +21,22 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('students', StudentController::class);
-    Route::resource('courses', CourseController::class);
-    Route::resource('instructors', InstructorController::class);
-    Route::resource('attendances', AttendanceController::class);
-    Route::resource('payments', PaymentController::class);
+    // Registered before the public index/show routes below: Route::resource() normally
+    // orders "create" ahead of "show" so that "courses/create" isn't swallowed by the
+    // "courses/{course}" pattern. Splitting the resource across two groups must preserve
+    // that ordering, so the admin-only "create" routes have to come first here.
+    Route::middleware('admin')->group(function () {
+        Route::resource('courses', CourseController::class)->except(['index', 'show']);
+        Route::resource('instructors', InstructorController::class)->except(['index', 'show']);
+        Route::delete('students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
+        Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
+        Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+    });
+
+    Route::resource('students', StudentController::class)->except(['destroy']);
+    Route::resource('courses', CourseController::class)->only(['index', 'show']);
+    Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
+    Route::resource('attendances', AttendanceController::class)->except(['destroy']);
+    Route::resource('payments', PaymentController::class)->except(['destroy']);
 });
 require __DIR__.'/auth.php';

@@ -60,11 +60,13 @@
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('students.show', $student) }}" class="text-sm text-indigo-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('students.edit', $student) }}" class="text-sm text-indigo-600 hover:underline">{{ __('Edit') }}</a>
-                                        <form method="post" action="{{ route('students.destroy', $student) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this student?') }}');">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
-                                        </form>
+                                        @if (auth()->user()->isAdmin())
+                                            <form method="post" action="{{ route('students.destroy', $student) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this student?') }}');">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty

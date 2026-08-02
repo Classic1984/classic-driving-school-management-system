@@ -56,9 +56,11 @@
                 </dl>
 
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('courses.edit', $course) }}">
-                        <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
-                    </a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ route('courses.edit', $course) }}">
+                            <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
+                        </a>
+                    @endif
                     <a href="{{ route('courses.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Back to list') }}</a>
                 </div>
             </div>
