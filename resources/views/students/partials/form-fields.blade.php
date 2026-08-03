@@ -148,15 +148,15 @@
     <x-input-error class="mt-2" :messages="$errors->get('has_driving_experience')" />
 </div>
 
-@php($requiresClasses = old('requires_classes', $student?->requires_classes))
+@php($wearsGlasses = old('wears_glasses', $student?->wears_glasses))
 <div>
-    <x-input-label for="requires_classes" :value="__('Do You Require Classes to Drive?')" />
-    <select id="requires_classes" name="requires_classes" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+    <x-input-label for="wears_glasses" :value="__('Do You Wear Glasses to Drive?')" />
+    <select id="wears_glasses" name="wears_glasses" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
         <option value="">{{ __('Select') }}</option>
-        <option value="1" @selected($requiresClasses !== null && $requiresClasses !== '' && filter_var($requiresClasses, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
-        <option value="0" @selected($requiresClasses !== null && $requiresClasses !== '' && ! filter_var($requiresClasses, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
+        <option value="1" @selected($wearsGlasses !== null && $wearsGlasses !== '' && filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
+        <option value="0" @selected($wearsGlasses !== null && $wearsGlasses !== '' && ! filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
     </select>
-    <x-input-error class="mt-2" :messages="$errors->get('requires_classes')" />
+    <x-input-error class="mt-2" :messages="$errors->get('wears_glasses')" />
 </div>
 
 <div>

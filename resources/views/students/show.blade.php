@@ -74,8 +74,8 @@
                         <dd class="text-sm text-gray-900 col-span-2">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
-                        <dt class="text-sm font-medium text-gray-500">{{ __('Requires Classes') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">{{ is_null($student->requires_classes) ? '—' : ($student->requires_classes ? __('Yes') : __('No')) }}</dd>
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Wears Glasses to Drive') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ is_null($student->wears_glasses) ? '—' : ($student->wears_glasses ? __('Yes') : __('No')) }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('How They Heard About Us') }}</dt>

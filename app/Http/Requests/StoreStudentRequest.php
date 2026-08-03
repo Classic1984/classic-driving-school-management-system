@@ -43,7 +43,7 @@ class StoreStudentRequest extends FormRequest
             'course_type' => ['required', 'in:manual,automatic,both'],
             'vehicle_class' => ['nullable', 'in:light,heavy'],
             'has_driving_experience' => ['nullable', 'boolean'],
-            'requires_classes' => ['nullable', 'boolean'],
+            'wears_glasses' => ['nullable', 'boolean'],
             'referral_source' => ['nullable', 'in:flyer,referral,facebook,other'],
             'referral_source_other' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'max:4096'],
