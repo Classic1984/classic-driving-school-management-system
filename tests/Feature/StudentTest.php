@@ -228,6 +228,49 @@ class StudentTest extends TestCase
         Storage::disk('public')->assertExists($newPath);
     }
 
+    public function test_storing_a_student_rejects_a_local_government_area_that_does_not_belong_to_the_state(): void
+    {
+        $user = User::factory()->create();
+
+        $data = [
+            'name' => 'Bola Ade',
+            'email' => 'bola@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'state_of_origin' => 'Rivers',
+            'local_government_area' => 'Ikeja',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+        ];
+
+        $response = $this->actingAs($user)->post('/students', $data);
+
+        $response->assertSessionHasErrors('local_government_area');
+        $this->assertDatabaseCount('students', 0);
+    }
+
+    public function test_storing_a_student_rejects_an_unrecognized_state_of_origin(): void
+    {
+        $user = User::factory()->create();
+
+        $data = [
+            'name' => 'Bola Ade',
+            'email' => 'bola@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'state_of_origin' => 'Atlantis',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+        ];
+
+        $response = $this->actingAs($user)->post('/students', $data);
+
+        $response->assertSessionHasErrors('state_of_origin');
+        $this->assertDatabaseCount('students', 0);
+    }
+
     public function test_each_student_gets_a_unique_sequential_id_number(): void
     {
         $first = Student::factory()->create();
