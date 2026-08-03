@@ -9,6 +9,7 @@ use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class StudentController extends Controller
@@ -63,7 +64,14 @@ class StudentController extends Controller
      */
     public function store(StoreStudentRequest $request): RedirectResponse
     {
-        Student::create($request->validated());
+        $data = $request->validated();
+        unset($data['photo']);
+
+        if ($request->hasFile('photo')) {
+            $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
+        }
+
+        Student::create($data);
 
         return Redirect::route('students.index')->with('status', 'student-created');
     }
@@ -91,7 +99,18 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
-        $student->update($request->validated());
+        $data = $request->validated();
+        unset($data['photo']);
+
+        if ($request->hasFile('photo')) {
+            if ($student->photo_path) {
+                Storage::disk('public')->delete($student->photo_path);
+            }
+
+            $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
+        }
+
+        $student->update($data);
 
         return Redirect::route('students.index')->with('status', 'student-updated');
     }
@@ -101,6 +120,10 @@ class StudentController extends Controller
      */
     public function destroy(Student $student): RedirectResponse
     {
+        if ($student->photo_path) {
+            Storage::disk('public')->delete($student->photo_path);
+        }
+
         $student->delete();
 
         return Redirect::route('students.index')->with('status', 'student-deleted');

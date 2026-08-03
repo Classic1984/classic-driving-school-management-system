@@ -24,8 +24,23 @@ class Student extends Model
         'phone',
         'address',
         'date_of_birth',
+        'mother_maiden_name',
+        'sex',
+        'state_of_origin',
+        'local_government_area',
+        'occupation',
+        'next_of_kin_name',
+        'next_of_kin_address',
+        'next_of_kin_phone',
+        'next_of_kin_email',
         'license_number',
         'course_type',
+        'vehicle_class',
+        'has_driving_experience',
+        'requires_classes',
+        'referral_source',
+        'referral_source_other',
+        'photo_path',
         'enrollment_date',
         'status',
     ];
@@ -40,6 +55,8 @@ class Student extends Model
         return [
             'date_of_birth' => 'date',
             'enrollment_date' => 'date',
+            'has_driving_experience' => 'boolean',
+            'requires_classes' => 'boolean',
         ];
     }
 
