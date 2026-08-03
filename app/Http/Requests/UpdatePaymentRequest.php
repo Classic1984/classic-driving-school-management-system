@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Enrollment;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdatePaymentRequest extends FormRequest
 {
@@ -33,5 +35,25 @@ class UpdatePaymentRequest extends FormRequest
             'reference_number' => ['nullable', 'string', 'max:255', Rule::unique('payments', 'reference_number')->ignore($this->route('payment'))],
             'notes' => ['nullable', 'string'],
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            if ($validator->errors()->has('student_id') || $validator->errors()->has('course_id')) {
+                return;
+            }
+
+            $enrolled = Enrollment::where('student_id', $this->input('student_id'))
+                ->where('course_id', $this->input('course_id'))
+                ->exists();
+
+            if (! $enrolled) {
+                $validator->errors()->add('student_id', 'This student is not enrolled in the selected course.');
+            }
+        });
     }
 }
