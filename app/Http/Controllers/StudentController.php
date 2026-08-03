@@ -82,6 +82,7 @@ class StudentController extends Controller
             'enrolled_at' => $student->enrollment_date->toDateString(),
             'due_date' => $student->enrollment_date->copy()->addDays($course->gracePeriodDays())->toDateString(),
             'status' => 'active',
+            'fee' => $course->fee,
         ]);
 
         if ($amountPaid = $request->validated('amount_paid')) {

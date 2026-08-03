@@ -192,6 +192,43 @@ class StudentTest extends TestCase
         $this->assertSame(95000.0, $enrollment->pivot->balance());
     }
 
+    public function test_registering_a_student_locks_in_the_courses_current_fee(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $this->actingAs($user)->post('/students', [
+            'name' => 'Early Bird',
+            'email' => 'early.bird@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+            'course_id' => $course->id,
+        ])->assertSessionHasNoErrors();
+
+        // The school raises the course's price after the first student enrolled.
+        $course->update(['fee' => 120000]);
+
+        $this->actingAs($user)->post('/students', [
+            'name' => 'Late Comer',
+            'email' => 'late.comer@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-02-01',
+            'status' => 'active',
+            'course_id' => $course->id,
+        ])->assertSessionHasNoErrors();
+
+        $earlyBird = Student::where('email', 'early.bird@example.com')->firstOrFail();
+        $lateComer = Student::where('email', 'late.comer@example.com')->firstOrFail();
+
+        $this->assertSame(95000.0, $earlyBird->courses->first()->pivot->fee());
+        $this->assertSame(120000.0, $lateComer->courses->first()->pivot->fee());
+    }
+
     public function test_storing_a_student_requires_a_course(): void
     {
         $user = User::factory()->create();

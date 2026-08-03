@@ -105,7 +105,7 @@
                 </dl>
 
                 @php
-                    $totalFees = $student->courses->sum('fee');
+                    $totalFees = $student->courses->sum(fn ($enrolledCourse) => $enrolledCourse->pivot->fee());
                     $totalPaid = $student->payments->where('status', 'paid')->sum('amount');
                     $totalBalance = $student->courses->sum(fn ($enrolledCourse) => $enrolledCourse->pivot->balance());
                 @endphp

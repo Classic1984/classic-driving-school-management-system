@@ -185,6 +185,39 @@ class CourseTest extends TestCase
         $this->assertFalse($course->students->contains($oldStudent));
     }
 
+    public function test_raising_a_courses_fee_does_not_affect_students_already_enrolled(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $existingStudent = Student::factory()->create();
+        $course->students()->attach($existingStudent->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+
+        $this->actingAs($user)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
+            'fee' => 75000,
+            'status' => $course->status,
+            'students' => [$existingStudent->id],
+        ])->assertSessionHasNoErrors();
+
+        $existingEnrollment = $existingStudent->courses()->first()->pivot;
+        $this->assertSame(50000.0, $existingEnrollment->fee());
+        $this->assertSame(50000.0, $existingEnrollment->balance());
+
+        $newStudent = Student::factory()->create();
+        $course->students()->attach($newStudent->id, [
+            'enrolled_at' => now(),
+            'status' => 'active',
+            'fee' => $course->fresh()->fee,
+        ]);
+
+        $newEnrollment = $newStudent->courses()->first()->pivot;
+        $this->assertSame(75000.0, $newEnrollment->fee());
+    }
+
     public function test_authenticated_user_can_delete_a_course(): void
     {
         $user = User::factory()->create();
