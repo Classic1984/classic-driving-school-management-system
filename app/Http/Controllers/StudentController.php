@@ -71,9 +71,9 @@ class StudentController extends Controller
             $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
         }
 
-        Student::create($data);
+        $student = Student::create($data);
 
-        return Redirect::route('students.index')->with('status', 'student-created');
+        return Redirect::route('students.show', $student)->with('status', 'student-created');
     }
 
     /**
