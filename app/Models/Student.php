@@ -37,7 +37,7 @@ class Student extends Model
         'course_type',
         'vehicle_class',
         'has_driving_experience',
-        'requires_classes',
+        'wears_glasses',
         'referral_source',
         'referral_source_other',
         'photo_path',
@@ -56,7 +56,7 @@ class Student extends Model
             'date_of_birth' => 'date',
             'enrollment_date' => 'date',
             'has_driving_experience' => 'boolean',
-            'requires_classes' => 'boolean',
+            'wears_glasses' => 'boolean',
         ];
     }
 

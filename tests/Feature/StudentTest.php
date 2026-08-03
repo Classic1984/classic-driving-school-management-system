@@ -170,7 +170,7 @@ class StudentTest extends TestCase
             'course_type' => 'manual',
             'vehicle_class' => 'light',
             'has_driving_experience' => '0',
-            'requires_classes' => '1',
+            'wears_glasses' => '1',
             'referral_source' => 'other',
             'referral_source_other' => 'Word of mouth',
             'photo' => UploadedFile::fake()->image('passport.jpg'),
@@ -195,7 +195,7 @@ class StudentTest extends TestCase
         $this->assertSame('chinedu@example.com', $student->next_of_kin_email);
         $this->assertSame('light', $student->vehicle_class);
         $this->assertFalse($student->has_driving_experience);
-        $this->assertTrue($student->requires_classes);
+        $this->assertTrue($student->wears_glasses);
         $this->assertSame('other', $student->referral_source);
         $this->assertSame('Word of mouth', $student->referral_source_other);
         $this->assertNotNull($student->photo_path);
