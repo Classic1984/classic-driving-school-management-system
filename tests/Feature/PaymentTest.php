@@ -67,6 +67,7 @@ class PaymentTest extends TestCase
         $user = User::factory()->create();
         $student = Student::factory()->create();
         $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
 
         $data = [
             'student_id' => $student->id,
@@ -117,6 +118,7 @@ class PaymentTest extends TestCase
         $user = User::factory()->create();
         $student = Student::factory()->create();
         $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
         Payment::factory()->create(['reference_number' => 'DUPLICATE-REF']);
 
         $response = $this->actingAs($user)->post('/payments', [
@@ -131,6 +133,44 @@ class PaymentTest extends TestCase
 
         $response->assertSessionHasErrors('reference_number');
         $this->assertDatabaseCount('payments', 1);
+    }
+
+    public function test_storing_a_payment_requires_the_student_to_be_enrolled_in_the_course(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+
+        $response = $this->actingAs($user)->post('/payments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'payment_date' => '2026-01-15',
+            'payment_method' => 'cash',
+            'status' => 'paid',
+        ]);
+
+        $response->assertSessionHasErrors('student_id');
+        $this->assertDatabaseCount('payments', 0);
+    }
+
+    public function test_updating_a_payment_requires_the_student_to_be_enrolled_in_the_course(): void
+    {
+        $user = User::factory()->create();
+        $payment = Payment::factory()->create(['status' => 'pending']);
+        $otherCourse = Course::factory()->create();
+
+        $response = $this->actingAs($user)->put("/payments/{$payment->id}", [
+            'student_id' => $payment->student_id,
+            'course_id' => $otherCourse->id,
+            'amount' => $payment->amount,
+            'payment_date' => $payment->payment_date->format('Y-m-d'),
+            'payment_method' => $payment->payment_method,
+            'status' => 'paid',
+        ]);
+
+        $response->assertSessionHasErrors('student_id');
+        $this->assertSame('pending', $payment->fresh()->status);
     }
 
     public function test_authenticated_user_can_view_a_payment(): void
@@ -148,6 +188,7 @@ class PaymentTest extends TestCase
     {
         $user = User::factory()->create();
         $payment = Payment::factory()->create(['status' => 'pending']);
+        $payment->student->courses()->attach($payment->course_id, ['enrolled_at' => now(), 'status' => 'active']);
 
         $response = $this->actingAs($user)->put("/payments/{$payment->id}", [
             'student_id' => $payment->student_id,
