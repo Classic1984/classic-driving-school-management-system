@@ -8,6 +8,10 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg space-y-4">
+                @if ($student->photo_path)
+                    <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-24 w-24 object-cover rounded-md border border-gray-200">
+                @endif
+
                 <dl class="divide-y divide-gray-100">
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Student ID') }}</dt>
@@ -34,12 +38,53 @@
                         <dd class="text-sm text-gray-900 col-span-2">{{ $student->date_of_birth->format('Y-m-d') }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Mother Maiden Name') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $student->mother_maiden_name ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Sex') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->sex ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('State of Origin') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $student->state_of_origin ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Local Govt. Area') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $student->local_government_area ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Occupation') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $student->occupation ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('License Number') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $student->license_number ?? '—' }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Course Type') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->course_type }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Vehicle Class') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->vehicle_class ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Previous Driving Experience') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Requires Classes') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ is_null($student->requires_classes) ? '—' : ($student->requires_classes ? __('Yes') : __('No')) }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('How They Heard About Us') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 capitalize">
+                            {{ $student->referral_source ?? '—' }}
+                            @if ($student->referral_source === 'other' && $student->referral_source_other)
+                                ({{ $student->referral_source_other }})
+                            @endif
+                        </dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Enrollment Date') }}</dt>
@@ -50,6 +95,28 @@
                         <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->status }}</dd>
                     </div>
                 </dl>
+
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Next of Kin') }}</h3>
+                    <dl class="divide-y divide-gray-100">
+                        <div class="py-2 grid grid-cols-3 gap-4">
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Name') }}</dt>
+                            <dd class="text-sm text-gray-900 col-span-2">{{ $student->next_of_kin_name ?? '—' }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3 gap-4">
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Address') }}</dt>
+                            <dd class="text-sm text-gray-900 col-span-2">{{ $student->next_of_kin_address ?? '—' }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3 gap-4">
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Phone No.') }}</dt>
+                            <dd class="text-sm text-gray-900 col-span-2">{{ $student->next_of_kin_phone ?? '—' }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3 gap-4">
+                            <dt class="text-sm font-medium text-gray-500">{{ __('Email') }}</dt>
+                            <dd class="text-sm text-gray-900 col-span-2">{{ $student->next_of_kin_email ?? '—' }}</dd>
+                        </div>
+                    </dl>
+                </div>
 
                 <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Enrollments') }}</h3>

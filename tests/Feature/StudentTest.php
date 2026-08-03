@@ -6,6 +6,8 @@ use App\Models\Course;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class StudentTest extends TestCase
@@ -143,6 +145,87 @@ class StudentTest extends TestCase
 
         $student = Student::where('email', 'john.smith@example.com')->firstOrFail();
         $this->assertMatchesRegularExpression('/^CDS-\d{5}$/', $student->student_id_number);
+    }
+
+    public function test_authenticated_user_can_store_a_student_with_the_full_registration_form_fields(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $data = [
+            'name' => 'Amaka Obi',
+            'email' => 'amaka@example.com',
+            'phone' => '555-0100',
+            'address' => '123 Main St',
+            'date_of_birth' => '2000-01-15',
+            'mother_maiden_name' => 'Chidinma Eze',
+            'sex' => 'female',
+            'state_of_origin' => 'Rivers',
+            'local_government_area' => 'Port Harcourt',
+            'occupation' => 'Trader',
+            'next_of_kin_name' => 'Chinedu Obi',
+            'next_of_kin_address' => '456 Kin St',
+            'next_of_kin_phone' => '555-0199',
+            'next_of_kin_email' => 'chinedu@example.com',
+            'course_type' => 'manual',
+            'vehicle_class' => 'light',
+            'has_driving_experience' => '0',
+            'requires_classes' => '1',
+            'referral_source' => 'other',
+            'referral_source_other' => 'Word of mouth',
+            'photo' => UploadedFile::fake()->image('passport.jpg'),
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+        ];
+
+        $response = $this->actingAs($user)->post('/students', $data);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/students');
+
+        $student = Student::where('email', 'amaka@example.com')->firstOrFail();
+        $this->assertSame('Chidinma Eze', $student->mother_maiden_name);
+        $this->assertSame('female', $student->sex);
+        $this->assertSame('Rivers', $student->state_of_origin);
+        $this->assertSame('Port Harcourt', $student->local_government_area);
+        $this->assertSame('Trader', $student->occupation);
+        $this->assertSame('Chinedu Obi', $student->next_of_kin_name);
+        $this->assertSame('456 Kin St', $student->next_of_kin_address);
+        $this->assertSame('555-0199', $student->next_of_kin_phone);
+        $this->assertSame('chinedu@example.com', $student->next_of_kin_email);
+        $this->assertSame('light', $student->vehicle_class);
+        $this->assertFalse($student->has_driving_experience);
+        $this->assertTrue($student->requires_classes);
+        $this->assertSame('other', $student->referral_source);
+        $this->assertSame('Word of mouth', $student->referral_source_other);
+        $this->assertNotNull($student->photo_path);
+        Storage::disk('public')->assertExists($student->photo_path);
+    }
+
+    public function test_updating_a_student_with_a_new_photo_deletes_the_old_one(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['photo_path' => 'student-photos/old.jpg']);
+        Storage::disk('public')->put('student-photos/old.jpg', 'old-contents');
+
+        $response = $this->actingAs($user)->put("/students/{$student->id}", [
+            'name' => $student->name,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'date_of_birth' => $student->date_of_birth->format('Y-m-d'),
+            'course_type' => $student->course_type,
+            'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
+            'status' => $student->status,
+            'photo' => UploadedFile::fake()->image('new.jpg'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        Storage::disk('public')->assertMissing('student-photos/old.jpg');
+        $newPath = $student->fresh()->photo_path;
+        $this->assertNotSame('student-photos/old.jpg', $newPath);
+        Storage::disk('public')->assertExists($newPath);
     }
 
     public function test_each_student_gets_a_unique_sequential_id_number(): void
