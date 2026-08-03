@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidLocalGovernmentArea;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -31,8 +32,8 @@ class UpdateStudentRequest extends FormRequest
             'date_of_birth' => ['required', 'date', 'before:today'],
             'mother_maiden_name' => ['nullable', 'string', 'max:255'],
             'sex' => ['nullable', 'in:male,female'],
-            'state_of_origin' => ['nullable', 'string', 'max:255'],
-            'local_government_area' => ['nullable', 'string', 'max:255'],
+            'state_of_origin' => ['nullable', Rule::in(array_keys(config('nigeria.states')))],
+            'local_government_area' => ['nullable', 'string', new ValidLocalGovernmentArea($this->input('state_of_origin'))],
             'occupation' => ['nullable', 'string', 'max:255'],
             'next_of_kin_name' => ['nullable', 'string', 'max:255'],
             'next_of_kin_address' => ['nullable', 'string', 'max:255'],

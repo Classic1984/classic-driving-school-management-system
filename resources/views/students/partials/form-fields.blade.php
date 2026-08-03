@@ -47,17 +47,62 @@
     <x-input-error class="mt-2" :messages="$errors->get('sex')" />
 </div>
 
+@php($statesAndLgas = config('nigeria.states'))
 <div>
     <x-input-label for="state_of_origin" :value="__('State of Origin')" />
-    <x-text-input id="state_of_origin" name="state_of_origin" type="text" class="mt-1 block w-full" :value="old('state_of_origin', $student?->state_of_origin)" />
+    <select id="state_of_origin" name="state_of_origin" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select') }}</option>
+        @foreach (array_keys($statesAndLgas) as $state)
+            <option value="{{ $state }}" @selected(old('state_of_origin', $student?->state_of_origin) === $state)>{{ $state }}</option>
+        @endforeach
+    </select>
     <x-input-error class="mt-2" :messages="$errors->get('state_of_origin')" />
 </div>
 
 <div>
     <x-input-label for="local_government_area" :value="__('Local Govt. Area')" />
-    <x-text-input id="local_government_area" name="local_government_area" type="text" class="mt-1 block w-full" :value="old('local_government_area', $student?->local_government_area)" />
+    <select id="local_government_area" name="local_government_area" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select a state first') }}</option>
+    </select>
     <x-input-error class="mt-2" :messages="$errors->get('local_government_area')" />
 </div>
+
+<script>
+    (function () {
+        var statesAndLgas = @json($statesAndLgas);
+        var selectedLga = @json(old('local_government_area', $student?->local_government_area));
+        var stateSelect = document.getElementById('state_of_origin');
+        var lgaSelect = document.getElementById('local_government_area');
+
+        function populateLgas(stateName, preselect) {
+            var lgas = statesAndLgas[stateName] || [];
+            lgaSelect.innerHTML = '';
+
+            var placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = lgas.length ? 'Select' : 'Select a state first';
+            lgaSelect.appendChild(placeholder);
+
+            lgas.forEach(function (lga) {
+                var option = document.createElement('option');
+                option.value = lga;
+                option.textContent = lga;
+                if (lga === preselect) {
+                    option.selected = true;
+                }
+                lgaSelect.appendChild(option);
+            });
+        }
+
+        if (stateSelect.value) {
+            populateLgas(stateSelect.value, selectedLga);
+        }
+
+        stateSelect.addEventListener('change', function () {
+            populateLgas(stateSelect.value, null);
+        });
+    })();
+</script>
 
 <div>
     <x-input-label for="occupation" :value="__('Occupation')" />
