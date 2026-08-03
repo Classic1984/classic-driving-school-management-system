@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
@@ -46,6 +47,20 @@ class TicketController extends Controller
             'ticket_number' => $this->generateTicketNumber($student, $validated['course_id'], $validated['date']),
             'payment_status' => 'cleared',
         ]);
+
+        // Issuing a ticket is proof the student attended, so mark them
+        // present automatically instead of requiring a separate manual step.
+        Attendance::firstOrCreate(
+            [
+                'student_id' => $validated['student_id'],
+                'course_id' => $validated['course_id'],
+                'date' => $validated['date'],
+            ],
+            [
+                'instructor_id' => $validated['instructor_id'] ?? null,
+                'status' => 'present',
+            ]
+        );
 
         return Redirect::route('tickets.index')->with('status', 'ticket-created');
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
@@ -85,6 +86,41 @@ class TicketTest extends TestCase
         $ticket = Ticket::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
         $this->assertStringStartsWith($student->fresh()->student_id_number, $ticket->ticket_number);
         $this->assertSame('cleared', $ticket->payment_status);
+
+        $this->assertDatabaseHas('attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'instructor_id' => $instructor->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+        ]);
+    }
+
+    public function test_issuing_a_ticket_does_not_duplicate_an_existing_attendance_record(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $this->enrollStudent($student, $course);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'late',
+        ]);
+
+        $this->actingAs($user)->post('/tickets', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseCount('attendances', 1);
+        $this->assertDatabaseHas('attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'status' => 'late',
+        ]);
     }
 
     public function test_ticket_cannot_be_issued_for_a_locked_enrollment(): void
