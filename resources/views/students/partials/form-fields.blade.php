@@ -215,6 +215,43 @@
     <x-input-error class="mt-2" :messages="$errors->get('photo')" />
 </div>
 
+@if (! $student)
+    <fieldset class="border border-gray-200 rounded-md p-4">
+        <legend class="text-sm font-medium text-gray-700 px-1">{{ __('Course Enrollment & Initial Payment') }}</legend>
+
+        <div class="space-y-6">
+            <div>
+                <x-input-label for="course_id" :value="__('Course')" />
+                <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                    <option value="">{{ __('Select a course') }}</option>
+                    @foreach ($courses as $course)
+                        <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} (₦{{ number_format($course->fee, 2) }})</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="amount_paid" :value="__('Amount Paid Now')" />
+                <x-text-input id="amount_paid" name="amount_paid" type="number" step="0.01" min="0.01" class="mt-1 block w-full" :value="old('amount_paid')" />
+                <p class="mt-1 text-xs text-gray-500">{{ __('Leave blank if no payment is being made yet.') }}</p>
+                <x-input-error class="mt-2" :messages="$errors->get('amount_paid')" />
+            </div>
+
+            <div>
+                <x-input-label for="payment_method" :value="__('Payment Method')" />
+                <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
+            </div>
+        </div>
+    </fieldset>
+@endif
+
 <div>
     <x-input-label for="enrollment_date" :value="__('Enrollment Date')" />
     <x-text-input id="enrollment_date" name="enrollment_date" type="date" class="mt-1 block w-full" :value="old('enrollment_date', optional($student?->enrollment_date)->format('Y-m-d'))" required />

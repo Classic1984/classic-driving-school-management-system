@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Course;
+use App\Models\Payment;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,7 +57,9 @@ class StudentController extends Controller
      */
     public function create(): View
     {
-        return view('students.create');
+        $courses = Course::orderBy('name')->get();
+
+        return view('students.create', compact('courses'));
     }
 
     /**
@@ -65,13 +68,32 @@ class StudentController extends Controller
     public function store(StoreStudentRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        unset($data['photo']);
+        unset($data['photo'], $data['course_id'], $data['amount_paid'], $data['payment_method']);
 
         if ($request->hasFile('photo')) {
             $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
         }
 
         $student = Student::create($data);
+
+        $course = Course::findOrFail($request->validated('course_id'));
+
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => $student->enrollment_date->toDateString(),
+            'due_date' => $student->enrollment_date->copy()->addDays($course->gracePeriodDays())->toDateString(),
+            'status' => 'active',
+        ]);
+
+        if ($amountPaid = $request->validated('amount_paid')) {
+            Payment::create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'amount' => $amountPaid,
+                'payment_date' => $student->enrollment_date->toDateString(),
+                'payment_method' => $request->validated('payment_method'),
+                'status' => 'paid',
+            ]);
+        }
 
         return Redirect::route('students.show', $student)->with('status', 'student-created');
     }
