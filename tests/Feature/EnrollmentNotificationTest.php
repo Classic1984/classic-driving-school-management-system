@@ -4,10 +4,12 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Payment;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\EnrollmentLockedNotification;
 use App\Notifications\GracePeriodEndingSoonNotification;
+use App\Notifications\PaymentReminderNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
@@ -92,5 +94,83 @@ class EnrollmentNotificationTest extends TestCase
         $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
 
         Notification::assertNotSentTo($admin, GracePeriodEndingSoonNotification::class);
+    }
+
+    public function test_student_is_reminded_three_days_before_their_payment_is_due(): void
+    {
+        Notification::fake();
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'due_date' => now()->addDays(3)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
+
+        Notification::assertSentTo($student, PaymentReminderNotification::class, function ($notification) {
+            return $notification->stage === 'upcoming';
+        });
+    }
+
+    public function test_student_is_reminded_on_the_day_their_payment_is_due(): void
+    {
+        Notification::fake();
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(4)->toDateString(),
+            'due_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
+
+        Notification::assertSentTo($student, PaymentReminderNotification::class, function ($notification) {
+            return $notification->stage === 'due_today';
+        });
+    }
+
+    public function test_student_is_not_reminded_once_the_balance_is_fully_paid(): void
+    {
+        Notification::fake();
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'due_date' => now()->addDays(3)->toDateString(),
+            'status' => 'active',
+        ]);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
+
+        Notification::assertNotSentTo($student, PaymentReminderNotification::class);
+    }
+
+    public function test_student_is_not_reminded_when_due_date_is_not_three_days_out_or_today(): void
+    {
+        Notification::fake();
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'due_date' => now()->addDays(5)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
+
+        Notification::assertNotSentTo($student, PaymentReminderNotification::class);
     }
 }
