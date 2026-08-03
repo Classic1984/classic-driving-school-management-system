@@ -8,6 +8,14 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg space-y-4">
+                @if (session('status') === 'student-created')
+                    <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
+                @elseif (session('status') === 'student-updated')
+                    <p class="text-sm font-medium text-green-600">{{ __('Student updated successfully.') }}</p>
+                @elseif (session('status') === 'payment-created')
+                    <p class="text-sm font-medium text-green-600">{{ __('Payment recorded successfully.') }}</p>
+                @endif
+
                 @if ($student->photo_path)
                     <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-24 w-24 object-cover rounded-md border border-gray-200">
                 @endif
@@ -95,6 +103,29 @@
                         <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->status }}</dd>
                     </div>
                 </dl>
+
+                @php
+                    $totalFees = $student->courses->sum('fee');
+                    $totalPaid = $student->payments->where('status', 'paid')->sum('amount');
+                    $totalBalance = $student->courses->sum(fn ($enrolledCourse) => $enrolledCourse->pivot->balance());
+                @endphp
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Payment Summary') }}</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-black text-amber-400 rounded-lg p-4">
+                            <p class="text-xs uppercase tracking-wider">{{ __('Total Fees') }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalFees, 2) }}</p>
+                        </div>
+                        <div class="bg-black text-amber-400 rounded-lg p-4">
+                            <p class="text-xs uppercase tracking-wider">{{ __('Total Paid') }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalPaid, 2) }}</p>
+                        </div>
+                        <div class="bg-amber-500 text-black rounded-lg p-4">
+                            <p class="text-xs uppercase tracking-wider">{{ __('Balance') }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalBalance, 2) }}</p>
+                        </div>
+                    </div>
+                </div>
 
                 <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Next of Kin') }}</h3>
@@ -206,6 +237,50 @@
                             @endif
                         </table>
                     </div>
+
+                    @if ($student->courses->isNotEmpty())
+                        <form method="post" action="{{ route('payments.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
+                            @csrf
+                            <input type="hidden" name="student_id" value="{{ $student->id }}">
+                            <input type="hidden" name="redirect_to_student" value="1">
+                            <input type="hidden" name="status" value="paid">
+
+                            <div>
+                                <x-input-label for="quick_course_id" :value="__('Course')" />
+                                <select id="quick_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                                    <option value="">{{ __('Select a course') }}</option>
+                                    @foreach ($student->courses as $enrolledCourse)
+                                        <option value="{{ $enrolledCourse->id }}">{{ $enrolledCourse->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <x-input-label for="quick_amount" :value="__('Amount')" />
+                                <x-text-input id="quick_amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full" required />
+                            </div>
+
+                            <div>
+                                <x-input-label for="quick_payment_date" :value="__('Date')" />
+                                <x-text-input id="quick_payment_date" name="payment_date" type="date" class="mt-1 block w-full" :value="now()->toDateString()" required />
+                            </div>
+
+                            <div>
+                                <x-input-label for="quick_payment_method" :value="__('Method')" />
+                                <select id="quick_payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                                    @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
+                                        <option value="{{ $value }}">{{ __($label) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <x-primary-button type="submit">{{ __('Record Payment') }}</x-primary-button>
+                            </div>
+                        </form>
+                    @else
+                        <p class="mt-4 text-sm text-gray-500">{{ __('Enroll this student in a course before recording a payment.') }}</p>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-4">

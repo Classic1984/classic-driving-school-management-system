@@ -23,6 +23,11 @@
                     Classic Driving School Management System
                 </p>
 
+                <form method="get" action="{{ route('students.index') }}" class="mt-6 flex gap-2 max-w-xl">
+                    <input type="text" name="search" placeholder="{{ __('Search students by name, email, or phone') }}" class="flex-1 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <x-primary-button type="submit">{{ __('Search') }}</x-primary-button>
+                </form>
+
                 <hr class="my-6">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

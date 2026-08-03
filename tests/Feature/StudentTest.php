@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Course;
+use App\Models\Payment;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -136,7 +137,6 @@ class StudentTest extends TestCase
         $response = $this->actingAs($user)->post('/students', $data);
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect('/students');
 
         $this->assertDatabaseHas('students', [
             'name' => 'John Smith',
@@ -145,6 +145,7 @@ class StudentTest extends TestCase
 
         $student = Student::where('email', 'john.smith@example.com')->firstOrFail();
         $this->assertMatchesRegularExpression('/^CDS-\d{5}$/', $student->student_id_number);
+        $response->assertRedirect("/students/{$student->id}");
     }
 
     public function test_authenticated_user_can_store_a_student_with_the_full_registration_form_fields(): void
@@ -181,9 +182,9 @@ class StudentTest extends TestCase
         $response = $this->actingAs($user)->post('/students', $data);
 
         $response->assertSessionHasNoErrors();
-        $response->assertRedirect('/students');
 
         $student = Student::where('email', 'amaka@example.com')->firstOrFail();
+        $response->assertRedirect("/students/{$student->id}");
         $this->assertSame('Chidinma Eze', $student->mother_maiden_name);
         $this->assertSame('female', $student->sex);
         $this->assertSame('Rivers', $student->state_of_origin);
@@ -348,6 +349,57 @@ class StudentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Defensive Driving 101');
+    }
+
+    public function test_student_page_shows_the_payment_summary(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 400, 'status' => 'paid']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        // Fees 1000, paid 400, balance 600.
+        $response->assertSeeInOrder(['Total Fees', '1,000.00', 'Total Paid', '400.00', 'Balance', '600.00']);
+    }
+
+    public function test_student_page_offers_a_quick_payment_form_when_enrolled(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Defensive Driving 101']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee(route('payments.store'), false);
+        $response->assertSee('Defensive Driving 101');
+    }
+
+    public function test_recording_a_payment_from_the_student_page_redirects_back_to_the_profile(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 500]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->post('/payments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 200,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'status' => 'paid',
+            'redirect_to_student' => '1',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect("/students/{$student->id}");
+        $this->assertDatabaseHas('payments', ['student_id' => $student->id, 'amount' => 200]);
     }
 
     public function test_authenticated_user_can_view_edit_form(): void

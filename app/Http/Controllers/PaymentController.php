@@ -74,6 +74,10 @@ class PaymentController extends Controller
 
         $this->refreshEnrollmentStatus($payment->student_id, $payment->course_id);
 
+        if ($request->boolean('redirect_to_student')) {
+            return Redirect::route('students.show', $payment->student_id)->with('status', 'payment-created');
+        }
+
         return Redirect::route('payments.index')->with('status', 'payment-created');
     }
 

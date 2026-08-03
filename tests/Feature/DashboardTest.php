@@ -45,4 +45,15 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('₦0.00', false);
     }
+
+    public function test_dashboard_has_a_student_search_bar(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee(route('students.index'), false);
+        $response->assertSee('name="search"', false);
+    }
 }
