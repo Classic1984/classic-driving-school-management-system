@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Certificate;
+use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Payment;
 use App\Models\Student;
@@ -55,5 +56,47 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee(route('students.index'), false);
         $response->assertSee('name="search"', false);
+    }
+
+    public function test_dashboard_lists_students_with_outstanding_balances(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Chidinma Eze']);
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(3),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Outstanding Payments');
+        $response->assertSee('Chidinma Eze');
+        $response->assertSee('1,000.00');
+    }
+
+    public function test_dashboard_does_not_list_fully_paid_enrollments_as_outstanding(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Fully Paid Student']);
+        $course = Course::factory()->create(['fee' => 500]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(3),
+            'status' => 'active',
+        ]);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 500,
+            'status' => 'paid',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Outstanding Payments');
     }
 }
