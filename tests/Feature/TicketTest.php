@@ -76,7 +76,7 @@ class TicketTest extends TestCase
             'instructor_id' => $instructor->id,
             'date' => now()->toDateString(),
             'vehicle' => 'Toyota Corolla',
-            'lesson_number' => 3,
+            'vehicle_number' => 'AK-234-XY',
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -146,12 +146,25 @@ class TicketTest extends TestCase
     public function test_authenticated_user_can_view_a_ticket(): void
     {
         $user = User::factory()->create();
-        $ticket = Ticket::factory()->create();
+        $ticket = Ticket::factory()->create(['vehicle_number' => 'AK-234-XY']);
 
         $response = $this->actingAs($user)->get("/tickets/{$ticket->id}");
 
         $response->assertOk();
         $response->assertSee($ticket->ticket_number);
+        $response->assertSee($ticket->student->student_id_number);
+        $response->assertSee('AK-234-XY');
+    }
+
+    public function test_create_form_shows_each_students_id_number(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Mr. Wellington']);
+
+        $response = $this->actingAs($user)->get('/tickets/create');
+
+        $response->assertOk();
+        $response->assertSee($student->student_id_number);
     }
 
     public function test_admin_and_secretary_cannot_delete_a_ticket_but_director_can(): void

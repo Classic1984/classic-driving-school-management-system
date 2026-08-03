@@ -38,7 +38,7 @@ class UpdateTicketRequest extends FormRequest
             'instructor_id' => ['nullable', 'integer', 'exists:instructors,id'],
             'date' => ['required', 'date'],
             'vehicle' => ['nullable', 'string', 'max:255'],
-            'lesson_number' => ['nullable', 'integer', 'min:1'],
+            'vehicle_number' => ['nullable', 'string', 'max:255'],
         ];
     }
 

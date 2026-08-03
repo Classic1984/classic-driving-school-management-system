@@ -26,7 +26,7 @@ class TicketFactory extends Factory
             'instructor_id' => Instructor::factory(),
             'date' => fake()->date(),
             'vehicle' => fake()->randomElement(['Toyota Corolla', 'Honda Civic', 'Nissan Sentra']),
-            'lesson_number' => fake()->numberBetween(1, 20),
+            'vehicle_number' => strtoupper(fake()->bothify('??-###-??')),
             'payment_status' => 'cleared',
         ];
     }

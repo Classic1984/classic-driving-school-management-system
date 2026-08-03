@@ -5,7 +5,7 @@
     <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         <option value="">{{ __('Select a student') }}</option>
         @foreach ($students as $availableStudent)
-            <option value="{{ $availableStudent->id }}" @selected((int) old('student_id', $ticket?->student_id) === $availableStudent->id)>{{ $availableStudent->name }}</option>
+            <option value="{{ $availableStudent->id }}" @selected((int) old('student_id', $ticket?->student_id) === $availableStudent->id)>{{ $availableStudent->name }} ({{ $availableStudent->student_id_number }})</option>
         @endforeach
     </select>
     <x-input-error class="mt-2" :messages="$errors->get('student_id')" />
@@ -46,7 +46,7 @@
 </div>
 
 <div>
-    <x-input-label for="lesson_number" :value="__('Lesson Number')" />
-    <x-text-input id="lesson_number" name="lesson_number" type="number" min="1" class="mt-1 block w-full" :value="old('lesson_number', $ticket?->lesson_number)" />
-    <x-input-error class="mt-2" :messages="$errors->get('lesson_number')" />
+    <x-input-label for="vehicle_number" :value="__('Vehicle Number')" />
+    <x-text-input id="vehicle_number" name="vehicle_number" type="text" class="mt-1 block w-full" :value="old('vehicle_number', $ticket?->vehicle_number)" />
+    <x-input-error class="mt-2" :messages="$errors->get('vehicle_number')" />
 </div>
