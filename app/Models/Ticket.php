@@ -24,7 +24,7 @@ class Ticket extends Model
         'instructor_id',
         'date',
         'vehicle',
-        'lesson_number',
+        'vehicle_number',
         'payment_status',
     ];
 
