@@ -121,6 +121,7 @@ class StudentTest extends TestCase
     public function test_authenticated_user_can_store_a_student(): void
     {
         $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
 
         $data = [
             'name' => 'John Smith',
@@ -132,6 +133,9 @@ class StudentTest extends TestCase
             'course_type' => 'manual',
             'enrollment_date' => '2026-01-01',
             'status' => 'active',
+            'course_id' => $course->id,
+            'amount_paid' => 50000,
+            'payment_method' => 'cash',
         ];
 
         $response = $this->actingAs($user)->post('/students', $data);
@@ -146,14 +150,95 @@ class StudentTest extends TestCase
         $student = Student::where('email', 'john.smith@example.com')->firstOrFail();
         $this->assertMatchesRegularExpression('/^CDS-\d{5}$/', $student->student_id_number);
         $response->assertRedirect("/students/{$student->id}");
+
+        $this->assertTrue($student->courses->contains($course->id));
+        $this->assertDatabaseHas('payments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 50000,
+            'payment_method' => 'cash',
+            'status' => 'paid',
+        ]);
+
+        $enrollment = $student->courses->firstWhere('id', $course->id);
+        $this->assertSame(45000.0, $enrollment->pivot->balance());
+    }
+
+    public function test_registering_a_student_without_an_initial_payment_still_creates_the_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $data = [
+            'name' => 'Grace Okoro',
+            'email' => 'grace.okoro@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+            'course_id' => $course->id,
+        ];
+
+        $response = $this->actingAs($user)->post('/students', $data);
+
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'grace.okoro@example.com')->firstOrFail();
+        $this->assertTrue($student->courses->contains($course->id));
+        $this->assertDatabaseCount('payments', 0);
+
+        $enrollment = $student->courses->firstWhere('id', $course->id);
+        $this->assertSame(95000.0, $enrollment->pivot->balance());
+    }
+
+    public function test_storing_a_student_requires_a_course(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/students', [
+            'name' => 'John Smith',
+            'email' => 'john.smith@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasErrors('course_id');
+        $this->assertDatabaseCount('students', 0);
+    }
+
+    public function test_storing_a_student_requires_a_payment_method_when_an_amount_is_paid(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $response = $this->actingAs($user)->post('/students', [
+            'name' => 'John Smith',
+            'email' => 'john.smith@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => '2026-01-01',
+            'status' => 'active',
+            'course_id' => $course->id,
+            'amount_paid' => 50000,
+        ]);
+
+        $response->assertSessionHasErrors('payment_method');
+        $this->assertDatabaseCount('students', 0);
     }
 
     public function test_authenticated_user_can_store_a_student_with_the_full_registration_form_fields(): void
     {
         Storage::fake('public');
         $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
 
         $data = [
+            'course_id' => $course->id,
             'name' => 'Amaka Obi',
             'email' => 'amaka@example.com',
             'phone' => '555-0100',
@@ -302,7 +387,7 @@ class StudentTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors([
-            'name', 'email', 'phone', 'date_of_birth', 'course_type', 'enrollment_date', 'status',
+            'name', 'email', 'phone', 'date_of_birth', 'course_type', 'enrollment_date', 'status', 'course_id',
         ]);
 
         $this->assertDatabaseCount('students', 0);

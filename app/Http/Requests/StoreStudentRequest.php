@@ -49,6 +49,9 @@ class StoreStudentRequest extends FormRequest
             'photo' => ['nullable', 'image', 'max:4096'],
             'enrollment_date' => ['required', 'date'],
             'status' => ['required', 'in:active,completed,withdrawn'],
+            'course_id' => ['required', 'integer', 'exists:courses,id'],
+            'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
+            'payment_method' => ['required_with:amount_paid', 'nullable', 'in:cash,card,bank_transfer,mobile_money'],
         ];
     }
 }
