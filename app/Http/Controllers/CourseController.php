@@ -115,6 +115,7 @@ class CourseController extends Controller
                 'enrolled_at' => now()->toDateString(),
                 'due_date' => now()->addDays($course->gracePeriodDays())->toDateString(),
                 'status' => 'active',
+                'fee' => $course->fee,
             ]);
         }
     }

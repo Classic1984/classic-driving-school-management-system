@@ -31,6 +31,7 @@ class Enrollment extends Pivot
         return [
             'enrolled_at' => 'date',
             'due_date' => 'date',
+            'fee' => 'decimal:2',
         ];
     }
 
@@ -56,11 +57,21 @@ class Enrollment extends Pivot
     }
 
     /**
+     * The fee owed for this enrollment, locked in at the time the student
+     * enrolled. Falls back to the course's current fee for enrollments
+     * recorded before this fee was captured on the pivot.
+     */
+    public function fee(): float
+    {
+        return (float) ($this->fee ?? $this->course->fee);
+    }
+
+    /**
      * The remaining balance owed for this course.
      */
     public function balance(): float
     {
-        return max(0, (float) $this->course->fee - $this->amountPaid());
+        return max(0, $this->fee() - $this->amountPaid());
     }
 
     public function isOverdue(): bool
