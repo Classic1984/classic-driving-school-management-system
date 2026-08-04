@@ -88,14 +88,43 @@ class Enrollment extends Pivot
     }
 
     /**
+     * The number of one-hour training sessions the student has attended for
+     * this course, per the attendance policy: one training day is used up
+     * per completed (present) session.
+     */
+    public function attendedDays(): int
+    {
+        return Attendance::where('student_id', $this->student_id)
+            ->where('course_id', $this->course_id)
+            ->where('status', 'present')
+            ->count();
+    }
+
+    /**
+     * Whether the student has attended all training days allocated to this
+     * course.
+     */
+    public function hasCompletedTraining(): bool
+    {
+        return $this->attendedDays() >= $this->course->totalTrainingDays();
+    }
+
+    /**
      * Recompute and persist this enrollment's locked/active status based on
      * the current payment and training-period rules. Runs immediately after
-     * a payment is recorded, and daily via a scheduled command to catch
-     * due-dates and the training-period deadline passing on their own.
+     * a payment is recorded or a ticket is issued, and daily via a
+     * scheduled command to catch due-dates and the training-period deadline
+     * passing on their own.
      */
     public function refreshStatus(): void
     {
         if ($this->status === 'completed') {
+            return;
+        }
+
+        if ($this->balance() <= 0 && $this->hasCompletedTraining()) {
+            $this->forceFill(['status' => 'completed', 'locked_reason' => null])->save();
+
             return;
         }
 

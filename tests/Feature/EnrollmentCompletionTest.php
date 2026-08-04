@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -118,6 +119,112 @@ class EnrollmentCompletionTest extends TestCase
         $response = $this->actingAs($secretary)->patch("/enrollments/{$enrollment->id}/complete");
 
         $response->assertSessionHasNoErrors();
+        $this->assertSame('completed', $enrollment->fresh()->status);
+    }
+
+    public function test_enrollment_auto_completes_once_attendance_and_balance_are_both_cleared(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        // A 1-week course requires 5 present training days.
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertNull($enrollment->fresh()->locked_reason);
+    }
+
+    public function test_enrollment_does_not_auto_complete_with_an_outstanding_balance_even_if_attendance_is_done(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
+    }
+
+    public function test_enrollment_does_not_auto_complete_until_attendance_is_exhausted(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        // Only 3 of the 5 required training days attended.
+        for ($day = 1; $day <= 3; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
+    }
+
+    public function test_issuing_the_final_ticket_auto_completes_the_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        for ($day = 1; $day <= 4; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+            ]);
+        }
+
+        $this->actingAs($user)->post('/tickets', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->addDays(5)->toDateString(),
+        ])->assertSessionHasNoErrors();
+
         $this->assertSame('completed', $enrollment->fresh()->status);
     }
 }

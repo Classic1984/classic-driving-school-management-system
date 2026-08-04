@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketRequest;
 use App\Models\Attendance;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\Ticket;
@@ -61,6 +62,14 @@ class TicketController extends Controller
                 'status' => 'present',
             ]
         );
+
+        // Recompute immediately in case this attendance record is the
+        // student's last training day, rather than waiting for the next
+        // payment or the daily scheduled refresh.
+        Enrollment::where('student_id', $validated['student_id'])
+            ->where('course_id', $validated['course_id'])
+            ->first()
+            ?->refreshStatus();
 
         return Redirect::route('tickets.index')->with('status', 'ticket-created');
     }

@@ -53,6 +53,16 @@ class Course extends Model
     }
 
     /**
+     * The total number of one-hour training sessions a student must attend
+     * to complete this course, per the school's attendance policy: 5
+     * training days per week (e.g. a 4-week program is 20 training days).
+     */
+    public function totalTrainingDays(): int
+    {
+        return $this->duration_weeks * 5;
+    }
+
+    /**
      * The instructors assigned to teach this course.
      */
     public function instructors(): BelongsToMany
