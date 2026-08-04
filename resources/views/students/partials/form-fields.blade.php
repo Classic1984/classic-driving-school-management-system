@@ -254,7 +254,13 @@
 
 <div>
     <x-input-label for="enrollment_date" :value="__('Enrollment Date')" />
-    <x-text-input id="enrollment_date" name="enrollment_date" type="date" class="mt-1 block w-full" :value="old('enrollment_date', optional($student?->enrollment_date)->format('Y-m-d'))" required />
+    @if ($student)
+        <x-text-input id="enrollment_date" name="enrollment_date" type="date" class="mt-1 block w-full" :value="old('enrollment_date', optional($student->enrollment_date)->format('Y-m-d'))" required />
+    @else
+        <x-text-input id="enrollment_date" type="text" class="mt-1 block w-full bg-gray-100" :value="now()->format('Y-m-d')" disabled />
+        <input type="hidden" name="enrollment_date" value="{{ now()->toDateString() }}">
+        <p class="mt-1 text-xs text-gray-500">{{ __('Registration always enrolls as of today.') }}</p>
+    @endif
     <x-input-error class="mt-2" :messages="$errors->get('enrollment_date')" />
 </div>
 
