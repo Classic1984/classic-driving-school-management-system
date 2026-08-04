@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Attendance;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -66,6 +67,28 @@ class EnrollmentCompletionTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertSame('completed', $enrollment->fresh()->status);
         $this->assertNull($enrollment->fresh()->locked_reason);
+    }
+
+    public function test_marking_complete_manually_automatically_issues_a_certificate(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete")->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('certificates', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'certificate_number' => Certificate::numberFor($student, $course),
+        ]);
     }
 
     public function test_completed_enrollments_stay_completed_even_when_overdue_conditions_are_recomputed(): void
@@ -148,6 +171,38 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->assertSame('completed', $enrollment->fresh()->status);
         $this->assertNull($enrollment->fresh()->locked_reason);
+        $this->assertDatabaseHas('certificates', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'certificate_number' => Certificate::numberFor($student, $course),
+        ]);
+    }
+
+    public function test_auto_completing_an_enrollment_twice_does_not_duplicate_the_certificate(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+        $enrollment->fresh()->refreshStatus();
+
+        $this->assertDatabaseCount('certificates', 1);
     }
 
     public function test_enrollment_does_not_auto_complete_with_an_outstanding_balance_even_if_attendance_is_done(): void

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Redirect;
 class EnrollmentController extends Controller
 {
     /**
-     * Mark an enrollment as completed, so the student can be issued a
+     * Mark an enrollment as completed, automatically issuing the student's
      * certificate for it. Requires the outstanding balance to be cleared
      * first; once completed, the enrollment is exempt from future locking.
      */
@@ -25,7 +25,7 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        $enrollment->forceFill(['status' => 'completed', 'locked_reason' => null])->save();
+        $enrollment->markCompleted();
 
         return Redirect::back()->with('status', 'enrollment-completed');
     }

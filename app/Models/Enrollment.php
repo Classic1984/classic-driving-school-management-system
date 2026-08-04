@@ -148,6 +148,21 @@ class Enrollment extends Pivot
     }
 
     /**
+     * Mark this enrollment completed and issue the student's certificate
+     * for it, if one doesn't already exist. Used both when training
+     * auto-completes and when staff complete it manually.
+     */
+    public function markCompleted(): void
+    {
+        $this->forceFill(['status' => 'completed', 'locked_reason' => null])->save();
+
+        Certificate::firstOrCreate(
+            ['student_id' => $this->student_id, 'course_id' => $this->course_id],
+            ['certificate_number' => Certificate::numberFor($this->student, $this->course), 'issue_date' => now()->toDateString()]
+        );
+    }
+
+    /**
      * Recompute and persist this enrollment's locked/active status based on
      * the current payment and training-period rules. Runs immediately after
      * a payment is recorded or a ticket is issued, and daily via a
@@ -161,7 +176,7 @@ class Enrollment extends Pivot
         }
 
         if ($this->balance() <= 0 && $this->hasCompletedTraining()) {
-            $this->forceFill(['status' => 'completed', 'locked_reason' => null])->save();
+            $this->markCompleted();
 
             return;
         }
