@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
@@ -98,5 +99,71 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertDontSee('Outstanding Payments');
+    }
+
+    public function test_dashboard_shows_student_training_progress(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Tobi Fashola']);
+        $course = Course::factory()->create(['name' => 'Two Week Program', 'duration_weeks' => 2]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(3),
+            'status' => 'active',
+        ]);
+        for ($day = 1; $day <= 3; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->subDays($day)->toDateString(),
+                'status' => 'present',
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Student Training Progress');
+        $response->assertSee('Tobi Fashola');
+        $response->assertSee($student->student_id_number);
+        $response->assertSee('Two Week Program');
+        // 2-week program = 10 total days, 3 attended, 7 remaining, 30% complete.
+        $response->assertSee('30%');
+        $response->assertSee('Active');
+    }
+
+    public function test_dashboard_shows_completed_training_status(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['duration_weeks' => 1]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(2),
+            'status' => 'completed',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Completed');
+    }
+
+    public function test_dashboard_shows_expired_training_status_for_locked_enrollments(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['duration_weeks' => 1]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Expired');
     }
 }

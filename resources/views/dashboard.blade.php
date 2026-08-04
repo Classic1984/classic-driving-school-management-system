@@ -95,6 +95,56 @@
                 </div>
             @endif
 
+            @if ($trainingProgress->isNotEmpty())
+                <div class="bg-white shadow rounded-lg p-8 mt-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Student Training Progress') }}</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Student ID') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Program') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Total Days') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Days Used') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Days Remaining') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Completion') }}</th>
+                                    <th class="pb-2">{{ __('Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($trainingProgress as $enrollment)
+                                    <tr>
+                                        <td class="py-2 pr-4">
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
+                                                {{ $enrollment->student->name }}
+                                            </a>
+                                        </td>
+                                        <td class="py-2 pr-4 font-mono">{{ $enrollment->student->student_id_number }}</td>
+                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
+                                        <td class="py-2 pr-4">{{ $enrollment->course->totalTrainingDays() }}</td>
+                                        <td class="py-2 pr-4">{{ $enrollment->attendedDays() }}</td>
+                                        <td class="py-2 pr-4">{{ $enrollment->remainingTrainingDays() }}</td>
+                                        <td class="py-2 pr-4">{{ $enrollment->trainingCompletionPercentage() }}%</td>
+                                        <td class="py-2">
+                                            @php($label = $enrollment->trainingStatusLabel())
+                                            @if ($label === 'Completed')
+                                                <span class="text-green-600 font-medium">{{ __('Completed') }}</span>
+                                            @elseif ($label === 'Expired')
+                                                <span class="text-red-600 font-medium">{{ __('Expired') }}</span>
+                                            @else
+                                                <span class="text-gray-500">{{ __('Active') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
         </div>
     </div>
 </x-app-layout>
