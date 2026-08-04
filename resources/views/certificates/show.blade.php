@@ -65,7 +65,7 @@
                     <div class="pb-4 sm:pb-0 sm:px-4">
                         <p class="invisible pt-1 text-sm">&nbsp;</p>
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Program') }}</p>
-                        <p class="text-sm capitalize">{{ $certificate->course->course_type }}</p>
+                        <p class="text-sm uppercase">{{ $certificate->course->name }}</p>
                     </div>
                     <div class="pt-4 sm:pt-0 sm:px-4">
                         <p class="border-t border-gray-400 pt-1 text-sm">&nbsp;</p>
