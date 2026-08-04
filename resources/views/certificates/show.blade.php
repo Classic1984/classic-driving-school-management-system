@@ -5,34 +5,77 @@
         </h2>
     </x-slot>
 
+    <style>
+        .certificate-card {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+    </style>
+
     <div class="py-12 print:py-0">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 print:max-w-full print:px-0">
-            <div class="p-10 bg-white shadow sm:rounded-lg border-4 border-double border-gray-400 print:border-2 print:shadow-none text-center">
-                <p class="text-sm tracking-widest text-gray-500 uppercase">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
-                <h1 class="mt-4 text-2xl font-bold text-gray-800">{{ __('Certificate of Completion') }}</h1>
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 print:max-w-full print:px-0">
+            <div class="certificate-card relative overflow-hidden bg-gray-900 text-white p-10 sm:p-14 rounded-lg border-4 border-amber-500 print:rounded-none text-center">
 
-                <p class="mt-8 text-sm text-gray-600">{{ __('This is to certify that') }}</p>
-                <p class="mt-2 text-xl font-semibold text-gray-900">{{ $certificate->student->name }}</p>
-                <p class="mt-1 text-xs text-gray-500">{{ __('Student ID') }}: {{ $certificate->student->id }}</p>
+                <div class="absolute top-6 left-6 flex flex-col items-center justify-center h-20 w-20 rounded-full border-2 border-amber-400 text-amber-400">
+                    <span class="text-[9px] font-bold leading-tight tracking-wide">{{ __('SAFETY') }}</span>
+                    <span class="text-[9px] font-bold leading-tight tracking-wide">{{ __('SKILL') }}</span>
+                    <span class="text-[9px] font-bold leading-tight tracking-wide">{{ __('CONFIDENCE') }}</span>
+                </div>
 
-                <p class="mt-6 text-sm text-gray-600">{{ __('has successfully completed the') }}</p>
-                <p class="mt-2 text-lg font-semibold text-gray-900">{{ $certificate->course->name }}</p>
-                <p class="mt-1 text-xs text-gray-500">{{ $certificate->course->duration_hours }} {{ __('hours') }} &middot; {{ $certificate->course->duration_weeks }} {{ __('weeks') }}</p>
+                <div class="absolute top-6 right-6 text-right">
+                    <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Certificate No.') }}</p>
+                    <p class="text-sm font-mono">{{ $certificate->certificate_number }}</p>
+                </div>
 
-                <dl class="mt-10 grid grid-cols-2 gap-4 text-left max-w-sm mx-auto">
+                <x-application-logo class="h-20 w-20 mx-auto" />
+                <p class="mt-1 text-xs uppercase tracking-widest text-amber-400">{{ __('& Son Nigeria Limited') }}</p>
+
+                <h1 class="mt-6 text-4xl font-bold tracking-wide text-amber-400">{{ __('CERTIFICATE') }}</h1>
+                <p class="text-lg tracking-widest text-gray-300">{{ __('OF TRAINING') }}</p>
+
+                <p class="mt-8 text-sm uppercase tracking-widest text-gray-300">{{ __('This is to certify that') }}</p>
+                <p class="mt-2 font-bold text-4xl sm:text-5xl text-amber-400" style="font-family: 'Dancing Script', cursive;">
+                    {{ $certificate->student->name }}
+                </p>
+                <p class="text-xs text-gray-400 font-mono">{{ $certificate->student->student_id_number }}</p>
+
+                <p class="mt-8 text-sm text-gray-300">
+                    {{ __('has successfully completed the training program in') }}
+                </p>
+                <p class="mt-1 text-xl font-bold text-amber-400 uppercase">{{ $certificate->course->name }}</p>
+                <p class="text-sm text-gray-300">
+                    {{ __('conducted by Classic Driving School & Son Nigeria Limited.') }}
+                </p>
+                <p class="mt-4 text-sm text-gray-400 max-w-xl mx-auto">
+                    {{ __('The bearer has demonstrated the knowledge, skills and discipline required to be a responsible and safe driver.') }}
+                </p>
+
+                <div class="mt-10 pt-6 border-t border-amber-500/40 grid grid-cols-2 sm:grid-cols-5 gap-6 text-left">
                     <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase">{{ __('Certificate #') }}</dt>
-                        <dd class="text-sm text-gray-900 font-mono">{{ $certificate->certificate_number }}</dd>
+                        <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Date of Completion') }}</p>
+                        <p class="text-sm">{{ $certificate->issue_date->format('jS F, Y') }}</p>
                     </div>
                     <div>
-                        <dt class="text-xs font-medium text-gray-500 uppercase">{{ __('Issue Date') }}</dt>
-                        <dd class="text-sm text-gray-900">{{ $certificate->issue_date->format('Y-m-d') }}</dd>
+                        <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Duration') }}</p>
+                        <p class="text-sm">{{ $certificate->course->duration_weeks }} {{ __('WEEKS') }} ({{ $certificate->course->totalTrainingDays() }} {{ __('HOURS') }})</p>
                     </div>
-                    <div class="col-span-2">
-                        <dt class="text-xs font-medium text-gray-500 uppercase">{{ __('Instructor') }}</dt>
-                        <dd class="text-sm text-gray-900">{{ $certificate->instructor?->name ?? '—' }}</dd>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Program') }}</p>
+                        <p class="text-sm capitalize">{{ $certificate->course->course_type }}</p>
                     </div>
-                </dl>
+                    <div>
+                        <p class="border-t border-gray-400 pt-1 text-sm">&nbsp;</p>
+                        <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Director') }}</p>
+                        <p class="text-[10px] text-gray-400">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
+                    </div>
+                    <div>
+                        <p class="border-t border-gray-400 pt-1 text-sm">{{ $certificate->instructor?->name }}&nbsp;</p>
+                        <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Instructor') }}</p>
+                        <p class="text-[10px] text-gray-400">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
+                    </div>
+                </div>
+
+                <p class="mt-8 italic text-amber-400">{{ __('"When you say Classic, you say it all."') }}</p>
             </div>
 
             <div class="mt-6 flex items-center gap-4 print:hidden">

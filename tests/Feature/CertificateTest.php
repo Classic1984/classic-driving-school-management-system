@@ -143,6 +143,9 @@ class CertificateTest extends TestCase
 
         $response->assertOk();
         $response->assertSee($certificate->student->name);
+        $response->assertSee($certificate->student->student_id_number);
+        $response->assertSee($certificate->course->name);
+        $response->assertSee($certificate->certificate_number);
     }
 
     public function test_admin_and_secretary_cannot_delete_a_certificate_but_director_can(): void
