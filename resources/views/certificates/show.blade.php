@@ -14,7 +14,7 @@
 
     <div class="py-12 print:py-0">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 print:max-w-full print:px-0">
-            <div class="certificate-card relative overflow-hidden bg-gray-900 text-white p-10 sm:p-14 rounded-lg border-4 border-amber-500 print:rounded-none text-center">
+            <div class="certificate-card relative bg-gray-900 text-white p-10 sm:p-14 rounded-lg border-4 border-amber-500 print:rounded-none text-center">
 
                 <div class="absolute top-6 left-6 flex flex-col items-center justify-center h-20 w-20 rounded-full border-2 border-amber-400 text-amber-400">
                     <span class="text-[9px] font-bold leading-tight tracking-wide">{{ __('SAFETY') }}</span>
@@ -38,6 +38,7 @@
                     {{ $certificate->student->name }}
                 </p>
                 <p class="text-xs text-gray-400 font-mono">{{ $certificate->student->student_id_number }}</p>
+                <div class="mt-4 border-t border-amber-500 w-2/3 mx-auto"></div>
 
                 <p class="mt-8 text-sm text-gray-300">
                     {{ __('has successfully completed the training program in') }}
@@ -50,25 +51,25 @@
                     {{ __('The bearer has demonstrated the knowledge, skills and discipline required to be a responsible and safe driver.') }}
                 </p>
 
-                <div class="mt-10 pt-6 border-t border-amber-500/40 grid grid-cols-2 sm:grid-cols-5 gap-6 text-left">
-                    <div>
+                <div class="mt-10 pt-6 border-t border-amber-500 grid grid-cols-2 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-amber-500/50 text-left">
+                    <div class="pb-4 sm:pb-0 sm:pr-4">
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Date of Completion') }}</p>
                         <p class="text-sm">{{ $certificate->issue_date->format('jS F, Y') }}</p>
                     </div>
-                    <div>
+                    <div class="pb-4 sm:pb-0 sm:px-4">
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Duration') }}</p>
                         <p class="text-sm">{{ $certificate->course->duration_weeks }} {{ __('WEEKS') }} ({{ $certificate->course->totalTrainingDays() }} {{ __('HOURS') }})</p>
                     </div>
-                    <div>
+                    <div class="pb-4 sm:pb-0 sm:px-4">
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Program') }}</p>
                         <p class="text-sm capitalize">{{ $certificate->course->course_type }}</p>
                     </div>
-                    <div>
+                    <div class="pt-4 sm:pt-0 sm:px-4">
                         <p class="border-t border-gray-400 pt-1 text-sm">&nbsp;</p>
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Director') }}</p>
                         <p class="text-[10px] text-gray-400">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
                     </div>
-                    <div>
+                    <div class="pt-4 sm:pt-0 sm:pl-4">
                         <p class="border-t border-gray-400 pt-1 text-sm">{{ $certificate->instructor?->name }}&nbsp;</p>
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Instructor') }}</p>
                         <p class="text-[10px] text-gray-400">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
