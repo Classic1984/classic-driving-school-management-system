@@ -131,7 +131,7 @@ class StudentTest extends TestCase
             'date_of_birth' => '2000-01-15',
             'license_number' => 'LIC-12345',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
             'course_id' => $course->id,
             'amount_paid' => 50000,
@@ -175,7 +175,7 @@ class StudentTest extends TestCase
             'phone' => '555-0100',
             'date_of_birth' => '2000-01-15',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
             'course_id' => $course->id,
         ];
@@ -203,7 +203,7 @@ class StudentTest extends TestCase
             'phone' => '555-0100',
             'date_of_birth' => '2000-01-15',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
             'course_id' => $course->id,
         ])->assertSessionHasNoErrors();
@@ -217,7 +217,7 @@ class StudentTest extends TestCase
             'phone' => '555-0100',
             'date_of_birth' => '2000-01-15',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-02-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
             'course_id' => $course->id,
         ])->assertSessionHasNoErrors();
@@ -227,6 +227,26 @@ class StudentTest extends TestCase
 
         $this->assertSame(95000.0, $earlyBird->courses->first()->pivot->fee());
         $this->assertSame(120000.0, $lateComer->courses->first()->pivot->fee());
+    }
+
+    public function test_storing_a_student_rejects_an_enrollment_date_other_than_today(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+
+        $response = $this->actingAs($user)->post('/students', [
+            'name' => 'John Smith',
+            'email' => 'john.smith@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->addDay()->toDateString(),
+            'status' => 'active',
+            'course_id' => $course->id,
+        ]);
+
+        $response->assertSessionHasErrors('enrollment_date');
+        $this->assertDatabaseCount('students', 0);
     }
 
     public function test_storing_a_student_requires_a_course(): void
@@ -239,7 +259,7 @@ class StudentTest extends TestCase
             'phone' => '555-0100',
             'date_of_birth' => '2000-01-15',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
         ]);
 
@@ -258,7 +278,7 @@ class StudentTest extends TestCase
             'phone' => '555-0100',
             'date_of_birth' => '2000-01-15',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
             'course_id' => $course->id,
             'amount_paid' => 50000,
@@ -297,7 +317,7 @@ class StudentTest extends TestCase
             'referral_source' => 'other',
             'referral_source_other' => 'Word of mouth',
             'photo' => UploadedFile::fake()->image('passport.jpg'),
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
         ];
 
@@ -363,7 +383,7 @@ class StudentTest extends TestCase
             'state_of_origin' => 'Rivers',
             'local_government_area' => 'Ikeja',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
         ];
 
@@ -384,7 +404,7 @@ class StudentTest extends TestCase
             'date_of_birth' => '2000-01-15',
             'state_of_origin' => 'Atlantis',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
         ];
 
@@ -441,7 +461,7 @@ class StudentTest extends TestCase
             'phone' => '555-0100',
             'date_of_birth' => '2000-01-15',
             'course_type' => 'manual',
-            'enrollment_date' => '2026-01-01',
+            'enrollment_date' => now()->toDateString(),
             'status' => 'active',
         ]);
 
