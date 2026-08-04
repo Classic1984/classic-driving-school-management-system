@@ -110,6 +110,44 @@ class Enrollment extends Pivot
     }
 
     /**
+     * The number of training days left before this course's allocation is
+     * exhausted.
+     */
+    public function remainingTrainingDays(): int
+    {
+        return max(0, $this->course->totalTrainingDays() - $this->attendedDays());
+    }
+
+    /**
+     * The percentage of allocated training days the student has attended
+     * so far, capped at 100.
+     */
+    public function trainingCompletionPercentage(): int
+    {
+        $totalDays = $this->course->totalTrainingDays();
+
+        if ($totalDays <= 0) {
+            return 0;
+        }
+
+        return (int) min(100, round($this->attendedDays() / $totalDays * 100));
+    }
+
+    /**
+     * A simplified training status for progress displays: locked
+     * enrollments (whichever reason) read as "Expired" here, since from a
+     * training-progress point of view they're no longer accruing days.
+     */
+    public function trainingStatusLabel(): string
+    {
+        return match ($this->status) {
+            'completed' => 'Completed',
+            'locked' => 'Expired',
+            default => 'Active',
+        };
+    }
+
+    /**
      * Recompute and persist this enrollment's locked/active status based on
      * the current payment and training-period rules. Runs immediately after
      * a payment is recorded or a ticket is issued, and daily via a

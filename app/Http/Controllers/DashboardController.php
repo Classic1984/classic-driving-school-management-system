@@ -28,6 +28,11 @@ class DashboardController extends Controller
             ->take(10)
             ->values();
 
-        return view('dashboard', compact('stats', 'outstandingPayments'));
+        $trainingProgress = Enrollment::with(['student', 'course'])
+            ->latest('enrolled_at')
+            ->take(15)
+            ->get();
+
+        return view('dashboard', compact('stats', 'outstandingPayments', 'trainingProgress'));
     }
 }
