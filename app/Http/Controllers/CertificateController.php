@@ -40,9 +40,11 @@ class CertificateController extends Controller
         $validated = $request->validated();
         $student = Student::findOrFail($validated['student_id']);
 
+        $course = Course::findOrFail($validated['course_id']);
+
         Certificate::create([
             ...$validated,
-            'certificate_number' => $this->generateCertificateNumber($student, $validated['course_id']),
+            'certificate_number' => Certificate::numberFor($student, $course),
         ]);
 
         return Redirect::route('certificates.index')->with('status', 'certificate-created');
@@ -98,16 +100,5 @@ class CertificateController extends Controller
             'courses' => Course::orderBy('name')->get(),
             'instructors' => Instructor::orderBy('name')->get(),
         ];
-    }
-
-    /**
-     * Build the certificate number from the student's permanent ID number,
-     * so every certificate issued to a student is traceable back to them.
-     * Unique because StoreCertificateRequest already enforces one
-     * certificate per student/course before this runs.
-     */
-    protected function generateCertificateNumber(Student $student, int $courseId): string
-    {
-        return "{$student->student_id_number}-CERT-{$courseId}";
     }
 }

@@ -51,4 +51,13 @@ class Certificate extends Model
     {
         return $this->belongsTo(Instructor::class);
     }
+
+    /**
+     * Build a certificate number from the student's permanent ID number, so
+     * every certificate issued to a student is traceable back to them.
+     */
+    public static function numberFor(Student $student, Course $course): string
+    {
+        return "{$student->student_id_number}-CERT-{$course->id}";
+    }
 }
