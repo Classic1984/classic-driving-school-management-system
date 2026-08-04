@@ -51,7 +51,7 @@
                     {{ __('The bearer has demonstrated the knowledge, skills and discipline required to be a responsible and safe driver.') }}
                 </p>
 
-                <div class="mt-10 pt-6 border-t border-amber-500 grid grid-cols-2 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-amber-500/50 text-left">
+                <div class="mt-10 grid grid-cols-2 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-amber-500/50 text-left">
                     <div class="pb-4 sm:pb-0 sm:pr-4">
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Date of Completion') }}</p>
                         <p class="text-sm">{{ $certificate->issue_date->format('jS F, Y') }}</p>
