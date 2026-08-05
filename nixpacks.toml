@@ -1,7 +1,11 @@
 # Railway (and any other Nixpacks-based host) builds this app using its
-# built-in PHP + Node providers (composer install, npm ci, npm run build
-# all happen automatically since both composer.json and package.json are
-# present). This file only overrides the start command: run pending
-# migrations, then serve on the port Railway assigns via $PORT.
+# built-in PHP + Node providers for composer install. Nixpacks does NOT
+# reliably run the front-end build step on its own for a combined PHP+Node
+# project, so it's forced explicitly here - without this, the app deploys
+# with no compiled CSS/JS at all (every page renders as unstyled HTML).
+[phases.build]
+cmds = ["npm ci", "npm run build"]
+
+# Run pending migrations, then serve on the port Railway assigns via $PORT.
 [start]
 cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
