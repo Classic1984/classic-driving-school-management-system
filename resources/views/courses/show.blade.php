@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->canManageCourses())
                         <a href="{{ route('courses.edit', $course) }}">
                             <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
                         </a>

@@ -29,11 +29,16 @@ Route::middleware('auth')->group(function () {
 
     // Registered before the public index/show routes below: Route::resource() normally
     // orders "create" ahead of "show" so that "courses/create" isn't swallowed by the
-    // "courses/{course}" pattern. Splitting the resource across two groups must preserve
-    // that ordering, so the admin-only "create" routes have to come first here.
+    // "courses/{course}" pattern. Splitting the resource across groups must preserve
+    // that ordering, so these restricted "create" routes have to come first here.
+    Route::middleware('course-manager')->group(function () {
+        Route::resource('courses', CourseController::class)->except(['index', 'show', 'destroy']);
+        Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
+    });
+
     Route::middleware('admin')->group(function () {
-        Route::resource('courses', CourseController::class)->except(['index', 'show']);
-        Route::resource('instructors', InstructorController::class)->except(['index', 'show']);
+        Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+        Route::delete('instructors/{instructor}', [InstructorController::class, 'destroy'])->name('instructors.destroy');
         Route::delete('students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');

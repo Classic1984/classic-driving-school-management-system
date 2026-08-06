@@ -13,7 +13,7 @@
                         {{ __('Instructors') }}
                     </h3>
 
-                    @if (auth()->user()->isAdmin())
+                    @if (auth()->user()->canManageCourses())
                         <a href="{{ route('instructors.create') }}">
                             <x-primary-button type="button">{{ __('Add Instructor') }}</x-primary-button>
                         </a>
@@ -50,8 +50,10 @@
                                     <td class="px-4 py-2 capitalize">{{ $instructor->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('instructors.show', $instructor) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
-                                        @if (auth()->user()->isAdmin())
+                                        @if (auth()->user()->canManageCourses())
                                             <a href="{{ route('instructors.edit', $instructor) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                        @endif
+                                        @if (auth()->user()->isAdmin())
                                             <form method="post" action="{{ route('instructors.destroy', $instructor) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this instructor?') }}');">
                                                 @csrf
                                                 @method('delete')
