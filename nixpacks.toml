@@ -6,6 +6,9 @@
 [phases.build]
 cmds = ["npm ci", "npm run build"]
 
-# Run pending migrations, then serve on the port Railway assigns via $PORT.
+# Run pending migrations, start the scheduler in the background (so daily
+# jobs like payment reminders and the database backup actually fire - a
+# plain "php artisan serve" never triggers Laravel's scheduler on its own),
+# then serve on the port Railway assigns via $PORT.
 [start]
-cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan migrate --force && (php artisan schedule:work >> storage/logs/schedule.log 2>&1 &) && php artisan serve --host=0.0.0.0 --port=$PORT"
