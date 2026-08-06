@@ -47,7 +47,7 @@ class UpdateStudentRequest extends FormRequest
             'referral_source' => ['nullable', 'in:flyer,referral,facebook,other'],
             'referral_source_other' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'max:4096'],
-            'enrollment_date' => ['required', 'date'],
+            'enrollment_date' => ['required', 'date', 'before_or_equal:today'],
             'status' => ['required', 'in:active,completed,withdrawn'],
         ];
     }
