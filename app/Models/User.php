@@ -50,12 +50,8 @@ class User extends Authenticatable
     }
 
     /**
-     * Whether this user has elevated (manager-level) access: managing
-     * courses/instructors and deleting records across every resource.
-     * Only Director has this. Admin and Secretary share the same
-     * restricted access: viewing everything and creating/editing
-     * students, attendance, payments, and tickets, with no deletion
-     * rights and no course or instructor management.
+     * Whether this user has elevated (manager-level) access: deleting
+     * records across every resource. Only Director has this.
      */
     public function isAdmin(): bool
     {
@@ -65,6 +61,20 @@ class User extends Authenticatable
     public function isDirector(): bool
     {
         return $this->role === 'director';
+    }
+
+    public function isSecretary(): bool
+    {
+        return $this->role === 'secretary';
+    }
+
+    /**
+     * Whether this user can create/edit (but not delete) courses and
+     * instructors. Secretary and Director have this; Admin does not.
+     */
+    public function canManageCourses(): bool
+    {
+        return $this->isSecretary() || $this->isDirector();
     }
 
     /**

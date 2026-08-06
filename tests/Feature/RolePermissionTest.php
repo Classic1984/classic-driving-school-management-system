@@ -93,16 +93,24 @@ class RolePermissionTest extends TestCase
         $this->actingAs($admin)->get("/payments/{$payment->id}/edit")->assertOk();
     }
 
-    public function test_secretary_cannot_manage_courses(): void
+    public function test_secretary_can_manage_courses_but_not_delete_them(): void
     {
         $secretary = User::factory()->secretary()->create();
         $course = Course::factory()->create();
 
-        $this->actingAs($secretary)->get('/courses/create')->assertForbidden();
-        $this->actingAs($secretary)->post('/courses', [])->assertForbidden();
-        $this->actingAs($secretary)->get("/courses/{$course->id}/edit")->assertForbidden();
-        $this->actingAs($secretary)->put("/courses/{$course->id}", [])->assertForbidden();
+        $this->actingAs($secretary)->get('/courses/create')->assertOk();
+        $this->actingAs($secretary)->get("/courses/{$course->id}/edit")->assertOk();
+        $this->actingAs($secretary)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
+            'fee' => $course->fee,
+            'status' => $course->status,
+        ])->assertRedirect('/courses');
         $this->actingAs($secretary)->delete("/courses/{$course->id}")->assertForbidden();
+        $this->assertDatabaseHas('courses', ['id' => $course->id]);
     }
 
     public function test_secretary_can_view_courses(): void
@@ -114,16 +122,23 @@ class RolePermissionTest extends TestCase
         $this->actingAs($secretary)->get("/courses/{$course->id}")->assertOk();
     }
 
-    public function test_secretary_cannot_manage_instructors(): void
+    public function test_secretary_can_manage_instructors_but_not_delete_them(): void
     {
         $secretary = User::factory()->secretary()->create();
         $instructor = Instructor::factory()->create();
 
-        $this->actingAs($secretary)->get('/instructors/create')->assertForbidden();
-        $this->actingAs($secretary)->post('/instructors', [])->assertForbidden();
-        $this->actingAs($secretary)->get("/instructors/{$instructor->id}/edit")->assertForbidden();
-        $this->actingAs($secretary)->put("/instructors/{$instructor->id}", [])->assertForbidden();
+        $this->actingAs($secretary)->get('/instructors/create')->assertOk();
+        $this->actingAs($secretary)->get("/instructors/{$instructor->id}/edit")->assertOk();
+        $this->actingAs($secretary)->put("/instructors/{$instructor->id}", [
+            'name' => $instructor->name,
+            'email' => $instructor->email,
+            'phone' => $instructor->phone,
+            'specialization' => $instructor->specialization,
+            'hire_date' => $instructor->hire_date->format('Y-m-d'),
+            'status' => $instructor->status,
+        ])->assertRedirect('/instructors');
         $this->actingAs($secretary)->delete("/instructors/{$instructor->id}")->assertForbidden();
+        $this->assertDatabaseHas('instructors', ['id' => $instructor->id]);
     }
 
     public function test_secretary_can_view_instructors(): void
