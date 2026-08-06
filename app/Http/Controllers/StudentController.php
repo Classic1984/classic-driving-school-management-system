@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Course;
+use App\Models\DiscountAuditLog;
 use App\Models\Payment;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
@@ -68,7 +69,11 @@ class StudentController extends Controller
     public function store(StoreStudentRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        unset($data['photo'], $data['course_id'], $data['amount_paid'], $data['payment_method']);
+        unset(
+            $data['photo'], $data['course_id'], $data['amount_paid'], $data['payment_method'],
+            $data['discount_choice'], $data['custom_discount_percentage'], $data['custom_discount_amount'],
+            $data['discount_reason'], $data['discount_reason_note'],
+        );
 
         if ($request->hasFile('photo')) {
             $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
@@ -77,13 +82,36 @@ class StudentController extends Controller
         $student = Student::create($data);
 
         $course = Course::findOrFail($request->validated('course_id'));
+        $originalFee = (float) $course->fee;
+        [$discountPercentage, $discountAmount] = $this->resolveDiscount($request, $originalFee);
+        $finalFee = max(0, $originalFee - $discountAmount);
 
         $student->courses()->attach($course->id, [
             'enrolled_at' => $student->enrollment_date->toDateString(),
             'due_date' => $student->enrollment_date->copy()->addDays($course->gracePeriodDays())->toDateString(),
             'status' => 'active',
-            'fee' => $course->fee,
+            'fee' => $finalFee,
+            'original_fee' => $originalFee,
+            'discount_percentage' => $discountAmount > 0 ? $discountPercentage : null,
+            'discount_amount' => $discountAmount > 0 ? $discountAmount : null,
+            'discount_reason' => $discountAmount > 0 ? $request->validated('discount_reason') : null,
+            'discount_reason_note' => $discountAmount > 0 ? $request->validated('discount_reason_note') : null,
+            'discount_approved_by' => $discountAmount > 0 ? $request->user()->id : null,
         ]);
+
+        if ($discountAmount > 0) {
+            DiscountAuditLog::create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'applied_by' => $request->user()->id,
+                'original_fee' => $originalFee,
+                'discount_percentage' => $discountPercentage,
+                'discount_amount' => $discountAmount,
+                'final_fee' => $finalFee,
+                'reason' => $request->validated('discount_reason'),
+                'reason_note' => $request->validated('discount_reason_note'),
+            ]);
+        }
 
         if ($amountPaid = $request->validated('amount_paid')) {
             Payment::create([
@@ -97,6 +125,40 @@ class StudentController extends Controller
         }
 
         return Redirect::route('students.show', $student)->with('status', 'student-created');
+    }
+
+    /**
+     * Work out the discount percentage and naira amount for this
+     * registration from the validated discount fields.
+     *
+     * @return array{0: ?float, 1: float}
+     */
+    protected function resolveDiscount(StoreStudentRequest $request, float $originalFee): array
+    {
+        $choice = $request->validated('discount_choice');
+
+        if (! $choice) {
+            return [null, 0.0];
+        }
+
+        if ($choice === 'custom') {
+            if ($amount = $request->validated('custom_discount_amount')) {
+                $amount = min((float) $amount, $originalFee);
+
+                return [
+                    $originalFee > 0 ? round($amount / $originalFee * 100, 2) : 0.0,
+                    round($amount, 2),
+                ];
+            }
+
+            $percentage = (float) $request->validated('custom_discount_percentage');
+
+            return [$percentage, round($originalFee * $percentage / 100, 2)];
+        }
+
+        $percentage = (float) $choice;
+
+        return [$percentage, round($originalFee * $percentage / 100, 2)];
     }
 
     /**

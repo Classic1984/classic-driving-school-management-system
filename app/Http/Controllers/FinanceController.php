@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Enrollment;
 use App\Models\Expense;
 use App\Models\Payment;
 use Carbon\Carbon;
@@ -20,8 +21,9 @@ class FinanceController extends Controller
     {
         [$year, $months, $totals] = $this->computeSummary($request);
         $today = $this->computeToday();
+        $discounts = $this->computeDiscounts($year);
 
-        return view('finance.summary', compact('year', 'months', 'totals', 'today'));
+        return view('finance.summary', compact('year', 'months', 'totals', 'today', 'discounts'));
     }
 
     /**
@@ -88,6 +90,20 @@ class FinanceController extends Controller
         ];
 
         return [$year, $months, $totals];
+    }
+
+    /**
+     * Every enrollment with a discount applied during the given year, for
+     * management to see how much revenue was reduced through discounts.
+     */
+    protected function computeDiscounts(int $year): \Illuminate\Support\Collection
+    {
+        return Enrollment::with(['student', 'course'])
+            ->whereNotNull('discount_amount')
+            ->where('discount_amount', '>', 0)
+            ->whereYear('enrolled_at', $year)
+            ->latest('enrolled_at')
+            ->get();
     }
 
     /**

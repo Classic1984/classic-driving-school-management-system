@@ -32,6 +32,9 @@ class Enrollment extends Pivot
             'enrolled_at' => 'date',
             'due_date' => 'date',
             'fee' => 'decimal:2',
+            'original_fee' => 'decimal:2',
+            'discount_percentage' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
         ];
     }
 
@@ -43,6 +46,25 @@ class Enrollment extends Pivot
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function discountApprovedBy()
+    {
+        return $this->belongsTo(User::class, 'discount_approved_by');
+    }
+
+    /**
+     * The course's fee before any discount. Falls back to the (already
+     * final) fee for enrollments recorded before discounts existed.
+     */
+    public function originalFee(): float
+    {
+        return (float) ($this->original_fee ?? $this->fee());
+    }
+
+    public function hasDiscount(): bool
+    {
+        return (float) ($this->discount_amount ?? 0) > 0;
     }
 
     /**

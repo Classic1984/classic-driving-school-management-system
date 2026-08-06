@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Course;
 use App\Models\Expense;
 use App\Models\Payment;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -79,6 +81,33 @@ class FinanceSummaryTest extends TestCase
         $this->assertStringContainsString('500.00', $content);
         $this->assertStringContainsString('200.00', $content);
         $this->assertStringContainsString('Year Total', $content);
+    }
+
+    public function test_summary_shows_discounts_applied_during_the_year(): void
+    {
+        $director = User::factory()->director()->create();
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create(['name' => 'John Doe']);
+        $course = Course::factory()->create(['name' => 'Manual Driving Basics', 'fee' => 95000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => '2026-03-01',
+            'due_date' => '2026-03-05',
+            'status' => 'active',
+            'fee' => 85500,
+            'original_fee' => 95000,
+            'discount_percentage' => 10,
+            'discount_amount' => 9500,
+            'discount_reason' => 'promotional_offer',
+            'discount_approved_by' => $secretary->id,
+        ]);
+
+        $response = $this->actingAs($director)->get('/finance?year=2026');
+
+        $response->assertOk();
+        $response->assertSee('Discounts');
+        $response->assertSee('John Doe');
+        $response->assertSee('9,500.00');
+        $response->assertSee($secretary->name);
     }
 
     public function test_admin_cannot_export_the_finance_summary(): void

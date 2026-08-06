@@ -77,7 +77,7 @@ class Course extends Model
     {
         return $this->belongsToMany(Student::class)
             ->using(Enrollment::class)
-            ->withPivot(['id', 'enrolled_at', 'due_date', 'status', 'locked_reason', 'fee'])
+            ->withPivot(['id', 'enrolled_at', 'due_date', 'status', 'locked_reason', 'fee', 'original_fee', 'discount_percentage', 'discount_amount', 'discount_reason', 'discount_reason_note', 'discount_approved_by'])
             ->withTimestamps();
     }
 

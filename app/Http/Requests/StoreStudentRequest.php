@@ -6,6 +6,7 @@ use App\Rules\ValidLocalGovernmentArea;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreStudentRequest extends FormRequest
 {
@@ -15,6 +16,28 @@ class StoreStudentRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * The discount presets this request's user is allowed to apply.
+     * Secretary is limited to a smaller set than Director; "custom" (a
+     * hand-entered percentage or fixed amount) is Director-only.
+     *
+     * @return list<string>
+     */
+    protected function allowedDiscountChoices(): array
+    {
+        $choices = array_map('strval', config('discounts.secretary_presets'));
+
+        if ($this->user()?->isDirector()) {
+            $choices = [
+                ...$choices,
+                ...array_map('strval', config('discounts.director_presets')),
+                'custom',
+            ];
+        }
+
+        return $choices;
     }
 
     /**
@@ -52,6 +75,50 @@ class StoreStudentRequest extends FormRequest
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
             'payment_method' => ['required_with:amount_paid', 'nullable', 'in:cash,card,bank_transfer,mobile_money'],
+            'discount_choice' => ['nullable', Rule::in($this->allowedDiscountChoices())],
+            'custom_discount_percentage' => ['nullable', 'numeric', 'min:0.01', 'max:100'],
+            'custom_discount_amount' => ['nullable', 'numeric', 'min:0.01'],
+            'discount_reason' => ['nullable', Rule::in(array_keys(config('discounts.reasons')))],
+            'discount_reason_note' => ['nullable', 'string', 'max:255'],
         ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'discount_choice.in' => 'You are not authorized to apply that discount.',
+        ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $choice = $this->input('discount_choice');
+
+            if ($choice === 'custom') {
+                $hasPercentage = $this->filled('custom_discount_percentage');
+                $hasAmount = $this->filled('custom_discount_amount');
+
+                if ($hasPercentage === $hasAmount) {
+                    $validator->errors()->add('custom_discount_percentage', 'Enter either a custom percentage or a fixed amount, not both.');
+                }
+            }
+
+            if ($choice && ! $this->filled('discount_reason')) {
+                $validator->errors()->add('discount_reason', 'A reason is required whenever a discount is applied.');
+            }
+
+            if ($this->input('discount_reason') === 'other' && ! $this->filled('discount_reason_note')) {
+                $validator->errors()->add('discount_reason_note', 'Please specify the reason.');
+            }
+        });
     }
 }
