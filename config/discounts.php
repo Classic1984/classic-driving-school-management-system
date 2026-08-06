@@ -4,24 +4,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Preset Discount Percentages
+    | Preset Discount Amounts (₦)
     |--------------------------------------------------------------------------
     |
-    | Every preset a Secretary is allowed to apply unassisted. Director can
-    | also approve any of these, plus a custom percentage or fixed amount.
+    | Fixed naira amounts off the course fee. Every preset a Secretary is
+    | allowed to apply unassisted - ₦5,000 is the routine ceiling. Director
+    | can also approve any of these, plus a custom percentage or fixed
+    | amount.
     |
     */
-    'secretary_presets' => [5, 10, 15],
+    'secretary_presets' => [1000, 2500, 5000],
 
     /*
     |--------------------------------------------------------------------------
-    | Director-Only Presets
+    | Director-Only Presets (₦)
     |--------------------------------------------------------------------------
     |
     | Additional presets only Director can approve, on top of the Secretary
     | presets above.
     */
-    'director_presets' => [20, 25, 30],
+    'director_presets' => [10000],
 
     /*
     |--------------------------------------------------------------------------

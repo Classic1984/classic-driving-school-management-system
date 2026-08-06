@@ -33,7 +33,7 @@ class DiscountTest extends TestCase
 
         $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '10',
+            'discount_choice' => '5000',
             'discount_reason' => 'promotional_offer',
         ]));
 
@@ -43,15 +43,14 @@ class DiscountTest extends TestCase
         $enrollment = $student->courses->first()->pivot;
 
         $this->assertSame(95000.0, $enrollment->originalFee());
-        $this->assertSame(10.0, (float) $enrollment->discount_percentage);
-        $this->assertSame(9500.0, (float) $enrollment->discount_amount);
-        $this->assertSame(85500.0, $enrollment->fee());
+        $this->assertSame(5000.0, (float) $enrollment->discount_amount);
+        $this->assertSame(90000.0, $enrollment->fee());
         $this->assertSame($secretary->id, $enrollment->discount_approved_by);
 
         $this->assertDatabaseHas('discount_audit_logs', [
             'student_id' => $student->id,
             'applied_by' => $secretary->id,
-            'discount_amount' => 9500,
+            'discount_amount' => 5000,
             'reason' => 'promotional_offer',
         ]);
     }
@@ -63,7 +62,7 @@ class DiscountTest extends TestCase
 
         $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '20',
+            'discount_choice' => '10000',
             'discount_reason' => 'promotional_offer',
         ]));
 
@@ -94,14 +93,15 @@ class DiscountTest extends TestCase
 
         $response = $this->actingAs($director)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '25',
+            'discount_choice' => '10000',
             'discount_reason' => 'directors_approval',
         ]));
 
         $response->assertSessionHasNoErrors();
 
         $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
-        $this->assertSame(23750.0, (float) $student->courses->first()->pivot->discount_amount);
+        $this->assertSame(10000.0, (float) $student->courses->first()->pivot->discount_amount);
+        $this->assertSame(85000.0, $student->courses->first()->pivot->fee());
     }
 
     public function test_director_can_apply_a_custom_percentage_discount(): void
@@ -168,7 +168,7 @@ class DiscountTest extends TestCase
 
         $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '10',
+            'discount_choice' => '5000',
         ]));
 
         $response->assertSessionHasErrors('discount_reason');
@@ -182,7 +182,7 @@ class DiscountTest extends TestCase
 
         $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '10',
+            'discount_choice' => '5000',
             'discount_reason' => 'other',
         ]));
 
@@ -215,7 +215,7 @@ class DiscountTest extends TestCase
 
         $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '10',
+            'discount_choice' => '5000',
             'discount_reason' => 'promotional_offer',
             'amount_paid' => 40000,
             'payment_method' => 'cash',
@@ -224,8 +224,26 @@ class DiscountTest extends TestCase
         $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
         $enrollment = $student->courses->first()->pivot;
 
-        // 95,000 - 9,500 discount = 85,500 final fee; 40,000 paid; 45,500 balance.
-        $this->assertSame(85500.0, $enrollment->fee());
-        $this->assertSame(45500.0, $enrollment->balance());
+        // 95,000 - 5,000 discount = 90,000 final fee; 40,000 paid; 50,000 balance.
+        $this->assertSame(90000.0, $enrollment->fee());
+        $this->assertSame(50000.0, $enrollment->balance());
+    }
+
+    public function test_a_preset_discount_cannot_exceed_the_course_fee(): void
+    {
+        $director = User::factory()->director()->create();
+        $course = Course::factory()->create(['fee' => 8000]);
+
+        $response = $this->actingAs($director)->post('/students', $this->registrationData([
+            'course_id' => $course->id,
+            'discount_choice' => '10000',
+            'discount_reason' => 'directors_approval',
+        ]));
+
+        $response->assertSessionHasNoErrors();
+
+        $enrollment = Student::where('email', 'jane.doe@example.com')->firstOrFail()->courses->first()->pivot;
+        $this->assertSame(8000.0, (float) $enrollment->discount_amount);
+        $this->assertSame(0.0, $enrollment->fee());
     }
 }

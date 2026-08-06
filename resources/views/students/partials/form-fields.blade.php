@@ -236,11 +236,11 @@
                 <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                     <option value="">{{ __('No Discount') }}</option>
                     @foreach (config('discounts.secretary_presets') as $preset)
-                        <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>{{ $preset }}%</option>
+                        <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
                     @endforeach
                     @if (auth()->user()->isDirector())
                         @foreach (config('discounts.director_presets') as $preset)
-                            <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>{{ $preset }}%</option>
+                            <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
                         @endforeach
                         <option value="custom" @selected(old('discount_choice') === 'custom')>{{ __('Custom (Director Only)') }}</option>
                     @endif
@@ -328,8 +328,8 @@
                             }
                         } else {
                             if (customFieldsWrapper) customFieldsWrapper.classList.add('hidden');
-                            var pct = parseFloat(choice) || 0;
-                            discountAmount = fee * pct / 100;
+                            var presetAmount = parseFloat(choice) || 0;
+                            discountAmount = Math.min(presetAmount, fee);
                         }
 
                         reasonWrapper.classList.toggle('hidden', ! choice);

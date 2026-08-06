@@ -156,9 +156,13 @@ class StudentController extends Controller
             return [$percentage, round($originalFee * $percentage / 100, 2)];
         }
 
-        $percentage = (float) $choice;
+        // Presets are fixed naira amounts, not percentages.
+        $amount = min((float) $choice, $originalFee);
 
-        return [$percentage, round($originalFee * $percentage / 100, 2)];
+        return [
+            $originalFee > 0 ? round($amount / $originalFee * 100, 2) : 0.0,
+            round($amount, 2),
+        ];
     }
 
     /**
