@@ -54,24 +54,26 @@
 
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                @if ($paymentTotals)
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
 
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('This Week') }}</h4>
-                        <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals['week'], 2) }}</p>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('This Week') }}</h4>
+                            <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals['week'], 2) }}</p>
+                        </div>
+
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('This Month') }}</h4>
+                            <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals['month'], 2) }}</p>
+                        </div>
+
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('All Time') }}</h4>
+                            <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals['all_time'], 2) }}</p>
+                        </div>
+
                     </div>
-
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('This Month') }}</h4>
-                        <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals['month'], 2) }}</p>
-                    </div>
-
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('All Time') }}</h4>
-                        <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals['all_time'], 2) }}</p>
-                    </div>
-
-                </div>
+                @endif
 
             </div>
 

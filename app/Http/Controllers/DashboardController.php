@@ -7,11 +7,12 @@ use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Payment;
 use App\Models\Student;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $stats = [
             'students' => Student::count(),
@@ -20,16 +21,20 @@ class DashboardController extends Controller
             'certificates' => Certificate::count(),
         ];
 
-        $paymentTotals = [
-            'week' => Payment::where('status', 'paid')
-                ->whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])
-                ->sum('amount'),
-            'month' => Payment::where('status', 'paid')
-                ->whereYear('payment_date', now()->year)
-                ->whereMonth('payment_date', now()->month)
-                ->sum('amount'),
-            'all_time' => Payment::where('status', 'paid')->sum('amount'),
-        ];
+        $paymentTotals = null;
+
+        if ($request->user()->isDirector()) {
+            $paymentTotals = [
+                'week' => Payment::where('status', 'paid')
+                    ->whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])
+                    ->sum('amount'),
+                'month' => Payment::where('status', 'paid')
+                    ->whereYear('payment_date', now()->year)
+                    ->whereMonth('payment_date', now()->month)
+                    ->sum('amount'),
+                'all_time' => Payment::where('status', 'paid')->sum('amount'),
+            ];
+        }
 
         $outstandingPayments = Enrollment::where('status', '!=', 'completed')
             ->with(['student', 'course'])
