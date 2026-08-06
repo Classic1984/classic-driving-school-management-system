@@ -83,6 +83,52 @@
                     </table>
                 </div>
             </div>
+
+            @if ($discounts->isNotEmpty())
+                <div class="bg-white shadow rounded-lg p-6 mt-6">
+                    <h3 class="text-lg font-semibold mb-4">{{ __('Discounts') }} — {{ $year }}</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-4 py-2">{{ __('Student') }}</th>
+                                    <th class="px-4 py-2">{{ __('Course') }}</th>
+                                    <th class="px-4 py-2">{{ __('Original Fee') }}</th>
+                                    <th class="px-4 py-2">{{ __('Discount') }}</th>
+                                    <th class="px-4 py-2">{{ __('Final Fee') }}</th>
+                                    <th class="px-4 py-2">{{ __('Reason') }}</th>
+                                    <th class="px-4 py-2">{{ __('Approved By') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($discounts as $enrollment)
+                                    <tr>
+                                        <td class="px-4 py-2 text-sm">
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
+                                                {{ $enrollment->student->name }}
+                                            </a>
+                                        </td>
+                                        <td class="px-4 py-2 text-sm">{{ $enrollment->course->name }}</td>
+                                        <td class="px-4 py-2 text-sm">{{ number_format($enrollment->originalFee(), 2) }}</td>
+                                        <td class="px-4 py-2 text-sm text-green-600">{{ number_format($enrollment->discount_amount, 2) }}</td>
+                                        <td class="px-4 py-2 text-sm font-medium">{{ number_format($enrollment->fee(), 2) }}</td>
+                                        <td class="px-4 py-2 text-sm">{{ config("discounts.reasons.{$enrollment->discount_reason}", $enrollment->discount_reason) }}</td>
+                                        <td class="px-4 py-2 text-sm">{{ $enrollment->discountApprovedBy?->name ?? '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr class="border-t-2 border-gray-300">
+                                    <td colspan="3" class="px-4 py-2 text-sm font-semibold">{{ __('Total Discounted') }}</td>
+                                    <td class="px-4 py-2 text-sm font-semibold text-green-600">{{ number_format($discounts->sum('discount_amount'), 2) }}</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

@@ -162,6 +162,8 @@
                             <thead>
                                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     <th class="px-2 py-1">{{ __('Course') }}</th>
+                                    <th class="px-2 py-1">{{ __('Fee') }}</th>
+                                    <th class="px-2 py-1">{{ __('Discount') }}</th>
                                     <th class="px-2 py-1">{{ __('Balance') }}</th>
                                     <th class="px-2 py-1">{{ __('Due Date') }}</th>
                                     <th class="px-2 py-1">{{ __('Status') }}</th>
@@ -172,6 +174,21 @@
                                 @forelse ($student->courses as $enrolledCourse)
                                     <tr>
                                         <td class="px-2 py-1 text-sm">{{ $enrolledCourse->name }}</td>
+                                        <td class="px-2 py-1 text-sm">
+                                            @if ($enrolledCourse->pivot->hasDiscount())
+                                                <span class="line-through text-gray-400">₦{{ number_format($enrolledCourse->pivot->originalFee(), 2) }}</span>
+                                                <span class="font-medium">₦{{ number_format($enrolledCourse->pivot->fee(), 2) }}</span>
+                                            @else
+                                                ₦{{ number_format($enrolledCourse->pivot->fee(), 2) }}
+                                            @endif
+                                        </td>
+                                        <td class="px-2 py-1 text-sm">
+                                            @if ($enrolledCourse->pivot->hasDiscount())
+                                                <span class="text-green-600">{{ rtrim(rtrim(number_format((float) $enrolledCourse->pivot->discount_percentage, 2), '0'), '.') }}% (₦{{ number_format($enrolledCourse->pivot->discount_amount, 2) }})</span>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ optional($enrolledCourse->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm font-semibold capitalize
@@ -193,7 +210,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('Not enrolled in any courses yet.') }}</td>
+                                        <td colspan="7" class="px-2 py-2 text-sm text-gray-500">{{ __('Not enrolled in any courses yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
