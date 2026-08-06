@@ -135,6 +135,26 @@ class PaymentTest extends TestCase
         $this->assertDatabaseCount('payments', 1);
     }
 
+    public function test_storing_a_payment_rejects_a_future_payment_date(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->post('/payments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'payment_date' => now()->addDay()->toDateString(),
+            'payment_method' => 'cash',
+            'status' => 'paid',
+        ]);
+
+        $response->assertSessionHasErrors('payment_date');
+        $this->assertDatabaseCount('payments', 0);
+    }
+
     public function test_storing_a_payment_requires_the_student_to_be_enrolled_in_the_course(): void
     {
         $user = User::factory()->create();
@@ -171,6 +191,44 @@ class PaymentTest extends TestCase
 
         $response->assertSessionHasErrors('student_id');
         $this->assertSame('pending', $payment->fresh()->status);
+    }
+
+    public function test_updating_a_payment_rejects_a_future_payment_date(): void
+    {
+        $user = User::factory()->create();
+        $payment = Payment::factory()->create(['status' => 'pending']);
+        $payment->student->courses()->attach($payment->course_id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->put("/payments/{$payment->id}", [
+            'student_id' => $payment->student_id,
+            'course_id' => $payment->course_id,
+            'amount' => $payment->amount,
+            'payment_date' => now()->addDay()->toDateString(),
+            'payment_method' => $payment->payment_method,
+            'status' => 'paid',
+        ]);
+
+        $response->assertSessionHasErrors('payment_date');
+        $this->assertSame('pending', $payment->fresh()->status);
+    }
+
+    public function test_updating_a_payment_can_correct_the_date_to_an_earlier_day(): void
+    {
+        $user = User::factory()->create();
+        $payment = Payment::factory()->create(['status' => 'paid', 'payment_date' => now()]);
+        $payment->student->courses()->attach($payment->course_id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->put("/payments/{$payment->id}", [
+            'student_id' => $payment->student_id,
+            'course_id' => $payment->course_id,
+            'amount' => $payment->amount,
+            'payment_date' => now()->subDay()->toDateString(),
+            'payment_method' => $payment->payment_method,
+            'status' => 'paid',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame(now()->subDay()->toDateString(), $payment->fresh()->payment_date->toDateString());
     }
 
     public function test_authenticated_user_can_view_a_payment(): void
