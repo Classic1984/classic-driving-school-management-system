@@ -24,10 +24,11 @@ class DashboardTest extends TestCase
         Instructor::factory()->count(2)->create();
         Certificate::factory()->count(4)->create();
 
-        Payment::factory()->create(['amount' => 500, 'status' => 'paid']);
-        Payment::factory()->create(['amount' => 300, 'status' => 'paid']);
-        // Not counted towards the payments total.
-        Payment::factory()->create(['amount' => 999, 'status' => 'pending']);
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()]);
+        Payment::factory()->create(['amount' => 300, 'status' => 'paid', 'payment_date' => now()]);
+        // Not counted towards today's payments total.
+        Payment::factory()->create(['amount' => 999, 'status' => 'pending', 'payment_date' => now()]);
+        Payment::factory()->create(['amount' => 700, 'status' => 'paid', 'payment_date' => now()->subDays(2)]);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
@@ -36,6 +37,40 @@ class DashboardTest extends TestCase
         $response->assertSee('800.00');
         $response->assertSee('2');
         $response->assertSee('4');
+    }
+
+    public function test_director_sees_this_week_this_month_and_all_time_payment_totals(): void
+    {
+        $director = User::factory()->director()->create();
+
+        // In the current week and month.
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()]);
+        // Earlier this month but outside the current week.
+        Payment::factory()->create(['amount' => 300, 'status' => 'paid', 'payment_date' => now()->startOfMonth()]);
+        // A previous month, still counted in the all-time total.
+        Payment::factory()->create(['amount' => 200, 'status' => 'paid', 'payment_date' => now()->subYear()]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('This Week');
+        $response->assertSee('This Month');
+        $response->assertSee('All Time');
+        $response->assertSee('1,000.00');
+    }
+
+    public function test_non_director_does_not_see_the_payment_totals_breakdown(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('This Week');
+        $response->assertDontSee('This Month');
+        $response->assertDontSee('All Time');
     }
 
     public function test_dashboard_shows_zeroes_when_there_is_no_data(): void
