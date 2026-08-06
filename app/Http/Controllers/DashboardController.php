@@ -15,9 +15,20 @@ class DashboardController extends Controller
     {
         $stats = [
             'students' => Student::count(),
-            'payments' => Payment::where('status', 'paid')->sum('amount'),
+            'payments' => Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount'),
             'instructors' => Instructor::count(),
             'certificates' => Certificate::count(),
+        ];
+
+        $paymentTotals = [
+            'week' => Payment::where('status', 'paid')
+                ->whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])
+                ->sum('amount'),
+            'month' => Payment::where('status', 'paid')
+                ->whereYear('payment_date', now()->year)
+                ->whereMonth('payment_date', now()->month)
+                ->sum('amount'),
+            'all_time' => Payment::where('status', 'paid')->sum('amount'),
         ];
 
         $outstandingPayments = Enrollment::where('status', '!=', 'completed')
@@ -33,6 +44,6 @@ class DashboardController extends Controller
             ->take(15)
             ->get();
 
-        return view('dashboard', compact('stats', 'outstandingPayments', 'trainingProgress'));
+        return view('dashboard', compact('stats', 'paymentTotals', 'outstandingPayments', 'trainingProgress'));
     }
 }
