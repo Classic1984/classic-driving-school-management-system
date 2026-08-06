@@ -39,6 +39,24 @@ class DashboardTest extends TestCase
         $response->assertSee('4');
     }
 
+    public function test_dashboard_shows_new_students_today_this_week_and_this_month(): void
+    {
+        $user = User::factory()->create();
+
+        // Registered today: counted in today, this week, and this month.
+        Student::factory()->create(['enrollment_date' => now()]);
+        // Earlier this month but outside the current week.
+        Student::factory()->create(['enrollment_date' => now()->startOfMonth()]);
+        // A previous month, not counted in today/week/month.
+        Student::factory()->create(['enrollment_date' => now()->subYear()]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('New Students');
+        $response->assertSee('Today');
+    }
+
     public function test_director_sees_this_week_this_month_and_all_time_payment_totals(): void
     {
         $director = User::factory()->director()->create();
@@ -68,8 +86,7 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('This Week');
-        $response->assertDontSee('This Month');
+        $response->assertDontSee('Total Payments');
         $response->assertDontSee('All Time');
     }
 
