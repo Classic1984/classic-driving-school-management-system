@@ -578,6 +578,25 @@ class StudentTest extends TestCase
         $this->assertSame('completed', $student->fresh()->status);
     }
 
+    public function test_updating_a_student_rejects_a_future_enrollment_date(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+
+        $response = $this->actingAs($user)->put("/students/{$student->id}", [
+            'name' => $student->name,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'date_of_birth' => $student->date_of_birth->format('Y-m-d'),
+            'course_type' => $student->course_type,
+            'enrollment_date' => now()->addDay()->toDateString(),
+            'status' => $student->status,
+        ]);
+
+        $response->assertSessionHasErrors('enrollment_date');
+        $this->assertNotSame(now()->addDay()->toDateString(), $student->fresh()->enrollment_date->toDateString());
+    }
+
     public function test_authenticated_user_can_delete_a_student(): void
     {
         $user = User::factory()->create();
