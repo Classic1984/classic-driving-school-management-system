@@ -21,6 +21,14 @@ class DashboardController extends Controller
             'certificates' => Certificate::count(),
         ];
 
+        $newStudentTotals = [
+            'today' => Student::whereDate('enrollment_date', today())->count(),
+            'week' => Student::whereBetween('enrollment_date', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'month' => Student::whereYear('enrollment_date', now()->year)
+                ->whereMonth('enrollment_date', now()->month)
+                ->count(),
+        ];
+
         $paymentTotals = null;
 
         if ($request->user()->isDirector()) {
@@ -49,6 +57,6 @@ class DashboardController extends Controller
             ->take(15)
             ->get();
 
-        return view('dashboard', compact('stats', 'paymentTotals', 'outstandingPayments', 'trainingProgress'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress'));
     }
 }
