@@ -30,7 +30,7 @@
 
 <div>
     <x-input-label for="payment_date" :value="__('Payment Date')" />
-    <x-text-input id="payment_date" name="payment_date" type="date" class="mt-1 block w-full" :value="old('payment_date', optional($payment?->payment_date)->format('Y-m-d'))" required />
+    <x-text-input id="payment_date" name="payment_date" type="date" class="mt-1 block w-full" :value="old('payment_date', optional($payment?->payment_date)->format('Y-m-d'))" :max="now()->format('Y-m-d')" required />
     <x-input-error class="mt-2" :messages="$errors->get('payment_date')" />
 </div>
 

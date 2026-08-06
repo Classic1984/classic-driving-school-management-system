@@ -28,7 +28,7 @@ class StorePaymentRequest extends FormRequest
             'student_id' => ['required', 'integer', 'exists:students,id'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'amount' => ['required', 'numeric', 'min:0.01'],
-            'payment_date' => ['required', 'date'],
+            'payment_date' => ['required', 'date', 'before_or_equal:today'],
             'payment_method' => ['required', 'in:cash,card,bank_transfer,mobile_money'],
             'status' => ['required', 'in:paid,pending,failed,refunded'],
             'reference_number' => ['nullable', 'string', 'max:255', 'unique:payments,reference_number'],
