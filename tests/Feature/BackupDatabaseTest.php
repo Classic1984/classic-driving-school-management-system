@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
+use ZipArchive;
 
 class BackupDatabaseTest extends TestCase
 {
@@ -26,7 +27,7 @@ class BackupDatabaseTest extends TestCase
         Mail::assertSent(DatabaseBackupMail::class, function (DatabaseBackupMail $mail) use ($director) {
             return $mail->hasTo($director->email)
                 && ! $mail->hasTo('admin@example.com')
-                && str_ends_with($mail->path, '.json.gz');
+                && str_ends_with($mail->path, '.zip');
         });
     }
 
@@ -35,7 +36,12 @@ class BackupDatabaseTest extends TestCase
         Student::factory()->create(['name' => 'Backed Up Student']);
 
         $path = (new BackupDatabase)->createDump();
-        $contents = json_decode(gzdecode(file_get_contents($path)), true);
+
+        $zip = new ZipArchive;
+        $zip->open($path);
+        $contents = json_decode($zip->getFromName($zip->getNameIndex(0)), true);
+        $zip->close();
+
         unlink($path);
 
         $this->assertTrue(collect($contents['students'])->contains(fn (array $row) => $row['name'] === 'Backed Up Student'));
