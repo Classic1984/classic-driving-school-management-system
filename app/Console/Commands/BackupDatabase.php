@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
-use ZipArchive;
+use ZipStream\ZipStream;
 
 class BackupDatabase extends Command
 {
@@ -65,7 +65,9 @@ class BackupDatabase extends Command
      * running on SQLite or Postgres, without depending on an external
      * dump binary being installed on the server. Zipped (rather than
      * gzipped) because Brevo's email API rejects ".gz" attachments as an
-     * unsupported file type.
+     * unsupported file type. Uses a pure-PHP zip writer (only needs
+     * zlib, not the optional "zip" extension) since Railway's PHP build
+     * doesn't include ext-zip.
      */
     public function createDump(): string
     {
@@ -79,17 +81,15 @@ class BackupDatabase extends Command
         ]);
 
         $basename = 'backup-'.now()->format('Y-m-d_His');
-        $jsonPath = storage_path("app/{$basename}.json");
         $zipPath = storage_path("app/{$basename}.zip");
 
-        file_put_contents($jsonPath, $data->toJson());
+        $stream = fopen($zipPath, 'w');
 
-        $zip = new ZipArchive;
-        $zip->open($zipPath, ZipArchive::CREATE);
-        $zip->addFile($jsonPath, "{$basename}.json");
-        $zip->close();
+        $zip = new ZipStream(outputStream: $stream, sendHttpHeaders: false);
+        $zip->addFile("{$basename}.json", $data->toJson());
+        $zip->finish();
 
-        unlink($jsonPath);
+        fclose($stream);
 
         return $zipPath;
     }
