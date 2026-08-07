@@ -54,6 +54,21 @@ class FinanceSummaryTest extends TestCase
         $response->assertSeeInOrder(["Today's Balance", '1,000.00', '400.00', '600.00']);
     }
 
+    public function test_summary_shows_a_revenue_trend_chart(): void
+    {
+        $director = User::factory()->director()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => '2026-03-10']);
+        Expense::factory()->create(['amount' => 200, 'expense_date' => '2026-03-05', 'category' => 'fuel']);
+
+        $response = $this->actingAs($director)->get('/finance?year=2026');
+
+        $response->assertOk();
+        $response->assertSee('Revenue Trend');
+        $response->assertSee('<svg', false);
+        $response->assertSee('March Income: ₦500.00', false);
+        $response->assertSee('March Expenses: ₦200.00', false);
+    }
+
     public function test_summary_defaults_to_the_current_year(): void
     {
         $director = User::factory()->director()->create();
