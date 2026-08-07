@@ -118,4 +118,26 @@ class FinanceSummaryTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_director_can_download_the_summary_as_a_pdf(): void
+    {
+        $director = User::factory()->director()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => '2026-03-10']);
+        Expense::factory()->create(['amount' => 200, 'expense_date' => '2026-03-05', 'category' => 'fuel']);
+
+        $response = $this->actingAs($director)->get('/finance/export-pdf?year=2026');
+
+        $response->assertOk();
+        $this->assertStringContainsString('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', $response->getContent());
+    }
+
+    public function test_admin_cannot_download_the_finance_summary_as_a_pdf(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get('/finance/export-pdf');
+
+        $response->assertForbidden();
+    }
 }

@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Enrollment;
 use App\Models\Expense;
 use App\Models\Payment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -56,6 +58,20 @@ class FinanceController extends Controller
 
             fclose($handle);
         }, "finance-summary-{$year}.csv", ['Content-Type' => 'text/csv']);
+    }
+
+    /**
+     * Download a PDF export of the same month-by-month summary, plus the
+     * year's discounts, formatted for printing or sharing.
+     */
+    public function exportPdf(Request $request): Response
+    {
+        [$year, $months, $totals] = $this->computeSummary($request);
+        $discounts = $this->computeDiscounts($year);
+
+        $pdf = Pdf::loadView('finance.summary-pdf', compact('year', 'months', 'totals', 'discounts'));
+
+        return $pdf->download("finance-summary-{$year}.pdf");
     }
 
     /**
