@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use ZipArchive;
 
 class BackupDatabase extends Command
 {
@@ -58,11 +59,13 @@ class BackupDatabase extends Command
     }
 
     /**
-     * Dump every table's rows into a single gzip-compressed JSON file and
+     * Dump every table's rows into a single zip-compressed JSON file and
      * return its path. A plain data export (rather than a driver-specific
      * SQL dump) so it works the same way regardless of whether the app is
      * running on SQLite or Postgres, without depending on an external
-     * dump binary being installed on the server.
+     * dump binary being installed on the server. Zipped (rather than
+     * gzipped) because Brevo's email API rejects ".gz" attachments as an
+     * unsupported file type.
      */
     public function createDump(): string
     {
@@ -75,10 +78,19 @@ class BackupDatabase extends Command
             $table => DB::table($table)->get(),
         ]);
 
-        $path = storage_path('app/backup-'.now()->format('Y-m-d_His').'.json.gz');
+        $basename = 'backup-'.now()->format('Y-m-d_His');
+        $jsonPath = storage_path("app/{$basename}.json");
+        $zipPath = storage_path("app/{$basename}.zip");
 
-        file_put_contents($path, gzencode($data->toJson(), 9));
+        file_put_contents($jsonPath, $data->toJson());
 
-        return $path;
+        $zip = new ZipArchive;
+        $zip->open($zipPath, ZipArchive::CREATE);
+        $zip->addFile($jsonPath, "{$basename}.json");
+        $zip->close();
+
+        unlink($jsonPath);
+
+        return $zipPath;
     }
 }
