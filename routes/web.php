@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('expenses', ExpenseController::class);
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
         Route::get('finance/export', [FinanceController::class, 'export'])->name('finance.export');
+        Route::get('finance/export-pdf', [FinanceController::class, 'exportPdf'])->name('finance.export-pdf');
     });
 
     Route::resource('students', StudentController::class)->except(['destroy']);
