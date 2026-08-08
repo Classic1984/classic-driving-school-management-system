@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Instructor;
@@ -57,6 +58,27 @@ class DashboardController extends Controller
             ->take(15)
             ->get();
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress'));
+        $trainingStats = [
+            'today' => $this->distinctStudentsTrained(today(), today()),
+            'week' => $this->distinctStudentsTrained(now()->startOfWeek(), now()->endOfWeek()),
+            'month' => $this->distinctStudentsTrained(now()->startOfMonth(), now()->endOfMonth()),
+            'year' => $this->distinctStudentsTrained(now()->startOfYear(), now()->endOfYear()),
+        ];
+
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats'));
+    }
+
+    /**
+     * Count of distinct students with at least one saved "present" training
+     * login in the given date range - actual training activity, not
+     * expected attendance.
+     */
+    protected function distinctStudentsTrained($from, $to): int
+    {
+        return Attendance::where('status', 'present')
+            ->whereDate('date', '>=', $from->toDateString())
+            ->whereDate('date', '<=', $to->toDateString())
+            ->distinct('student_id')
+            ->count('student_id');
     }
 }

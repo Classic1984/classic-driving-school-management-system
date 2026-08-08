@@ -16,6 +16,31 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_dashboard_shows_training_statistics_linking_to_the_training_report(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+
+        $today1 = Student::factory()->create();
+        $today2 = Student::factory()->create();
+        Attendance::factory()->create(['student_id' => $today1->id, 'course_id' => $course->id, 'date' => now(), 'status' => 'present']);
+        Attendance::factory()->create(['student_id' => $today2->id, 'course_id' => $course->id, 'date' => now(), 'status' => 'present']);
+        // Not counted: absent status, and a login outside today.
+        $absent = Student::factory()->create();
+        Attendance::factory()->create(['student_id' => $absent->id, 'course_id' => $course->id, 'date' => now(), 'status' => 'absent']);
+        $old = Student::factory()->create();
+        Attendance::factory()->create(['student_id' => $old->id, 'course_id' => $course->id, 'date' => now()->subYear(), 'status' => 'present']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Training Statistics');
+        $response->assertSee(route('training-report.index', ['period' => 'today']), false);
+        $response->assertSee(route('training-report.index', ['period' => 'week']), false);
+        $response->assertSee(route('training-report.index', ['period' => 'month']), false);
+        $response->assertSee(route('training-report.index', ['period' => 'year']), false);
+    }
+
     public function test_dashboard_shows_live_counts_and_totals(): void
     {
         $user = User::factory()->create();

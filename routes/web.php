@@ -11,6 +11,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TrainingReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -58,6 +59,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
     Route::resource('attendances', AttendanceController::class)->except(['destroy']);
+    Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');
+    Route::get('training-report/export', [TrainingReportController::class, 'export'])->name('training-report.export');
+    Route::get('training-report/export-pdf', [TrainingReportController::class, 'exportPdf'])->name('training-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
     // above: "payments/export" would otherwise be swallowed by "payments/{payment}".
     Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
