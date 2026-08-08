@@ -7,7 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">
                         {{ __('Training Login Records') }}
@@ -49,7 +49,15 @@
                                     <td class="px-4 py-2 capitalize">{{ $attendance->session ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->vehicle ?? '—' }}</td>
-                                    <td class="px-4 py-2 capitalize">{{ $attendance->status }}</td>
+                                    <td class="px-4 py-2">
+                                        <x-badge :color="match ($attendance->status) {
+                                            'present' => 'green',
+                                            'absent' => 'red',
+                                            'late' => 'amber',
+                                            'excused' => 'blue',
+                                            default => 'gray',
+                                        }" class="capitalize">{{ $attendance->status }}</x-badge>
+                                    </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('attendances.show', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>

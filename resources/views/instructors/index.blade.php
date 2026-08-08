@@ -7,7 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">
                         {{ __('Instructors') }}
@@ -47,7 +47,9 @@
                                     <td class="px-4 py-2">{{ $instructor->email }}</td>
                                     <td class="px-4 py-2">{{ $instructor->phone }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $instructor->specialization }}</td>
-                                    <td class="px-4 py-2 capitalize">{{ $instructor->status }}</td>
+                                    <td class="px-4 py-2">
+                                        <x-badge :color="$instructor->status === 'active' ? 'green' : 'gray'" class="capitalize">{{ $instructor->status }}</x-badge>
+                                    </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('instructors.show', $instructor) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         @if (auth()->user()->canManageCourses())

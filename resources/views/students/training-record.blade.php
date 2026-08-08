@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg space-y-4">
+            <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 @if (session('status') === 'training-logged')
                     <p class="text-sm font-medium text-green-600">{{ __('Training logged successfully.') }}</p>
                 @endif

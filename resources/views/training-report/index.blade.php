@@ -7,7 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4 print:hidden">
                     <div class="flex items-center gap-2">
                         @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $tabLabel)
@@ -62,7 +62,18 @@
                                     <td class="px-4 py-2 text-sm capitalize">{{ $attendance->session ?? '—' }}</td>
                                     <td class="px-4 py-2 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-2 text-sm">{{ $attendance->vehicle ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-sm">
+                                        @php $trainingStatus = $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? null; @endphp
+                                        @if ($trainingStatus)
+                                            <x-badge :color="match ($trainingStatus) {
+                                                'Completed' => 'blue',
+                                                'Expired' => 'red',
+                                                default => 'green',
+                                            }">{{ $trainingStatus }}</x-badge>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

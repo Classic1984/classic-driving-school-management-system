@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg space-y-4">
+            <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 @if (session('status') === 'student-created')
                     <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
                 @elseif (session('status') === 'student-updated')
@@ -100,7 +100,14 @@
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Status') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $student->status }}</dd>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            <x-badge :color="match ($student->status) {
+                                'active' => 'green',
+                                'completed' => 'blue',
+                                'withdrawn' => 'red',
+                                default => 'gray',
+                            }" class="capitalize">{{ $student->status }}</x-badge>
+                        </dd>
                     </div>
                 </dl>
 
@@ -191,12 +198,12 @@
                                         </td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ optional($enrolledCourse->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
-                                        <td class="px-2 py-1 text-sm font-semibold capitalize
-                                            @if ($enrolledCourse->pivot->status === 'locked') text-red-600
-                                            @elseif ($enrolledCourse->pivot->status === 'completed') text-blue-600
-                                            @else text-green-600
-                                            @endif">
-                                            {{ $enrolledCourse->pivot->status }}
+                                        <td class="px-2 py-1 text-sm">
+                                            <x-badge :color="match ($enrolledCourse->pivot->status) {
+                                                'locked' => 'red',
+                                                'completed' => 'blue',
+                                                default => 'green',
+                                            }" class="capitalize">{{ $enrolledCourse->pivot->status }}</x-badge>
                                         </td>
                                         <td class="px-2 py-1 text-sm">
                                             @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->balance() <= 0)
@@ -325,7 +332,15 @@
                                         <td class="px-2 py-1 text-sm">{{ $payment->payment_date->format('Y-m-d') }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $payment->course->name }}</td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($payment->amount, 2) }}</td>
-                                        <td class="px-2 py-1 text-sm capitalize">{{ $payment->status }}</td>
+                                        <td class="px-2 py-1 text-sm">
+                                            <x-badge :color="match ($payment->status) {
+                                                'paid' => 'green',
+                                                'pending' => 'amber',
+                                                'failed' => 'red',
+                                                'refunded' => 'blue',
+                                                default => 'gray',
+                                            }" class="capitalize">{{ $payment->status }}</x-badge>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>

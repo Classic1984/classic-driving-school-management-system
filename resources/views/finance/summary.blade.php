@@ -7,7 +7,7 @@
 
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mb-6">
                 <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">{{ __("Today's Balance") }}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-black text-amber-400 rounded-lg p-4">
@@ -32,7 +32,7 @@
                 $barWidth = 22;
                 $chartWidth = $groupWidth * 12;
             @endphp
-            <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">{{ __('Revenue Trend') }} — {{ $year }}</h3>
                     <div class="flex items-center gap-4 text-xs text-gray-600">
@@ -78,7 +78,7 @@
                 </svg>
             </div>
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">
                         {{ __('Income, Expenses & Balance') }} — {{ $year }}
@@ -141,7 +141,7 @@
             </div>
 
             @if ($discounts->isNotEmpty())
-                <div class="bg-white shadow rounded-lg p-6 mt-6">
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mt-6">
                     <h3 class="text-lg font-semibold mb-4">{{ __('Discounts') }} — {{ $year }}</h3>
 
                     <div class="overflow-x-auto">

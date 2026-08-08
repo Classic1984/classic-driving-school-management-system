@@ -13,7 +13,7 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="bg-white shadow rounded-lg p-8">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
 
                 <h1 class="text-3xl font-bold text-gray-800">
                     Welcome to CDSMS
@@ -112,7 +112,7 @@
             </div>
 
             @if ($outstandingPayments->isNotEmpty())
-                <div class="bg-white shadow rounded-lg p-8 mt-6">
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Outstanding Payments') }}</h3>
 
                     <table class="min-w-full divide-y divide-gray-200">
@@ -138,9 +138,9 @@
                                     <td class="py-2">{{ optional($enrollment->due_date)->format('Y-m-d') ?? '—' }}</td>
                                     <td class="py-2">
                                         @if ($enrollment->isOverdue())
-                                            <span class="text-red-600 font-medium">{{ __('Overdue') }}</span>
+                                            <x-badge color="red">{{ __('Overdue') }}</x-badge>
                                         @else
-                                            <span class="text-gray-500">{{ __('Upcoming') }}</span>
+                                            <x-badge color="gray">{{ __('Upcoming') }}</x-badge>
                                         @endif
                                     </td>
                                 </tr>
@@ -151,7 +151,7 @@
             @endif
 
             @if ($trainingProgress->isNotEmpty())
-                <div class="bg-white shadow rounded-lg p-8 mt-6">
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Student Training Progress') }}</h3>
 
                     <div class="overflow-x-auto">
@@ -184,13 +184,11 @@
                                         <td class="py-2 pr-4">{{ $enrollment->trainingCompletionPercentage() }}%</td>
                                         <td class="py-2">
                                             @php($label = $enrollment->trainingStatusLabel())
-                                            @if ($label === 'Completed')
-                                                <span class="text-green-600 font-medium">{{ __('Completed') }}</span>
-                                            @elseif ($label === 'Expired')
-                                                <span class="text-red-600 font-medium">{{ __('Expired') }}</span>
-                                            @else
-                                                <span class="text-gray-500">{{ __('Active') }}</span>
-                                            @endif
+                                            <x-badge :color="match ($label) {
+                                                'Completed' => 'blue',
+                                                'Expired' => 'red',
+                                                default => 'green',
+                                            }">{{ __($label) }}</x-badge>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -8,7 +8,7 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <h2 class="text-2xl font-bold mb-1">
                     Classic Driving School & Son Nigeria Limited
                 </h2>
@@ -18,7 +18,7 @@
                 </p>
             </div>
 
-            <div class="bg-white shadow rounded-lg p-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">
                         {{ __('Students') }}
@@ -100,12 +100,19 @@
                                     <td class="px-4 py-2">{{ $student->email }}</td>
                                     <td class="px-4 py-2">{{ $student->phone }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $student->course_type }}</td>
-                                    <td class="px-4 py-2 capitalize">{{ $student->status }}</td>
+                                    <td class="px-4 py-2">
+                                        <x-badge :color="match ($student->status) {
+                                            'active' => 'green',
+                                            'completed' => 'blue',
+                                            'withdrawn' => 'red',
+                                            default => 'gray',
+                                        }" class="capitalize">{{ $student->status }}</x-badge>
+                                    </td>
                                     <td class="px-4 py-2">
                                         @if ($student->courses->contains(fn ($enrolledCourse) => $enrolledCourse->pivot->status === 'locked'))
-                                            <span class="font-semibold text-red-600">{{ __('Locked') }}</span>
+                                            <x-badge color="red">{{ __('Locked') }}</x-badge>
                                         @else
-                                            <span class="text-green-600">{{ __('Clear') }}</span>
+                                            <x-badge color="green">{{ __('Clear') }}</x-badge>
                                         @endif
                                     </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
