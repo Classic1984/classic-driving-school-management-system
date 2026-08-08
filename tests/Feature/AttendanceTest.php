@@ -62,8 +62,8 @@ class AttendanceTest extends TestCase
             'instructor_id' => $instructor->id,
             'date' => '2026-01-15',
             'status' => 'present',
-            'session' => 'morning',
-            'vehicle' => 'Toyota Corolla - ABC123',
+            'type' => 'practical',
+            'duration' => 2,
             'notes' => 'Practiced parallel parking.',
         ];
 
@@ -77,8 +77,8 @@ class AttendanceTest extends TestCase
             'course_id' => $course->id,
             'date' => '2026-01-15',
             'status' => 'present',
-            'session' => 'morning',
-            'vehicle' => 'Toyota Corolla - ABC123',
+            'type' => 'practical',
+            'duration' => 2,
             'logged_by' => $user->id,
         ]);
     }
@@ -134,13 +134,13 @@ class AttendanceTest extends TestCase
             'course_id' => $course->id,
             'date' => now()->toDateString(),
             'status' => 'present',
-            'session' => 'afternoon',
+            'type' => 'classroom',
             'redirect_to_student' => '1',
         ]);
 
         $response->assertSessionHasNoErrors();
         $response->assertRedirect(route('students.show', $student));
-        $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'session' => 'afternoon']);
+        $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'type' => 'classroom']);
     }
 
     public function test_storing_an_attendance_record_requires_valid_data(): void

@@ -36,8 +36,8 @@ class TrainingReportTest extends TestCase
             'instructor_id' => $instructor->id,
             'date' => now()->toDateString(),
             'status' => 'present',
-            'session' => 'morning',
-            'vehicle' => 'Toyota Corolla',
+            'type' => 'practical',
+            'duration' => 2,
         ]);
         Attendance::factory()->create([
             'student_id' => $yesterday->id,
@@ -57,8 +57,7 @@ class TrainingReportTest extends TestCase
         $response->assertOk();
         $response->assertSee('Trained Today');
         $response->assertSee('Mr. Adebayo');
-        $response->assertSee('Toyota Corolla');
-        $response->assertSee('morning');
+        $response->assertSee('practical');
         $response->assertDontSee('Trained Yesterday');
         $response->assertDontSee('Marked Absent');
     }

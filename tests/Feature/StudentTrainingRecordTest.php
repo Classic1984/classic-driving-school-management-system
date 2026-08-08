@@ -33,8 +33,8 @@ class StudentTrainingRecordTest extends TestCase
             'course_id' => $course->id,
             'date' => now(),
             'status' => 'present',
-            'session' => 'morning',
-            'vehicle' => 'Toyota Corolla',
+            'type' => 'practical',
+            'duration' => 2,
             'logged_by' => $user->id,
         ]);
 
@@ -43,8 +43,7 @@ class StudentTrainingRecordTest extends TestCase
         $response->assertOk();
         $response->assertSee('Chidinma Eze');
         $response->assertSee('Defensive Driving Course');
-        $response->assertSee('morning');
-        $response->assertSee('Toyota Corolla');
+        $response->assertSee('practical');
         $response->assertSee('Secretary Ade');
         // No balance, payment, or fee details on this page.
         $response->assertDontSee('Balance');
@@ -64,7 +63,7 @@ class StudentTrainingRecordTest extends TestCase
             'course_id' => $course->id,
             'date' => now()->toDateString(),
             'status' => 'present',
-            'session' => 'evening',
+            'type' => 'classroom',
             'redirect_to_training_record' => '1',
         ]);
 
@@ -73,7 +72,7 @@ class StudentTrainingRecordTest extends TestCase
 
         $this->assertDatabaseHas('attendances', [
             'student_id' => $student->id,
-            'session' => 'evening',
+            'type' => 'classroom',
             'logged_by' => $user->id,
         ]);
     }

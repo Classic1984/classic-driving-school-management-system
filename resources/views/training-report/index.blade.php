@@ -43,9 +43,9 @@
                                 <th class="px-4 py-2">{{ __('Student ID') }}</th>
                                 <th class="px-4 py-2">{{ __('Student Name') }}</th>
                                 <th class="px-4 py-2">{{ __('Training Date') }}</th>
-                                <th class="px-4 py-2">{{ __('Session') }}</th>
+                                <th class="px-4 py-2">{{ __('Type') }}</th>
+                                <th class="px-4 py-2">{{ __('Duration') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructor') }}</th>
-                                <th class="px-4 py-2">{{ __('Vehicle') }}</th>
                                 <th class="px-4 py-2">{{ __('Training Status') }}</th>
                             </tr>
                         </thead>
@@ -59,9 +59,9 @@
                                         </a>
                                     </td>
                                     <td class="px-4 py-2 text-sm">{{ $attendance->date->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-2 text-sm capitalize">{{ $attendance->session ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
+                                    <td class="px-4 py-2 text-sm">{{ $attendance->duration ?? '—' }}</td>
                                     <td class="px-4 py-2 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $attendance->vehicle ?? '—' }}</td>
                                     <td class="px-4 py-2 text-sm">
                                         @php $trainingStatus = $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? null; @endphp
                                         @if ($trainingStatus)

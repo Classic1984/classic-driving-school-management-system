@@ -22,16 +22,16 @@
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->course->name }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
-                        <dt class="text-sm font-medium text-gray-500">{{ __('Session') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $attendance->session ?? '—' }}</dd>
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Type') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $attendance->type ?? '—' }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Instructor') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->instructor?->name ?? '—' }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
-                        <dt class="text-sm font-medium text-gray-500">{{ __('Vehicle') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->vehicle ?? '—' }}</dd>
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Duration') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->duration ?? '—' }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Status') }}</dt>

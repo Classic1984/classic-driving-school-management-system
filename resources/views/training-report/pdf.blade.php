@@ -22,9 +22,9 @@
                 <th>Student ID</th>
                 <th>Student Name</th>
                 <th>Training Date</th>
-                <th>Session</th>
+                <th>Type</th>
+                <th>Duration</th>
                 <th>Instructor</th>
-                <th>Vehicle</th>
                 <th>Training Status</th>
             </tr>
         </thead>
@@ -34,9 +34,9 @@
                     <td>{{ $attendance->student->student_id_number }}</td>
                     <td>{{ $attendance->student->name }}</td>
                     <td>{{ $attendance->date->format('Y-m-d') }}</td>
-                    <td>{{ $attendance->session ? ucfirst($attendance->session) : '—' }}</td>
+                    <td>{{ $attendance->type ? ucfirst($attendance->type) : '—' }}</td>
+                    <td>{{ $attendance->duration ?? '—' }}</td>
                     <td>{{ $attendance->instructor?->name ?? '—' }}</td>
-                    <td>{{ $attendance->vehicle ?? '—' }}</td>
                     <td>{{ $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? '—' }}</td>
                 </tr>
             @empty
