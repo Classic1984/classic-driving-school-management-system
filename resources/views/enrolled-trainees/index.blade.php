@@ -59,7 +59,7 @@
                                     <td class="px-4 py-2 text-sm">{{ $lastLogin?->updated_at->format('Y-m-d H:i') ?? '—' }}</td>
                                     <td class="px-4 py-2 text-sm">{{ $lastLogin?->loggedBy?->name ?? '—' }}</td>
                                     <td class="px-4 py-2 text-right whitespace-nowrap">
-                                        <a href="{{ route('students.training-record', $trainee) }}" class="text-sm text-amber-600 hover:underline">{{ __('Log Training') }}</a>
+                                        <a href="{{ route('students.training-record', $trainee) }}" class="text-sm text-amber-600 hover:underline">{{ __('Training Log') }}</a>
                                     </td>
                                 </tr>
                             @empty

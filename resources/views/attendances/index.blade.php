@@ -33,9 +33,9 @@
                                 <th class="px-4 py-2">{{ __('Date') }}</th>
                                 <th class="px-4 py-2">{{ __('Student') }}</th>
                                 <th class="px-4 py-2">{{ __('Course') }}</th>
-                                <th class="px-4 py-2">{{ __('Session') }}</th>
+                                <th class="px-4 py-2">{{ __('Type') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructor') }}</th>
-                                <th class="px-4 py-2">{{ __('Vehicle') }}</th>
+                                <th class="px-4 py-2">{{ __('Duration') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
@@ -46,9 +46,9 @@
                                     <td class="px-4 py-2">{{ $attendance->date->format('Y-m-d') }}</td>
                                     <td class="px-4 py-2">{{ $attendance->student->name }}</td>
                                     <td class="px-4 py-2">{{ $attendance->course->name }}</td>
-                                    <td class="px-4 py-2 capitalize">{{ $attendance->session ?? '—' }}</td>
+                                    <td class="px-4 py-2 capitalize">{{ $attendance->type ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                    <td class="px-4 py-2">{{ $attendance->vehicle ?? '—' }}</td>
+                                    <td class="px-4 py-2">{{ $attendance->duration ?? '—' }}</td>
                                     <td class="px-4 py-2">
                                         <x-badge :color="match ($attendance->status) {
                                             'present' => 'green',

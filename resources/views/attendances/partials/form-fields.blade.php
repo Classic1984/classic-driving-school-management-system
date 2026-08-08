@@ -40,20 +40,20 @@
 </div>
 
 <div>
-    <x-input-label for="session" :value="__('Session')" />
-    <select id="session" name="session" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+    <x-input-label for="type" :value="__('Type')" />
+    <select id="type" name="type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
         <option value="">{{ __('Not specified') }}</option>
-        @foreach (['morning' => 'Morning', 'afternoon' => 'Afternoon', 'evening' => 'Evening'] as $value => $label)
-            <option value="{{ $value }}" @selected(old('session', $attendance?->session) === $value)>{{ __($label) }}</option>
+        @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
+            <option value="{{ $value }}" @selected(old('type', $attendance?->type) === $value)>{{ __($label) }}</option>
         @endforeach
     </select>
-    <x-input-error class="mt-2" :messages="$errors->get('session')" />
+    <x-input-error class="mt-2" :messages="$errors->get('type')" />
 </div>
 
 <div>
-    <x-input-label for="vehicle" :value="__('Vehicle')" />
-    <x-text-input id="vehicle" name="vehicle" type="text" class="mt-1 block w-full" :value="old('vehicle', $attendance?->vehicle)" />
-    <x-input-error class="mt-2" :messages="$errors->get('vehicle')" />
+    <x-input-label for="duration" :value="__('Duration')" />
+    <x-text-input id="duration" name="duration" type="number" min="1" class="mt-1 block w-full" :value="old('duration', $attendance?->duration ?? 1)" />
+    <x-input-error class="mt-2" :messages="$errors->get('duration')" />
 </div>
 
 <div>

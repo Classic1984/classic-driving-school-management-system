@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Training Record') }}
+            {{ __('Training Log for :name', ['name' => $student->name]) }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 @if (session('status') === 'training-logged')
                     <p class="text-sm font-medium text-green-600">{{ __('Training logged successfully.') }}</p>
@@ -41,33 +41,35 @@
                 </dl>
 
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Training Login History') }}</h3>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Training Log for :name', ['name' => $student->name]) }}</h3>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="px-2 py-1">{{ __('Date') }}</th>
-                                    <th class="px-2 py-1">{{ __('Course') }}</th>
-                                    <th class="px-2 py-1">{{ __('Session') }}</th>
+                                    <th class="px-2 py-1">{{ __('S/N') }}</th>
+                                    <th class="px-2 py-1">{{ __('Date of Training') }}</th>
+                                    <th class="px-2 py-1">{{ __('Type') }}</th>
+                                    <th class="px-2 py-1">{{ __('Duration') }}</th>
                                     <th class="px-2 py-1">{{ __('Instructor') }}</th>
-                                    <th class="px-2 py-1">{{ __('Vehicle') }}</th>
+                                    <th class="px-2 py-1">{{ __('Date Logged') }}</th>
                                     <th class="px-2 py-1">{{ __('Logged By') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                @forelse ($student->attendances as $attendance)
+                                @forelse ($student->attendances as $index => $attendance)
                                     <tr>
+                                        <td class="px-2 py-1 text-sm">{{ $index + 1 }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->date->format('Y-m-d') }}</td>
-                                        <td class="px-2 py-1 text-sm">{{ $attendance->course->name }}</td>
-                                        <td class="px-2 py-1 text-sm capitalize">{{ $attendance->session ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $attendance->duration ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                        <td class="px-2 py-1 text-sm">{{ $attendance->vehicle ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $attendance->created_at->format('Y-m-d H:i') }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->loggedBy?->name ?? '—' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
+                                        <td colspan="7" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -93,10 +95,10 @@
                             </div>
 
                             <div>
-                                <x-input-label for="record_session" :value="__('Session')" />
-                                <select id="record_session" name="session" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                                <x-input-label for="record_type" :value="__('Type')" />
+                                <select id="record_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                                     <option value="">{{ __('Not specified') }}</option>
-                                    @foreach (['morning' => 'Morning', 'afternoon' => 'Afternoon', 'evening' => 'Evening'] as $value => $label)
+                                    @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
                                         <option value="{{ $value }}">{{ __($label) }}</option>
                                     @endforeach
                                 </select>
@@ -113,12 +115,12 @@
                             </div>
 
                             <div>
-                                <x-input-label for="record_vehicle" :value="__('Vehicle')" />
-                                <x-text-input id="record_vehicle" name="vehicle" type="text" class="mt-1 block w-full" />
+                                <x-input-label for="record_duration" :value="__('Duration')" />
+                                <x-text-input id="record_duration" name="duration" type="number" min="1" class="mt-1 block w-full" value="1" />
                             </div>
 
                             <div>
-                                <x-primary-button type="submit">{{ __('Log Training') }}</x-primary-button>
+                                <x-primary-button type="submit">{{ __('Add Training Log') }}</x-primary-button>
                             </div>
                         </form>
                     @else

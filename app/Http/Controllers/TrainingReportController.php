@@ -53,7 +53,7 @@ class TrainingReportController extends Controller
         return response()->streamDownload(function () use ($attendances, $enrollmentStatuses) {
             $handle = fopen('php://output', 'w');
 
-            fputcsv($handle, ['Student ID', 'Student Name', 'Training Date', 'Session', 'Instructor', 'Vehicle', 'Training Status']);
+            fputcsv($handle, ['Student ID', 'Student Name', 'Training Date', 'Type', 'Duration', 'Instructor', 'Training Status']);
 
             foreach ($attendances as $attendance) {
                 fputcsv($handle, $this->row($attendance, $enrollmentStatuses));
@@ -135,9 +135,9 @@ class TrainingReportController extends Controller
             $attendance->student->student_id_number,
             $attendance->student->name,
             $attendance->date->format('Y-m-d'),
-            $attendance->session ? ucfirst($attendance->session) : '',
+            $attendance->type ? ucfirst($attendance->type) : '',
+            $attendance->duration ?? '',
             $attendance->instructor?->name ?? '',
-            $attendance->vehicle ?? '',
             $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? '',
         ];
     }
