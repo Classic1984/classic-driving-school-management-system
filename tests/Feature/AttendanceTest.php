@@ -79,6 +79,7 @@ class AttendanceTest extends TestCase
             'status' => 'present',
             'session' => 'morning',
             'vehicle' => 'Toyota Corolla - ABC123',
+            'logged_by' => $user->id,
         ]);
     }
 

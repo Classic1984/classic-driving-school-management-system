@@ -24,7 +24,7 @@
                     <x-nav-link :href="route('instructors.index')" :active="request()->routeIs('instructors.*')">
                         {{ __('Instructors') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
+                    <x-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
                         {{ __('Student Login Training') }}
                     </x-nav-link>
                     <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
@@ -102,7 +102,7 @@
             <x-responsive-nav-link :href="route('instructors.index')" :active="request()->routeIs('instructors.*')">
                 {{ __('Instructors') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')">
+            <x-responsive-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
                 {{ __('Student Login Training') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
