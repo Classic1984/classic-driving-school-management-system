@@ -36,6 +36,8 @@ class UpdateAttendanceRequest extends FormRequest
             'instructor_id' => ['nullable', 'integer', 'exists:instructors,id'],
             'date' => ['required', 'date'],
             'status' => ['required', 'in:present,absent,late,excused'],
+            'session' => ['nullable', 'in:morning,afternoon,evening'],
+            'vehicle' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
         ];
     }

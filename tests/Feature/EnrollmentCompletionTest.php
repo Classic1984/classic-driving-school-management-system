@@ -252,7 +252,7 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertNotSame('completed', $enrollment->fresh()->status);
     }
 
-    public function test_issuing_the_final_ticket_auto_completes_the_enrollment(): void
+    public function test_logging_the_final_training_day_auto_completes_the_enrollment(): void
     {
         $user = User::factory()->create();
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
@@ -274,10 +274,11 @@ class EnrollmentCompletionTest extends TestCase
             ]);
         }
 
-        $this->actingAs($user)->post('/tickets', [
+        $this->actingAs($user)->post('/attendances', [
             'student_id' => $student->id,
             'course_id' => $course->id,
             'date' => now()->addDays(5)->toDateString(),
+            'status' => 'present',
         ])->assertSessionHasNoErrors();
 
         $this->assertSame('completed', $enrollment->fresh()->status);

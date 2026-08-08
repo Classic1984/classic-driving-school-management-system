@@ -6,6 +6,7 @@ use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\Course;
 use App\Models\DiscountAuditLog;
+use App\Models\Instructor;
 use App\Models\Payment;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
@@ -170,9 +171,10 @@ class StudentController extends Controller
      */
     public function show(Student $student): View
     {
-        $student->load(['courses', 'payments']);
+        $student->load(['courses', 'payments', 'attendances' => fn ($query) => $query->with('instructor')->latest('date')]);
+        $instructors = Instructor::orderBy('name')->get();
 
-        return view('students.show', compact('student'));
+        return view('students.show', compact('student', 'instructors'));
     }
 
     /**

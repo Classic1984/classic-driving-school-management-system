@@ -54,6 +54,7 @@ class AttendanceTest extends TestCase
         $student = Student::factory()->create();
         $course = Course::factory()->create();
         $instructor = Instructor::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
 
         $data = [
             'student_id' => $student->id,
@@ -61,6 +62,8 @@ class AttendanceTest extends TestCase
             'instructor_id' => $instructor->id,
             'date' => '2026-01-15',
             'status' => 'present',
+            'session' => 'morning',
+            'vehicle' => 'Toyota Corolla - ABC123',
             'notes' => 'Practiced parallel parking.',
         ];
 
@@ -74,7 +77,69 @@ class AttendanceTest extends TestCase
             'course_id' => $course->id,
             'date' => '2026-01-15',
             'status' => 'present',
+            'session' => 'morning',
+            'vehicle' => 'Toyota Corolla - ABC123',
         ]);
+    }
+
+    public function test_storing_an_attendance_record_requires_the_student_to_be_enrolled_in_the_course(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response->assertSessionHasErrors('student_id');
+        $this->assertDatabaseCount('attendances', 0);
+    }
+
+    public function test_storing_an_attendance_record_is_rejected_for_a_locked_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 100]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response->assertSessionHasErrors('student_id');
+        $this->assertDatabaseCount('attendances', 0);
+    }
+
+    public function test_logging_training_from_the_student_profile_redirects_back_to_the_profile(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+            'session' => 'afternoon',
+            'redirect_to_student' => '1',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('students.show', $student));
+        $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'session' => 'afternoon']);
     }
 
     public function test_storing_an_attendance_record_requires_valid_data(): void

@@ -11,7 +11,6 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -42,7 +41,6 @@ Route::middleware('auth')->group(function () {
         Route::delete('students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
-        Route::delete('tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
         Route::delete('certificates/{certificate}', [CertificateController::class, 'destroy'])->name('certificates.destroy');
     });
 
@@ -64,7 +62,6 @@ Route::middleware('auth')->group(function () {
     // above: "payments/export" would otherwise be swallowed by "payments/{payment}".
     Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
     Route::resource('payments', PaymentController::class)->except(['destroy']);
-    Route::resource('tickets', TicketController::class)->except(['destroy']);
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });

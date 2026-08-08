@@ -66,9 +66,9 @@ class Student extends Model
         // student_id_number is deliberately not fillable: it's a permanent,
         // system-assigned identifier (not something a form should be able to
         // set or change), derived from the auto-increment id so it's unique
-        // without a collision-check loop. Tickets and certificates embed it
-        // in their own numbers so every document for a student is traceable
-        // back to the same id.
+        // without a collision-check loop. Certificates embed it in their own
+        // numbers so every document for a student is traceable back to the
+        // same id.
         static::created(function (Student $student) {
             $student->forceFill([
                 'student_id_number' => 'CDS-'.str_pad((string) $student->id, 5, '0', STR_PAD_LEFT),
