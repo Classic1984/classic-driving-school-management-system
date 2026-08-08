@@ -11,6 +11,7 @@ use App\Notifications\EnrollmentLockedNotification;
 use App\Notifications\GracePeriodEndingSoonNotification;
 use App\Notifications\PaymentReminderNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -99,9 +100,11 @@ class EnrollmentNotificationTest extends TestCase
     public function test_student_is_reminded_three_days_before_their_payment_is_due(): void
     {
         Notification::fake();
+        config(['services.termii.api_key' => 'fake-key']);
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
 
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
-        $student = Student::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
         $course->students()->attach($student->id, [
             'enrolled_at' => now()->toDateString(),
             'due_date' => now()->addDays(3)->toDateString(),
@@ -113,14 +116,17 @@ class EnrollmentNotificationTest extends TestCase
         Notification::assertSentTo($student, PaymentReminderNotification::class, function ($notification) {
             return $notification->stage === 'upcoming';
         });
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567' && str_contains($request['sms'], 'is due on'));
     }
 
     public function test_student_is_reminded_on_the_day_their_payment_is_due(): void
     {
         Notification::fake();
+        config(['services.termii.api_key' => 'fake-key']);
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
 
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
-        $student = Student::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
         $course->students()->attach($student->id, [
             'enrolled_at' => now()->subDays(4)->toDateString(),
             'due_date' => now()->toDateString(),
@@ -132,6 +138,7 @@ class EnrollmentNotificationTest extends TestCase
         Notification::assertSentTo($student, PaymentReminderNotification::class, function ($notification) {
             return $notification->stage === 'due_today';
         });
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567' && str_contains($request['sms'], 'is due TODAY'));
     }
 
     public function test_student_is_not_reminded_once_the_balance_is_fully_paid(): void
