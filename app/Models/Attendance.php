@@ -23,6 +23,8 @@ class Attendance extends Model
         'instructor_id',
         'date',
         'status',
+        'session',
+        'vehicle',
         'notes',
     ];
 

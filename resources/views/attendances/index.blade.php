@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Attendance') }}
+            {{ __('Student Login Training') }}
         </h2>
     </x-slot>
 
@@ -10,20 +10,20 @@
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">
-                        {{ __('Attendance Records') }}
+                        {{ __('Training Login Records') }}
                     </h3>
 
                     <a href="{{ route('attendances.create') }}">
-                        <x-primary-button type="button">{{ __('Record Attendance') }}</x-primary-button>
+                        <x-primary-button type="button">{{ __('Log Training') }}</x-primary-button>
                     </a>
                 </div>
 
-                @if (session('status') === 'attendance-created')
-                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Attendance recorded successfully.') }}</p>
+                @if (session('status') === 'attendance-created' || session('status') === 'training-logged')
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Training logged successfully.') }}</p>
                 @elseif (session('status') === 'attendance-updated')
-                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Attendance updated successfully.') }}</p>
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Training login updated successfully.') }}</p>
                 @elseif (session('status') === 'attendance-deleted')
-                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Attendance record removed successfully.') }}</p>
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Training login removed successfully.') }}</p>
                 @endif
 
                 <div class="overflow-x-auto">
@@ -33,7 +33,9 @@
                                 <th class="px-4 py-2">{{ __('Date') }}</th>
                                 <th class="px-4 py-2">{{ __('Student') }}</th>
                                 <th class="px-4 py-2">{{ __('Course') }}</th>
+                                <th class="px-4 py-2">{{ __('Session') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructor') }}</th>
+                                <th class="px-4 py-2">{{ __('Vehicle') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
@@ -44,13 +46,15 @@
                                     <td class="px-4 py-2">{{ $attendance->date->format('Y-m-d') }}</td>
                                     <td class="px-4 py-2">{{ $attendance->student->name }}</td>
                                     <td class="px-4 py-2">{{ $attendance->course->name }}</td>
+                                    <td class="px-4 py-2 capitalize">{{ $attendance->session ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->instructor?->name ?? '—' }}</td>
+                                    <td class="px-4 py-2">{{ $attendance->vehicle ?? '—' }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $attendance->status }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('attendances.show', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                         @if (auth()->user()->isAdmin())
-                                            <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this attendance record?') }}');">
+                                            <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this training login?') }}');">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
@@ -60,8 +64,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
-                                        {{ __('No attendance records yet.') }}
+                                    <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">
+                                        {{ __('No training logins yet.') }}
                                     </td>
                                 </tr>
                             @endforelse

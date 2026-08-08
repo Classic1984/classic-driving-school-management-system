@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Attendance Details') }}
+            {{ __('Training Login Details') }}
         </h2>
     </x-slot>
 
@@ -22,8 +22,16 @@
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->course->name }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Session') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $attendance->session ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Instructor') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->instructor?->name ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Vehicle') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->vehicle ?? '—' }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Status') }}</dt>

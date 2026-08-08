@@ -35,8 +35,25 @@
 
 <div>
     <x-input-label for="date" :value="__('Date')" />
-    <x-text-input id="date" name="date" type="date" class="mt-1 block w-full" :value="old('date', optional($attendance?->date)->format('Y-m-d'))" required />
+    <x-text-input id="date" name="date" type="date" class="mt-1 block w-full" :value="old('date', optional($attendance?->date)->format('Y-m-d') ?? now()->format('Y-m-d'))" required />
     <x-input-error class="mt-2" :messages="$errors->get('date')" />
+</div>
+
+<div>
+    <x-input-label for="session" :value="__('Session')" />
+    <select id="session" name="session" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Not specified') }}</option>
+        @foreach (['morning' => 'Morning', 'afternoon' => 'Afternoon', 'evening' => 'Evening'] as $value => $label)
+            <option value="{{ $value }}" @selected(old('session', $attendance?->session) === $value)>{{ __($label) }}</option>
+        @endforeach
+    </select>
+    <x-input-error class="mt-2" :messages="$errors->get('session')" />
+</div>
+
+<div>
+    <x-input-label for="vehicle" :value="__('Vehicle')" />
+    <x-text-input id="vehicle" name="vehicle" type="text" class="mt-1 block w-full" :value="old('vehicle', $attendance?->vehicle)" />
+    <x-input-error class="mt-2" :messages="$errors->get('vehicle')" />
 </div>
 
 <div>

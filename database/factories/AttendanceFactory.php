@@ -25,6 +25,8 @@ class AttendanceFactory extends Factory
             'instructor_id' => Instructor::factory(),
             'date' => fake()->date(),
             'status' => fake()->randomElement(['present', 'absent', 'late', 'excused']),
+            'session' => fake()->optional()->randomElement(['morning', 'afternoon', 'evening']),
+            'vehicle' => fake()->optional()->word(),
             'notes' => fake()->optional()->sentence(),
         ];
     }

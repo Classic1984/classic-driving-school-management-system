@@ -187,7 +187,7 @@ class Enrollment extends Pivot
     /**
      * Recompute and persist this enrollment's locked/active status based on
      * the current payment and training-period rules. Runs immediately after
-     * a payment is recorded or a ticket is issued, and daily via a
+     * a payment is recorded or a training login is saved, and daily via a
      * scheduled command to catch due-dates and the training-period deadline
      * passing on their own.
      */
