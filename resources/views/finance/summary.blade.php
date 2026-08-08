@@ -25,6 +25,59 @@
                 </div>
             </div>
 
+            @php
+                $chartMax = max(1, $months->max('income'), $months->max('expenses'));
+                $chartHeight = 200;
+                $groupWidth = 70;
+                $barWidth = 22;
+                $chartWidth = $groupWidth * 12;
+            @endphp
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">{{ __('Revenue Trend') }} — {{ $year }}</h3>
+                    <div class="flex items-center gap-4 text-xs text-gray-600">
+                        <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-amber-500 rounded-sm"></span> {{ __('Income') }}</span>
+                        <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-gray-900 rounded-sm"></span> {{ __('Expenses') }}</span>
+                    </div>
+                </div>
+
+                <svg viewBox="0 0 {{ $chartWidth }} {{ $chartHeight + 30 }}" class="w-full" style="max-height: 260px;">
+                    @foreach ($months as $index => $month)
+                        @php
+                            $groupX = $index * $groupWidth;
+                            $incomeHeight = round(($month['income'] / $chartMax) * $chartHeight);
+                            $expensesHeight = round(($month['expenses'] / $chartMax) * $chartHeight);
+                        @endphp
+                        <rect
+                            x="{{ $groupX + ($groupWidth - $barWidth) / 2 - $barWidth / 2 - 2 }}"
+                            y="{{ $chartHeight - $incomeHeight }}"
+                            width="{{ $barWidth / 2 }}"
+                            height="{{ $incomeHeight }}"
+                            fill="#f59e0b"
+                        >
+                            <title>{{ $month['label'] }} Income: ₦{{ number_format($month['income'], 2) }}</title>
+                        </rect>
+                        <rect
+                            x="{{ $groupX + ($groupWidth - $barWidth) / 2 + $barWidth / 2 + 2 }}"
+                            y="{{ $chartHeight - $expensesHeight }}"
+                            width="{{ $barWidth / 2 }}"
+                            height="{{ $expensesHeight }}"
+                            fill="#111827"
+                        >
+                            <title>{{ $month['label'] }} Expenses: ₦{{ number_format($month['expenses'], 2) }}</title>
+                        </rect>
+                        <text
+                            x="{{ $groupX + $groupWidth / 2 }}"
+                            y="{{ $chartHeight + 18 }}"
+                            text-anchor="middle"
+                            font-size="10"
+                            fill="#6b7280"
+                        >{{ substr($month['label'], 0, 3) }}</text>
+                    @endforeach
+                    <line x1="0" y1="{{ $chartHeight }}" x2="{{ $chartWidth }}" y2="{{ $chartHeight }}" stroke="#d1d5db" stroke-width="1" />
+                </svg>
+            </div>
+
             <div class="bg-white shadow rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">

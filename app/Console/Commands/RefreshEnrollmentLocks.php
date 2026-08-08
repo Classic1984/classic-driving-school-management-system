@@ -6,6 +6,7 @@ use App\Models\Enrollment;
 use App\Models\User;
 use App\Notifications\GracePeriodEndingSoonNotification;
 use App\Notifications\PaymentReminderNotification;
+use App\Services\TermiiSmsService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Notification;
 
@@ -25,6 +26,11 @@ class RefreshEnrollmentLocks extends Command
      */
     protected $description = 'Lock or unlock student course enrollments based on overdue balances and the training-period deadline, and send payment reminders';
 
+    public function __construct(protected TermiiSmsService $sms)
+    {
+        parent::__construct();
+    }
+
     /**
      * Execute the console command.
      */
@@ -40,8 +46,10 @@ class RefreshEnrollmentLocks extends Command
 
                 if ($enrollment->due_date?->isSameDay(now()->addDays(3))) {
                     $enrollment->student->notify(new PaymentReminderNotification($enrollment, 'upcoming'));
+                    $this->sms->send($enrollment->student->phone, $this->smsText($enrollment, 'upcoming'));
                 } elseif ($enrollment->due_date?->isToday()) {
                     $enrollment->student->notify(new PaymentReminderNotification($enrollment, 'due_today'));
+                    $this->sms->send($enrollment->student->phone, $this->smsText($enrollment, 'due_today'));
                 }
             }
 
@@ -51,5 +59,16 @@ class RefreshEnrollmentLocks extends Command
         $this->info("Refreshed {$enrollments->count()} enrollment(s).");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * @param  'upcoming'|'due_today'  $stage
+     */
+    protected function smsText(Enrollment $enrollment, string $stage): string
+    {
+        $balance = number_format($enrollment->balance(), 2);
+        $when = $stage === 'due_today' ? 'is due TODAY' : 'is due on '.$enrollment->due_date->format('Y-m-d');
+
+        return "Classic Driving School: Your payment for {$enrollment->course->name} {$when}. Balance: NGN{$balance}. Please pay to avoid your training being locked.";
     }
 }

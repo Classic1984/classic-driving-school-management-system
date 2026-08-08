@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('app:refresh-enrollment-locks')->daily();
 Schedule::command('backup:database')->dailyAt('02:00');
+Schedule::command('app:send-theory-class-reminder')->weeklyOn(4, '08:00');
