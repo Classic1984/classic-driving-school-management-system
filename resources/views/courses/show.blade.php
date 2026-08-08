@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg space-y-4">
+            <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 <dl class="divide-y divide-gray-100">
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Name') }}</dt>
@@ -35,7 +35,9 @@
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Status') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $course->status }}</dd>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            <x-badge :color="$course->status === 'active' ? 'green' : 'gray'" class="capitalize">{{ $course->status }}</x-badge>
+                        </dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Instructors') }}</dt>
@@ -74,12 +76,12 @@
                                         <td class="px-2 py-1 text-sm">{{ $enrolledStudent->name }}</td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($enrolledStudent->pivot->balance(), 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ optional($enrolledStudent->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
-                                        <td class="px-2 py-1 text-sm font-semibold capitalize
-                                            @if ($enrolledStudent->pivot->status === 'locked') text-red-600
-                                            @elseif ($enrolledStudent->pivot->status === 'completed') text-blue-600
-                                            @else text-green-600
-                                            @endif">
-                                            {{ $enrolledStudent->pivot->status }}
+                                        <td class="px-2 py-1 text-sm">
+                                            <x-badge :color="match ($enrolledStudent->pivot->status) {
+                                                'locked' => 'red',
+                                                'completed' => 'blue',
+                                                default => 'green',
+                                            }" class="capitalize">{{ $enrolledStudent->pivot->status }}</x-badge>
                                         </td>
                                         <td class="px-2 py-1 text-sm">
                                             @if ($enrolledStudent->pivot->status !== 'completed' && $enrolledStudent->pivot->balance() <= 0)
