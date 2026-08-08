@@ -38,7 +38,10 @@ class AttendanceController extends Controller
      */
     public function store(StoreAttendanceRequest $request): RedirectResponse
     {
-        $attendance = Attendance::create($request->validated());
+        $attendance = Attendance::create([
+            ...$request->validated(),
+            'logged_by' => $request->user()->id,
+        ]);
 
         // Recompute immediately in case this is the student's last training
         // day, rather than waiting for the next payment or the daily
@@ -47,6 +50,10 @@ class AttendanceController extends Controller
             ->where('course_id', $attendance->course_id)
             ->first()
             ?->refreshStatus();
+
+        if ($request->boolean('redirect_to_training_record')) {
+            return Redirect::route('students.training-record', $attendance->student_id)->with('status', 'training-logged');
+        }
 
         if ($request->boolean('redirect_to_student')) {
             return Redirect::route('students.show', $attendance->student_id)->with('status', 'training-logged');

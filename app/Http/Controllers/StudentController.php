@@ -178,6 +178,19 @@ class StudentController extends Controller
     }
 
     /**
+     * A training-only view of this student for the day-to-day Student Login
+     * Training workflow: their login history and the quick-log form,
+     * without any payment/balance/fee details.
+     */
+    public function trainingRecord(Student $student): View
+    {
+        $student->load(['courses', 'attendances' => fn ($query) => $query->with(['instructor', 'loggedBy'])->latest('date')]);
+        $instructors = Instructor::orderBy('name')->get();
+
+        return view('students.training-record', compact('student', 'instructors'));
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Student $student): View

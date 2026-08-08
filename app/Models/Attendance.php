@@ -26,6 +26,7 @@ class Attendance extends Model
         'session',
         'vehicle',
         'notes',
+        'logged_by',
     ];
 
     /**
@@ -53,5 +54,15 @@ class Attendance extends Model
     public function instructor(): BelongsTo
     {
         return $this->belongsTo(Instructor::class);
+    }
+
+    /**
+     * The staff member who saved this training login. Deliberately not
+     * mass-assignable: always set server-side from the authenticated user,
+     * never from submitted form data.
+     */
+    public function loggedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'logged_by');
     }
 }

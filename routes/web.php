@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
@@ -55,6 +56,8 @@ Route::middleware('auth')->group(function () {
         Route::get('finance/export-pdf', [FinanceController::class, 'exportPdf'])->name('finance.export-pdf');
     });
 
+    Route::get('enrolled-trainees', [EnrolledTraineeController::class, 'index'])->name('enrolled-trainees.index');
+    Route::get('students/{student}/training-record', [StudentController::class, 'trainingRecord'])->name('students.training-record');
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
