@@ -37,21 +37,22 @@ class FinanceSummaryTest extends TestCase
         $response->assertSeeInOrder(['March', '800.00', '250.00', '550.00']);
     }
 
-    public function test_summary_shows_todays_automatically_deducted_balance(): void
+    public function test_summary_shows_the_overall_running_balance(): void
     {
         $director = User::factory()->director()->create();
 
         Payment::factory()->create(['amount' => 1000, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->subYear()->toDateString()]);
         Expense::factory()->create(['amount' => 400, 'expense_date' => now()->toDateString(), 'category' => 'fuel']);
-        // Not counted: paid yesterday, expensed yesterday.
-        Payment::factory()->create(['amount' => 999, 'status' => 'paid', 'payment_date' => now()->subDay()->toDateString()]);
-        Expense::factory()->create(['amount' => 999, 'expense_date' => now()->subDay()->toDateString(), 'category' => 'fuel']);
+        Expense::factory()->create(['amount' => 100, 'expense_date' => now()->subYear()->toDateString(), 'category' => 'fuel']);
+        // Not counted: a pending (unpaid) payment.
+        Payment::factory()->create(['amount' => 999, 'status' => 'pending', 'payment_date' => now()->toDateString()]);
 
         $response = $this->actingAs($director)->get('/finance');
 
         $response->assertOk();
-        // Today: income 1000, expenses 400, balance 600.
-        $response->assertSeeInOrder(["Today's Balance", '1,000.00', '400.00', '600.00']);
+        // Overall, across all time: income 1500, expenses 500, balance 1000.
+        $response->assertSeeInOrder(['Total Balance', '1,500.00', '500.00', '1,000.00']);
     }
 
     public function test_summary_shows_a_revenue_trend_chart(): void

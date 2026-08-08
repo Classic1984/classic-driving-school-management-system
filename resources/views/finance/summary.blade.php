@@ -8,19 +8,19 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mb-6">
-                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">{{ __("Today's Balance") }}</h3>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">{{ __('Total Balance') }}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div class="bg-black text-amber-400 rounded-lg p-4">
-                        <p class="text-xs uppercase tracking-wider">{{ __('Income') }}</p>
-                        <p class="text-2xl font-bold mt-1">₦{{ number_format($today['income'], 2) }}</p>
+                        <p class="text-xs uppercase tracking-wider">{{ __('Total Income') }}</p>
+                        <p class="text-2xl font-bold mt-1">₦{{ number_format($overall['income'], 2) }}</p>
                     </div>
                     <div class="bg-black text-amber-400 rounded-lg p-4">
-                        <p class="text-xs uppercase tracking-wider">{{ __('Expenses') }}</p>
-                        <p class="text-2xl font-bold mt-1">₦{{ number_format($today['expenses'], 2) }}</p>
+                        <p class="text-xs uppercase tracking-wider">{{ __('Total Expenses') }}</p>
+                        <p class="text-2xl font-bold mt-1">₦{{ number_format($overall['expenses'], 2) }}</p>
                     </div>
                     <div class="bg-amber-500 text-black rounded-lg p-4">
                         <p class="text-xs uppercase tracking-wider">{{ __('Balance') }}</p>
-                        <p class="text-2xl font-bold mt-1">₦{{ number_format($today['balance'], 2) }}</p>
+                        <p class="text-2xl font-bold mt-1">₦{{ number_format($overall['balance'], 2) }}</p>
                     </div>
                 </div>
             </div>
