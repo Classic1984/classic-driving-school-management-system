@@ -51,6 +51,20 @@ class StudentTrainingRecordTest extends TestCase
         $response->assertDontSee('40,000');
     }
 
+    public function test_the_training_log_forms_course_and_type_fields_default_automatically(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['name' => 'Weekend Program']);
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}/training-record");
+
+        $response->assertOk();
+        $response->assertSee("<option value=\"{$course->id}\" selected>Weekend Program</option>", false);
+        $response->assertSee('<option value="practical" selected>Practical</option>', false);
+    }
+
     public function test_logging_training_from_the_record_page_records_who_logged_it_and_redirects_back(): void
     {
         $user = User::factory()->create();
