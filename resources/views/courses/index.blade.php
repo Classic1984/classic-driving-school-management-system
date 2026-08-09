@@ -34,6 +34,7 @@
                             <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <th class="px-4 py-2">{{ __('Name') }}</th>
                                 <th class="px-4 py-2">{{ __('Type') }}</th>
+                                <th class="px-4 py-2">{{ __('Schedule') }}</th>
                                 <th class="px-4 py-2">{{ __('Duration') }}</th>
                                 <th class="px-4 py-2">{{ __('Fee') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructors') }}</th>
@@ -47,6 +48,9 @@
                                 <tr>
                                     <td class="px-4 py-2">{{ $course->name }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $course->course_type }}</td>
+                                    <td class="px-4 py-2">
+                                        <x-badge :color="$course->isWeekend() ? 'blue' : 'gray'" class="capitalize">{{ $course->schedule }}</x-badge>
+                                    </td>
                                     <td class="px-4 py-2">{{ $course->duration_hours }}h</td>
                                     <td class="px-4 py-2">{{ number_format($course->fee, 2) }}</td>
                                     <td class="px-4 py-2">{{ $course->instructors->pluck('name')->join(', ') ?: '—' }}</td>
@@ -70,7 +74,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No courses created yet.') }}
                                     </td>
                                 </tr>

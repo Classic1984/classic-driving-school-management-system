@@ -104,6 +104,7 @@ class RolePermissionTest extends TestCase
             'name' => $course->name,
             'description' => $course->description,
             'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
             'duration_hours' => $course->duration_hours,
             'duration_weeks' => $course->duration_weeks,
             'fee' => $course->fee,

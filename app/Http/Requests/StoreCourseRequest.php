@@ -26,6 +26,7 @@ class StoreCourseRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'course_type' => ['required', 'in:manual,automatic,both'],
+            'schedule' => ['required', 'in:weekday,weekend'],
             'duration_hours' => ['required', 'integer', 'min:1'],
             'duration_weeks' => ['required', 'integer', 'min:1'],
             'fee' => ['required', 'numeric', 'min:0'],

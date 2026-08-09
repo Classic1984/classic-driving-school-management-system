@@ -55,6 +55,7 @@ class CourseTest extends TestCase
             'name' => 'Beginner Driving',
             'description' => 'An introductory course.',
             'course_type' => 'manual',
+            'schedule' => 'weekday',
             'duration_hours' => 20,
             'duration_weeks' => 4,
             'fee' => 199.99,
@@ -80,6 +81,7 @@ class CourseTest extends TestCase
         $response = $this->actingAs($user)->post('/courses', [
             'name' => '',
             'course_type' => 'invalid-type',
+            'schedule' => 'invalid-schedule',
             'duration_hours' => 0,
             'duration_weeks' => 0,
             'fee' => -10,
@@ -87,7 +89,7 @@ class CourseTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors([
-            'name', 'course_type', 'duration_hours', 'duration_weeks', 'fee', 'status',
+            'name', 'course_type', 'schedule', 'duration_hours', 'duration_weeks', 'fee', 'status',
         ]);
 
         $this->assertDatabaseCount('courses', 0);
@@ -116,6 +118,7 @@ class CourseTest extends TestCase
             'name' => 'New Course Name',
             'description' => $course->description,
             'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
             'duration_hours' => $course->duration_hours,
             'duration_weeks' => $course->duration_weeks,
             'fee' => $course->fee,
@@ -142,6 +145,7 @@ class CourseTest extends TestCase
             'name' => 'Beginner Driving',
             'description' => 'An introductory course.',
             'course_type' => 'manual',
+            'schedule' => 'weekday',
             'duration_hours' => 20,
             'duration_weeks' => 4,
             'fee' => 199.99,
@@ -170,6 +174,7 @@ class CourseTest extends TestCase
             'name' => $course->name,
             'description' => $course->description,
             'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
             'duration_hours' => $course->duration_hours,
             'duration_weeks' => $course->duration_weeks,
             'fee' => $course->fee,
@@ -196,6 +201,7 @@ class CourseTest extends TestCase
             'name' => $course->name,
             'description' => $course->description,
             'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
             'duration_hours' => $course->duration_hours,
             'duration_weeks' => $course->duration_weeks,
             'fee' => 75000,

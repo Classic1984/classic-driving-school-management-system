@@ -225,7 +225,7 @@
                 <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                     <option value="">{{ __('Select a course') }}</option>
                     @foreach ($courses as $course)
-                        <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} (₦{{ number_format($course->fee, 2) }})</option>
+                        <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} — {{ $course->isWeekend() ? 'Weekend' : 'Weekday' }} (₦{{ number_format($course->fee, 2) }})</option>
                     @endforeach
                 </select>
                 <x-input-error class="mt-2" :messages="$errors->get('course_id')" />

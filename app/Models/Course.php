@@ -22,6 +22,7 @@ class Course extends Model
         'name',
         'description',
         'course_type',
+        'schedule',
         'duration_hours',
         'duration_weeks',
         'fee',
@@ -42,13 +43,25 @@ class Course extends Model
         ];
     }
 
+    public function isWeekend(): bool
+    {
+        return $this->schedule === 'weekend';
+    }
+
     /**
      * The number of days a student has to clear their balance before this
-     * course's enrollment is locked: 4 days for 3-4 week courses, 2 days
-     * for 1-2 week courses.
+     * course's enrollment is locked. Weekend-schedule courses get a full
+     * week (7 days), since a weekend-only student is next back at the
+     * school the following Saturday, not mid-week. Weekday courses keep
+     * the shorter 4-day (3-4 week courses) or 2-day (1-2 week courses)
+     * grace period.
      */
     public function gracePeriodDays(): int
     {
+        if ($this->isWeekend()) {
+            return 7;
+        }
+
         return $this->duration_weeks >= 3 ? 4 : 2;
     }
 
