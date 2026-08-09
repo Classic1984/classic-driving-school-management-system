@@ -381,9 +381,8 @@
                             <div>
                                 <x-input-label for="quick_course_id" :value="__('Course')" />
                                 <select id="quick_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
-                                    <option value="">{{ __('Select a course') }}</option>
                                     @foreach ($student->courses as $enrolledCourse)
-                                        <option value="{{ $enrolledCourse->id }}">{{ $enrolledCourse->name }}</option>
+                                        <option value="{{ $enrolledCourse->id }}" @selected($loop->first)>{{ $enrolledCourse->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
