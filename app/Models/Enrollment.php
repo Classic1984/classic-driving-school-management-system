@@ -35,6 +35,8 @@ class Enrollment extends Pivot
             'original_fee' => 'decimal:2',
             'discount_percentage' => 'decimal:2',
             'discount_amount' => 'decimal:2',
+            'reactivated_at' => 'date',
+            'reactivation_fee' => 'decimal:2',
         ];
     }
 
@@ -51,6 +53,21 @@ class Enrollment extends Pivot
     public function discountApprovedBy()
     {
         return $this->belongsTo(User::class, 'discount_approved_by');
+    }
+
+    public function reactivatedBy()
+    {
+        return $this->belongsTo(User::class, 'reactivated_by');
+    }
+
+    /**
+     * Whether this enrollment is locked specifically because its two-month
+     * training period lapsed (as opposed to an overdue balance), which is
+     * the only lock reason the Director can clear via reactivation.
+     */
+    public function isLockedForExpiredTrainingPeriod(): bool
+    {
+        return $this->status === 'locked' && $this->locked_reason === 'training_period_expired';
     }
 
     /**

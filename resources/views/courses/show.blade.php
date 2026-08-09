@@ -91,6 +91,9 @@
                                                     <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Mark Complete') }}</button>
                                                 </form>
                                             @endif
+                                            @if ($enrolledStudent->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.reactivate.create', $enrolledStudent->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
