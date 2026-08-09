@@ -654,6 +654,19 @@ class StudentTest extends TestCase
         $response->assertSee('Defensive Driving 101');
     }
 
+    public function test_the_quick_payment_forms_course_field_defaults_to_the_students_enrolled_course(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Defensive Driving 101']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee("<option value=\"{$course->id}\" selected>Defensive Driving 101</option>", false);
+    }
+
     public function test_recording_a_payment_from_the_student_page_redirects_back_to_the_profile(): void
     {
         $user = User::factory()->create();
