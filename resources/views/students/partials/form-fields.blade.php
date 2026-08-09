@@ -111,12 +111,6 @@
 </div>
 
 <div>
-    <x-input-label for="license_number" :value="__('License Number')" />
-    <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number)" />
-    <x-input-error class="mt-2" :messages="$errors->get('license_number')" />
-</div>
-
-<div>
     <x-input-label for="course_type" :value="__('Course Type')" />
     <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
