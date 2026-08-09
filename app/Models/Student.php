@@ -102,4 +102,29 @@ class Student extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    /**
+     * Recompute this student's overall status from their enrollments:
+     * automatically completed once every course they're enrolled in has
+     * completed, active otherwise. Runs whenever an enrollment completes or
+     * a new one is added, so staff never have to set this by hand.
+     * "Withdrawn" is a manual, administrative status and is never touched
+     * by this automation.
+     */
+    public function refreshStatus(): void
+    {
+        if ($this->status === 'withdrawn') {
+            return;
+        }
+
+        $enrollments = $this->courses()->get()->pluck('pivot');
+
+        $newStatus = $enrollments->isNotEmpty() && $enrollments->every(fn (Enrollment $enrollment) => $enrollment->status === 'completed')
+            ? 'completed'
+            : 'active';
+
+        if ($newStatus !== $this->status) {
+            $this->forceFill(['status' => $newStatus])->save();
+        }
+    }
 }

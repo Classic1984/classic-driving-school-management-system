@@ -71,7 +71,6 @@ class StoreStudentRequest extends FormRequest
             'referral_source_other' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'max:4096'],
             'enrollment_date' => ['required', 'date', 'date_equals:today'],
-            'status' => ['required', 'in:active,completed,withdrawn'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'starts_double_period' => ['nullable', 'boolean'],
             'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
