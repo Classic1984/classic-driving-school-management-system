@@ -64,15 +64,15 @@ class DashboardTest extends TestCase
         $response->assertSee('4');
     }
 
-    public function test_dashboard_shows_new_students_today_this_week_and_this_month(): void
+    public function test_dashboard_shows_new_students_today_this_week_this_month_and_this_year(): void
     {
         $user = User::factory()->create();
 
-        // Registered today: counted in today, this week, and this month.
+        // Registered today: counted in today, this week, this month, and this year.
         Student::factory()->create(['enrollment_date' => now()]);
         // Earlier this month but outside the current week.
         Student::factory()->create(['enrollment_date' => now()->startOfMonth()]);
-        // A previous month, not counted in today/week/month.
+        // A previous year, not counted in today/week/month/year.
         Student::factory()->create(['enrollment_date' => now()->subYear()]);
 
         $response = $this->actingAs($user)->get('/dashboard');
@@ -80,6 +80,18 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('New Students');
         $response->assertSee('Today');
+        $response->assertSee('This Year');
+    }
+
+    public function test_the_new_students_cards_link_to_the_student_registration_report(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee(route('student-registration-report.index', ['period' => 'today']), false);
+        $response->assertSee(route('student-registration-report.index', ['period' => 'year']), false);
     }
 
     public function test_director_sees_this_week_this_month_and_all_time_payment_totals(): void
@@ -100,6 +112,18 @@ class DashboardTest extends TestCase
         $response->assertSee('This Month');
         $response->assertSee('All Time');
         $response->assertSee('1,000.00');
+    }
+
+    public function test_the_total_payments_cards_link_to_the_payments_index_by_period(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee(route('payments.index', ['period' => 'week']), false);
+        $response->assertSee(route('payments.index', ['period' => 'month']), false);
+        $response->assertSee(route('payments.index', ['period' => 'all_time']), false);
     }
 
     public function test_non_director_does_not_see_the_payment_totals_breakdown(): void

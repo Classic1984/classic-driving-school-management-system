@@ -53,6 +53,61 @@ class PaymentTest extends TestCase
         $response->assertSee('800.00');
     }
 
+    public function test_the_weekly_period_filters_payments_to_this_week_only(): void
+    {
+        $user = User::factory()->create();
+        $thisWeek = Student::factory()->create(['name' => 'This Week Payer']);
+        $lastMonth = Student::factory()->create(['name' => 'Last Month Payer']);
+        Payment::factory()->create(['student_id' => $thisWeek->id, 'amount' => 400, 'status' => 'paid', 'payment_date' => now()->startOfWeek()->toDateString()]);
+        Payment::factory()->create(['student_id' => $lastMonth->id, 'amount' => 999, 'status' => 'paid', 'payment_date' => now()->subMonth()->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/payments?period=week');
+
+        $response->assertOk();
+        $response->assertSee('This Week Payer');
+        $response->assertDontSee('Last Month Payer');
+        $response->assertSee('400.00');
+    }
+
+    public function test_the_monthly_period_filters_payments_to_this_month_only(): void
+    {
+        $user = User::factory()->create();
+        $thisMonth = Student::factory()->create(['name' => 'This Month Payer']);
+        $lastYear = Student::factory()->create(['name' => 'Last Year Payer']);
+        Payment::factory()->create(['student_id' => $thisMonth->id, 'status' => 'paid', 'payment_date' => now()->startOfMonth()->toDateString()]);
+        Payment::factory()->create(['student_id' => $lastYear->id, 'status' => 'paid', 'payment_date' => now()->subYear()->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/payments?period=month');
+
+        $response->assertOk();
+        $response->assertSee('This Month Payer');
+        $response->assertDontSee('Last Year Payer');
+    }
+
+    public function test_the_all_time_period_shows_every_payment_regardless_of_date(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Old Payer']);
+        Payment::factory()->create(['student_id' => $student->id, 'status' => 'paid', 'payment_date' => now()->subYears(2)->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/payments?period=all_time');
+
+        $response->assertOk();
+        $response->assertSee('Old Payer');
+    }
+
+    public function test_an_invalid_payment_period_falls_back_to_all_time(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Fallback Payer']);
+        Payment::factory()->create(['student_id' => $student->id, 'status' => 'paid', 'payment_date' => now()->subYears(2)->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/payments?period=not-a-real-period');
+
+        $response->assertOk();
+        $response->assertSee('Fallback Payer');
+    }
+
     public function test_authenticated_user_can_view_create_form(): void
     {
         $user = User::factory()->create();

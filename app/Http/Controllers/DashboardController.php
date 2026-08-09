@@ -28,6 +28,7 @@ class DashboardController extends Controller
             'month' => Student::whereYear('enrollment_date', now()->year)
                 ->whereMonth('enrollment_date', now()->month)
                 ->count(),
+            'year' => Student::whereYear('enrollment_date', now()->year)->count(),
         ];
 
         $paymentTotals = null;
