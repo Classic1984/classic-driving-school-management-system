@@ -55,22 +55,14 @@
                 </div>
 
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('New Students') }}</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
 
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('Today') }}</h4>
-                        <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($newStudentTotals['today']) }}</p>
-                    </div>
-
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('This Week') }}</h4>
-                        <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($newStudentTotals['week']) }}</p>
-                    </div>
-
-                    <div class="bg-gray-100 p-4 rounded-lg">
-                        <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __('This Month') }}</h4>
-                        <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($newStudentTotals['month']) }}</p>
-                    </div>
+                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg block">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __($periodLabel) }}</h4>
+                            <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($newStudentTotals[$period]) }}</p>
+                        </a>
+                    @endforeach
 
                 </div>
 

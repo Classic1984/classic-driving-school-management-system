@@ -12,6 +12,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentRegistrationReportController;
 use App\Http\Controllers\TrainingReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -67,6 +68,9 @@ Route::middleware('auth')->group(function () {
     Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');
     Route::get('training-report/export', [TrainingReportController::class, 'export'])->name('training-report.export');
     Route::get('training-report/export-pdf', [TrainingReportController::class, 'exportPdf'])->name('training-report.export-pdf');
+    Route::get('student-registration-report', [StudentRegistrationReportController::class, 'index'])->name('student-registration-report.index');
+    Route::get('student-registration-report/export', [StudentRegistrationReportController::class, 'export'])->name('student-registration-report.export');
+    Route::get('student-registration-report/export-pdf', [StudentRegistrationReportController::class, 'exportPdf'])->name('student-registration-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
     // above: "payments/export" would otherwise be swallowed by "payments/{payment}".
     Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
