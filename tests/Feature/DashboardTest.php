@@ -194,6 +194,7 @@ class DashboardTest extends TestCase
                 'course_id' => $course->id,
                 'date' => now()->subDays($day)->toDateString(),
                 'status' => 'present',
+                'duration' => 1,
             ]);
         }
 

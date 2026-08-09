@@ -158,6 +158,25 @@ class AttendanceTest extends TestCase
         $this->assertDatabaseCount('attendances', 0);
     }
 
+    public function test_storing_an_attendance_record_rejects_a_duration_outside_the_allowed_weekend_values(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+            'duration' => 4,
+        ]);
+
+        $response->assertSessionHasErrors('duration');
+        $this->assertDatabaseCount('attendances', 0);
+    }
+
     public function test_storing_a_duplicate_attendance_record_for_the_same_student_course_and_date_fails(): void
     {
         $user = User::factory()->create();

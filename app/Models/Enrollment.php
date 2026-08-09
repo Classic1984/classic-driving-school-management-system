@@ -127,16 +127,20 @@ class Enrollment extends Pivot
     }
 
     /**
-     * The number of one-hour training sessions the student has attended for
-     * this course, per the attendance policy: one training day is used up
-     * per completed (present) session.
+     * The number of training days the student has used up for this course.
+     * Each present training login counts for its own "duration" in days
+     * (defaulting to 1), not just one day per login — this is what lets a
+     * weekend student's single Saturday session count for 2 days and a
+     * single Sunday session count for 3, covering a full training week
+     * across just the weekend.
      */
     public function attendedDays(): int
     {
-        return Attendance::where('student_id', $this->student_id)
+        return (int) Attendance::where('student_id', $this->student_id)
             ->where('course_id', $this->course_id)
             ->where('status', 'present')
-            ->count();
+            ->get()
+            ->sum(fn (Attendance $attendance) => $attendance->duration ?? 1);
     }
 
     /**
