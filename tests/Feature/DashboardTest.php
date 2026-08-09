@@ -114,6 +114,18 @@ class DashboardTest extends TestCase
         $response->assertSee('1,000.00');
     }
 
+    public function test_the_total_payments_cards_link_to_the_payments_index_by_period(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee(route('payments.index', ['period' => 'week']), false);
+        $response->assertSee(route('payments.index', ['period' => 'month']), false);
+        $response->assertSee(route('payments.index', ['period' => 'all_time']), false);
+    }
+
     public function test_non_director_does_not_see_the_payment_totals_breakdown(): void
     {
         $user = User::factory()->admin()->create();

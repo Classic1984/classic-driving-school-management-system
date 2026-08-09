@@ -8,6 +8,8 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\Student;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -16,25 +18,43 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class PaymentController extends Controller
 {
     /**
+     * Periods the dashboard's Total Payments cards link into.
+     */
+    protected const PERIODS = ['week', 'month', 'all_time'];
+
+    protected const LABELS = [
+        'week' => 'This Week',
+        'month' => 'This Month',
+        'all_time' => 'All Time',
+    ];
+
+    /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $payments = Payment::with(['student', 'course'])->latest('payment_date')->paginate(10);
+        $period = $this->period($request);
+
+        $payments = $this->query($period)->with(['student', 'course'])->latest('payment_date')->paginate(10)->appends($request->query());
 
         $todayTotal = Payment::where('status', 'paid')
             ->whereDate('payment_date', today())
             ->sum('amount');
 
-        return view('payments.index', compact('payments', 'todayTotal'));
+        $periodTotal = $this->query($period)->where('status', 'paid')->sum('amount');
+        $periodLabel = self::LABELS[$period];
+
+        return view('payments.index', compact('payments', 'todayTotal', 'periodTotal', 'periodLabel', 'period'));
     }
 
     /**
-     * Download a CSV export of every payment record.
+     * Download a CSV export of the payments for the given period (or every
+     * record, if no period is selected).
      */
-    public function export(): StreamedResponse
+    public function export(Request $request): StreamedResponse
     {
-        $payments = Payment::with(['student', 'course'])->latest('payment_date')->get();
+        $period = $this->period($request);
+        $payments = $this->query($period)->with(['student', 'course'])->latest('payment_date')->get();
 
         return response()->streamDownload(function () use ($payments) {
             $handle = fopen('php://output', 'w');
@@ -54,7 +74,7 @@ class PaymentController extends Controller
             }
 
             fclose($handle);
-        }, 'payments.csv', ['Content-Type' => 'text/csv']);
+        }, "payments-{$period}.csv", ['Content-Type' => 'text/csv']);
     }
 
     /**
@@ -154,5 +174,29 @@ class PaymentController extends Controller
             'students' => Student::orderBy('name')->get(),
             'courses' => Course::orderBy('name')->get(),
         ];
+    }
+
+    protected function period(Request $request): string
+    {
+        $period = $request->query('period', 'all_time');
+
+        return in_array($period, self::PERIODS, true) ? $period : 'all_time';
+    }
+
+    /**
+     * Payments recorded during the given period, unfiltered for "all_time".
+     */
+    protected function query(string $period): Builder
+    {
+        $query = Payment::query();
+
+        match ($period) {
+            'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
+                ->whereDate('payment_date', '<=', now()->endOfWeek()->toDateString()),
+            'month' => $query->whereYear('payment_date', now()->year)->whereMonth('payment_date', now()->month),
+            default => null,
+        };
+
+        return $query;
     }
 }

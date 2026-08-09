@@ -14,13 +14,22 @@
                     </h3>
 
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('payments.export') }}">
+                        <a href="{{ route('payments.export', ['period' => $period]) }}">
                             <x-secondary-button type="button">{{ __('Export CSV') }}</x-secondary-button>
                         </a>
                         <a href="{{ route('payments.create') }}">
                             <x-primary-button type="button">{{ __('Record Payment') }}</x-primary-button>
                         </a>
                     </div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-4">
+                    @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $value => $tabLabel)
+                        <a
+                            href="{{ route('payments.index', ['period' => $value]) }}"
+                            class="px-3 py-1.5 text-sm rounded-md {{ $period === $value ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                        >{{ __($tabLabel) }}</a>
+                    @endforeach
                 </div>
 
                 @if (session('status') === 'payment-created')
@@ -31,9 +40,15 @@
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Payment record removed successfully.') }}</p>
                 @endif
 
-                <div class="mb-4 bg-black text-amber-400 rounded-lg p-4 inline-flex items-baseline gap-2">
-                    <span class="text-sm font-medium">{{ __("Today's Total") }}</span>
-                    <span class="text-2xl font-bold">₦{{ number_format($todayTotal, 2) }}</span>
+                <div class="mb-4 flex flex-wrap items-baseline gap-4">
+                    <div class="bg-black text-amber-400 rounded-lg p-4 inline-flex items-baseline gap-2">
+                        <span class="text-sm font-medium">{{ __("Today's Total") }}</span>
+                        <span class="text-2xl font-bold">₦{{ number_format($todayTotal, 2) }}</span>
+                    </div>
+                    <div class="bg-amber-500 text-black rounded-lg p-4 inline-flex items-baseline gap-2">
+                        <span class="text-sm font-medium">{{ __($periodLabel) }} {{ __('Total') }}</span>
+                        <span class="text-2xl font-bold">₦{{ number_format($periodTotal, 2) }}</span>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
