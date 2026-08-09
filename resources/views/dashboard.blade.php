@@ -200,9 +200,11 @@
                                     <th class="pb-2 pr-4">{{ __('Student') }}</th>
                                     <th class="pb-2 pr-4">{{ __('Student ID') }}</th>
                                     <th class="pb-2 pr-4">{{ __('Program') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Start Date') }}</th>
                                     <th class="pb-2 pr-4">{{ __('Total Days') }}</th>
                                     <th class="pb-2 pr-4">{{ __('Days Used') }}</th>
                                     <th class="pb-2 pr-4">{{ __('Days Remaining') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Expected Completion') }}</th>
                                     <th class="pb-2 pr-4">{{ __('Completion') }}</th>
                                     <th class="pb-2">{{ __('Status') }}</th>
                                 </tr>
@@ -216,10 +218,12 @@
                                             </a>
                                         </td>
                                         <td class="py-2 pr-4 font-mono">{{ $enrollment->student->student_id_number }}</td>
-                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
+                                        <td class="py-2 pr-4">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }} / {{ $enrollment->course->totalTrainingDays() }} {{ __('Days') }})</td>
+                                        <td class="py-2 pr-4">{{ optional($enrollment->enrolled_at)->format('Y-m-d') ?? '—' }}</td>
                                         <td class="py-2 pr-4">{{ $enrollment->course->totalTrainingDays() }}</td>
                                         <td class="py-2 pr-4">{{ $enrollment->attendedDays() }}</td>
                                         <td class="py-2 pr-4">{{ $enrollment->remainingTrainingDays() }}</td>
+                                        <td class="py-2 pr-4">{{ optional($enrollment->expectedCompletionDate())->format('Y-m-d') ?? '—' }}</td>
                                         <td class="py-2 pr-4">{{ $enrollment->trainingCompletionPercentage() }}%</td>
                                         <td class="py-2">
                                             @php($label = $enrollment->trainingStatusLabel())

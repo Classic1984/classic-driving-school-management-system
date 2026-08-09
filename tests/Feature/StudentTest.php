@@ -164,6 +164,37 @@ class StudentTest extends TestCase
         $this->assertSame(45000.0, $enrollment->pivot->balance());
     }
 
+    public function test_registering_a_student_always_sets_status_to_active_automatically(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+
+        $response = $this->actingAs($user)->post('/students', [
+            'name' => 'Auto Active Student',
+            'email' => 'auto.active@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'course_id' => $course->id,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'auto.active@example.com')->firstOrFail();
+        $this->assertSame('active', $student->status);
+    }
+
+    public function test_the_registration_form_does_not_offer_a_manual_status_field(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/students/create');
+
+        $response->assertOk();
+        $response->assertDontSee('name="status"', false);
+    }
+
     public function test_registering_into_a_weekend_course_gives_a_seven_day_payment_grace_period(): void
     {
         $user = User::factory()->create();
@@ -407,7 +438,7 @@ class StudentTest extends TestCase
             'sex' => 'female',
             'state_of_origin' => 'Rivers',
             'local_government_area' => 'Port Harcourt',
-            'occupation' => 'Trader',
+            'occupation' => 'business',
             'next_of_kin_name' => 'Chinedu Obi',
             'next_of_kin_address' => '456 Kin St',
             'next_of_kin_phone' => '555-0199',
@@ -433,7 +464,7 @@ class StudentTest extends TestCase
         $this->assertSame('female', $student->sex);
         $this->assertSame('Rivers', $student->state_of_origin);
         $this->assertSame('Port Harcourt', $student->local_government_area);
-        $this->assertSame('Trader', $student->occupation);
+        $this->assertSame('business', $student->occupation);
         $this->assertSame('Chinedu Obi', $student->next_of_kin_name);
         $this->assertSame('456 Kin St', $student->next_of_kin_address);
         $this->assertSame('555-0199', $student->next_of_kin_phone);
@@ -542,11 +573,10 @@ class StudentTest extends TestCase
             'date_of_birth' => '',
             'course_type' => 'invalid-course',
             'enrollment_date' => '',
-            'status' => 'invalid-status',
         ]);
 
         $response->assertSessionHasErrors([
-            'name', 'email', 'phone', 'date_of_birth', 'course_type', 'enrollment_date', 'status', 'course_id',
+            'name', 'email', 'phone', 'date_of_birth', 'course_type', 'enrollment_date', 'course_id',
         ]);
 
         $this->assertDatabaseCount('students', 0);

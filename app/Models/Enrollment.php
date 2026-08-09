@@ -127,6 +127,15 @@ class Enrollment extends Pivot
     }
 
     /**
+     * The deadline by which this enrollment's training is expected to be
+     * finished before it locks for an expired training period.
+     */
+    public function expectedCompletionDate(): ?\Illuminate\Support\Carbon
+    {
+        return $this->enrolled_at?->copy()->addMonths(self::TRAINING_PERIOD_MONTHS);
+    }
+
+    /**
      * The number of training days the student has used up for this course.
      * Each present training login counts for its own "duration" in days
      * (defaulting to 1), not just one day per login — this is what lets a
@@ -217,6 +226,8 @@ class Enrollment extends Pivot
             ['student_id' => $this->student_id, 'course_id' => $this->course_id],
             ['certificate_number' => Certificate::numberFor($this->student, $this->course), 'issue_date' => now()->toDateString()]
         );
+
+        $this->student->refreshStatus();
     }
 
     /**

@@ -34,7 +34,7 @@ class UpdateStudentRequest extends FormRequest
             'sex' => ['nullable', 'in:male,female'],
             'state_of_origin' => ['nullable', Rule::in(array_keys(config('nigeria.states')))],
             'local_government_area' => ['nullable', 'string', new ValidLocalGovernmentArea($this->input('state_of_origin'))],
-            'occupation' => ['nullable', 'string', 'max:255'],
+            'occupation' => ['nullable', 'in:student,business,other'],
             'next_of_kin_name' => ['nullable', 'string', 'max:255'],
             'next_of_kin_address' => ['nullable', 'string', 'max:255'],
             'next_of_kin_phone' => ['nullable', 'string', 'max:20'],

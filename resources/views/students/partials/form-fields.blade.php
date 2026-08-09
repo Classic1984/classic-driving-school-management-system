@@ -106,14 +106,13 @@
 
 <div>
     <x-input-label for="occupation" :value="__('Occupation')" />
-    <x-text-input id="occupation" name="occupation" type="text" class="mt-1 block w-full" :value="old('occupation', $student?->occupation)" />
+    <select id="occupation" name="occupation" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select') }}</option>
+        @foreach (['student' => 'Student', 'business' => 'Business', 'other' => 'Others'] as $value => $label)
+            <option value="{{ $value }}" @selected(old('occupation', $student?->occupation) === $value)>{{ __($label) }}</option>
+        @endforeach
+    </select>
     <x-input-error class="mt-2" :messages="$errors->get('occupation')" />
-</div>
-
-<div>
-    <x-input-label for="license_number" :value="__('License Number')" />
-    <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number)" />
-    <x-input-error class="mt-2" :messages="$errors->get('license_number')" />
 </div>
 
 <div>
@@ -396,12 +395,15 @@
     <x-input-error class="mt-2" :messages="$errors->get('enrollment_date')" />
 </div>
 
-<div>
-    <x-input-label for="status" :value="__('Status')" />
-    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
-        @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
-            <option value="{{ $value }}" @selected(old('status', $student?->status ?? 'active') === $value)>{{ __($label) }}</option>
-        @endforeach
-    </select>
-    <x-input-error class="mt-2" :messages="$errors->get('status')" />
-</div>
+@if ($student)
+    <div>
+        <x-input-label for="status" :value="__('Status')" />
+        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+            @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
+                <option value="{{ $value }}" @selected(old('status', $student->status) === $value)>{{ __($label) }}</option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-gray-500">{{ __('Active/Completed are normally set automatically as training progresses. Use Withdrawn to record that a student has left the program.') }}</p>
+        <x-input-error class="mt-2" :messages="$errors->get('status')" />
+    </div>
+@endif

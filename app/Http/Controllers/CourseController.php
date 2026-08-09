@@ -117,6 +117,10 @@ class CourseController extends Controller
                 'status' => 'active',
                 'fee' => $course->fee,
             ]);
+
+            // Reopens a previously "completed" student now that they have a
+            // new course in progress.
+            Student::find($studentId)?->refreshStatus();
         }
     }
 }

@@ -63,7 +63,12 @@
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Occupation') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">{{ $student->occupation ?? '—' }}</dd>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ match ($student->occupation) {
+                            'student' => 'Student',
+                            'business' => 'Business',
+                            'other' => 'Others',
+                            default => '—',
+                        } }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('License Number') }}</dt>

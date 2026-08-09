@@ -329,4 +329,110 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->assertSame('completed', $enrollment->fresh()->status);
     }
+
+    public function test_the_students_own_status_automatically_becomes_completed_once_their_only_enrollment_completes(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create(['status' => 'active']);
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertSame('completed', $student->fresh()->status);
+    }
+
+    public function test_a_students_status_stays_active_while_any_enrollment_is_incomplete(): void
+    {
+        $courseA = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $courseB = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create(['status' => 'active']);
+        $enrollmentA = $this->enroll($student, $courseA);
+        $this->enroll($student, $courseB);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $courseA->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $courseA->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $enrollmentA->refreshStatus();
+
+        $this->assertSame('completed', $enrollmentA->fresh()->status);
+        $this->assertSame('active', $student->fresh()->status);
+    }
+
+    public function test_a_previously_completed_students_status_reopens_when_enrolled_in_a_new_course(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['status' => 'completed']);
+        $newCourse = Course::factory()->create(['fee' => 100]);
+
+        $this->actingAs($user)->put("/courses/{$newCourse->id}", [
+            'name' => $newCourse->name,
+            'description' => $newCourse->description,
+            'course_type' => $newCourse->course_type,
+            'schedule' => $newCourse->schedule,
+            'duration_hours' => $newCourse->duration_hours,
+            'duration_weeks' => $newCourse->duration_weeks,
+            'fee' => $newCourse->fee,
+            'status' => $newCourse->status,
+            'students' => [$student->id],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('active', $student->fresh()->status);
+    }
+
+    public function test_a_withdrawn_students_status_is_never_overridden_by_completion_automation(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create(['status' => 'withdrawn']);
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertSame('withdrawn', $student->fresh()->status);
+    }
 }
