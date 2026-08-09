@@ -438,7 +438,7 @@ class StudentTest extends TestCase
             'sex' => 'female',
             'state_of_origin' => 'Rivers',
             'local_government_area' => 'Port Harcourt',
-            'occupation' => 'Trader',
+            'occupation' => 'business',
             'next_of_kin_name' => 'Chinedu Obi',
             'next_of_kin_address' => '456 Kin St',
             'next_of_kin_phone' => '555-0199',
@@ -464,7 +464,7 @@ class StudentTest extends TestCase
         $this->assertSame('female', $student->sex);
         $this->assertSame('Rivers', $student->state_of_origin);
         $this->assertSame('Port Harcourt', $student->local_government_area);
-        $this->assertSame('Trader', $student->occupation);
+        $this->assertSame('business', $student->occupation);
         $this->assertSame('Chinedu Obi', $student->next_of_kin_name);
         $this->assertSame('456 Kin St', $student->next_of_kin_address);
         $this->assertSame('555-0199', $student->next_of_kin_phone);

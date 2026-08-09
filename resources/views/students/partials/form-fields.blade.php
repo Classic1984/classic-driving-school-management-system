@@ -106,7 +106,12 @@
 
 <div>
     <x-input-label for="occupation" :value="__('Occupation')" />
-    <x-text-input id="occupation" name="occupation" type="text" class="mt-1 block w-full" :value="old('occupation', $student?->occupation)" />
+    <select id="occupation" name="occupation" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select') }}</option>
+        @foreach (['student' => 'Student', 'business' => 'Business', 'other' => 'Others'] as $value => $label)
+            <option value="{{ $value }}" @selected(old('occupation', $student?->occupation) === $value)>{{ __($label) }}</option>
+        @endforeach
+    </select>
     <x-input-error class="mt-2" :messages="$errors->get('occupation')" />
 </div>
 
