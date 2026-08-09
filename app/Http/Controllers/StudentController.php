@@ -71,7 +71,7 @@ class StudentController extends Controller
     {
         $data = $request->validated();
         unset(
-            $data['photo'], $data['course_id'], $data['amount_paid'], $data['payment_method'],
+            $data['photo'], $data['course_id'], $data['starts_double_period'], $data['amount_paid'], $data['payment_method'],
             $data['discount_choice'], $data['custom_discount_percentage'], $data['custom_discount_amount'],
             $data['discount_reason'], $data['discount_reason_note'],
         );
@@ -87,9 +87,16 @@ class StudentController extends Controller
         [$discountPercentage, $discountAmount] = $this->resolveDiscount($request, $originalFee);
         $finalFee = max(0, $originalFee - $discountAmount);
 
+        // A weekday student starting double period immediately burns through
+        // 4 training days in just 2 calendar days, so their balance is due
+        // that much sooner than the course's normal grace period.
+        $gracePeriodDays = (! $course->isWeekend() && $request->boolean('starts_double_period'))
+            ? 2
+            : $course->gracePeriodDays();
+
         $student->courses()->attach($course->id, [
             'enrolled_at' => $student->enrollment_date->toDateString(),
-            'due_date' => $student->enrollment_date->copy()->addDays($course->gracePeriodDays())->toDateString(),
+            'due_date' => $student->enrollment_date->copy()->addDays($gracePeriodDays)->toDateString(),
             'status' => 'active',
             'fee' => $finalFee,
             'original_fee' => $originalFee,

@@ -202,6 +202,70 @@ class StudentTest extends TestCase
         $this->assertSame('overdue_balance', $enrollment->pivot->fresh()->locked_reason);
     }
 
+    public function test_starting_double_period_immediately_shortens_the_payment_grace_period_to_two_days(): void
+    {
+        $user = User::factory()->create();
+        // A 4-week weekday course would normally get a 4-day grace period.
+        $course = Course::factory()->create(['fee' => 95000, 'schedule' => 'weekday', 'duration_weeks' => 4]);
+
+        $data = [
+            'name' => 'Double Period Student',
+            'email' => 'double.period@example.com',
+            'phone' => '555-0100',
+            'address' => '123 Main St',
+            'date_of_birth' => '2000-01-15',
+            'license_number' => 'LIC-88888',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+            'course_id' => $course->id,
+            'starts_double_period' => '1',
+            'amount_paid' => 47500,
+            'payment_method' => 'cash',
+        ];
+
+        $response = $this->actingAs($user)->post('/students', $data);
+
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'double.period@example.com')->firstOrFail();
+        $enrollment = $student->courses->firstWhere('id', $course->id);
+
+        $this->assertSame(now()->addDays(2)->toDateString(), $enrollment->pivot->due_date->toDateString());
+    }
+
+    public function test_starting_double_period_has_no_effect_on_a_weekend_courses_grace_period(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000, 'schedule' => 'weekend']);
+
+        $data = [
+            'name' => 'Weekend Double Period Student',
+            'email' => 'weekend.double.period@example.com',
+            'phone' => '555-0100',
+            'address' => '123 Main St',
+            'date_of_birth' => '2000-01-15',
+            'license_number' => 'LIC-77777',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+            'course_id' => $course->id,
+            'starts_double_period' => '1',
+            'amount_paid' => 47500,
+            'payment_method' => 'cash',
+        ];
+
+        $response = $this->actingAs($user)->post('/students', $data);
+
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'weekend.double.period@example.com')->firstOrFail();
+        $enrollment = $student->courses->firstWhere('id', $course->id);
+
+        // Still the weekend course's normal 7-day grace period, not the 2-day double-period rule.
+        $this->assertSame(now()->addDays(7)->toDateString(), $enrollment->pivot->due_date->toDateString());
+    }
+
     public function test_registering_a_student_without_an_initial_payment_still_creates_the_enrollment(): void
     {
         $user = User::factory()->create();

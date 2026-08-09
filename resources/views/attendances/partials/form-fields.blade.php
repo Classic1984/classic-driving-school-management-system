@@ -53,7 +53,7 @@
 <div>
     <x-input-label for="duration" :value="__('Duration')" />
     <select id="duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-        @foreach ([1 => '1 Day (Weekday)', 2 => '2 Days (Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
+        @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
             <option value="{{ $value }}" @selected((int) old('duration', $attendance?->duration ?? 1) === $value)>{{ __($label) }}</option>
         @endforeach
     </select>
