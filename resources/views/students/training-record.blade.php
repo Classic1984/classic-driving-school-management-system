@@ -116,7 +116,11 @@
 
                             <div>
                                 <x-input-label for="record_duration" :value="__('Duration')" />
-                                <x-text-input id="record_duration" name="duration" type="number" min="1" class="mt-1 block w-full" value="1" />
+                                <select id="record_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                                    @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
+                                        <option value="{{ $value }}">{{ __($label) }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>

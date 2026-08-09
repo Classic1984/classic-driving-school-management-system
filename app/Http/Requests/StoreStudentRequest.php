@@ -73,6 +73,7 @@ class StoreStudentRequest extends FormRequest
             'enrollment_date' => ['required', 'date', 'date_equals:today'],
             'status' => ['required', 'in:active,completed,withdrawn'],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
+            'starts_double_period' => ['nullable', 'boolean'],
             'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
             'payment_method' => ['required_with:amount_paid', 'nullable', 'in:cash,card,bank_transfer,mobile_money'],
             'discount_choice' => ['nullable', Rule::in($this->allowedDiscountChoices())],

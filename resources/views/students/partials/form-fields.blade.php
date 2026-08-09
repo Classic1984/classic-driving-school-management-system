@@ -225,10 +225,19 @@
                 <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                     <option value="">{{ __('Select a course') }}</option>
                     @foreach ($courses as $course)
-                        <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} (₦{{ number_format($course->fee, 2) }})</option>
+                        <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} — {{ $course->isWeekend() ? 'Weekend' : 'Weekday' }} (₦{{ number_format($course->fee, 2) }})</option>
                     @endforeach
                 </select>
                 <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
+            </div>
+
+            <div>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" id="starts_double_period" name="starts_double_period" value="1" @checked(old('starts_double_period')) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                    {{ __('Starting Double Period training immediately (weekday courses only)') }}
+                </label>
+                <p class="mt-1 text-xs text-gray-500">{{ __('Double Period covers 4 training days in 2 calendar days, so the balance due date is shortened to 2 days instead of the course\'s usual grace period.') }}</p>
+                <x-input-error class="mt-2" :messages="$errors->get('starts_double_period')" />
             </div>
 
             <div>

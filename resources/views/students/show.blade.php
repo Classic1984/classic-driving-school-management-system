@@ -213,6 +213,9 @@
                                                     <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Mark Complete') }}</button>
                                                 </form>
                                             @endif
+                                            @if ($enrolledCourse->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -239,9 +242,9 @@
                                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     <th class="px-2 py-1">{{ __('Date') }}</th>
                                     <th class="px-2 py-1">{{ __('Course') }}</th>
-                                    <th class="px-2 py-1">{{ __('Session') }}</th>
+                                    <th class="px-2 py-1">{{ __('Type') }}</th>
+                                    <th class="px-2 py-1">{{ __('Duration') }}</th>
                                     <th class="px-2 py-1">{{ __('Instructor') }}</th>
-                                    <th class="px-2 py-1">{{ __('Vehicle') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -249,9 +252,9 @@
                                     <tr>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->date->format('Y-m-d') }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->course->name }}</td>
-                                        <td class="px-2 py-1 text-sm capitalize">{{ $attendance->session ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $attendance->duration ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                        <td class="px-2 py-1 text-sm">{{ $attendance->vehicle ?? '—' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -281,10 +284,10 @@
                             </div>
 
                             <div>
-                                <x-input-label for="quick_login_session" :value="__('Session')" />
-                                <select id="quick_login_session" name="session" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                                <x-input-label for="quick_login_type" :value="__('Type')" />
+                                <select id="quick_login_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                                     <option value="">{{ __('Not specified') }}</option>
-                                    @foreach (['morning' => 'Morning', 'afternoon' => 'Afternoon', 'evening' => 'Evening'] as $value => $label)
+                                    @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
                                         <option value="{{ $value }}">{{ __($label) }}</option>
                                     @endforeach
                                 </select>
@@ -301,8 +304,12 @@
                             </div>
 
                             <div>
-                                <x-input-label for="quick_login_vehicle" :value="__('Vehicle')" />
-                                <x-text-input id="quick_login_vehicle" name="vehicle" type="text" class="mt-1 block w-full" />
+                                <x-input-label for="quick_login_duration" :value="__('Duration')" />
+                                <select id="quick_login_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                                    @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
+                                        <option value="{{ $value }}">{{ __($label) }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div>

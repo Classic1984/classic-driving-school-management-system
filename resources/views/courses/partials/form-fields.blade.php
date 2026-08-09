@@ -25,6 +25,17 @@
 </div>
 
 <div>
+    <x-input-label for="schedule" :value="__('Schedule')" />
+    <select id="schedule" name="schedule" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+        @foreach (['weekday' => 'Weekday', 'weekend' => 'Weekend'] as $value => $label)
+            <option value="{{ $value }}" @selected(old('schedule', $course?->schedule ?? 'weekday') === $value)>{{ __($label) }}</option>
+        @endforeach
+    </select>
+    <p class="mt-1 text-xs text-gray-500">{{ __('Weekend courses get a 7-day payment grace period, since students are only back the following Saturday.') }}</p>
+    <x-input-error class="mt-2" :messages="$errors->get('schedule')" />
+</div>
+
+<div>
     <x-input-label for="duration_hours" :value="__('Duration (hours)')" />
     <x-text-input id="duration_hours" name="duration_hours" type="number" min="1" class="mt-1 block w-full" :value="old('duration_hours', $course?->duration_hours)" required />
     <x-input-error class="mt-2" :messages="$errors->get('duration_hours')" />

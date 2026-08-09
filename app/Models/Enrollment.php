@@ -35,6 +35,8 @@ class Enrollment extends Pivot
             'original_fee' => 'decimal:2',
             'discount_percentage' => 'decimal:2',
             'discount_amount' => 'decimal:2',
+            'reactivated_at' => 'date',
+            'reactivation_fee' => 'decimal:2',
         ];
     }
 
@@ -51,6 +53,21 @@ class Enrollment extends Pivot
     public function discountApprovedBy()
     {
         return $this->belongsTo(User::class, 'discount_approved_by');
+    }
+
+    public function reactivatedBy()
+    {
+        return $this->belongsTo(User::class, 'reactivated_by');
+    }
+
+    /**
+     * Whether this enrollment is locked specifically because its two-month
+     * training period lapsed (as opposed to an overdue balance), which is
+     * the only lock reason the Director can clear via reactivation.
+     */
+    public function isLockedForExpiredTrainingPeriod(): bool
+    {
+        return $this->status === 'locked' && $this->locked_reason === 'training_period_expired';
     }
 
     /**
@@ -110,16 +127,20 @@ class Enrollment extends Pivot
     }
 
     /**
-     * The number of one-hour training sessions the student has attended for
-     * this course, per the attendance policy: one training day is used up
-     * per completed (present) session.
+     * The number of training days the student has used up for this course.
+     * Each present training login counts for its own "duration" in days
+     * (defaulting to 1), not just one day per login — this is what lets a
+     * weekend student's single Saturday session count for 2 days and a
+     * single Sunday session count for 3, covering a full training week
+     * across just the weekend.
      */
     public function attendedDays(): int
     {
-        return Attendance::where('student_id', $this->student_id)
+        return (int) Attendance::where('student_id', $this->student_id)
             ->where('course_id', $this->course_id)
             ->where('status', 'present')
-            ->count();
+            ->get()
+            ->sum(fn (Attendance $attendance) => $attendance->duration ?? 1);
     }
 
     /**
@@ -166,6 +187,20 @@ class Enrollment extends Pivot
             'completed' => 'Completed',
             'locked' => 'Expired',
             default => 'Active',
+        };
+    }
+
+    /**
+     * A human-readable explanation of why this enrollment is locked, for
+     * display to staff (e.g. on the Dashboard's locked-students list). Null
+     * when the enrollment isn't locked at all.
+     */
+    public function lockedReasonLabel(): ?string
+    {
+        return match ($this->locked_reason) {
+            'training_period_expired' => 'Training Period Expired',
+            'overdue_balance' => 'Overdue Balance',
+            default => null,
         };
     }
 

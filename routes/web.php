@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
         Route::get('finance/export', [FinanceController::class, 'export'])->name('finance.export');
         Route::get('finance/export-pdf', [FinanceController::class, 'exportPdf'])->name('finance.export-pdf');
+        Route::get('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'showReactivateForm'])->name('enrollments.reactivate.create');
+        Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
     });
 
     Route::get('enrolled-trainees', [EnrolledTraineeController::class, 'index'])->name('enrolled-trainees.index');

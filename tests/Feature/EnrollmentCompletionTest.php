@@ -164,6 +164,7 @@ class EnrollmentCompletionTest extends TestCase
                 'course_id' => $course->id,
                 'date' => now()->addDays($day)->toDateString(),
                 'status' => 'present',
+                'duration' => 1,
             ]);
         }
 
@@ -196,6 +197,7 @@ class EnrollmentCompletionTest extends TestCase
                 'course_id' => $course->id,
                 'date' => now()->addDays($day)->toDateString(),
                 'status' => 'present',
+                'duration' => 1,
             ]);
         }
 
@@ -217,6 +219,7 @@ class EnrollmentCompletionTest extends TestCase
                 'course_id' => $course->id,
                 'date' => now()->addDays($day)->toDateString(),
                 'status' => 'present',
+                'duration' => 1,
             ]);
         }
 
@@ -244,12 +247,54 @@ class EnrollmentCompletionTest extends TestCase
                 'course_id' => $course->id,
                 'date' => now()->addDays($day)->toDateString(),
                 'status' => 'present',
+                'duration' => 1,
             ]);
         }
 
         $enrollment->refreshStatus();
 
         $this->assertNotSame('completed', $enrollment->fresh()->status);
+    }
+
+    public function test_a_weekend_students_saturday_and_sunday_logins_count_for_five_days(): void
+    {
+        // A weekend-only student trains Saturday and Sunday, but each of
+        // those single logins counts for multiple training days (2 and 3
+        // respectively) so a full training week is covered in one weekend.
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->addDays(1)->toDateString(),
+            'status' => 'present',
+            'duration' => 2,
+        ]);
+
+        $enrollment->refreshStatus();
+        $this->assertSame(2, $enrollment->fresh()->attendedDays());
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
+
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->addDays(2)->toDateString(),
+            'status' => 'present',
+            'duration' => 3,
+        ]);
+
+        $enrollment->refreshStatus();
+
+        $this->assertSame(5, $enrollment->fresh()->attendedDays());
+        $this->assertSame('completed', $enrollment->fresh()->status);
     }
 
     public function test_logging_the_final_training_day_auto_completes_the_enrollment(): void
@@ -271,6 +316,7 @@ class EnrollmentCompletionTest extends TestCase
                 'course_id' => $course->id,
                 'date' => now()->addDays($day)->toDateString(),
                 'status' => 'present',
+                'duration' => 1,
             ]);
         }
 

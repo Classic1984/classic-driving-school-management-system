@@ -22,6 +22,12 @@
                         <dd class="text-sm text-gray-900 col-span-2 capitalize">{{ $course->course_type }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Schedule') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            <x-badge :color="$course->isWeekend() ? 'blue' : 'gray'" class="capitalize">{{ $course->schedule }}</x-badge>
+                        </dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Duration') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $course->duration_hours }} {{ __('hours') }} ({{ $course->duration_weeks }} {{ __('weeks') }})</dd>
                     </div>
@@ -90,6 +96,9 @@
                                                     @method('patch')
                                                     <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Mark Complete') }}</button>
                                                 </form>
+                                            @endif
+                                            @if ($enrolledStudent->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.reactivate.create', $enrolledStudent->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
                                             @endif
                                         </td>
                                     </tr>

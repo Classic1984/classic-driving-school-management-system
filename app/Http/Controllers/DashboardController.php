@@ -58,6 +58,12 @@ class DashboardController extends Controller
             ->take(15)
             ->get();
 
+        $lockedEnrollments = Enrollment::where('status', 'locked')
+            ->with(['student', 'course'])
+            ->latest('updated_at')
+            ->take(15)
+            ->get();
+
         $trainingStats = [
             'today' => $this->distinctStudentsTrained(today(), today()),
             'week' => $this->distinctStudentsTrained(now()->startOfWeek(), now()->endOfWeek()),
@@ -65,7 +71,7 @@ class DashboardController extends Controller
             'year' => $this->distinctStudentsTrained(now()->startOfYear(), now()->endOfYear()),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments'));
     }
 
     /**
