@@ -150,6 +150,45 @@
                 </div>
             @endif
 
+            @if ($lockedEnrollments->isNotEmpty())
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Locked Students') }}</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Course') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Reason') }}</th>
+                                    <th class="pb-2"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($lockedEnrollments as $enrollment)
+                                    <tr>
+                                        <td class="py-2 pr-4">
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
+                                                {{ $enrollment->student->name }}
+                                            </a>
+                                        </td>
+                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
+                                        <td class="py-2 pr-4">
+                                            <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
+                                        </td>
+                                        <td class="py-2">
+                                            @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
             @if ($trainingProgress->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Student Training Progress') }}</h3>

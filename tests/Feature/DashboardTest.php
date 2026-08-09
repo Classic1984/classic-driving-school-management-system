@@ -243,4 +243,75 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Expired');
     }
+
+    public function test_dashboard_lists_locked_students_with_their_lock_reason(): void
+    {
+        $user = User::factory()->create();
+        $overdueStudent = Student::factory()->create(['name' => 'Overdue Student']);
+        $overdueCourse = Course::factory()->create();
+        $overdueStudent->courses()->attach($overdueCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+        $expiredStudent = Student::factory()->create(['name' => 'Expired Student']);
+        $expiredCourse = Course::factory()->create();
+        $expiredStudent->courses()->attach($expiredCourse->id, [
+            'enrolled_at' => now()->subMonths(3),
+            'due_date' => now()->addDays(30),
+            'status' => 'locked',
+            'locked_reason' => 'training_period_expired',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Locked Students');
+        $response->assertSee('Overdue Student');
+        $response->assertSee('Overdue Balance');
+        $response->assertSee('Expired Student');
+        $response->assertSee('Training Period Expired');
+    }
+
+    public function test_dashboard_does_not_show_the_locked_students_section_when_nobody_is_locked(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Locked Students');
+    }
+
+    public function test_dashboard_only_shows_the_reactivate_link_to_directors_for_expired_training_period_locks(): void
+    {
+        $director = User::factory()->director()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now()->subMonths(3),
+            'due_date' => now()->addDays(30),
+            'status' => 'locked',
+            'locked_reason' => 'training_period_expired',
+        ]);
+        $overdueStudent = Student::factory()->create();
+        $overdueCourse = Course::factory()->create();
+        $overdueStudent->courses()->attach($overdueCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
+        $directorResponse = $this->actingAs($director)->get('/dashboard');
+        $directorResponse->assertOk();
+        $directorResponse->assertSee('Reactivate');
+
+        $adminResponse = $this->actingAs($admin)->get('/dashboard');
+        $adminResponse->assertOk();
+        $adminResponse->assertDontSee('Reactivate');
+    }
 }

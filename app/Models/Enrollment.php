@@ -187,6 +187,20 @@ class Enrollment extends Pivot
     }
 
     /**
+     * A human-readable explanation of why this enrollment is locked, for
+     * display to staff (e.g. on the Dashboard's locked-students list). Null
+     * when the enrollment isn't locked at all.
+     */
+    public function lockedReasonLabel(): ?string
+    {
+        return match ($this->locked_reason) {
+            'training_period_expired' => 'Training Period Expired',
+            'overdue_balance' => 'Overdue Balance',
+            default => null,
+        };
+    }
+
+    /**
      * Mark this enrollment completed and issue the student's certificate
      * for it, if one doesn't already exist. Used both when training
      * auto-completes and when staff complete it manually.
