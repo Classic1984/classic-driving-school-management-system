@@ -179,6 +179,27 @@ class DashboardTest extends TestCase
         $response->assertSee('1,000.00');
     }
 
+    public function test_dashboard_lists_completed_enrollments_with_an_outstanding_balance(): void
+    {
+        // Training completion no longer implies payment is cleared, so a
+        // completed-but-unpaid enrollment must still surface here.
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Completed But Owing']);
+        $course = Course::factory()->create(['fee' => 500]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(3),
+            'status' => 'completed',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Outstanding Payments');
+        $response->assertSee('Completed But Owing');
+        $response->assertSee('500.00');
+    }
+
     public function test_dashboard_does_not_list_fully_paid_enrollments_as_outstanding(): void
     {
         $user = User::factory()->create();

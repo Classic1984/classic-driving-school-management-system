@@ -46,8 +46,7 @@ class DashboardController extends Controller
             ];
         }
 
-        $outstandingPayments = Enrollment::where('status', '!=', 'completed')
-            ->with(['student', 'course'])
+        $outstandingPayments = Enrollment::with(['student', 'course'])
             ->get()
             ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0)
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)

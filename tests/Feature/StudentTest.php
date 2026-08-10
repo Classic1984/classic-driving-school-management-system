@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Student;
@@ -623,6 +624,33 @@ class StudentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Defensive Driving 101');
+    }
+
+    public function test_student_page_shows_training_progress_for_each_enrolled_course(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Two Week Program', 'duration_weeks' => 2]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        for ($day = 1; $day <= 3; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->subDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Training Progress');
+        $response->assertSee('Two Week Program');
+        // 2-week program = 10 total days, 3 attended, 7 remaining, 30% complete.
+        $response->assertSee('3 / 10');
+        $response->assertSee('7');
+        $response->assertSee('30%');
     }
 
     public function test_student_page_shows_the_payment_summary(): void
