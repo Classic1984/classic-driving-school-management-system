@@ -46,8 +46,8 @@ class UserFactory extends Factory
 
     /**
      * Indicate that the user has the restricted "admin" role: can view
-     * everything and create/edit students, training logins, and payments,
-     * but cannot manage courses/instructors, delete anything, or access
+     * everything and create/edit students and payments, but cannot manage
+     * courses/instructors/training logins, delete anything, or access
      * Finance.
      */
     public function admin(): static

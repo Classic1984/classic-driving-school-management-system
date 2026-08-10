@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('course-manager')->group(function () {
         Route::resource('courses', CourseController::class)->except(['index', 'show', 'destroy']);
         Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
+        Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
     });
 
     Route::middleware('admin')->group(function () {
@@ -71,7 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
-    Route::resource('attendances', AttendanceController::class)->except(['destroy']);
+    Route::resource('attendances', AttendanceController::class)->only(['index', 'show']);
     Route::get('training-progress', [TrainingProgressController::class, 'index'])->name('training-progress.index');
     Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');
     Route::get('training-report/export', [TrainingReportController::class, 'export'])->name('training-report.export');
