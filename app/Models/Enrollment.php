@@ -300,16 +300,20 @@ class Enrollment extends Pivot
     }
 
     /**
-     * Recompute this enrollment's status after an attendance record is
-     * added, corrected, or removed - including reverting a "completed"
-     * status back to active/locked if the correction dropped attendance
-     * below the course's required training days. Ordinary refreshStatus()
-     * deliberately never un-completes an enrollment, so routine due-date or
-     * training-period drift can't relock a finished student; only a
-     * deliberate attendance correction should be able to. Any certificate
-     * already issued is left on file rather than deleted automatically.
+     * Recompute this enrollment's status from scratch against its current
+     * attendance and balance - including reverting a "completed" status
+     * back to active/locked if the numbers no longer support it. Used
+     * whenever something that feeds hasCompletedTraining()/balance() is
+     * deliberately corrected after the fact: an attendance record being
+     * added, corrected, or removed, or a course's required training days
+     * being edited (which changes totalTrainingDays() for every enrollment
+     * in that course). Ordinary refreshStatus() deliberately never
+     * un-completes an enrollment, so routine due-date or training-period
+     * drift can't relock a finished student - only a deliberate correction
+     * like this should be able to. Any certificate already issued is left
+     * on file rather than deleted automatically.
      */
-    public function recalculateAfterAttendanceChange(): void
+    public function reconcile(): void
     {
         if ($this->balance() <= 0 && $this->hasCompletedTraining()) {
             if ($this->status !== 'completed') {
