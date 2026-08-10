@@ -178,7 +178,7 @@ class StudentController extends Controller
      */
     public function show(Student $student): View
     {
-        $student->load(['courses', 'payments', 'attendances' => fn ($query) => $query->with('instructor')->latest('date')]);
+        $student->load(['courses', 'payments', 'certificates' => fn ($query) => $query->with('course')->latest('issue_date'), 'attendances' => fn ($query) => $query->with('instructor')->latest('date')]);
         $instructors = Instructor::orderBy('name')->get();
 
         return view('students.show', compact('student', 'instructors'));

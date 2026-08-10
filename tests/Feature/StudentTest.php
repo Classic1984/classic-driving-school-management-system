@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Attendance;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Student;
@@ -651,6 +652,33 @@ class StudentTest extends TestCase
         $response->assertSee('3 / 10');
         $response->assertSee('7');
         $response->assertSee('30%');
+    }
+
+    public function test_student_page_shows_an_issued_certificate(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Beginner Program']);
+        $certificate = Certificate::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Certificates');
+        $response->assertSee($certificate->certificate_number);
+        $response->assertSee('Beginner Program');
+        $response->assertSee(route('certificates.show', $certificate), false);
+    }
+
+    public function test_student_page_shows_no_certificates_issued_yet_when_there_are_none(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('No certificates issued yet.');
     }
 
     public function test_student_page_shows_the_payment_summary(): void
