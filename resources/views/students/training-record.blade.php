@@ -76,6 +76,7 @@
                         </table>
                     </div>
 
+                    @if (auth()->user()->canManageCourses())
                     @if ($student->courses->isNotEmpty())
                         <form method="post" action="{{ route('attendances.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
                             @csrf
@@ -127,6 +128,7 @@
                         </form>
                     @else
                         <p class="mt-4 text-sm text-gray-500">{{ __('Enroll this student in a course before logging training.') }}</p>
+                    @endif
                     @endif
                 </div>
 

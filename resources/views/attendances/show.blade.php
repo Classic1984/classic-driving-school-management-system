@@ -52,9 +52,11 @@
                 </dl>
 
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('attendances.edit', $attendance) }}">
-                        <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
-                    </a>
+                    @if (auth()->user()->canManageCourses())
+                        <a href="{{ route('attendances.edit', $attendance) }}">
+                            <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
+                        </a>
+                    @endif
                     <a href="{{ route('attendances.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Back to list') }}</a>
                 </div>
             </div>

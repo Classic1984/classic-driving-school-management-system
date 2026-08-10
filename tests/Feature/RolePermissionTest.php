@@ -69,16 +69,20 @@ class RolePermissionTest extends TestCase
         $this->actingAs($admin)->get("/students/{$student->id}/edit")->assertOk();
     }
 
-    public function test_admin_cannot_delete_attendance_but_can_manage_it(): void
+    public function test_admin_cannot_manage_attendance_but_can_view_it(): void
     {
         $admin = User::factory()->admin()->create();
         $attendance = Attendance::factory()->create();
 
+        $this->actingAs($admin)->get('/attendances/create')->assertForbidden();
+        $this->actingAs($admin)->post('/attendances', [])->assertForbidden();
+        $this->actingAs($admin)->get("/attendances/{$attendance->id}/edit")->assertForbidden();
+        $this->actingAs($admin)->put("/attendances/{$attendance->id}", [])->assertForbidden();
         $this->actingAs($admin)->delete("/attendances/{$attendance->id}")->assertForbidden();
         $this->assertDatabaseHas('attendances', ['id' => $attendance->id]);
 
-        $this->actingAs($admin)->get('/attendances/create')->assertOk();
-        $this->actingAs($admin)->get("/attendances/{$attendance->id}/edit")->assertOk();
+        $this->actingAs($admin)->get('/attendances')->assertOk();
+        $this->actingAs($admin)->get("/attendances/{$attendance->id}")->assertOk();
     }
 
     public function test_admin_cannot_delete_payments_but_can_manage_them(): void

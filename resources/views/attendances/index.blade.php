@@ -13,9 +13,11 @@
                         {{ __('Training Login Records') }}
                     </h3>
 
-                    <a href="{{ route('attendances.create') }}">
-                        <x-primary-button type="button">{{ __('Log Training') }}</x-primary-button>
-                    </a>
+                    @if (auth()->user()->canManageCourses())
+                        <a href="{{ route('attendances.create') }}">
+                            <x-primary-button type="button">{{ __('Log Training') }}</x-primary-button>
+                        </a>
+                    @endif
                 </div>
 
                 @if (session('status') === 'attendance-created' || session('status') === 'training-logged')
@@ -60,7 +62,9 @@
                                     </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('attendances.show', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
-                                        <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                        @if (auth()->user()->canManageCourses())
+                                            <a href="{{ route('attendances.edit', $attendance) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                        @endif
                                         @if (auth()->user()->isAdmin())
                                             <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this training login?') }}');">
                                                 @csrf
