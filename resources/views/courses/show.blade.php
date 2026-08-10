@@ -90,7 +90,7 @@
                                             }" class="capitalize">{{ $enrolledStudent->pivot->status }}</x-badge>
                                         </td>
                                         <td class="px-2 py-1 text-sm">
-                                            @if ($enrolledStudent->pivot->status !== 'completed' && $enrolledStudent->pivot->balance() <= 0)
+                                            @if ($enrolledStudent->pivot->status !== 'completed' && $enrolledStudent->pivot->hasCompletedTraining())
                                                 <form method="post" action="{{ route('enrollments.complete', $enrolledStudent->pivot->id) }}" class="inline">
                                                     @csrf
                                                     @method('patch')

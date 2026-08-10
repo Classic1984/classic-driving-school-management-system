@@ -14,8 +14,10 @@ class EnrollmentController extends Controller
 {
     /**
      * Mark an enrollment as completed, automatically issuing the student's
-     * certificate for it. Requires the outstanding balance to be cleared
-     * first; once completed, the enrollment is exempt from future locking.
+     * certificate for it. Requires the required training days to have been
+     * attended; an outstanding balance does not block this, since training
+     * completion and payment status are tracked independently. Once
+     * completed, the enrollment is exempt from future locking.
      */
     public function complete(Enrollment $enrollment): RedirectResponse
     {
@@ -23,9 +25,9 @@ class EnrollmentController extends Controller
             return Redirect::back()->with('status', 'enrollment-already-completed');
         }
 
-        if ($enrollment->balance() > 0) {
+        if (! $enrollment->hasCompletedTraining()) {
             return Redirect::back()->withErrors([
-                'enrollment' => 'Cannot mark this course complete: outstanding balance of '.number_format($enrollment->balance(), 2).' must be cleared first.',
+                'enrollment' => 'Cannot mark this course complete: the required training days ('.$enrollment->attendedDays().' of '.$enrollment->course->totalTrainingDays().') have not been attended yet.',
             ]);
         }
 

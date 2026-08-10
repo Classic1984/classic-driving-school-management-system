@@ -36,10 +36,13 @@ class RefreshEnrollmentLocks extends Command
      */
     public function handle(): int
     {
-        $enrollments = Enrollment::where('status', '!=', 'completed')->get();
+        $enrollments = Enrollment::all();
 
         foreach ($enrollments as $enrollment) {
-            if ($enrollment->status === 'active' && $enrollment->balance() > 0) {
+            // Payment reminders keep firing even once training is completed,
+            // since an outstanding balance remains a financial matter that's
+            // independent of training status.
+            if (in_array($enrollment->status, ['active', 'completed'], true) && $enrollment->balance() > 0) {
                 if ($enrollment->due_date?->isTomorrow()) {
                     Notification::send(User::admins()->get(), new GracePeriodEndingSoonNotification($enrollment));
                 }

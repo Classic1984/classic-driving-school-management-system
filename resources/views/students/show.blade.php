@@ -211,7 +211,7 @@
                                             }" class="capitalize">{{ $enrolledCourse->pivot->status }}</x-badge>
                                         </td>
                                         <td class="px-2 py-1 text-sm">
-                                            @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->balance() <= 0)
+                                            @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->hasCompletedTraining())
                                                 <form method="post" action="{{ route('enrollments.complete', $enrolledCourse->pivot->id) }}" class="inline">
                                                     @csrf
                                                     @method('patch')
@@ -232,6 +232,40 @@
                         </table>
                     </div>
                 </div>
+
+                @if ($student->courses->isNotEmpty())
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Training Progress') }}</h3>
+                        <div class="space-y-4">
+                            @foreach ($student->courses as $enrolledCourse)
+                                @php($label = $enrolledCourse->pivot->trainingStatusLabel())
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-sm font-semibold text-gray-800">{{ $enrolledCourse->name }} — {{ $enrolledCourse->duration_weeks }} {{ __('Weeks') }}</h4>
+                                        <x-badge :color="match ($label) {
+                                            'Completed' => 'blue',
+                                            'Expired' => 'red',
+                                            default => 'green',
+                                        }">{{ __($label) }}</x-badge>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div class="bg-amber-500 h-2.5 rounded-full" style="width: {{ $enrolledCourse->pivot->trainingCompletionPercentage() }}%"></div>
+                                    </div>
+                                    <div class="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
+                                        <span>{{ $enrolledCourse->pivot->attendedDays() }} / {{ $enrolledCourse->totalTrainingDays() }} {{ __('Days Completed') }}</span>
+                                        <span>{{ $enrolledCourse->pivot->remainingTrainingDays() }} {{ __('Days Remaining') }}</span>
+                                        <span>{{ $enrolledCourse->pivot->trainingCompletionPercentage() }}%</span>
+                                    </div>
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        {{ __('Start Date') }}: {{ optional($enrolledCourse->pivot->enrolled_at)->format('Y-m-d') ?? '—' }}
+                                        &middot;
+                                        {{ __('Expected Completion') }}: {{ optional($enrolledCourse->pivot->expectedCompletionDate())->format('Y-m-d') ?? '—' }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Student Login Training') }}</h3>

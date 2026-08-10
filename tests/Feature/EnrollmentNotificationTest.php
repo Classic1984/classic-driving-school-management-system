@@ -141,6 +141,25 @@ class EnrollmentNotificationTest extends TestCase
         Http::assertSent(fn ($request) => $request['to'] === '2348031234567' && str_contains($request['sms'], 'is due TODAY'));
     }
 
+    public function test_student_is_still_reminded_about_a_balance_after_their_enrollment_completes(): void
+    {
+        Notification::fake();
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'due_date' => now()->toDateString(),
+            'status' => 'completed',
+        ]);
+
+        $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
+
+        Notification::assertSentTo($student, PaymentReminderNotification::class, function ($notification) {
+            return $notification->stage === 'due_today';
+        });
+    }
+
     public function test_student_is_not_reminded_once_the_balance_is_fully_paid(): void
     {
         Notification::fake();

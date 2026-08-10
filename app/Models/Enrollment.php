@@ -243,7 +243,11 @@ class Enrollment extends Pivot
             return;
         }
 
-        if ($this->balance() <= 0 && $this->hasCompletedTraining()) {
+        // Training completion depends only on attendance, never on payment
+        // status - a student who has attended every required day completes
+        // their training even with a balance outstanding, which then remains
+        // a separate financial matter tracked via balance()/isOverdue().
+        if ($this->hasCompletedTraining()) {
             $this->markCompleted();
 
             return;

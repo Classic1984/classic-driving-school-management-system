@@ -36,20 +36,7 @@ class EnrollmentCompletionTest extends TestCase
         $this->patch("/enrollments/{$enrollment->id}/complete")->assertRedirect('/login');
     }
 
-    public function test_marking_complete_fails_with_an_outstanding_balance(): void
-    {
-        $user = User::factory()->create();
-        $course = Course::factory()->create(['fee' => 100]);
-        $student = Student::factory()->create();
-        $enrollment = $this->enroll($student, $course);
-
-        $response = $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete");
-
-        $response->assertSessionHasErrors('enrollment');
-        $this->assertSame('active', $enrollment->fresh()->status);
-    }
-
-    public function test_marking_complete_succeeds_once_balance_is_cleared(): void
+    public function test_marking_complete_fails_when_training_is_not_yet_completed(): void
     {
         $user = User::factory()->create();
         $course = Course::factory()->create(['fee' => 100]);
@@ -61,6 +48,34 @@ class EnrollmentCompletionTest extends TestCase
             'amount' => 100,
             'status' => 'paid',
         ]);
+
+        $response = $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete");
+
+        $response->assertSessionHasErrors('enrollment');
+        $this->assertSame('active', $enrollment->fresh()->status);
+    }
+
+    public function test_marking_complete_succeeds_once_training_is_completed(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
 
         $response = $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete");
 
@@ -69,10 +84,35 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertNull($enrollment->fresh()->locked_reason);
     }
 
+    public function test_marking_complete_succeeds_even_with_an_outstanding_balance(): void
+    {
+        // Training completion is a training-only concern; the balance stays
+        // owed and is tracked separately once the enrollment completes.
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $response = $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete");
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertSame(100.0, $enrollment->fresh()->balance());
+    }
+
     public function test_marking_complete_manually_automatically_issues_a_certificate(): void
     {
         $user = User::factory()->create();
-        $course = Course::factory()->create(['fee' => 100]);
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
         $student = Student::factory()->create();
         $enrollment = $this->enroll($student, $course);
         Payment::factory()->create([
@@ -81,6 +121,15 @@ class EnrollmentCompletionTest extends TestCase
             'amount' => 100,
             'status' => 'paid',
         ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
 
         $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete")->assertSessionHasNoErrors();
 
@@ -94,7 +143,7 @@ class EnrollmentCompletionTest extends TestCase
     public function test_completed_enrollments_stay_completed_even_when_overdue_conditions_are_recomputed(): void
     {
         $user = User::factory()->create();
-        $course = Course::factory()->create(['fee' => 100]);
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
         $student = Student::factory()->create();
         $enrollment = $this->enroll($student, $course);
         Payment::factory()->create([
@@ -103,6 +152,15 @@ class EnrollmentCompletionTest extends TestCase
             'amount' => 100,
             'status' => 'paid',
         ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
         $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete");
 
         $enrollment->fresh()->refreshStatus();
@@ -129,7 +187,7 @@ class EnrollmentCompletionTest extends TestCase
     public function test_secretary_can_mark_an_enrollment_complete(): void
     {
         $secretary = User::factory()->secretary()->create();
-        $course = Course::factory()->create(['fee' => 100]);
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
         $student = Student::factory()->create();
         $enrollment = $this->enroll($student, $course);
         Payment::factory()->create([
@@ -138,6 +196,15 @@ class EnrollmentCompletionTest extends TestCase
             'amount' => 100,
             'status' => 'paid',
         ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
 
         $response = $this->actingAs($secretary)->patch("/enrollments/{$enrollment->id}/complete");
 
@@ -207,8 +274,11 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertDatabaseCount('certificates', 1);
     }
 
-    public function test_enrollment_does_not_auto_complete_with_an_outstanding_balance_even_if_attendance_is_done(): void
+    public function test_enrollment_auto_completes_once_attendance_is_done_even_with_an_outstanding_balance(): void
     {
+        // Training completion is independent of payment status: a student
+        // who has attended every required day completes even while they
+        // still owe money, and the balance remains outstanding afterward.
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
         $student = Student::factory()->create();
         $enrollment = $this->enroll($student, $course);
@@ -225,7 +295,37 @@ class EnrollmentCompletionTest extends TestCase
 
         $enrollment->refreshStatus();
 
-        $this->assertNotSame('completed', $enrollment->fresh()->status);
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertSame(100.0, $enrollment->fresh()->balance());
+        $this->assertDatabaseHas('certificates', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+        ]);
+    }
+
+    public function test_an_incomplete_enrollment_with_an_overdue_balance_locks_instead_of_completing(): void
+    {
+        // One day short of the required total, and the balance is overdue:
+        // the enrollment locks for the payment issue rather than completing.
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        $enrollment->forceFill(['due_date' => now()->subDay()->toDateString()])->save();
+
+        for ($day = 1; $day <= 19; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertSame('locked', $enrollment->fresh()->status);
+        $this->assertSame('overdue_balance', $enrollment->fresh()->locked_reason);
     }
 
     public function test_enrollment_does_not_auto_complete_until_attendance_is_exhausted(): void
