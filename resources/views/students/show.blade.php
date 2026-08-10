@@ -270,6 +270,42 @@
                 @endif
 
                 <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Certificates') }}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-2 py-1">{{ __('Certificate #') }}</th>
+                                    <th class="px-2 py-1">{{ __('Course') }}</th>
+                                    <th class="px-2 py-1">{{ __('Issue Date') }}</th>
+                                    <th class="px-2 py-1">{{ __('Status') }}</th>
+                                    <th class="px-2 py-1"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($student->certificates as $certificate)
+                                    <tr>
+                                        <td class="px-2 py-1 text-sm font-mono">{{ $certificate->certificate_number }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $certificate->course->name }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $certificate->issue_date->format('Y-m-d') }}</td>
+                                        <td class="px-2 py-1 text-sm">
+                                            <x-badge color="amber">{{ __('Certified') }}</x-badge>
+                                        </td>
+                                        <td class="px-2 py-1 text-sm">
+                                            <a href="{{ route('certificates.show', $certificate) }}" class="text-sm text-amber-600 hover:underline">{{ __('View / Print') }}</a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('No certificates issued yet.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Student Login Training') }}</h3>
 
                     @if (session('status') === 'training-logged')

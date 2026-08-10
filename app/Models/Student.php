@@ -104,6 +104,14 @@ class Student extends Model
     }
 
     /**
+     * The certificates issued to this student.
+     */
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    /**
      * Recompute this student's overall status from their enrollments:
      * automatically completed once every course they're enrolled in has
      * completed, active otherwise. Runs whenever an enrollment completes or
