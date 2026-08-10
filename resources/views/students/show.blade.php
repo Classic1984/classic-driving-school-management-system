@@ -204,11 +204,13 @@
                                         <td class="px-2 py-1 text-sm">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ optional($enrolledCourse->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">
-                                            <x-badge :color="match ($enrolledCourse->pivot->status) {
-                                                'locked' => 'red',
-                                                'completed' => 'blue',
+                                            <x-badge :color="match ($enrolledCourse->pivot->statusLabel()) {
+                                                'Registered' => 'gray',
+                                                'Locked' => 'red',
+                                                'Completed' => 'blue',
+                                                'Certified' => 'amber',
                                                 default => 'green',
-                                            }" class="capitalize">{{ $enrolledCourse->pivot->status }}</x-badge>
+                                            }">{{ __($enrolledCourse->pivot->statusLabel()) }}</x-badge>
                                         </td>
                                         <td class="px-2 py-1 text-sm">
                                             @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->hasCompletedTraining())

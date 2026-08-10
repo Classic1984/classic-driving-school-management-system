@@ -638,4 +638,95 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->assertSame('completed', $enrollment->fresh()->status);
     }
+
+    public function test_status_label_reads_registered_before_any_attendance_is_logged(): void
+    {
+        $course = Course::factory()->create(['duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+
+        $this->assertSame('Registered', $enrollment->statusLabel());
+    }
+
+    public function test_status_label_reads_active_once_some_attendance_is_logged(): void
+    {
+        $course = Course::factory()->create(['duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+            'duration' => 1,
+        ]);
+
+        $this->assertSame('Active', $enrollment->statusLabel());
+    }
+
+    public function test_status_label_reads_locked_for_a_locked_enrollment(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $enrollment->refreshStatus();
+
+        $this->assertSame('Locked', $enrollment->fresh()->statusLabel());
+    }
+
+    public function test_status_label_reads_certified_once_the_certificate_is_issued(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+
+        $this->assertSame('Certified', $enrollment->fresh()->statusLabel());
+    }
+
+    public function test_status_label_reads_completed_when_the_certificate_has_been_removed(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+        Certificate::where('student_id', $student->id)->where('course_id', $course->id)->delete();
+
+        $this->assertSame('Completed', $enrollment->fresh()->statusLabel());
+    }
 }

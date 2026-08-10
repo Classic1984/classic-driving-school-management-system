@@ -200,6 +200,38 @@ class Enrollment extends Pivot
     }
 
     /**
+     * A five-stage status label - Registered, Active, Locked, Completed, or
+     * Certified - layered on top of the real stored `status` column
+     * (active/locked/completed) purely for display. Nothing is persisted
+     * here and the underlying column is untouched, so every existing
+     * feature that reads `status` directly keeps working; this just gives
+     * staff the richer REGISTERED -> ACTIVE -> LOCKED -> COMPLETED ->
+     * CERTIFIED picture wherever an enrollment's stage is shown.
+     */
+    public function statusLabel(): string
+    {
+        if ($this->status === 'completed') {
+            return $this->hasCertificate() ? 'Certified' : 'Completed';
+        }
+
+        if ($this->status === 'locked') {
+            return 'Locked';
+        }
+
+        return $this->attendedDays() === 0 ? 'Registered' : 'Active';
+    }
+
+    /**
+     * Whether a certificate has been issued for this enrollment.
+     */
+    public function hasCertificate(): bool
+    {
+        return Certificate::where('student_id', $this->student_id)
+            ->where('course_id', $this->course_id)
+            ->exists();
+    }
+
+    /**
      * A human-readable explanation of why this enrollment is locked, for
      * display to staff (e.g. on the Dashboard's locked-students list). Null
      * when the enrollment isn't locked at all.
