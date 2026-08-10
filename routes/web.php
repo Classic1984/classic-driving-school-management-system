@@ -9,6 +9,7 @@ use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -75,6 +76,9 @@ Route::middleware('auth')->group(function () {
     Route::get('certificate-report', [CertificateReportController::class, 'index'])->name('certificate-report.index');
     Route::get('certificate-report/export', [CertificateReportController::class, 'export'])->name('certificate-report.export');
     Route::get('certificate-report/export-pdf', [CertificateReportController::class, 'exportPdf'])->name('certificate-report.export-pdf');
+    Route::get('instructor-activity-report', [InstructorActivityReportController::class, 'index'])->name('instructor-activity-report.index');
+    Route::get('instructor-activity-report/export', [InstructorActivityReportController::class, 'export'])->name('instructor-activity-report.export');
+    Route::get('instructor-activity-report/export-pdf', [InstructorActivityReportController::class, 'exportPdf'])->name('instructor-activity-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
     // above: "payments/export" would otherwise be swallowed by "payments/{payment}".
     Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');

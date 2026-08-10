@@ -13,11 +13,16 @@
                         {{ __('Instructors') }}
                     </h3>
 
-                    @if (auth()->user()->canManageCourses())
-                        <a href="{{ route('instructors.create') }}">
-                            <x-primary-button type="button">{{ __('Add Instructor') }}</x-primary-button>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('instructor-activity-report.index') }}">
+                            <x-secondary-button type="button">{{ __('View Activity Report') }}</x-secondary-button>
                         </a>
-                    @endif
+                        @if (auth()->user()->canManageCourses())
+                            <a href="{{ route('instructors.create') }}">
+                                <x-primary-button type="button">{{ __('Add Instructor') }}</x-primary-button>
+                            </a>
+                        @endif
+                    </div>
                 </div>
 
                 @if (session('status') === 'instructor-created')
