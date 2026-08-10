@@ -16,6 +16,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentRegistrationReportController;
+use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
     Route::resource('attendances', AttendanceController::class)->except(['destroy']);
+    Route::get('training-progress', [TrainingProgressController::class, 'index'])->name('training-progress.index');
     Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');
     Route::get('training-report/export', [TrainingReportController::class, 'export'])->name('training-report.export');
     Route::get('training-report/export-pdf', [TrainingReportController::class, 'exportPdf'])->name('training-report.export-pdf');

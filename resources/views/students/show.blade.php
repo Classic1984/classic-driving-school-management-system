@@ -211,6 +211,9 @@
                                                 'Certified' => 'amber',
                                                 default => 'green',
                                             }">{{ __($enrolledCourse->pivot->statusLabel()) }}</x-badge>
+                                            @if ($enrolledCourse->pivot->status === 'locked')
+                                                <span class="block text-xs text-gray-500 mt-0.5">{{ $enrolledCourse->pivot->lockedReasonLabel() }}</span>
+                                            @endif
                                         </td>
                                         <td class="px-2 py-1 text-sm">
                                             @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->hasCompletedTraining() && $enrolledCourse->pivot->balance() <= 0)
