@@ -13,9 +13,14 @@
                         {{ __('Certificates') }}
                     </h3>
 
-                    <a href="{{ route('certificates.create') }}">
-                        <x-primary-button type="button">{{ __('Issue Certificate') }}</x-primary-button>
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('certificate-report.index') }}">
+                            <x-secondary-button type="button">{{ __('View Report') }}</x-secondary-button>
+                        </a>
+                        <a href="{{ route('certificates.create') }}">
+                            <x-primary-button type="button">{{ __('Issue Certificate') }}</x-primary-button>
+                        </a>
+                    </div>
                 </div>
 
                 @if (session('status') === 'certificate-created')
