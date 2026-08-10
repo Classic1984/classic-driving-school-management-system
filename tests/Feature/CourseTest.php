@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\User;
@@ -160,6 +161,35 @@ class CourseTest extends TestCase
 
         $course = Course::where('name', 'Beginner Driving')->firstOrFail();
         $this->assertTrue($course->students->contains($student));
+    }
+
+    public function test_enrolling_a_student_from_the_course_roster_sets_the_due_date_from_the_grace_period(): void
+    {
+        // Grace period is baked into due_date once, at enrollment time, the
+        // same way the fee is - not re-derived from the course on every
+        // overdue check - so this confirms the roster-attach path (as
+        // opposed to the student registration form) applies it correctly.
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['schedule' => 'weekend', 'duration_weeks' => 4]);
+
+        $response = $this->actingAs($user)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
+            'fee' => $course->fee,
+            'status' => $course->status,
+            'students' => [$student->id],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertSame($course->gracePeriodDays(), 7);
+        $this->assertSame(now()->addDays(7)->toDateString(), $enrollment->due_date->toDateString());
     }
 
     public function test_authenticated_user_can_update_a_course_and_its_students(): void
