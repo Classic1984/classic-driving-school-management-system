@@ -247,10 +247,13 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Student Training Progress');
+        // Lean, operational columns: Student, Programme, Required, Completed, Remaining, %, Status.
+        $response->assertSee('Programme');
+        $response->assertSee('Required');
+        $response->assertSee('Remaining');
         $response->assertSee('Tobi Fashola');
-        $response->assertSee($student->student_id_number);
         $response->assertSee('Two Week Program');
-        // 2-week program = 10 total days, 3 attended, 7 remaining, 30% complete.
+        // 2-week program = 10 required days, 3 completed, 7 remaining, 30%.
         $response->assertSee('30%');
         $response->assertSee('Active');
     }
