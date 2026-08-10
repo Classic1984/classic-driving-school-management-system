@@ -247,20 +247,20 @@ class RolePermissionTest extends TestCase
         $this->actingAs($director)->delete("/courses/{$course->id}")->assertRedirect('/courses');
     }
 
-    public function test_newly_registered_users_default_to_the_restricted_admin_role(): void
+    public function test_the_users_table_still_defaults_new_rows_to_the_restricted_admin_role(): void
     {
-        $response = $this->post('/register', [
+        // Public self-registration is gone (see Tests\Feature\Auth\RegistrationTest
+        // and Tests\Feature\UserManagementTest) - this locks in the column
+        // default itself, so any row created without an explicit role
+        // (e.g. a future script or migration) still lands least-privileged.
+        $user = User::forceCreate([
             'name' => 'New User',
             'email' => 'newuser@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => bcrypt('password'),
         ]);
 
-        $response->assertRedirect('/dashboard');
-
-        $user = User::where('email', 'newuser@example.com')->firstOrFail();
-        $this->assertSame('admin', $user->role);
-        $this->assertFalse($user->isAdmin());
-        $this->assertFalse($user->isDirector());
+        $this->assertSame('admin', $user->fresh()->role);
+        $this->assertFalse($user->fresh()->isAdmin());
+        $this->assertFalse($user->fresh()->isDirector());
     }
 }
