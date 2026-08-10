@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -91,8 +92,11 @@ class PaymentController extends Controller
     public function store(StorePaymentRequest $request): RedirectResponse
     {
         $payment = Payment::create($request->validated());
+        $payment->load(['student', 'course']);
 
         $this->refreshEnrollmentStatus($payment->student_id, $payment->course_id);
+
+        ActivityLog::record("Recorded a payment of ₦".number_format((float) $payment->amount, 2)." for {$payment->student->name} ({$payment->course->name})");
 
         if ($request->boolean('redirect_to_student')) {
             return Redirect::route('students.show', $payment->student_id)->with('status', 'payment-created');
@@ -128,9 +132,12 @@ class PaymentController extends Controller
         $previousCourseId = $payment->course_id;
 
         $payment->update($request->validated());
+        $payment->load(['student', 'course']);
 
         $this->refreshEnrollmentStatus($previousStudentId, $previousCourseId);
         $this->refreshEnrollmentStatus($payment->student_id, $payment->course_id);
+
+        ActivityLog::record("Updated a payment for {$payment->student->name} ({$payment->course->name})");
 
         return Redirect::route('payments.index')->with('status', 'payment-updated');
     }
@@ -140,12 +147,16 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment): RedirectResponse
     {
+        $payment->load(['student', 'course']);
         $studentId = $payment->student_id;
         $courseId = $payment->course_id;
+        $description = "Deleted a payment for {$payment->student->name} ({$payment->course->name})";
 
         $payment->delete();
 
         $this->refreshEnrollmentStatus($studentId, $courseId);
+
+        ActivityLog::record($description);
 
         return Redirect::route('payments.index')->with('status', 'payment-deleted');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCertificateRequest;
 use App\Http\Requests\UpdateCertificateRequest;
+use App\Models\ActivityLog;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
@@ -37,7 +38,10 @@ class CertificateController extends Controller
      */
     public function store(StoreCertificateRequest $request): RedirectResponse
     {
-        Certificate::create($request->validated());
+        $certificate = Certificate::create($request->validated());
+        $certificate->load('student');
+
+        ActivityLog::record("Issued certificate {$certificate->certificate_number} for {$certificate->student->name}");
 
         return Redirect::route('certificates.index')->with('status', 'certificate-created');
     }
@@ -66,6 +70,9 @@ class CertificateController extends Controller
     public function update(UpdateCertificateRequest $request, Certificate $certificate): RedirectResponse
     {
         $certificate->update($request->validated());
+        $certificate->load('student');
+
+        ActivityLog::record("Updated certificate {$certificate->certificate_number} for {$certificate->student->name}");
 
         return Redirect::route('certificates.index')->with('status', 'certificate-updated');
     }
@@ -75,7 +82,12 @@ class CertificateController extends Controller
      */
     public function destroy(Certificate $certificate): RedirectResponse
     {
+        $certificate->load('student');
+        $description = "Revoked certificate {$certificate->certificate_number} for {$certificate->student->name}";
+
         $certificate->delete();
+
+        ActivityLog::record($description);
 
         return Redirect::route('certificates.index')->with('status', 'certificate-deleted');
     }

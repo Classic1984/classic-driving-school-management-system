@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\DiscountAuditLog;
 use App\Models\Instructor;
@@ -132,6 +133,8 @@ class StudentController extends Controller
             ]);
         }
 
+        ActivityLog::record("Registered student {$student->name}");
+
         return Redirect::route('students.show', $student)->with('status', 'student-created');
     }
 
@@ -223,6 +226,8 @@ class StudentController extends Controller
 
         $student->update($data);
 
+        ActivityLog::record("Updated student {$student->name}");
+
         return Redirect::route('students.index')->with('status', 'student-updated');
     }
 
@@ -235,7 +240,10 @@ class StudentController extends Controller
             Storage::disk('public')->delete($student->photo_path);
         }
 
+        $name = $student->name;
         $student->delete();
+
+        ActivityLog::record("Deleted student {$name}");
 
         return Redirect::route('students.index')->with('status', 'student-deleted');
     }

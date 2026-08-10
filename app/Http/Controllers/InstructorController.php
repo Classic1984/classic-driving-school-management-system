@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInstructorRequest;
 use App\Http\Requests\UpdateInstructorRequest;
+use App\Models\ActivityLog;
 use App\Models\Instructor;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -34,7 +35,9 @@ class InstructorController extends Controller
      */
     public function store(StoreInstructorRequest $request): RedirectResponse
     {
-        Instructor::create($request->validated());
+        $instructor = Instructor::create($request->validated());
+
+        ActivityLog::record("Added instructor {$instructor->name}");
 
         return Redirect::route('instructors.index')->with('status', 'instructor-created');
     }
@@ -64,6 +67,8 @@ class InstructorController extends Controller
     {
         $instructor->update($request->validated());
 
+        ActivityLog::record("Updated instructor {$instructor->name}");
+
         return Redirect::route('instructors.index')->with('status', 'instructor-updated');
     }
 
@@ -72,7 +77,10 @@ class InstructorController extends Controller
      */
     public function destroy(Instructor $instructor): RedirectResponse
     {
+        $name = $instructor->name;
         $instructor->delete();
+
+        ActivityLog::record("Removed instructor {$name}");
 
         return Redirect::route('instructors.index')->with('status', 'instructor-deleted');
     }

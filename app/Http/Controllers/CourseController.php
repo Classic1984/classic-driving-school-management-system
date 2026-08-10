@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
+use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
@@ -44,6 +45,8 @@ class CourseController extends Controller
         $course->instructors()->sync($request->validated('instructors', []));
         $this->syncStudentEnrollments($course, $request->validated('students', []));
 
+        ActivityLog::record("Created course {$course->name}");
+
         return Redirect::route('courses.index')->with('status', 'course-created');
     }
 
@@ -79,6 +82,8 @@ class CourseController extends Controller
         $course->instructors()->sync($request->validated('instructors', []));
         $this->syncStudentEnrollments($course, $request->validated('students', []));
 
+        ActivityLog::record("Updated course {$course->name}");
+
         return Redirect::route('courses.index')->with('status', 'course-updated');
     }
 
@@ -87,7 +92,10 @@ class CourseController extends Controller
      */
     public function destroy(Course $course): RedirectResponse
     {
+        $name = $course->name;
         $course->delete();
+
+        ActivityLog::record("Deleted course {$name}");
 
         return Redirect::route('courses.index')->with('status', 'course-deleted');
     }

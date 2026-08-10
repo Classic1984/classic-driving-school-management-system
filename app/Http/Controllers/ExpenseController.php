@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
+use App\Models\ActivityLog;
 use App\Models\Expense;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -34,7 +35,9 @@ class ExpenseController extends Controller
      */
     public function store(StoreExpenseRequest $request): RedirectResponse
     {
-        Expense::create($request->validated());
+        $expense = Expense::create($request->validated());
+
+        ActivityLog::record("Recorded an expense of ₦".number_format((float) $expense->amount, 2)." ({$expense->category})");
 
         return Redirect::route('expenses.index')->with('status', 'expense-created');
     }
@@ -62,6 +65,8 @@ class ExpenseController extends Controller
     {
         $expense->update($request->validated());
 
+        ActivityLog::record("Updated an expense ({$expense->category})");
+
         return Redirect::route('expenses.index')->with('status', 'expense-updated');
     }
 
@@ -70,7 +75,10 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense): RedirectResponse
     {
+        $category = $expense->category;
         $expense->delete();
+
+        ActivityLog::record("Deleted an expense ({$category})");
 
         return Redirect::route('expenses.index')->with('status', 'expense-deleted');
     }

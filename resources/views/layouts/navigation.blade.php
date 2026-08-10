@@ -37,6 +37,9 @@
                         <x-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
                             {{ __('Finance') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
+                            {{ __('Activity Log') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -114,6 +117,9 @@
             @if (auth()->user()->isDirector())
                 <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
                     {{ __('Finance') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
+                    {{ __('Activity Log') }}
                 </x-responsive-nav-link>
             @endif
         </div>
