@@ -213,7 +213,7 @@
                                             }">{{ __($enrolledCourse->pivot->statusLabel()) }}</x-badge>
                                         </td>
                                         <td class="px-2 py-1 text-sm">
-                                            @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->hasCompletedTraining())
+                                            @if ($enrolledCourse->pivot->status !== 'completed' && $enrolledCourse->pivot->hasCompletedTraining() && $enrolledCourse->pivot->balance() <= 0)
                                                 <form method="post" action="{{ route('enrollments.complete', $enrolledCourse->pivot->id) }}" class="inline">
                                                     @csrf
                                                     @method('patch')

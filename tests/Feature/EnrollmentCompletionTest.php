@@ -84,10 +84,10 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertNull($enrollment->fresh()->locked_reason);
     }
 
-    public function test_marking_complete_succeeds_even_with_an_outstanding_balance(): void
+    public function test_marking_complete_fails_with_an_outstanding_balance_even_if_training_is_done(): void
     {
-        // Training completion is a training-only concern; the balance stays
-        // owed and is tracked separately once the enrollment completes.
+        // A student never completes while still owing money, no matter how
+        // many training days they've attended.
         $user = User::factory()->create();
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
         $student = Student::factory()->create();
@@ -104,8 +104,8 @@ class EnrollmentCompletionTest extends TestCase
 
         $response = $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete");
 
-        $response->assertSessionHasNoErrors();
-        $this->assertSame('completed', $enrollment->fresh()->status);
+        $response->assertSessionHasErrors('enrollment');
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
         $this->assertSame(100.0, $enrollment->fresh()->balance());
     }
 
@@ -268,16 +268,16 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertDatabaseCount('certificates', 1);
     }
 
-    public function test_enrollment_auto_completes_once_attendance_is_done_even_with_an_outstanding_balance(): void
+    public function test_enrollment_does_not_auto_complete_while_a_balance_is_owed_even_with_full_attendance(): void
     {
-        // Training completion is independent of payment status: a student
-        // who has attended every required day completes even while they
-        // still owe money, and the balance remains outstanding afterward.
-        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        // A 4-week programme requiring 20 days: the student attends all 20
+        // but still owes money, and the balance isn't overdue yet - the
+        // enrollment stays Active, not Completed, and no certificate issues.
+        $course = Course::factory()->create(['fee' => 20000, 'duration_weeks' => 4]);
         $student = Student::factory()->create();
         $enrollment = $this->enroll($student, $course);
 
-        for ($day = 1; $day <= 5; $day++) {
+        for ($day = 1; $day <= 20; $day++) {
             Attendance::factory()->create([
                 'student_id' => $student->id,
                 'course_id' => $course->id,
@@ -289,9 +289,9 @@ class EnrollmentCompletionTest extends TestCase
 
         $enrollment->refreshStatus();
 
-        $this->assertSame('completed', $enrollment->fresh()->status);
-        $this->assertSame(100.0, $enrollment->fresh()->balance());
-        $this->assertDatabaseHas('certificates', [
+        $this->assertSame('active', $enrollment->fresh()->status);
+        $this->assertSame(20000.0, $enrollment->fresh()->balance());
+        $this->assertDatabaseMissing('certificates', [
             'student_id' => $student->id,
             'course_id' => $course->id,
         ]);

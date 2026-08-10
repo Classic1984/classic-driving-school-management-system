@@ -153,8 +153,8 @@ class ActivityLogTest extends TestCase
     {
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Jane Doe']);
-        $course = Course::factory()->create(['name' => 'Beginner Program', 'duration_weeks' => 1]);
-        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $course = Course::factory()->create(['name' => 'Beginner Program', 'duration_weeks' => 1, 'fee' => 0]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 0]);
         for ($day = 1; $day <= 5; $day++) {
             Attendance::factory()->create([
                 'student_id' => $student->id,

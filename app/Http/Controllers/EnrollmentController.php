@@ -15,10 +15,10 @@ class EnrollmentController extends Controller
 {
     /**
      * Mark an enrollment as completed, automatically issuing the student's
-     * certificate for it. Requires the required training days to have been
-     * attended; an outstanding balance does not block this, since training
-     * completion and payment status are tracked independently. Once
-     * completed, the enrollment is exempt from future locking.
+     * certificate for it. Requires both the required training days to have
+     * been attended AND the outstanding balance to be cleared - a student
+     * never completes while still owing money. Once completed, the
+     * enrollment is exempt from future locking.
      */
     public function complete(Enrollment $enrollment): RedirectResponse
     {
@@ -29,6 +29,12 @@ class EnrollmentController extends Controller
         if (! $enrollment->hasCompletedTraining()) {
             return Redirect::back()->withErrors([
                 'enrollment' => 'Cannot mark this course complete: the required training days ('.$enrollment->attendedDays().' of '.$enrollment->course->totalTrainingDays().') have not been attended yet.',
+            ]);
+        }
+
+        if ($enrollment->balance() > 0) {
+            return Redirect::back()->withErrors([
+                'enrollment' => 'Cannot mark this course complete: outstanding balance of ₦'.number_format($enrollment->balance(), 2).' must be cleared first.',
             ]);
         }
 
