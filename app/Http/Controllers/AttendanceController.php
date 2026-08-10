@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
+use App\Models\ActivityLog;
 use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
@@ -42,11 +43,14 @@ class AttendanceController extends Controller
             ...$request->validated(),
             'logged_by' => $request->user()->id,
         ]);
+        $attendance->load(['student', 'course']);
 
         // Recompute immediately in case this is the student's last training
         // day, rather than waiting for the next payment or the daily
         // scheduled refresh.
         $this->recalculateEnrollment($attendance->student_id, $attendance->course_id);
+
+        ActivityLog::record("Logged training attendance for {$attendance->student->name} ({$attendance->course->name})");
 
         if ($request->boolean('redirect_to_training_record')) {
             return Redirect::route('students.training-record', $attendance->student_id)->with('status', 'training-logged');
@@ -86,12 +90,15 @@ class AttendanceController extends Controller
         $previousCourseId = $attendance->course_id;
 
         $attendance->update($request->validated());
+        $attendance->load(['student', 'course']);
 
         // A correction can change the training day count for either the
         // original enrollment (student/course reassigned) or the new one,
         // and can flip a completed enrollment back to active/locked.
         $this->recalculateEnrollment($previousStudentId, $previousCourseId);
         $this->recalculateEnrollment($attendance->student_id, $attendance->course_id);
+
+        ActivityLog::record("Updated a training attendance record for {$attendance->student->name} ({$attendance->course->name})");
 
         return Redirect::route('attendances.index')->with('status', 'attendance-updated');
     }
@@ -101,12 +108,16 @@ class AttendanceController extends Controller
      */
     public function destroy(Attendance $attendance): RedirectResponse
     {
+        $attendance->load(['student', 'course']);
         $studentId = $attendance->student_id;
         $courseId = $attendance->course_id;
+        $description = "Deleted a training attendance record for {$attendance->student->name} ({$attendance->course->name})";
 
         $attendance->delete();
 
         $this->recalculateEnrollment($studentId, $courseId);
+
+        ActivityLog::record($description);
 
         return Redirect::route('attendances.index')->with('status', 'attendance-deleted');
     }

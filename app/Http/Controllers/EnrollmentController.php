@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReactivationRequest;
+use App\Models\ActivityLog;
 use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\ReactivationAuditLog;
@@ -32,6 +33,8 @@ class EnrollmentController extends Controller
         }
 
         $enrollment->markCompleted();
+
+        ActivityLog::record("Marked {$enrollment->student->name}'s enrollment in {$enrollment->course->name} as completed");
 
         return Redirect::back()->with('status', 'enrollment-completed');
     }
@@ -104,6 +107,8 @@ class EnrollmentController extends Controller
             'reactivation_fee' => $additionalFee,
             'reactivated_by' => $request->user()->id,
         ])->save();
+
+        ActivityLog::record("Reactivated {$enrollment->student->name}'s enrollment in {$enrollment->course->name}");
 
         return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-reactivated');
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
@@ -59,6 +60,7 @@ Route::middleware('auth')->group(function () {
         Route::get('finance/export-pdf', [FinanceController::class, 'exportPdf'])->name('finance.export-pdf');
         Route::get('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'showReactivateForm'])->name('enrollments.reactivate.create');
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
+        Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
     });
 
     Route::get('enrolled-trainees', [EnrolledTraineeController::class, 'index'])->name('enrolled-trainees.index');
