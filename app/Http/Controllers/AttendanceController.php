@@ -132,7 +132,7 @@ class AttendanceController extends Controller
         Enrollment::where('student_id', $studentId)
             ->where('course_id', $courseId)
             ->first()
-            ?->recalculateAfterAttendanceChange();
+            ?->reconcile();
     }
 
     /**

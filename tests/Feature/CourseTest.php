@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Instructor;
+use App\Models\Payment;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -281,5 +283,46 @@ class CourseTest extends TestCase
 
         $response->assertRedirect('/courses');
         $this->assertDatabaseMissing('courses', ['id' => $course->id]);
+    }
+
+    public function test_increasing_a_courses_required_days_reverts_an_enrollment_that_no_longer_qualifies(): void
+    {
+        // A student completed a 3-week (15-day) programme in full. The
+        // Director then edits the course to 4 weeks (20 days) - the
+        // student's 15 attended days no longer meet the new requirement,
+        // so their "Completed" status must be reverted, not left stale.
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['duration_weeks' => 3, 'fee' => 100]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 100]);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 100, 'status' => 'paid']);
+        for ($day = 1; $day <= 15; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $enrollment->reconcile();
+        $this->assertSame('completed', $enrollment->fresh()->status);
+
+        $this->actingAs($user)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => 4,
+            'fee' => $course->fee,
+            'status' => $course->status,
+            'students' => [$student->id],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
+        $this->assertSame(15, $enrollment->fresh()->attendedDays());
+        $this->assertSame(20, $course->fresh()->totalTrainingDays());
     }
 }

@@ -784,4 +784,42 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertSame('completed', $enrollmentB->fresh()->status);
         $this->assertNotSame('completed', $enrollmentA->fresh()->status);
     }
+
+    public function test_correcting_a_20_of_20_completed_enrollment_down_to_19_days_reverts_completion(): void
+    {
+        // The exact scenario that must never happen: attendance says 19 of
+        // 20 required days, but the enrollment still reads Completed.
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $attendances = [];
+        for ($day = 1; $day <= 20; $day++) {
+            $attendances[] = Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertSame(20, $enrollment->fresh()->attendedDays());
+
+        // Staff notice day 1 was logged for the wrong student and delete it.
+        $this->actingAs($user)->delete("/attendances/{$attendances[0]->id}")->assertSessionHasNoErrors();
+
+        $this->assertSame(19, $enrollment->fresh()->attendedDays());
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
+        $this->assertSame(1, $enrollment->fresh()->remainingTrainingDays());
+        $this->assertSame(95, $enrollment->fresh()->trainingCompletionPercentage());
+    }
 }

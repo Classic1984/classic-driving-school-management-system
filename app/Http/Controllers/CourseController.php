@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\ActivityLog;
 use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
@@ -81,6 +82,12 @@ class CourseController extends Controller
 
         $course->instructors()->sync($request->validated('instructors', []));
         $this->syncStudentEnrollments($course, $request->validated('students', []));
+
+        // A duration_weeks change alters totalTrainingDays() for every
+        // enrollment in this course - reconcile them all so a "Completed"
+        // enrollment that no longer meets the (now larger) requirement is
+        // correctly reverted, rather than silently going stale.
+        Enrollment::where('course_id', $course->id)->get()->each(fn (Enrollment $enrollment) => $enrollment->reconcile());
 
         ActivityLog::record("Updated course {$course->name}");
 
