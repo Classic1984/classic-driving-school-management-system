@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Notifications\EnrollmentLockedNotification;
+use App\Notifications\TrainingCompletedNotification;
+use App\Notifications\TrainingDaysRemainingNotification;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Facades\Notification;
 
@@ -22,6 +24,12 @@ class Enrollment extends Pivot
     public const TRAINING_PERIOD_MONTHS = 2;
 
     /**
+     * Remaining training days at or below this number trigger a one-time
+     * "nearing completion" reminder to staff.
+     */
+    public const TRAINING_DAYS_REMAINING_THRESHOLD = 3;
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -37,6 +45,7 @@ class Enrollment extends Pivot
             'discount_amount' => 'decimal:2',
             'reactivated_at' => 'date',
             'reactivation_fee' => 'decimal:2',
+            'training_reminder_sent_at' => 'datetime',
         ];
     }
 
@@ -259,6 +268,8 @@ class Enrollment extends Pivot
             ['issue_date' => now()->toDateString()]
         );
 
+        Notification::send(User::admins()->get(), new TrainingCompletedNotification($this));
+
         $this->student->refreshStatus();
     }
 
@@ -286,6 +297,7 @@ class Enrollment extends Pivot
         }
 
         $this->applyLockingRules();
+        $this->maybeNotifyDaysRemaining();
     }
 
     /**
@@ -313,6 +325,7 @@ class Enrollment extends Pivot
         }
 
         $this->applyLockingRules();
+        $this->maybeNotifyDaysRemaining();
 
         $this->student->refreshStatus();
     }
@@ -343,6 +356,25 @@ class Enrollment extends Pivot
             if ($newStatus === 'locked' && $newReason === 'overdue_balance' && ! $wasLockedForOverdueBalance) {
                 Notification::send(User::admins()->get(), new EnrollmentLockedNotification($this));
             }
+        }
+    }
+
+    /**
+     * Notify staff once, the first time this enrollment's remaining
+     * training days drop to (or below) the reminder threshold. Re-arms if
+     * an attendance correction pushes remaining days back above the
+     * threshold, so a later re-approach notifies again.
+     */
+    protected function maybeNotifyDaysRemaining(): void
+    {
+        $remaining = $this->remainingTrainingDays();
+        $withinThreshold = $remaining > 0 && $remaining <= self::TRAINING_DAYS_REMAINING_THRESHOLD;
+
+        if ($withinThreshold && $this->training_reminder_sent_at === null) {
+            Notification::send(User::admins()->get(), new TrainingDaysRemainingNotification($this));
+            $this->forceFill(['training_reminder_sent_at' => now()])->save();
+        } elseif (! $withinThreshold && $this->training_reminder_sent_at !== null) {
+            $this->forceFill(['training_reminder_sent_at' => null])->save();
         }
     }
 }
