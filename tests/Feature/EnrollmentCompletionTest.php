@@ -535,4 +535,113 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertSame('completed', $enrollment->fresh()->status);
         $this->assertSame('withdrawn', $student->fresh()->status);
     }
+
+    public function test_deleting_a_wrongly_logged_attendance_reverts_a_completed_enrollment_back_to_active(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $attendances = [];
+        for ($day = 1; $day <= 5; $day++) {
+            $attendances[] = Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+        $this->assertSame('completed', $enrollment->fresh()->status);
+
+        // A wrongly logged day is removed, dropping attendance to 4/5.
+        $this->actingAs($user)->delete("/attendances/{$attendances[0]->id}")->assertSessionHasNoErrors();
+
+        $this->assertSame('active', $enrollment->fresh()->status);
+        $this->assertSame(4, $enrollment->fresh()->attendedDays());
+        $this->assertSame('active', $student->fresh()->status);
+    }
+
+    public function test_correcting_an_attendance_from_present_to_absent_reverts_a_completed_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $attendances = [];
+        for ($day = 1; $day <= 5; $day++) {
+            $attendances[] = Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+        $this->assertSame('completed', $enrollment->fresh()->status);
+
+        $last = $attendances[4];
+        $this->actingAs($user)->put("/attendances/{$last->id}", [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'instructor_id' => '',
+            'date' => $last->date->toDateString(),
+            'status' => 'absent',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('active', $enrollment->fresh()->status);
+    }
+
+    public function test_re_logging_a_deleted_attendance_re_completes_the_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $attendances = [];
+        for ($day = 1; $day <= 5; $day++) {
+            $attendances[] = Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+        $this->actingAs($user)->delete("/attendances/{$attendances[0]->id}");
+        $this->assertSame('active', $enrollment->fresh()->status);
+
+        $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->addDays(6)->toDateString(),
+            'status' => 'present',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('completed', $enrollment->fresh()->status);
+    }
 }

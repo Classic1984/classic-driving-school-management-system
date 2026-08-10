@@ -253,6 +253,45 @@ class Enrollment extends Pivot
             return;
         }
 
+        $this->applyLockingRules();
+    }
+
+    /**
+     * Recompute this enrollment's status after an attendance record is
+     * added, corrected, or removed - including reverting a "completed"
+     * status back to active/locked if the correction dropped attendance
+     * below the course's required training days. Ordinary refreshStatus()
+     * deliberately never un-completes an enrollment, so routine due-date or
+     * training-period drift can't relock a finished student; only a
+     * deliberate attendance correction should be able to. Any certificate
+     * already issued is left on file rather than deleted automatically.
+     */
+    public function recalculateAfterAttendanceChange(): void
+    {
+        if ($this->hasCompletedTraining()) {
+            if ($this->status !== 'completed') {
+                $this->markCompleted();
+            }
+
+            return;
+        }
+
+        if ($this->status === 'completed') {
+            $this->forceFill(['status' => 'active', 'locked_reason' => null])->save();
+        }
+
+        $this->applyLockingRules();
+
+        $this->student->refreshStatus();
+    }
+
+    /**
+     * Apply the overdue-balance / expired-training-period / active locking
+     * rules and persist the result, notifying admins the first time an
+     * enrollment locks for an overdue balance.
+     */
+    protected function applyLockingRules(): void
+    {
         $wasLockedForOverdueBalance = $this->status === 'locked' && $this->locked_reason === 'overdue_balance';
 
         if ($this->isOverdue()) {

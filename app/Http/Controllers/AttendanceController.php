@@ -46,10 +46,7 @@ class AttendanceController extends Controller
         // Recompute immediately in case this is the student's last training
         // day, rather than waiting for the next payment or the daily
         // scheduled refresh.
-        Enrollment::where('student_id', $attendance->student_id)
-            ->where('course_id', $attendance->course_id)
-            ->first()
-            ?->refreshStatus();
+        $this->recalculateEnrollment($attendance->student_id, $attendance->course_id);
 
         if ($request->boolean('redirect_to_training_record')) {
             return Redirect::route('students.training-record', $attendance->student_id)->with('status', 'training-logged');
@@ -85,7 +82,16 @@ class AttendanceController extends Controller
      */
     public function update(UpdateAttendanceRequest $request, Attendance $attendance): RedirectResponse
     {
+        $previousStudentId = $attendance->student_id;
+        $previousCourseId = $attendance->course_id;
+
         $attendance->update($request->validated());
+
+        // A correction can change the training day count for either the
+        // original enrollment (student/course reassigned) or the new one,
+        // and can flip a completed enrollment back to active/locked.
+        $this->recalculateEnrollment($previousStudentId, $previousCourseId);
+        $this->recalculateEnrollment($attendance->student_id, $attendance->course_id);
 
         return Redirect::route('attendances.index')->with('status', 'attendance-updated');
     }
@@ -95,9 +101,27 @@ class AttendanceController extends Controller
      */
     public function destroy(Attendance $attendance): RedirectResponse
     {
+        $studentId = $attendance->student_id;
+        $courseId = $attendance->course_id;
+
         $attendance->delete();
 
+        $this->recalculateEnrollment($studentId, $courseId);
+
         return Redirect::route('attendances.index')->with('status', 'attendance-deleted');
+    }
+
+    /**
+     * Recompute the enrollment's status now that its attendance record has
+     * changed, including reverting a "completed" status if the correction
+     * dropped attendance back below the required training days.
+     */
+    protected function recalculateEnrollment(int $studentId, int $courseId): void
+    {
+        Enrollment::where('student_id', $studentId)
+            ->where('course_id', $courseId)
+            ->first()
+            ?->recalculateAfterAttendanceChange();
     }
 
     /**
