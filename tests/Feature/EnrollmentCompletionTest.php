@@ -729,4 +729,59 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->assertSame('Completed', $enrollment->fresh()->statusLabel());
     }
+
+    public function test_reassigning_an_attendance_to_a_different_student_recalculates_both_enrollments(): void
+    {
+        // A 1-week course requires 5 days. Student A has 5/5 (but no
+        // payment, so incomplete under the balance rule); Student B has
+        // 4/5. Moving one of Student A's days onto Student B should drop
+        // A back to 4/5 and push B up to 5/5.
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $studentA = Student::factory()->create();
+        $studentB = Student::factory()->create();
+        $enrollmentA = $this->enroll($studentA, $course);
+        $enrollmentB = $this->enroll($studentB, $course);
+        Payment::factory()->create([
+            'student_id' => $studentB->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        $attendancesA = [];
+        for ($day = 1; $day <= 5; $day++) {
+            $attendancesA[] = Attendance::factory()->create([
+                'student_id' => $studentA->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        for ($day = 1; $day <= 4; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $studentB->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $moved = $attendancesA[0];
+        $this->actingAs($user)->put("/attendances/{$moved->id}", [
+            'student_id' => $studentB->id,
+            'course_id' => $course->id,
+            'instructor_id' => '',
+            'date' => now()->addDays(6)->toDateString(),
+            'status' => 'present',
+            'duration' => 1,
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame(4, $enrollmentA->fresh()->attendedDays());
+        $this->assertSame(5, $enrollmentB->fresh()->attendedDays());
+        $this->assertSame('completed', $enrollmentB->fresh()->status);
+        $this->assertNotSame('completed', $enrollmentA->fresh()->status);
+    }
 }

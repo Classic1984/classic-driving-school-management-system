@@ -107,6 +107,24 @@ class CourseTest extends TestCase
         $response->assertSee($course->name);
     }
 
+    public function test_course_page_shows_why_a_locked_enrollment_is_locked(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 100]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now()->subDays(10),
+            'due_date' => now()->subDays(6),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
+        $response = $this->actingAs($user)->get("/courses/{$course->id}");
+
+        $response->assertOk();
+        $response->assertSee('Overdue Balance');
+    }
+
     public function test_authenticated_user_can_update_a_course_and_its_instructors(): void
     {
         $user = User::factory()->create();

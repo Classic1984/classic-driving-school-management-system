@@ -627,6 +627,24 @@ class StudentTest extends TestCase
         $response->assertSee('Defensive Driving 101');
     }
 
+    public function test_student_page_shows_why_a_locked_enrollment_is_locked(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 100]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now()->subDays(10),
+            'due_date' => now()->subDays(6),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Overdue Balance');
+    }
+
     public function test_student_page_shows_training_progress_for_each_enrolled_course(): void
     {
         $user = User::factory()->create();

@@ -175,7 +175,10 @@
 
             @if ($trainingProgress->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Student Training Progress') }}</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">{{ __('Student Training Progress') }}</h3>
+                        <a href="{{ route('training-progress.index') }}" class="text-sm text-amber-600 hover:underline">{{ __('View Full List') }}</a>
+                    </div>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
