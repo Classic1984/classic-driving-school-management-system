@@ -75,7 +75,24 @@ class CertificateTest extends TestCase
         $response->assertRedirect('/certificates');
 
         $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
-        $this->assertStringStartsWith($student->fresh()->student_id_number, $certificate->certificate_number);
+        $this->assertMatchesRegularExpression('/^CDS-CERT-\d{4}-\d{5}$/', $certificate->certificate_number);
+    }
+
+    public function test_certificate_numbers_are_derived_from_the_row_id_and_issue_year(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $this->enrollAndComplete($student, $course);
+
+        $this->actingAs($user)->post('/certificates', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'issue_date' => '2026-08-10',
+        ])->assertSessionHasNoErrors();
+
+        $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertSame('CDS-CERT-2026-'.str_pad((string) $certificate->id, 5, '0', STR_PAD_LEFT), $certificate->certificate_number);
     }
 
     public function test_certificate_cannot_be_issued_when_course_is_not_completed(): void

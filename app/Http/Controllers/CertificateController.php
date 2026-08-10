@@ -37,15 +37,7 @@ class CertificateController extends Controller
      */
     public function store(StoreCertificateRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-        $student = Student::findOrFail($validated['student_id']);
-
-        $course = Course::findOrFail($validated['course_id']);
-
-        Certificate::create([
-            ...$validated,
-            'certificate_number' => Certificate::numberFor($student, $course),
-        ]);
+        Certificate::create($request->validated());
 
         return Redirect::route('certificates.index')->with('status', 'certificate-created');
     }

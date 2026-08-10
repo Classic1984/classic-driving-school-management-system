@@ -224,7 +224,7 @@ class Enrollment extends Pivot
 
         Certificate::firstOrCreate(
             ['student_id' => $this->student_id, 'course_id' => $this->course_id],
-            ['certificate_number' => Certificate::numberFor($this->student, $this->course), 'issue_date' => now()->toDateString()]
+            ['issue_date' => now()->toDateString()]
         );
 
         $this->student->refreshStatus();
