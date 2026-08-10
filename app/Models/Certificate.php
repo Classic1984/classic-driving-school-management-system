@@ -6,6 +6,7 @@ use Database\Factories\CertificateFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Certificate extends Model
 {
@@ -18,7 +19,6 @@ class Certificate extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'certificate_number',
         'student_id',
         'course_id',
         'instructor_id',
@@ -53,11 +53,27 @@ class Certificate extends Model
     }
 
     /**
-     * Build a certificate number from the student's permanent ID number, so
-     * every certificate issued to a student is traceable back to them.
+     * certificate_number is deliberately not fillable: it's a permanent,
+     * system-assigned identifier derived from the row's own auto-increment
+     * id (like Student::student_id_number) so it's unique without a
+     * collision-check loop, in the form CDS-CERT-{issue year}-{00001}. A
+     * temporary placeholder satisfies the column's NOT NULL + unique
+     * constraint for the moment before the row has an id to derive from.
      */
-    public static function numberFor(Student $student, Course $course): string
+    protected static function booted(): void
     {
-        return "{$student->student_id_number}-CERT-{$course->id}";
+        static::creating(function (Certificate $certificate) {
+            $certificate->certificate_number = 'PENDING-'.Str::uuid();
+        });
+
+        static::created(function (Certificate $certificate) {
+            $certificate->forceFill([
+                'certificate_number' => sprintf(
+                    'CDS-CERT-%s-%s',
+                    $certificate->issue_date->format('Y'),
+                    str_pad((string) $certificate->id, 5, '0', STR_PAD_LEFT)
+                ),
+            ])->save();
+        });
     }
 }

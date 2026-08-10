@@ -133,11 +133,8 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete")->assertSessionHasNoErrors();
 
-        $this->assertDatabaseHas('certificates', [
-            'student_id' => $student->id,
-            'course_id' => $course->id,
-            'certificate_number' => Certificate::numberFor($student, $course),
-        ]);
+        $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertMatchesRegularExpression('/^CDS-CERT-\d{4}-\d{5}$/', $certificate->certificate_number);
     }
 
     public function test_completed_enrollments_stay_completed_even_when_overdue_conditions_are_recomputed(): void
@@ -239,11 +236,8 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->assertSame('completed', $enrollment->fresh()->status);
         $this->assertNull($enrollment->fresh()->locked_reason);
-        $this->assertDatabaseHas('certificates', [
-            'student_id' => $student->id,
-            'course_id' => $course->id,
-            'certificate_number' => Certificate::numberFor($student, $course),
-        ]);
+        $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertMatchesRegularExpression('/^CDS-CERT-\d{4}-\d{5}$/', $certificate->certificate_number);
     }
 
     public function test_auto_completing_an_enrollment_twice_does_not_duplicate_the_certificate(): void

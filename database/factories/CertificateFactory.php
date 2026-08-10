@@ -20,7 +20,6 @@ class CertificateFactory extends Factory
     public function definition(): array
     {
         return [
-            'certificate_number' => 'CERT-'.fake()->unique()->numerify('######'),
             'student_id' => Student::factory(),
             'course_id' => Course::factory(),
             'instructor_id' => Instructor::factory(),
