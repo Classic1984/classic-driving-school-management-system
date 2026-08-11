@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Certificate>
+ * @extends Factory<Certificate>
  */
 class CertificateFactory extends Factory
 {

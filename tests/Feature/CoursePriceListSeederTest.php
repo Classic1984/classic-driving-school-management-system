@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Course;
 use Database\Seeders\CoursePriceListSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

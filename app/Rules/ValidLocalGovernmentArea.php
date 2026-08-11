@@ -7,9 +7,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class ValidLocalGovernmentArea implements ValidationRule
 {
-    public function __construct(protected ?string $state)
-    {
-    }
+    public function __construct(protected ?string $state) {}
 
     /**
      * Confirm the given local government area actually belongs to the

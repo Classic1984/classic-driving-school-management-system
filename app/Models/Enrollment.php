@@ -6,6 +6,7 @@ use App\Notifications\EnrollmentLockedNotification;
 use App\Notifications\TrainingCompletedNotification;
 use App\Notifications\TrainingDaysRemainingNotification;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 
 class Enrollment extends Pivot
@@ -139,7 +140,7 @@ class Enrollment extends Pivot
      * The deadline by which this enrollment's training is expected to be
      * finished before it locks for an expired training period.
      */
-    public function expectedCompletionDate(): ?\Illuminate\Support\Carbon
+    public function expectedCompletionDate(): ?Carbon
     {
         return $this->enrolled_at?->copy()->addMonths(self::TRAINING_PERIOD_MONTHS);
     }

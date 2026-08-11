@@ -11,9 +11,7 @@ class TrainingDaysRemainingNotification extends Notification
 {
     use Queueable;
 
-    public function __construct(public Enrollment $enrollment)
-    {
-    }
+    public function __construct(public Enrollment $enrollment) {}
 
     /**
      * @return array<int, string>

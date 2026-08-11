@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Attendance>
+ * @extends Factory<Attendance>
  */
 class AttendanceFactory extends Factory
 {
