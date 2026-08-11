@@ -98,6 +98,9 @@
                         <a href="{{ route('finance.export-pdf', ['year' => $year]) }}">
                             <x-secondary-button type="button">{{ __('Download PDF') }}</x-secondary-button>
                         </a>
+                        <a href="{{ route('payment-reports.index') }}">
+                            <x-secondary-button type="button">{{ __('Financial Reports') }}</x-secondary-button>
+                        </a>
                         <a href="{{ route('expenses.index') }}">
                             <x-primary-button type="button">{{ __('Manage Expenses') }}</x-primary-button>
                         </a>

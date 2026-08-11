@@ -16,6 +16,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentCorrectionController;
+use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
@@ -77,6 +78,9 @@ Route::middleware('auth')->group(function () {
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
         Route::get('finance/export', [FinanceController::class, 'export'])->name('finance.export');
         Route::get('finance/export-pdf', [FinanceController::class, 'exportPdf'])->name('finance.export-pdf');
+        Route::get('payment-reports', [PaymentReportController::class, 'index'])->name('payment-reports.index');
+        Route::get('payment-reports/export', [PaymentReportController::class, 'export'])->name('payment-reports.export');
+        Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
         Route::get('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'showReactivateForm'])->name('enrollments.reactivate.create');
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
