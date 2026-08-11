@@ -325,4 +325,86 @@ class CourseTest extends TestCase
         $this->assertSame(15, $enrollment->fresh()->attendedDays());
         $this->assertSame(20, $course->fresh()->totalTrainingDays());
     }
+
+    public function test_a_secretary_cannot_enroll_students_when_creating_a_course(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+
+        $response = $this->actingAs($secretary)->post('/courses', [
+            'name' => 'Beginner Driving',
+            'description' => 'An introductory course.',
+            'course_type' => 'manual',
+            'schedule' => 'weekday',
+            'duration_hours' => 20,
+            'duration_weeks' => 4,
+            'fee' => 199.99,
+            'status' => 'active',
+            'students' => [$student->id],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $course = Course::where('name', 'Beginner Driving')->firstOrFail();
+        $this->assertFalse($course->students->contains($student));
+    }
+
+    public function test_a_secretary_cannot_change_a_courses_enrolled_students(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create();
+        $existingStudent = Student::factory()->create();
+        $newStudent = Student::factory()->create();
+        $course->students()->attach($existingStudent);
+
+        $response = $this->actingAs($secretary)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
+            'fee' => $course->fee,
+            'status' => $course->status,
+            'students' => [$newStudent->id],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $course->refresh();
+        $this->assertTrue($course->students->contains($existingStudent));
+        $this->assertFalse($course->students->contains($newStudent));
+    }
+
+    public function test_a_secretary_can_still_update_a_courses_own_fields(): void
+    {
+        // Confirms the roster lock doesn't block the rest of course
+        // editing, which Secretary still legitimately does.
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create(['name' => 'Old Name']);
+
+        $response = $this->actingAs($secretary)->put("/courses/{$course->id}", [
+            'name' => 'New Name',
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
+            'fee' => $course->fee,
+            'status' => $course->status,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame('New Name', $course->fresh()->name);
+    }
+
+    public function test_the_students_roster_picker_is_hidden_from_a_secretary(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create();
+
+        $response = $this->actingAs($secretary)->get("/courses/{$course->id}/edit");
+
+        $response->assertOk();
+        $response->assertSee('Director-only');
+        $response->assertDontSee('name="students[]"', false);
+    }
 }

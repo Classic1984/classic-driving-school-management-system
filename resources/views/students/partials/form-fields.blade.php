@@ -1,10 +1,47 @@
 @php($student = $student ?? null)
+@php($fieldsLocked = $student && ! auth()->user()->isDirector())
 
-<div>
-    <x-input-label for="name" :value="__('Name')" />
-    <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $student?->name)" required autofocus />
-    <x-input-error class="mt-2" :messages="$errors->get('name')" />
-</div>
+@if ($fieldsLocked)
+    <div class="rounded-md bg-gray-50 border border-gray-200 p-4 space-y-3">
+        <p class="text-xs font-medium text-gray-500">{{ __('🔒 Director-controlled information') }}</p>
+
+        <div>
+            <x-input-label :value="__('Name')" />
+            <p class="mt-1 text-sm text-gray-900">{{ $student->name }}</p>
+        </div>
+        <div>
+            <x-input-label :value="__('Phone')" />
+            <p class="mt-1 text-sm text-gray-900">{{ $student->phone }}</p>
+        </div>
+        <div>
+            <x-input-label :value="__('Date of Birth')" />
+            <p class="mt-1 text-sm text-gray-900">{{ optional($student->date_of_birth)->format('Y-m-d') ?? '—' }}</p>
+        </div>
+
+        <a href="{{ route('student-correction-requests.create', $student) }}" class="text-sm text-amber-600 hover:underline">{{ __('Request a Correction') }}</a>
+    </div>
+    <input type="hidden" name="name" value="{{ $student->name }}">
+    <input type="hidden" name="phone" value="{{ $student->phone }}">
+    <input type="hidden" name="date_of_birth" value="{{ optional($student->date_of_birth)->format('Y-m-d') }}">
+@else
+    <div>
+        <x-input-label for="name" :value="__('Name')" />
+        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $student?->name)" required autofocus />
+        <x-input-error class="mt-2" :messages="$errors->get('name')" />
+    </div>
+
+    <div>
+        <x-input-label for="phone" :value="__('Phone')" />
+        <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $student?->phone)" required />
+        <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+    </div>
+
+    <div>
+        <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
+        <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="mt-1 block w-full" :value="old('date_of_birth', optional($student?->date_of_birth)->format('Y-m-d'))" required />
+        <x-input-error class="mt-2" :messages="$errors->get('date_of_birth')" />
+    </div>
+@endif
 
 <div>
     <x-input-label for="email" :value="__('Email')" />
@@ -13,21 +50,9 @@
 </div>
 
 <div>
-    <x-input-label for="phone" :value="__('Phone')" />
-    <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $student?->phone)" required />
-    <x-input-error class="mt-2" :messages="$errors->get('phone')" />
-</div>
-
-<div>
     <x-input-label for="address" :value="__('Address')" />
     <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $student?->address)" />
     <x-input-error class="mt-2" :messages="$errors->get('address')" />
-</div>
-
-<div>
-    <x-input-label for="date_of_birth" :value="__('Date of Birth')" />
-    <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="mt-1 block w-full" :value="old('date_of_birth', optional($student?->date_of_birth)->format('Y-m-d'))" required />
-    <x-input-error class="mt-2" :messages="$errors->get('date_of_birth')" />
 </div>
 
 <div>
@@ -214,7 +239,13 @@
     <x-input-error class="mt-2" :messages="$errors->get('photo')" />
 </div>
 
-@if (! $student)
+@if (! $student && ! auth()->user()->isDirector())
+    <div class="rounded-md bg-gray-50 border border-gray-200 p-4">
+        <p class="text-sm text-gray-600">{{ __('🔒 Assigning a training program is Director-only. This student will be registered without one - a Director can enroll them afterward.') }}</p>
+    </div>
+@endif
+
+@if (! $student && auth()->user()->isDirector())
     <fieldset class="border border-gray-200 rounded-md p-4">
         <legend class="text-sm font-medium text-gray-700 px-1">{{ __('Course Enrollment & Initial Payment') }}</legend>
 

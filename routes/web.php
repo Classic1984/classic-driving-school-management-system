@@ -16,6 +16,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentCorrectionRequestController;
 use App\Http\Controllers\StudentRegistrationReportController;
 use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
@@ -74,10 +75,19 @@ Route::middleware('auth')->group(function () {
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::resource('users', UserController::class)->except(['show']);
+
+        // Reviewing and resolving/rejecting correction requests is
+        // Director-only; submitting one (below, outside this group) is
+        // open to any authenticated user.
+        Route::get('correction-requests', [StudentCorrectionRequestController::class, 'index'])->name('student-correction-requests.index');
+        Route::patch('correction-requests/{correctionRequest}/resolve', [StudentCorrectionRequestController::class, 'resolve'])->name('student-correction-requests.resolve');
+        Route::patch('correction-requests/{correctionRequest}/reject', [StudentCorrectionRequestController::class, 'reject'])->name('student-correction-requests.reject');
     });
 
     Route::get('enrolled-trainees', [EnrolledTraineeController::class, 'index'])->name('enrolled-trainees.index');
     Route::get('students/{student}/training-record', [StudentController::class, 'trainingRecord'])->name('students.training-record');
+    Route::get('students/{student}/correction-requests/create', [StudentCorrectionRequestController::class, 'create'])->name('student-correction-requests.create');
+    Route::post('students/{student}/correction-requests', [StudentCorrectionRequestController::class, 'store'])->name('student-correction-requests.store');
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);

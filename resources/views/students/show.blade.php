@@ -14,6 +14,8 @@
                     <p class="text-sm font-medium text-green-600">{{ __('Student updated successfully.') }}</p>
                 @elseif (session('status') === 'payment-created')
                     <p class="text-sm font-medium text-green-600">{{ __('Payment recorded successfully.') }}</p>
+                @elseif (session('status') === 'correction-requested')
+                    <p class="text-sm font-medium text-green-600">{{ __('Correction request submitted. A Director will review it.') }}</p>
                 @endif
 
                 @if ($student->photo_path)
@@ -162,7 +164,15 @@
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Enrollments') }}</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-500">{{ __('Enrollments') }}</h3>
+                        @unless (auth()->user()->isDirector())
+                            <span class="text-xs text-gray-400">
+                                {{ __('🔒 Director-controlled') }} ·
+                                <a href="{{ route('student-correction-requests.create', ['student' => $student, 'field' => 'program']) }}" class="text-amber-600 hover:underline">{{ __('Request a Correction') }}</a>
+                            </span>
+                        @endunless
+                    </div>
 
                     @if (session('status') === 'enrollment-completed')
                         <p class="mb-2 text-sm font-medium text-green-600">{{ __('Course marked as completed.') }}</p>

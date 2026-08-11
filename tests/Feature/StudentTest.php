@@ -402,6 +402,28 @@ class StudentTest extends TestCase
         $this->assertDatabaseCount('students', 0);
     }
 
+    public function test_a_secretary_can_register_a_student_without_a_course(): void
+    {
+        // Assigning a training program is Director-only, so a Secretary
+        // registering a student isn't even required to pick one - the
+        // student is simply registered unenrolled.
+        $secretary = User::factory()->secretary()->create();
+
+        $response = $this->actingAs($secretary)->post('/students', [
+            'name' => 'John Smith',
+            'email' => 'john.smith@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $student = Student::where('email', 'john.smith@example.com')->firstOrFail();
+        $this->assertTrue($student->courses->isEmpty());
+    }
+
     public function test_storing_a_student_requires_a_payment_method_when_an_amount_is_paid(): void
     {
         $user = User::factory()->create();
@@ -825,5 +847,100 @@ class StudentTest extends TestCase
 
         $response->assertRedirect('/students');
         $this->assertDatabaseMissing('students', ['id' => $student->id]);
+    }
+
+    public function test_a_secretary_cannot_change_a_students_locked_fields_but_can_change_others(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create([
+            'name' => 'Original Name',
+            'phone' => '555-0000',
+            'date_of_birth' => '1995-05-05',
+            'address' => 'Old Address',
+        ]);
+
+        $response = $this->actingAs($secretary)->put("/students/{$student->id}", [
+            'name' => 'Tampered Name',
+            'email' => $student->email,
+            'phone' => '555-9999',
+            'date_of_birth' => '2001-01-01',
+            'address' => 'New Address',
+            'course_type' => $student->course_type,
+            'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
+            'status' => $student->status,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/students');
+
+        $student->refresh();
+        $this->assertSame('Original Name', $student->name);
+        $this->assertSame('555-0000', $student->phone);
+        $this->assertSame('1995-05-05', $student->date_of_birth->toDateString());
+        // Unlocked fields still update normally.
+        $this->assertSame('New Address', $student->address);
+    }
+
+    public function test_a_director_can_change_a_students_locked_fields_and_it_is_logged(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create([
+            'name' => 'Original Name',
+            'phone' => '555-0000',
+            'date_of_birth' => '1995-05-05',
+        ]);
+
+        $this->actingAs($director)->put("/students/{$student->id}", [
+            'name' => 'New Name',
+            'email' => $student->email,
+            'phone' => '555-1234',
+            'date_of_birth' => '2001-01-01',
+            'course_type' => $student->course_type,
+            'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
+            'status' => $student->status,
+        ])->assertSessionHasNoErrors();
+
+        $student->refresh();
+        $this->assertSame('New Name', $student->name);
+        $this->assertSame('555-1234', $student->phone);
+        $this->assertSame('2001-01-01', $student->date_of_birth->toDateString());
+
+        $this->assertDatabaseHas('activity_logs', [
+            'description' => "Changed {$student->name}'s Name: Original Name → New Name",
+        ]);
+        $this->assertDatabaseHas('activity_logs', [
+            'description' => "Changed {$student->name}'s Phone: 555-0000 → 555-1234",
+        ]);
+        $this->assertDatabaseHas('activity_logs', [
+            'description' => "Changed {$student->name}'s Date of Birth: 1995-05-05 → 2001-01-01",
+        ]);
+    }
+
+    public function test_a_secretarys_edit_form_shows_locked_fields_as_read_only_with_a_correction_link(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create(['name' => 'Jane Roe']);
+
+        $response = $this->actingAs($secretary)->get("/students/{$student->id}/edit");
+
+        $response->assertOk();
+        $response->assertSee('Director-controlled information');
+        $response->assertSee('Request a Correction');
+        // A hidden input carries the unchanged value (so the rest of the
+        // form still validates), but the editable text input is gone.
+        $response->assertDontSee('<input id="name"', false);
+        $response->assertSee('type="hidden" name="name"', false);
+    }
+
+    public function test_a_directors_edit_form_shows_locked_fields_as_normal_inputs(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create();
+
+        $response = $this->actingAs($director)->get("/students/{$student->id}/edit");
+
+        $response->assertOk();
+        $response->assertDontSee('Director-controlled information');
+        $response->assertSee('name="name"', false);
     }
 }

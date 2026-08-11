@@ -79,17 +79,24 @@
     <x-input-error class="mt-2" :messages="$errors->get('instructors')" />
 </div>
 
-<div>
-    <x-input-label :value="__('Students')" />
-    <div class="mt-1 space-y-1 border border-gray-200 rounded-md p-3 max-h-48 overflow-y-auto">
-        @forelse ($students as $availableStudent)
-            <label class="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" name="students[]" value="{{ $availableStudent->id }}" @checked(in_array($availableStudent->id, $selectedStudents)) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
-                {{ $availableStudent->name }}
-            </label>
-        @empty
-            <p class="text-sm text-gray-500">{{ __('No students available yet.') }}</p>
-        @endforelse
+@if (auth()->user()->isDirector())
+    <div>
+        <x-input-label :value="__('Students')" />
+        <div class="mt-1 space-y-1 border border-gray-200 rounded-md p-3 max-h-48 overflow-y-auto">
+            @forelse ($students as $availableStudent)
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="students[]" value="{{ $availableStudent->id }}" @checked(in_array($availableStudent->id, $selectedStudents)) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                    {{ $availableStudent->name }}
+                </label>
+            @empty
+                <p class="text-sm text-gray-500">{{ __('No students available yet.') }}</p>
+            @endforelse
+        </div>
+        <x-input-error class="mt-2" :messages="$errors->get('students')" />
     </div>
-    <x-input-error class="mt-2" :messages="$errors->get('students')" />
-</div>
+@else
+    <div>
+        <x-input-label :value="__('Students')" />
+        <p class="mt-1 text-sm text-gray-500">{{ __('🔒 Enrolling students into a course is Director-only.') }}</p>
+    </div>
+@endif
