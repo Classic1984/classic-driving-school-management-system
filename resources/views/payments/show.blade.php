@@ -83,9 +83,42 @@
                     </table>
                 </div>
 
+                @if ($payment->corrections->isNotEmpty())
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Correction History') }}</h3>
+                        <div class="space-y-3">
+                            @foreach ($payment->corrections as $correction)
+                                <div class="text-sm border border-gray-200 rounded-md p-3">
+                                    <p class="text-gray-500">
+                                        {{ $correction->created_at->format('Y-m-d H:i') }} — {{ __('by') }} {{ $correction->correctedBy->name }}
+                                    </p>
+                                    <p class="mt-1"><span class="font-medium">{{ __('Reason') }}:</span> {{ $correction->reason }}</p>
+                                    <div class="mt-2 grid grid-cols-2 gap-4 text-xs">
+                                        <div>
+                                            <p class="font-semibold text-gray-500 uppercase tracking-wider">{{ __('Original') }}</p>
+                                            @foreach ($correction->original_allocations as $row)
+                                                <p>{{ $row['label'] }}: ₦{{ number_format($row['amount'], 2) }}</p>
+                                            @endforeach
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-500 uppercase tracking-wider">{{ __('Corrected') }}</p>
+                                            @foreach ($correction->new_allocations as $row)
+                                                <p>{{ $row['label'] }}: ₦{{ number_format($row['amount'], 2) }}</p>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <div class="flex items-center gap-4">
                     <a href="{{ route('payments.receipt', $payment) }}">
                         <x-secondary-button type="button">{{ __('View Receipt') }}</x-secondary-button>
+                    </a>
+                    <a href="{{ route('payments.correct.edit', $payment) }}">
+                        <x-secondary-button type="button">{{ __('Correct Allocation') }}</x-secondary-button>
                     </a>
                     <a href="{{ route('payments.edit', $payment) }}">
                         <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>

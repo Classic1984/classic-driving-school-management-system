@@ -73,6 +73,15 @@ class Payment extends Model
     }
 
     /**
+     * Every correction ever made to how this payment's amount is split
+     * across its charges, most recent first.
+     */
+    public function corrections(): HasMany
+    {
+        return $this->hasMany(PaymentCorrectionLog::class)->latest();
+    }
+
+    /**
      * A human-readable summary of what this payment paid for, e.g.
      * "Training — Beginner Course, Learner's Permit" - built from its
      * allocations so it's accurate whether this is a legacy single-course
