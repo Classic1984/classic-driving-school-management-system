@@ -26,6 +26,8 @@ class Course extends Model
         'duration_hours',
         'duration_weeks',
         'fee',
+        'online_certificate_fee',
+        'student_certificate_fee',
         'status',
     ];
 
@@ -38,6 +40,8 @@ class Course extends Model
     {
         return [
             'fee' => 'decimal:2',
+            'online_certificate_fee' => 'decimal:2',
+            'student_certificate_fee' => 'decimal:2',
             'duration_hours' => 'integer',
             'duration_weeks' => 'integer',
         ];
@@ -90,7 +94,7 @@ class Course extends Model
     {
         return $this->belongsToMany(Student::class)
             ->using(Enrollment::class)
-            ->withPivot(['id', 'enrolled_at', 'due_date', 'status', 'locked_reason', 'fee', 'original_fee', 'discount_percentage', 'discount_amount', 'discount_reason', 'discount_reason_note', 'discount_approved_by', 'reactivated_at', 'reactivation_fee', 'reactivated_by'])
+            ->withPivot(['id', 'enrolled_at', 'due_date', 'status', 'locked_reason', 'fee', 'original_fee', 'discount_percentage', 'discount_amount', 'discount_reason', 'discount_reason_note', 'discount_approved_by', 'reactivated_at', 'reactivation_fee', 'reactivated_by', 'online_certificate_fee', 'student_certificate_fee'])
             ->withTimestamps();
     }
 

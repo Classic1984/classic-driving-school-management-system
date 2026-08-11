@@ -47,6 +47,8 @@ class Enrollment extends Pivot
             'reactivated_at' => 'date',
             'reactivation_fee' => 'decimal:2',
             'training_reminder_sent_at' => 'datetime',
+            'online_certificate_fee' => 'decimal:2',
+            'student_certificate_fee' => 'decimal:2',
         ];
     }
 
@@ -121,6 +123,52 @@ class Enrollment extends Pivot
     public function balance(): float
     {
         return max(0, $this->fee() - $this->amountPaid());
+    }
+
+    /**
+     * The remaining balance owed for this enrollment's online certificate
+     * charge, or null if the student hasn't been charged for one.
+     */
+    public function onlineCertificateBalance(): ?float
+    {
+        return $this->certificateBalance('online_certificate');
+    }
+
+    /**
+     * The remaining balance owed for this enrollment's student certificate
+     * charge, or null if the student hasn't been charged for one.
+     */
+    public function studentCertificateBalance(): ?float
+    {
+        return $this->certificateBalance('student_certificate');
+    }
+
+    /**
+     * The remaining balance for a course-outline certificate charge
+     * ('online_certificate' or 'student_certificate'), or null if this
+     * enrollment was never charged for that certificate type.
+     */
+    protected function certificateBalance(string $type): ?float
+    {
+        $fee = $this->{"{$type}_fee"};
+
+        if ($fee === null) {
+            return null;
+        }
+
+        return max(0, (float) $fee - $this->certificateAmountPaid($type));
+    }
+
+    /**
+     * The total amount paid toward a course-outline certificate charge so
+     * far, across every payment allocation recorded against it.
+     */
+    protected function certificateAmountPaid(string $type): float
+    {
+        return (float) PaymentAllocation::where('enrollment_id', $this->id)
+            ->where('allocation_type', $type)
+            ->whereHas('payment', fn ($query) => $query->where('status', 'paid'))
+            ->sum('amount');
     }
 
     public function isOverdue(): bool
