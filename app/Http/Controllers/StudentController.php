@@ -11,6 +11,7 @@ use App\Models\Instructor;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
+use App\Services\StudentChargeResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -205,8 +206,9 @@ class StudentController extends Controller
         $instructors = Instructor::orderBy('name')->get();
         $chargedServiceIds = $student->studentServices->pluck('service_id');
         $availableServices = Service::where('is_active', true)->whereNotIn('id', $chargedServiceIds)->orderBy('name')->get();
+        $financialOverview = StudentChargeResolver::allCharges($student);
 
-        return view('students.show', compact('student', 'instructors', 'availableServices'));
+        return view('students.show', compact('student', 'instructors', 'availableServices', 'financialOverview'));
     }
 
     /**

@@ -121,26 +121,70 @@
                 </dl>
 
                 @php
-                    $totalFees = $student->courses->sum(fn ($enrolledCourse) => $enrolledCourse->pivot->fee());
-                    $totalPaid = $student->payments->where('status', 'paid')->sum('amount');
-                    $totalBalance = $student->courses->sum(fn ($enrolledCourse) => $enrolledCourse->pivot->balance());
+                    $totalCharges = $financialOverview->sum('price');
+                    $totalOverviewPaid = $financialOverview->sum('paid');
+                    $totalOutstanding = $financialOverview->sum('balance');
                 @endphp
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Payment Summary') }}</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Financial Overview') }}</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div class="bg-black text-amber-400 rounded-lg p-4">
-                            <p class="text-xs uppercase tracking-wider">{{ __('Total Fees') }}</p>
-                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalFees, 2) }}</p>
+                            <p class="text-xs uppercase tracking-wider">{{ __('Total Charges') }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalCharges, 2) }}</p>
                         </div>
                         <div class="bg-black text-amber-400 rounded-lg p-4">
                             <p class="text-xs uppercase tracking-wider">{{ __('Total Paid') }}</p>
-                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalPaid, 2) }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalOverviewPaid, 2) }}</p>
                         </div>
                         <div class="bg-amber-500 text-black rounded-lg p-4">
-                            <p class="text-xs uppercase tracking-wider">{{ __('Balance') }}</p>
-                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalBalance, 2) }}</p>
+                            <p class="text-xs uppercase tracking-wider">{{ __('Total Outstanding') }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
                         </div>
                     </div>
+
+                    @if ($financialOverview->isNotEmpty())
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                        <th class="px-2 py-1">{{ __('Item') }}</th>
+                                        <th class="px-2 py-1">{{ __('Price') }}</th>
+                                        <th class="px-2 py-1">{{ __('Paid') }}</th>
+                                        <th class="px-2 py-1">{{ __('Balance') }}</th>
+                                        <th class="px-2 py-1">{{ __('Status') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @foreach ($financialOverview as $charge)
+                                        <tr>
+                                            <td class="px-2 py-1 text-sm">{{ $charge['label'] }}</td>
+                                            <td class="px-2 py-1 text-sm">{{ number_format($charge['price'], 2) }}</td>
+                                            <td class="px-2 py-1 text-sm">{{ number_format($charge['paid'], 2) }}</td>
+                                            <td class="px-2 py-1 text-sm">{{ number_format($charge['balance'], 2) }}</td>
+                                            <td class="px-2 py-1 text-sm">
+                                                <x-badge :color="match ($charge['status']) {
+                                                    'paid' => 'green',
+                                                    'part_payment' => 'amber',
+                                                    default => 'red',
+                                                }">{{ __(ucwords(str_replace('_', ' ', $charge['status']))) }}</x-badge>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr class="border-t-2 border-gray-300 font-semibold">
+                                        <td class="px-2 py-1 text-sm">{{ __('TOTAL') }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($totalCharges, 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($totalOverviewPaid, 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($totalOutstanding, 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $totalOutstanding > 0 ? __('Outstanding') : __('Paid') }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-sm text-gray-500">{{ __('No charges yet.') }}</p>
+                    @endif
                 </div>
 
                 <div>
@@ -348,7 +392,7 @@
                                                 'paid' => 'green',
                                                 'part_payment' => 'amber',
                                                 default => 'red',
-                                            }">{{ __(ucfirst(str_replace('_', ' ', $studentService->status()))) }}</x-badge>
+                                            }">{{ __(ucwords(str_replace('_', ' ', $studentService->status()))) }}</x-badge>
                                         </td>
                                     </tr>
                                 @empty

@@ -6,84 +6,87 @@ use App\Models\Student;
 use Illuminate\Support\Collection;
 
 /**
- * Resolves a student's open (balance > 0) charges across every billing
- * surface - training, per-course certificate fees, and flat catalog
- * services - into one normalized list. Used both to render the
- * multi-service payment entry screen and to validate what's submitted
- * from it, so the two can never disagree about what a student actually
- * owes.
+ * Resolves a student's charges across every billing surface - training,
+ * per-course certificate fees, and flat catalog services - into one
+ * normalized list. Used to render the student's financial overview and
+ * the multi-service payment entry screen, and to validate what's
+ * submitted from the latter, so none of the three can ever disagree
+ * about what a student owes.
  */
 class StudentChargeResolver
 {
     /**
-     * @return Collection<int, array{type: string, id: int, label: string, price: float, paid: float, balance: float}>
+     * Every charge a student has, regardless of payment status.
+     *
+     * @return Collection<int, array{type: string, id: int, label: string, price: float, paid: float, balance: float, status: string}>
      */
-    public static function openCharges(Student $student): Collection
+    public static function allCharges(Student $student): Collection
     {
         $charges = collect();
 
         foreach ($student->courses()->get() as $course) {
             $enrollment = $course->pivot;
 
-            if ($enrollment->balance() > 0) {
-                $charges->push([
-                    'type' => 'training',
-                    'id' => $enrollment->id,
-                    'label' => "Training — {$course->name}",
-                    'price' => $enrollment->fee(),
-                    'paid' => $enrollment->amountPaid(),
-                    'balance' => $enrollment->balance(),
-                ]);
+            $charges->push(self::charge('training', $enrollment->id, "Training — {$course->name}", $enrollment->fee(), $enrollment->balance()));
+
+            if ($enrollment->online_certificate_fee !== null) {
+                $charges->push(self::charge('online_certificate', $enrollment->id, "Online Certificate — {$course->name}", (float) $enrollment->online_certificate_fee, $enrollment->onlineCertificateBalance()));
             }
 
-            if ($enrollment->online_certificate_fee !== null && $enrollment->onlineCertificateBalance() > 0) {
-                $charges->push([
-                    'type' => 'online_certificate',
-                    'id' => $enrollment->id,
-                    'label' => "Online Certificate — {$course->name}",
-                    'price' => (float) $enrollment->online_certificate_fee,
-                    'paid' => (float) $enrollment->online_certificate_fee - $enrollment->onlineCertificateBalance(),
-                    'balance' => $enrollment->onlineCertificateBalance(),
-                ]);
-            }
-
-            if ($enrollment->student_certificate_fee !== null && $enrollment->studentCertificateBalance() > 0) {
-                $charges->push([
-                    'type' => 'student_certificate',
-                    'id' => $enrollment->id,
-                    'label' => "Student Certificate — {$course->name}",
-                    'price' => (float) $enrollment->student_certificate_fee,
-                    'paid' => (float) $enrollment->student_certificate_fee - $enrollment->studentCertificateBalance(),
-                    'balance' => $enrollment->studentCertificateBalance(),
-                ]);
+            if ($enrollment->student_certificate_fee !== null) {
+                $charges->push(self::charge('student_certificate', $enrollment->id, "Student Certificate — {$course->name}", (float) $enrollment->student_certificate_fee, $enrollment->studentCertificateBalance()));
             }
         }
 
         foreach ($student->studentServices()->with('service')->get() as $studentService) {
-            if ($studentService->balance() > 0) {
-                $charges->push([
-                    'type' => 'service',
-                    'id' => $studentService->id,
-                    'label' => $studentService->service->name,
-                    'price' => (float) $studentService->price,
-                    'paid' => $studentService->amountPaid(),
-                    'balance' => $studentService->balance(),
-                ]);
-            }
+            $charges->push(self::charge('service', $studentService->id, $studentService->service->name, (float) $studentService->price, $studentService->balance()));
         }
 
         return $charges;
     }
 
     /**
+     * Only the charges with a balance still owed - what the payment entry
+     * screen actually needs to offer.
+     *
+     * @return Collection<int, array{type: string, id: int, label: string, price: float, paid: float, balance: float, status: string}>
+     */
+    public static function openCharges(Student $student): Collection
+    {
+        return self::allCharges($student)->filter(fn (array $charge) => $charge['balance'] > 0)->values();
+    }
+
+    /**
      * Find one specific open charge by type/id, scoped to this student, or
      * null if it doesn't exist or isn't currently open.
      *
-     * @return array{type: string, id: int, label: string, price: float, paid: float, balance: float}|null
+     * @return array{type: string, id: int, label: string, price: float, paid: float, balance: float, status: string}|null
      */
     public static function find(Student $student, string $type, int $id): ?array
     {
         return self::openCharges($student)
             ->first(fn (array $charge) => $charge['type'] === $type && $charge['id'] === $id);
+    }
+
+    /**
+     * @return array{type: string, id: int, label: string, price: float, paid: float, balance: float, status: string}
+     */
+    protected static function charge(string $type, int $id, string $label, float $price, float $balance): array
+    {
+        $paid = $price - $balance;
+
+        return [
+            'type' => $type,
+            'id' => $id,
+            'label' => $label,
+            'price' => $price,
+            'paid' => $paid,
+            'balance' => $balance,
+            'status' => match (true) {
+                $paid <= 0 => 'unpaid',
+                $balance > 0 => 'part_payment',
+                default => 'paid',
+            },
+        ];
     }
 }

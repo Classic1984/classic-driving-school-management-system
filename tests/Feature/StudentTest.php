@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Payment;
+use App\Models\Service;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -771,19 +772,45 @@ class StudentTest extends TestCase
         $response->assertSee('No certificates issued yet.');
     }
 
-    public function test_student_page_shows_the_payment_summary(): void
+    public function test_student_page_shows_the_financial_overview(): void
     {
         $user = User::factory()->create();
         $student = Student::factory()->create();
         $course = Course::factory()->create(['fee' => 1000]);
-        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
         Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 400, 'status' => 'paid']);
 
         $response = $this->actingAs($user)->get("/students/{$student->id}");
 
         $response->assertOk();
-        // Fees 1000, paid 400, balance 600.
-        $response->assertSeeInOrder(['Total Fees', '1,000.00', 'Total Paid', '400.00', 'Balance', '600.00']);
+        // Charges 1000, paid 400, outstanding 600.
+        $response->assertSeeInOrder(['Total Charges', '1,000.00', 'Total Paid', '400.00', 'Total Outstanding', '600.00']);
+        $response->assertSee('Part Payment');
+    }
+
+    public function test_the_financial_overview_includes_certificate_fees_and_flat_services(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000, 'online_certificate_fee' => 20000, 'student_certificate_fee' => 1000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'status' => 'active',
+            'fee' => 95000,
+            'online_certificate_fee' => 20000,
+            'student_certificate_fee' => 1000,
+        ]);
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Online Certificate — '.$course->name);
+        $response->assertSee('Student Certificate — '.$course->name);
+        $response->assertSee("Learner's Permit");
+        // Total charges: 95000 + 20000 + 1000 + 6000 = 122000.
+        $response->assertSee('122,000.00');
     }
 
     public function test_student_page_offers_a_quick_payment_form_when_enrolled(): void
