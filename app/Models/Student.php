@@ -83,7 +83,7 @@ class Student extends Model
     {
         return $this->belongsToMany(Course::class)
             ->using(Enrollment::class)
-            ->withPivot(['id', 'enrolled_at', 'due_date', 'status', 'locked_reason', 'fee', 'original_fee', 'discount_percentage', 'discount_amount', 'discount_reason', 'discount_reason_note', 'discount_approved_by', 'reactivated_at', 'reactivation_fee', 'reactivated_by'])
+            ->withPivot(['id', 'enrolled_at', 'due_date', 'status', 'locked_reason', 'fee', 'original_fee', 'discount_percentage', 'discount_amount', 'discount_reason', 'discount_reason_note', 'discount_approved_by', 'reactivated_at', 'reactivation_fee', 'reactivated_by', 'online_certificate_fee', 'student_certificate_fee'])
             ->withTimestamps();
     }
 
@@ -109,6 +109,16 @@ class Student extends Model
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
+    }
+
+    /**
+     * This student's charges for flat catalog services (e.g. Driver's
+     * License Processing, Learner's Permit), independent of any course
+     * enrollment.
+     */
+    public function studentServices(): HasMany
+    {
+        return $this->hasMany(StudentService::class);
     }
 
     /**

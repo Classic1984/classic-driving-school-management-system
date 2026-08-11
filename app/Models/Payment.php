@@ -6,6 +6,7 @@ use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Payment extends Model
 {
@@ -49,5 +50,14 @@ class Payment extends Model
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);
+    }
+
+    /**
+     * The individual charges (enrollment or flat service) this payment's
+     * amount has been allocated across.
+     */
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(PaymentAllocation::class);
     }
 }
