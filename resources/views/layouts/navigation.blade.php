@@ -44,7 +44,7 @@
                             {{ __('Staff') }}
                         </x-nav-link>
                         <x-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                            {{ __('Correction Requests') }}
+                            {{ __('Corrections') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -131,7 +131,7 @@
                     {{ __('Staff') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                    {{ __('Correction Requests') }}
+                    {{ __('Corrections') }}
                 </x-responsive-nav-link>
             @endif
         </div>
