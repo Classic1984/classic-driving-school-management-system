@@ -69,7 +69,7 @@
                                 <tr>
                                     <td class="px-4 py-2">{{ $payment->payment_date->format('Y-m-d') }}</td>
                                     <td class="px-4 py-2">{{ $payment->student->name }}</td>
-                                    <td class="px-4 py-2">{{ $payment->course->name }}</td>
+                                    <td class="px-4 py-2">{{ $payment->course->name ?? __('Multiple Services') }}</td>
                                     <td class="px-4 py-2">{{ number_format($payment->amount, 2) }}</td>
                                     <td class="px-4 py-2 capitalize">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
                                     <td class="px-4 py-2">

@@ -19,7 +19,7 @@
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Course') }}</dt>
-                        <dd class="text-sm text-gray-900 col-span-2">{{ $payment->course->name }}</dd>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $payment->course->name ?? __('Multiple Services') }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Amount') }}</dt>

@@ -16,6 +16,8 @@
                     <p class="text-sm font-medium text-green-600">{{ __('Payment recorded successfully.') }}</p>
                 @elseif (session('status') === 'correction-requested')
                     <p class="text-sm font-medium text-green-600">{{ __('Correction request submitted. A Director will review it.') }}</p>
+                @elseif (session('status') === 'service-charged')
+                    <p class="text-sm font-medium text-green-600">{{ __('Service charge added successfully.') }}</p>
                 @endif
 
                 @if ($student->photo_path)
@@ -319,6 +321,64 @@
                 </div>
 
                 <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Services') }}</h3>
+
+                    <x-input-error class="mb-2" :messages="$errors->get('service_id')" />
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-2 py-1">{{ __('Service') }}</th>
+                                    <th class="px-2 py-1">{{ __('Price') }}</th>
+                                    <th class="px-2 py-1">{{ __('Paid') }}</th>
+                                    <th class="px-2 py-1">{{ __('Balance') }}</th>
+                                    <th class="px-2 py-1">{{ __('Status') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($student->studentServices as $studentService)
+                                    <tr>
+                                        <td class="px-2 py-1 text-sm">{{ $studentService->service->name }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($studentService->price, 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($studentService->amountPaid(), 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ number_format($studentService->balance(), 2) }}</td>
+                                        <td class="px-2 py-1 text-sm">
+                                            <x-badge :color="match ($studentService->status()) {
+                                                'paid' => 'green',
+                                                'part_payment' => 'amber',
+                                                default => 'red',
+                                            }">{{ __(ucfirst(str_replace('_', ' ', $studentService->status()))) }}</x-badge>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('No service charges yet.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if ($availableServices->isNotEmpty())
+                        <form method="post" action="{{ route('students.services.store', $student) }}" class="mt-4 flex items-end gap-4">
+                            @csrf
+
+                            <div>
+                                <x-input-label for="service_id" :value="__('Charge for a Service')" />
+                                <select id="service_id" name="service_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                                    @foreach ($availableServices as $service)
+                                        <option value="{{ $service->id }}">{{ $service->name }} (₦{{ number_format($service->price, 2) }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <x-primary-button>{{ __('Add Charge') }}</x-primary-button>
+                        </form>
+                    @endif
+                </div>
+
+                <div>
                     <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Student Login Training') }}</h3>
 
                     @if (session('status') === 'training-logged')
@@ -414,7 +474,10 @@
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Payments') }}</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-500">{{ __('Payments') }}</h3>
+                        <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}" class="text-sm text-amber-600 hover:underline">{{ __('Record a Payment') }}</a>
+                    </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
@@ -429,7 +492,7 @@
                                 @forelse ($student->payments as $payment)
                                     <tr>
                                         <td class="px-2 py-1 text-sm">{{ $payment->payment_date->format('Y-m-d') }}</td>
-                                        <td class="px-2 py-1 text-sm">{{ $payment->course->name }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $payment->course->name ?? __('Multiple Services') }}</td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($payment->amount, 2) }}</td>
                                         <td class="px-2 py-1 text-sm">
                                             <x-badge :color="match ($payment->status) {
