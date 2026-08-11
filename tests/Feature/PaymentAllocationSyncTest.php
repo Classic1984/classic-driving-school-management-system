@@ -167,6 +167,7 @@ class PaymentAllocationSyncTest extends TestCase
             'payment_date' => now()->toDateString(),
             'payment_method' => 'cash',
             'status' => 'paid',
+            'receipt_number' => 'CDS-RC-'.now()->year.'-99999',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -193,6 +194,7 @@ class PaymentAllocationSyncTest extends TestCase
             'payment_date' => now()->toDateString(),
             'payment_method' => 'cash',
             'status' => 'paid',
+            'receipt_number' => 'CDS-RC-'.now()->year.'-99999',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

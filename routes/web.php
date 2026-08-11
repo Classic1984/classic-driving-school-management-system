@@ -115,6 +115,7 @@ Route::middleware('auth')->group(function () {
     Route::get('payments/record', [PaymentAllocationController::class, 'create'])->name('payments.record.create');
     Route::post('payments/record', [PaymentAllocationController::class, 'store'])->name('payments.record.store');
     Route::resource('payments', PaymentController::class)->except(['destroy']);
+    Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });
