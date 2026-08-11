@@ -97,13 +97,15 @@ class Enrollment extends Pivot
     }
 
     /**
-     * The total amount the student has paid toward this course so far.
+     * The total amount the student has paid toward this course so far,
+     * summed from the training payment allocations recorded against this
+     * enrollment (each backed by a payment currently marked "paid").
      */
     public function amountPaid(): float
     {
-        return (float) Payment::where('student_id', $this->student_id)
-            ->where('course_id', $this->course_id)
-            ->where('status', 'paid')
+        return (float) PaymentAllocation::where('enrollment_id', $this->id)
+            ->where('allocation_type', 'training')
+            ->whereHas('payment', fn ($query) => $query->where('status', 'paid'))
             ->sum('amount');
     }
 
