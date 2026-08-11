@@ -16,6 +16,7 @@ class TwoFactorChallengeTest extends TestCase
     {
         return User::factory()->create([
             'two_factor_secret' => (new Google2FA)->generateSecretKey(),
+            'two_factor_confirmed_at' => now(),
         ]);
     }
 
