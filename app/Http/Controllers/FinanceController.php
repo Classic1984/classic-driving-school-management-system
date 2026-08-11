@@ -9,6 +9,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -75,7 +76,7 @@ class FinanceController extends Controller
     }
 
     /**
-     * @return array{0: int, 1: \Illuminate\Support\Collection, 2: array<string, float>}
+     * @return array{0: int, 1: Collection, 2: array<string, float>}
      */
     protected function computeSummary(Request $request): array
     {
@@ -112,7 +113,7 @@ class FinanceController extends Controller
      * Every enrollment with a discount applied during the given year, for
      * management to see how much revenue was reduced through discounts.
      */
-    protected function computeDiscounts(int $year): \Illuminate\Support\Collection
+    protected function computeDiscounts(int $year): Collection
     {
         return Enrollment::with(['student', 'course'])
             ->whereNotNull('discount_amount')

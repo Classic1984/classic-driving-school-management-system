@@ -13,9 +13,7 @@ class DatabaseBackupMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public string $path)
-    {
-    }
+    public function __construct(public string $path) {}
 
     public function envelope(): Envelope
     {

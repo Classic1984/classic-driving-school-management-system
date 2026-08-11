@@ -14,9 +14,7 @@ class PaymentReminderNotification extends Notification
     /**
      * @param  'upcoming'|'due_today'  $stage
      */
-    public function __construct(public Enrollment $enrollment, public string $stage)
-    {
-    }
+    public function __construct(public Enrollment $enrollment, public string $stage) {}
 
     /**
      * @return array<int, string>

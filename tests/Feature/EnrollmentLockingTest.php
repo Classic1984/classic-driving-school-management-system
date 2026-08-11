@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -66,7 +67,7 @@ class EnrollmentLockingTest extends TestCase
 
     public function test_recording_a_payment_immediately_unlocks_the_enrollment(): void
     {
-        $admin = \App\Models\User::factory()->create();
+        $admin = User::factory()->create();
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
         $student = Student::factory()->create();
         $course->students()->attach($student->id, [

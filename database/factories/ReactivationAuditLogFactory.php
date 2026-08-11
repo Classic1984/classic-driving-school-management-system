@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Course;
+use App\Models\ReactivationAuditLog;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\ReactivationAuditLog>
+ * @extends Factory<ReactivationAuditLog>
  */
 class ReactivationAuditLogFactory extends Factory
 {

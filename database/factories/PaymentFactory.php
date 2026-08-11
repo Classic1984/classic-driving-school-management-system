@@ -3,11 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\Course;
+use App\Models\Payment;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<\App\Models\Payment>
+ * @extends Factory<Payment>
  */
 class PaymentFactory extends Factory
 {

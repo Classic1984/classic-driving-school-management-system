@@ -37,7 +37,7 @@ class ExpenseController extends Controller
     {
         $expense = Expense::create($request->validated());
 
-        ActivityLog::record("Recorded an expense of ₦".number_format((float) $expense->amount, 2)." ({$expense->category})");
+        ActivityLog::record('Recorded an expense of ₦'.number_format((float) $expense->amount, 2)." ({$expense->category})");
 
         return Redirect::route('expenses.index')->with('status', 'expense-created');
     }

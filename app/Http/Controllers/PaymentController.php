@@ -10,8 +10,8 @@ use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -96,7 +96,7 @@ class PaymentController extends Controller
 
         $this->refreshEnrollmentStatus($payment->student_id, $payment->course_id);
 
-        ActivityLog::record("Recorded a payment of ₦".number_format((float) $payment->amount, 2)." for {$payment->student->name} ({$payment->course->name})");
+        ActivityLog::record('Recorded a payment of ₦'.number_format((float) $payment->amount, 2)." for {$payment->student->name} ({$payment->course->name})");
 
         if ($request->boolean('redirect_to_student')) {
             return Redirect::route('students.show', $payment->student_id)->with('status', 'payment-created');
