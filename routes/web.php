@@ -16,6 +16,7 @@ use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentCorrectionController;
+use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
@@ -63,6 +64,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
+        Route::get('payments/{payment}/reverse', [PaymentReversalController::class, 'create'])->name('payments.reverse.create');
+        Route::post('payments/{payment}/reverse', [PaymentReversalController::class, 'store'])->name('payments.reverse.store');
         Route::delete('certificates/{certificate}', [CertificateController::class, 'destroy'])->name('certificates.destroy');
     });
 

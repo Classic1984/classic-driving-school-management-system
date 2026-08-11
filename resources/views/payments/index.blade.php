@@ -90,6 +90,9 @@
                                         <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
                                         <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                         @if (auth()->user()->isAdmin())
+                                            @if ($payment->status === 'paid' && ! $payment->reversal)
+                                                <a href="{{ route('payments.reverse.create', $payment) }}" class="text-sm text-red-600 hover:underline">{{ __('Reverse') }}</a>
+                                            @endif
                                             <form method="post" action="{{ route('payments.destroy', $payment) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this payment record?') }}');">
                                                 @csrf
                                                 @method('delete')

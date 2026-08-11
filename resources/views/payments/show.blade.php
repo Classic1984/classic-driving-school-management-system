@@ -8,6 +8,10 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
+                @if (session('status') === 'payment-reversed')
+                    <p class="text-sm font-medium text-green-600">{{ __('Payment reversed successfully.') }}</p>
+                @endif
+
                 <dl class="divide-y divide-gray-100">
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Receipt No.') }}</dt>
@@ -83,6 +87,17 @@
                     </table>
                 </div>
 
+                @if ($payment->reversal)
+                    <div class="rounded-md bg-blue-50 border border-blue-200 p-4 text-sm">
+                        <p class="font-medium text-blue-900">{{ __('This payment was reversed.') }}</p>
+                        <p class="text-blue-800 mt-1">
+                            {{ $payment->reversal->created_at->format('Y-m-d H:i') }} — {{ __('by') }} {{ $payment->reversal->reversedBy->name }}
+                        </p>
+                        <p class="text-blue-800 mt-1"><span class="font-medium">{{ __('Reason') }}:</span> {{ $payment->reversal->reason }}</p>
+                        <p class="text-blue-800 mt-1"><span class="font-medium">{{ __('Amount Reversed') }}:</span> ₦{{ number_format($payment->reversal->amount, 2) }}</p>
+                    </div>
+                @endif
+
                 @if ($payment->corrections->isNotEmpty())
                     <div>
                         <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Correction History') }}</h3>
@@ -123,6 +138,11 @@
                     <a href="{{ route('payments.edit', $payment) }}">
                         <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
                     </a>
+                    @if (auth()->user()->isAdmin() && $payment->status === 'paid' && ! $payment->reversal)
+                        <a href="{{ route('payments.reverse.create', $payment) }}">
+                            <x-secondary-button type="button" class="!text-red-700">{{ __('Reverse Payment') }}</x-secondary-button>
+                        </a>
+                    @endif
                     <a href="{{ route('payments.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Back to list') }}</a>
                 </div>
             </div>
