@@ -305,4 +305,139 @@ class PaymentAllocationEntryTest extends TestCase
         $payment = Payment::whereNull('course_id')->firstOrFail();
         $this->actingAs($user)->get("/payments/{$payment->id}")->assertOk()->assertSee('Multiple Services')->assertSee($description);
     }
+
+    public function test_an_uncharged_active_service_appears_as_a_billable_row(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'is_active' => true]);
+
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}");
+
+        $response->assertOk();
+        $response->assertSee("Driver's License Processing");
+        $response->assertSee('Not Yet Billed');
+        $response->assertSee('50,000.00');
+    }
+
+    public function test_an_inactive_service_does_not_appear_as_a_billable_row(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        Service::factory()->create(['name' => 'Retired Service', 'is_active' => false]);
+
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('Retired Service');
+    }
+
+    public function test_an_already_charged_service_does_not_duplicate_as_a_new_billable_row(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}");
+
+        $response->assertOk();
+        $response->assertSee("Learner's Permit");
+        $response->assertDontSee('Not Yet Billed');
+    }
+
+    public function test_paying_for_an_uncharged_service_bills_and_pays_for_it_in_one_step(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000]);
+
+        $response = $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 50000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'new_service', 'id' => $service->id, 'amount' => 50000],
+            ],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect("/students/{$student->id}");
+
+        $this->assertDatabaseHas('student_services', [
+            'student_id' => $student->id,
+            'service_id' => $service->id,
+            'price' => 50000,
+        ]);
+
+        $studentService = $student->studentServices()->firstOrFail();
+        $this->assertSame(50000.0, $studentService->amountPaid());
+        $this->assertSame(0.0, $studentService->balance());
+    }
+
+    public function test_paying_less_than_the_full_price_for_an_uncharged_service_leaves_a_balance(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 20000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'new_service', 'id' => $service->id, 'amount' => 20000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $studentService = $student->studentServices()->firstOrFail();
+        $this->assertSame(20000.0, $studentService->amountPaid());
+        $this->assertSame(30000.0, $studentService->balance());
+    }
+
+    public function test_a_new_service_allocation_cannot_exceed_its_full_price(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['price' => 6000]);
+
+        $response = $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 10000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'new_service', 'id' => $service->id, 'amount' => 10000],
+            ],
+        ]);
+
+        $response->assertSessionHasErrors('allocations.0.amount');
+        $this->assertDatabaseCount('student_services', 0);
+    }
+
+    public function test_one_payment_can_bill_a_new_service_while_paying_an_existing_charge(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+        $enrollment = $student->courses()->first()->pivot;
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 26000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'training', 'id' => $enrollment->id, 'amount' => 20000],
+                ['type' => 'new_service', 'id' => $service->id, 'amount' => 6000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame(20000.0, $enrollment->fresh()->amountPaid());
+        $this->assertDatabaseHas('student_services', ['student_id' => $student->id, 'service_id' => $service->id]);
+    }
 }

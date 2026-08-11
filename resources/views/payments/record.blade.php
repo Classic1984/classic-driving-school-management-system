@@ -50,7 +50,12 @@
                                     <tbody class="divide-y divide-gray-100">
                                         @foreach ($charges as $index => $charge)
                                             <tr>
-                                                <td class="px-2 py-1 text-sm">{{ $charge['label'] }}</td>
+                                                <td class="px-2 py-1 text-sm">
+                                                    {{ $charge['label'] }}
+                                                    @if ($charge['type'] === 'new_service')
+                                                        <x-badge color="gray" class="ms-1">{{ __('Not Yet Billed') }}</x-badge>
+                                                    @endif
+                                                </td>
                                                 <td class="px-2 py-1 text-sm">{{ number_format($charge['price'], 2) }}</td>
                                                 <td class="px-2 py-1 text-sm">{{ number_format($charge['paid'], 2) }}</td>
                                                 <td class="px-2 py-1 text-sm">{{ number_format($charge['balance'], 2) }}</td>
