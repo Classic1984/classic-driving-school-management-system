@@ -45,4 +45,22 @@ class StudentServiceController extends Controller
 
         return Redirect::route('students.show', $student)->with('status', 'service-charged');
     }
+
+    /**
+     * Update a service charge's real-world processing status - entirely
+     * independent of its payment status, per its own field on the model.
+     */
+    public function updateProcessingStatus(Request $request, StudentService $studentService): RedirectResponse
+    {
+        $data = $request->validate([
+            'processing_status' => ['required', Rule::in(StudentService::PROCESSING_STATUSES)],
+        ]);
+
+        $studentService->load('service');
+        $studentService->update(['processing_status' => $data['processing_status']]);
+
+        ActivityLog::record("Updated {$studentService->service->name} processing status to \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name}");
+
+        return Redirect::route('students.show', $studentService->student_id)->with('status', 'service-status-updated');
+    }
 }

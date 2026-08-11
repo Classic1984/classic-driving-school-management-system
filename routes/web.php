@@ -99,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::get('students/{student}/correction-requests/create', [StudentCorrectionRequestController::class, 'create'])->name('student-correction-requests.create');
     Route::post('students/{student}/correction-requests', [StudentCorrectionRequestController::class, 'store'])->name('student-correction-requests.store');
     Route::post('students/{student}/services', [StudentServiceController::class, 'store'])->name('students.services.store');
+    Route::patch('student-services/{studentService}/processing-status', [StudentServiceController::class, 'updateProcessingStatus'])->name('student-services.processing-status.update');
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);

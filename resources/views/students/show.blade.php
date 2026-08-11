@@ -18,6 +18,8 @@
                     <p class="text-sm font-medium text-green-600">{{ __('Correction request submitted. A Director will review it.') }}</p>
                 @elseif (session('status') === 'service-charged')
                     <p class="text-sm font-medium text-green-600">{{ __('Service charge added successfully.') }}</p>
+                @elseif (session('status') === 'service-status-updated')
+                    <p class="text-sm font-medium text-green-600">{{ __('Processing status updated successfully.') }}</p>
                 @endif
 
                 @if ($student->photo_path)
@@ -377,7 +379,8 @@
                                     <th class="px-2 py-1">{{ __('Price') }}</th>
                                     <th class="px-2 py-1">{{ __('Paid') }}</th>
                                     <th class="px-2 py-1">{{ __('Balance') }}</th>
-                                    <th class="px-2 py-1">{{ __('Status') }}</th>
+                                    <th class="px-2 py-1">{{ __('Payment Status') }}</th>
+                                    <th class="px-2 py-1">{{ __('Processing Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -394,10 +397,21 @@
                                                 default => 'red',
                                             }">{{ __(ucwords(str_replace('_', ' ', $studentService->status()))) }}</x-badge>
                                         </td>
+                                        <td class="px-2 py-1 text-sm">
+                                            <form method="post" action="{{ route('student-services.processing-status.update', $studentService) }}">
+                                                @csrf
+                                                @method('patch')
+                                                <select name="processing_status" class="border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
+                                                    @foreach (\App\Models\StudentService::PROCESSING_STATUSES as $value)
+                                                        <option value="{{ $value }}" @selected($studentService->processing_status === $value)>{{ ucwords(str_replace('_', ' ', $value)) }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </form>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('No service charges yet.') }}</td>
+                                        <td colspan="6" class="px-2 py-2 text-sm text-gray-500">{{ __('No service charges yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
