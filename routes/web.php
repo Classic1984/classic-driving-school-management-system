@@ -13,11 +13,13 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
 use App\Http\Controllers\StudentRegistrationReportController;
+use App\Http\Controllers\StudentServiceController;
 use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
 use App\Http\Controllers\UserController;
@@ -88,6 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::get('students/{student}/training-record', [StudentController::class, 'trainingRecord'])->name('students.training-record');
     Route::get('students/{student}/correction-requests/create', [StudentCorrectionRequestController::class, 'create'])->name('student-correction-requests.create');
     Route::post('students/{student}/correction-requests', [StudentCorrectionRequestController::class, 'store'])->name('student-correction-requests.store');
+    Route::post('students/{student}/services', [StudentServiceController::class, 'store'])->name('students.services.store');
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
@@ -106,8 +109,11 @@ Route::middleware('auth')->group(function () {
     Route::get('instructor-activity-report/export', [InstructorActivityReportController::class, 'export'])->name('instructor-activity-report.export');
     Route::get('instructor-activity-report/export-pdf', [InstructorActivityReportController::class, 'exportPdf'])->name('instructor-activity-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
-    // above: "payments/export" would otherwise be swallowed by "payments/{payment}".
+    // above: "payments/export" and "payments/record" would otherwise be swallowed by
+    // "payments/{payment}".
     Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
+    Route::get('payments/record', [PaymentAllocationController::class, 'create'])->name('payments.record.create');
+    Route::post('payments/record', [PaymentAllocationController::class, 'store'])->name('payments.record.store');
     Route::resource('payments', PaymentController::class)->except(['destroy']);
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');

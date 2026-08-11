@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Models\DiscountAuditLog;
 use App\Models\Instructor;
 use App\Models\Payment;
+use App\Models\Service;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -111,6 +112,12 @@ class StudentController extends Controller
                 'discount_reason' => $discountAmount > 0 ? $request->validated('discount_reason') : null,
                 'discount_reason_note' => $discountAmount > 0 ? $request->validated('discount_reason_note') : null,
                 'discount_approved_by' => $discountAmount > 0 ? $request->user()->id : null,
+                // Certificate fees are part of the course outline, not an
+                // opt-in add-on - every student enrolling in a course that
+                // offers a certificate is charged for it from day one, the
+                // same way the training fee itself is locked in here.
+                'online_certificate_fee' => $course->online_certificate_fee,
+                'student_certificate_fee' => $course->student_certificate_fee,
             ]);
 
             if ($discountAmount > 0) {
@@ -187,10 +194,18 @@ class StudentController extends Controller
      */
     public function show(Student $student): View
     {
-        $student->load(['courses', 'payments', 'certificates' => fn ($query) => $query->with('course')->latest('issue_date'), 'attendances' => fn ($query) => $query->with('instructor')->latest('date')]);
+        $student->load([
+            'courses',
+            'payments',
+            'certificates' => fn ($query) => $query->with('course')->latest('issue_date'),
+            'attendances' => fn ($query) => $query->with('instructor')->latest('date'),
+            'studentServices' => fn ($query) => $query->with('service'),
+        ]);
         $instructors = Instructor::orderBy('name')->get();
+        $chargedServiceIds = $student->studentServices->pluck('service_id');
+        $availableServices = Service::where('is_active', true)->whereNotIn('id', $chargedServiceIds)->orderBy('name')->get();
 
-        return view('students.show', compact('student', 'instructors'));
+        return view('students.show', compact('student', 'instructors', 'availableServices'));
     }
 
     /**

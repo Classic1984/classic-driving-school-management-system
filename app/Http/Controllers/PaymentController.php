@@ -66,7 +66,7 @@ class PaymentController extends Controller
                 fputcsv($handle, [
                     $payment->payment_date->format('Y-m-d'),
                     $payment->student->name,
-                    $payment->course->name,
+                    $payment->course->name ?? 'Multiple Services',
                     number_format((float) $payment->amount, 2, '.', ''),
                     $payment->payment_method,
                     $payment->status,

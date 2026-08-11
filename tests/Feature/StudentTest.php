@@ -364,6 +364,56 @@ class StudentTest extends TestCase
         $this->assertSame(120000.0, $lateComer->courses->first()->pivot->fee());
     }
 
+    public function test_registering_a_student_into_a_course_with_certificate_fees_charges_for_them_automatically(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create([
+            'fee' => 95000,
+            'online_certificate_fee' => 20000,
+            'student_certificate_fee' => 1000,
+        ]);
+
+        $this->actingAs($user)->post('/students', [
+            'name' => 'Certificate Student',
+            'email' => 'certificate.student@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+            'course_id' => $course->id,
+        ])->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'certificate.student@example.com')->firstOrFail();
+        $enrollment = $student->courses->first()->pivot;
+
+        $this->assertSame(20000.0, (float) $enrollment->online_certificate_fee);
+        $this->assertSame(1000.0, (float) $enrollment->student_certificate_fee);
+    }
+
+    public function test_registering_a_student_into_a_course_without_certificate_fees_charges_for_none(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $this->actingAs($user)->post('/students', [
+            'name' => 'No Certificate Student',
+            'email' => 'no.certificate.student@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+            'course_id' => $course->id,
+        ])->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'no.certificate.student@example.com')->firstOrFail();
+        $enrollment = $student->courses->first()->pivot;
+
+        $this->assertNull($enrollment->online_certificate_fee);
+        $this->assertNull($enrollment->student_certificate_fee);
+    }
+
     public function test_storing_a_student_rejects_an_enrollment_date_other_than_today(): void
     {
         $user = User::factory()->create();
