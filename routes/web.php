@@ -19,6 +19,7 @@ use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
 use App\Http\Controllers\StudentRegistrationReportController;
@@ -85,6 +86,7 @@ Route::middleware('auth')->group(function () {
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::resource('users', UserController::class)->except(['show']);
+        Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
 
         // Reviewing and resolving/rejecting correction requests is
         // Director-only; submitting one (below, outside this group) is
