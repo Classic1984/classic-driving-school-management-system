@@ -9,12 +9,6 @@
         </p>
     </header>
 
-    @if (session('status') === 'two-factor-authentication-required')
-        <p class="mt-4 text-sm font-medium text-red-600">
-            {{ __('Your role requires two factor authentication. Please finish setting it up below before you can access the rest of the system.') }}
-        </p>
-    @endif
-
     <div class="mt-6 space-y-6">
         @if ($user->hasEnabledTwoFactorAuthentication())
             <p class="text-sm font-medium text-green-600">

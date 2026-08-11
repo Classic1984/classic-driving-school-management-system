@@ -31,17 +31,6 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'role' => 'director',
-            // Two factor authentication is enforced for Director accounts
-            // (see EnsureDirectorHasTwoFactorEnabled), which would block
-            // every existing test's factory-made Director from reaching
-            // anything but the profile page. Defaulting to "already set
-            // up" here (a real secret, confirmed) keeps every test
-            // unrelated to two-factor auth itself behaving as it did
-            // before that enforcement existed; tests that specifically
-            // need an unconfirmed Director use the withoutTwoFactor()
-            // state below.
-            'two_factor_secret' => 'TESTINGSECRETTESTINGSECRETTESTI',
-            'two_factor_confirmed_at' => now(),
         ];
     }
 
