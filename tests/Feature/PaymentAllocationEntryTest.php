@@ -285,10 +285,14 @@ class PaymentAllocationEntryTest extends TestCase
             ],
         ])->assertSessionHasNoErrors();
 
-        $this->actingAs($user)->get("/students/{$student->id}")->assertOk()->assertSee('Multiple Services');
-        $this->actingAs($user)->get('/payments')->assertOk()->assertSee('Multiple Services');
+        // A multi-service payment has no single course, so every page that
+        // lists payments must render its allocation-based description
+        // instead of crashing on a null $payment->course.
+        $description = 'Training — '.$course->name;
+        $this->actingAs($user)->get("/students/{$student->id}")->assertOk()->assertSee($description);
+        $this->actingAs($user)->get('/payments')->assertOk()->assertSee($description);
 
         $payment = Payment::whereNull('course_id')->firstOrFail();
-        $this->actingAs($user)->get("/payments/{$payment->id}")->assertOk()->assertSee('Multiple Services');
+        $this->actingAs($user)->get("/payments/{$payment->id}")->assertOk()->assertSee('Multiple Services')->assertSee($description);
     }
 }

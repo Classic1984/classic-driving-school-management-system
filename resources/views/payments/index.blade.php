@@ -56,11 +56,13 @@
                         <thead>
                             <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <th class="px-4 py-2">{{ __('Date') }}</th>
+                                <th class="px-4 py-2">{{ __('Receipt') }}</th>
                                 <th class="px-4 py-2">{{ __('Student') }}</th>
-                                <th class="px-4 py-2">{{ __('Course') }}</th>
+                                <th class="px-4 py-2">{{ __('Description') }}</th>
                                 <th class="px-4 py-2">{{ __('Amount') }}</th>
                                 <th class="px-4 py-2">{{ __('Method') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
+                                <th class="px-4 py-2">{{ __('Recorded By') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                         </thead>
@@ -68,8 +70,9 @@
                             @forelse ($payments as $payment)
                                 <tr>
                                     <td class="px-4 py-2">{{ $payment->payment_date->format('Y-m-d') }}</td>
+                                    <td class="px-4 py-2 font-mono text-xs">{{ $payment->receipt_number }}</td>
                                     <td class="px-4 py-2">{{ $payment->student->name }}</td>
-                                    <td class="px-4 py-2">{{ $payment->course->name ?? __('Multiple Services') }}</td>
+                                    <td class="px-4 py-2">{{ $payment->description() }}</td>
                                     <td class="px-4 py-2">{{ number_format($payment->amount, 2) }}</td>
                                     <td class="px-4 py-2 capitalize">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
                                     <td class="px-4 py-2">
@@ -81,6 +84,7 @@
                                             default => 'gray',
                                         }" class="capitalize">{{ $payment->status }}</x-badge>
                                     </td>
+                                    <td class="px-4 py-2">{{ $payment->recordedBy?->name ?? '—' }}</td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('payments.show', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
@@ -96,7 +100,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No payments recorded yet.') }}
                                     </td>
                                 </tr>

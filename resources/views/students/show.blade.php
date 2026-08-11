@@ -527,9 +527,12 @@
                             <thead>
                                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     <th class="px-2 py-1">{{ __('Date') }}</th>
-                                    <th class="px-2 py-1">{{ __('Course') }}</th>
+                                    <th class="px-2 py-1">{{ __('Receipt') }}</th>
+                                    <th class="px-2 py-1">{{ __('Description') }}</th>
                                     <th class="px-2 py-1">{{ __('Amount') }}</th>
+                                    <th class="px-2 py-1">{{ __('Method') }}</th>
                                     <th class="px-2 py-1">{{ __('Status') }}</th>
+                                    <th class="px-2 py-1">{{ __('Recorded By') }}</th>
                                     <th class="px-2 py-1"></th>
                                 </tr>
                             </thead>
@@ -537,8 +540,12 @@
                                 @forelse ($student->payments as $payment)
                                     <tr>
                                         <td class="px-2 py-1 text-sm">{{ $payment->payment_date->format('Y-m-d') }}</td>
-                                        <td class="px-2 py-1 text-sm">{{ $payment->course->name ?? __('Multiple Services') }}</td>
+                                        <td class="px-2 py-1 text-sm font-mono text-xs">
+                                            <a href="{{ route('payments.show', $payment) }}" class="text-amber-600 hover:underline">{{ $payment->receipt_number }}</a>
+                                        </td>
+                                        <td class="px-2 py-1 text-sm">{{ $payment->description() }}</td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($payment->amount, 2) }}</td>
+                                        <td class="px-2 py-1 text-sm capitalize">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
                                         <td class="px-2 py-1 text-sm">
                                             <x-badge :color="match ($payment->status) {
                                                 'paid' => 'green',
@@ -548,21 +555,22 @@
                                                 default => 'gray',
                                             }" class="capitalize">{{ $payment->status }}</x-badge>
                                         </td>
+                                        <td class="px-2 py-1 text-sm">{{ $payment->recordedBy?->name ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">
                                             <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
+                                        <td colspan="8" class="px-2 py-2 text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                             @if ($student->payments->where('status', 'paid')->isNotEmpty())
                                 <tfoot>
                                     <tr>
-                                        <td colspan="2" class="px-2 py-1 text-sm font-medium text-right">{{ __('Total paid') }}</td>
-                                        <td colspan="3" class="px-2 py-1 text-sm font-medium">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
+                                        <td colspan="3" class="px-2 py-1 text-sm font-medium text-right">{{ __('Total paid') }}</td>
+                                        <td colspan="5" class="px-2 py-1 text-sm font-medium">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
                                     </tr>
                                 </tfoot>
                             @endif

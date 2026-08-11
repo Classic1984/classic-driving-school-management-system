@@ -10,6 +10,10 @@
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 <dl class="divide-y divide-gray-100">
                     <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Receipt No.') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2 font-mono">{{ $payment->receipt_number }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Date') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $payment->payment_date->format('Y-m-d') }}</dd>
                     </div>
@@ -49,7 +53,35 @@
                         <dt class="text-sm font-medium text-gray-500">{{ __('Notes') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $payment->notes ?? '—' }}</dd>
                     </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Recorded By') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $payment->recordedBy?->name ?? '—' }}</dd>
+                    </div>
                 </dl>
+
+                <div>
+                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Allocation Breakdown') }}</h3>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <th class="px-2 py-1">{{ __('Charge') }}</th>
+                                <th class="px-2 py-1 text-right">{{ __('Amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($payment->allocations as $allocation)
+                                <tr>
+                                    <td class="px-2 py-1 text-sm">{{ $allocation->label() }}</td>
+                                    <td class="px-2 py-1 text-sm text-right">{{ number_format($allocation->amount, 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="px-2 py-2 text-sm text-gray-500">{{ __('No allocation detail recorded for this payment.') }}</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
                 <div class="flex items-center gap-4">
                     <a href="{{ route('payments.receipt', $payment) }}">

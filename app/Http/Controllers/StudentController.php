@@ -198,7 +198,7 @@ class StudentController extends Controller
     {
         $student->load([
             'courses',
-            'payments',
+            'payments' => fn ($query) => $query->with(['recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])->latest('payment_date'),
             'certificates' => fn ($query) => $query->with('course')->latest('issue_date'),
             'attendances' => fn ($query) => $query->with('instructor')->latest('date'),
             'studentServices' => fn ($query) => $query->with('service'),
