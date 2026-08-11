@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -91,7 +92,7 @@ class PaymentController extends Controller
      */
     public function store(StorePaymentRequest $request): RedirectResponse
     {
-        $payment = Payment::create($request->validated());
+        $payment = Payment::create([...$request->validated(), 'recorded_by' => $request->user()->id]);
         $payment->load(['student', 'course']);
 
         $this->refreshEnrollmentStatus($payment->student_id, $payment->course_id);
@@ -121,6 +122,21 @@ class PaymentController extends Controller
     public function edit(Payment $payment): View
     {
         return view('payments.edit', [...$this->formOptions(), 'payment' => $payment]);
+    }
+
+    /**
+     * Show a printable receipt for the specified payment: what it paid
+     * for, and the resulting balance on each charge it touched.
+     */
+    public function receipt(Payment $payment): View
+    {
+        $payment->load(['student', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service']);
+
+        $balances = $payment->allocations
+            ->unique(fn (PaymentAllocation $allocation) => $allocation->chargeKey())
+            ->map(fn (PaymentAllocation $allocation) => ['label' => $allocation->label(), 'balance' => $allocation->chargeBalance()]);
+
+        return view('payments.receipt', compact('payment', 'balances'));
     }
 
     /**

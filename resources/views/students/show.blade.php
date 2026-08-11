@@ -486,6 +486,7 @@
                                     <th class="px-2 py-1">{{ __('Course') }}</th>
                                     <th class="px-2 py-1">{{ __('Amount') }}</th>
                                     <th class="px-2 py-1">{{ __('Status') }}</th>
+                                    <th class="px-2 py-1"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -503,10 +504,13 @@
                                                 default => 'gray',
                                             }" class="capitalize">{{ $payment->status }}</x-badge>
                                         </td>
+                                        <td class="px-2 py-1 text-sm">
+                                            <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-2 py-2 text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
+                                        <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -514,7 +518,7 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="2" class="px-2 py-1 text-sm font-medium text-right">{{ __('Total paid') }}</td>
-                                        <td colspan="2" class="px-2 py-1 text-sm font-medium">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
+                                        <td colspan="3" class="px-2 py-1 text-sm font-medium">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
                                     </tr>
                                 </tfoot>
                             @endif

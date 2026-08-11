@@ -71,4 +71,46 @@ class PaymentAllocation extends Model
     {
         return $this->belongsTo(StudentService::class);
     }
+
+    /**
+     * A human-readable label for the charge this allocation applies to,
+     * e.g. "Training — Beginner Course" or "Learner's Permit".
+     */
+    public function label(): string
+    {
+        return match ($this->allocation_type) {
+            'training' => "Training — {$this->enrollment->course->name}",
+            'online_certificate' => "Online Certificate — {$this->enrollment->course->name}",
+            'student_certificate' => "Student Certificate — {$this->enrollment->course->name}",
+            'service' => $this->studentService->service->name,
+            default => ucfirst(str_replace('_', ' ', $this->allocation_type)),
+        };
+    }
+
+    /**
+     * The current remaining balance on the underlying charge this
+     * allocation applies to (i.e. after this and every other allocation
+     * against it), not the amount of this allocation itself.
+     */
+    public function chargeBalance(): float
+    {
+        return match ($this->allocation_type) {
+            'training' => $this->enrollment->balance(),
+            'online_certificate' => $this->enrollment->onlineCertificateBalance() ?? 0.0,
+            'student_certificate' => $this->enrollment->studentCertificateBalance() ?? 0.0,
+            'service' => $this->studentService->balance(),
+            default => 0.0,
+        };
+    }
+
+    /**
+     * A key identifying the underlying charge this allocation applies to,
+     * stable across every allocation ever made against the same charge -
+     * used to de-duplicate a payment's allocations down to the distinct
+     * charges it touched.
+     */
+    public function chargeKey(): string
+    {
+        return "{$this->allocation_type}:".($this->enrollment_id ?? $this->student_service_id);
+    }
 }

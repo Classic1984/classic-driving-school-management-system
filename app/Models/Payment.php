@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Payment extends Model
 {
@@ -27,6 +28,7 @@ class Payment extends Model
         'status',
         'reference_number',
         'notes',
+        'recorded_by',
     ];
 
     /**
@@ -53,6 +55,15 @@ class Payment extends Model
     }
 
     /**
+     * The staff member who recorded this payment. Null for historical
+     * payments recorded before this was tracked.
+     */
+    public function recordedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'recorded_by');
+    }
+
+    /**
      * The individual charges (enrollment or flat service) this payment's
      * amount has been allocated across.
      */
@@ -61,8 +72,30 @@ class Payment extends Model
         return $this->hasMany(PaymentAllocation::class);
     }
 
+    /**
+     * receipt_number is deliberately not fillable: it's a permanent,
+     * system-assigned identifier derived from the row's own auto-increment
+     * id (like Certificate::certificate_number), in the form
+     * CDS-RC-{payment year}-{00001}. A temporary placeholder satisfies the
+     * column's NOT NULL + unique constraint for the moment before the row
+     * has an id to derive from.
+     */
     protected static function booted(): void
     {
+        static::creating(function (Payment $payment) {
+            $payment->receipt_number = 'PENDING-'.Str::uuid();
+        });
+
+        static::created(function (Payment $payment) {
+            $payment->forceFill([
+                'receipt_number' => sprintf(
+                    'CDS-RC-%s-%s',
+                    $payment->payment_date->format('Y'),
+                    str_pad((string) $payment->id, 5, '0', STR_PAD_LEFT)
+                ),
+            ])->save();
+        });
+
         // Keeps the training PaymentAllocation ledger in sync with the
         // legacy single-course payment flow: whenever a payment is saved
         // (created, updated, its amount corrected, its course changed),
@@ -70,10 +103,10 @@ class Payment extends Model
         // reflecting the payment's current amount. This means
         // Enrollment::amountPaid()/balance() can read allocations only,
         // without every payment-creating code path (factories, seeders,
-        // the controller) needing to know allocations exist. A multi-
-        // service payment entry screen will create allocations directly
-        // in a later phase; this keeps the existing single-course flow
-        // behaviorally unchanged in the meantime.
+        // the controller) needing to know allocations exist. The multi-
+        // service payment entry screen creates allocations directly
+        // itself; this keeps the existing single-course flow behaviorally
+        // unchanged alongside it.
         static::saved(function (Payment $payment) {
             $enrollment = Enrollment::where('student_id', $payment->student_id)
                 ->where('course_id', $payment->course_id)

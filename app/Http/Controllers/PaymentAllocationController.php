@@ -59,6 +59,7 @@ class PaymentAllocationController extends Controller
                 'status' => 'paid',
                 'reference_number' => $request->validated('reference_number'),
                 'notes' => $request->validated('notes'),
+                'recorded_by' => $request->user()->id,
             ]);
 
             foreach ($allocations as $row) {

@@ -142,6 +142,7 @@ class StudentController extends Controller
                     'payment_date' => $student->enrollment_date->toDateString(),
                     'payment_method' => $request->validated('payment_method'),
                     'status' => 'paid',
+                    'recorded_by' => $request->user()->id,
                 ]);
             }
         }

@@ -52,6 +52,9 @@
                 </dl>
 
                 <div class="flex items-center gap-4">
+                    <a href="{{ route('payments.receipt', $payment) }}">
+                        <x-secondary-button type="button">{{ __('View Receipt') }}</x-secondary-button>
+                    </a>
                     <a href="{{ route('payments.edit', $payment) }}">
                         <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
                     </a>
