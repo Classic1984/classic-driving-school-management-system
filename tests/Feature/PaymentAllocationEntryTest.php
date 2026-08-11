@@ -21,6 +21,16 @@ class PaymentAllocationEntryTest extends TestCase
         $this->post('/payments/record', [])->assertRedirect('/login');
     }
 
+    public function test_the_payments_index_records_payment_button_links_to_the_multi_service_screen(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/payments');
+
+        $response->assertOk();
+        $response->assertSee(route('payments.record.create'), false);
+    }
+
     public function test_the_entry_screen_shows_a_student_picker_with_no_student_selected(): void
     {
         $user = User::factory()->create();
