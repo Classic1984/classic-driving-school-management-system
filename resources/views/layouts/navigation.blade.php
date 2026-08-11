@@ -34,18 +34,35 @@
                         {{ __('Certificates') }}
                     </x-nav-link>
                     @if (auth()->user()->isDirector())
-                        <x-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
-                            {{ __('Finance') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
-                            {{ __('Activity Log') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                            {{ __('Staff') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                            {{ __('Corrections') }}
-                        </x-nav-link>
+                        @php
+                            $directorSectionActive = request()->routeIs('finance.*', 'expenses.*', 'activity-log.*', 'users.*', 'student-correction-requests.*');
+                        @endphp
+                        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+                            <button @click="open = ! open" type="button" class="inline-flex items-center gap-1 px-1 pt-1 border-b-2 {{ $directorSectionActive ? 'border-amber-500 text-white' : 'border-transparent text-gray-400 hover:text-amber-400 hover:border-gray-500' }} text-sm font-medium leading-5 focus:outline-none transition duration-150 ease-in-out">
+                                {{ __('Director') }}
+                                <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+
+                            <div x-show="open"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-75"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute z-50 mt-2 w-48 rounded-lg shadow-lg ltr:origin-top-left rtl:origin-top-right start-0"
+                                    style="display: none;"
+                                    @click="open = false">
+                                <div class="rounded-lg ring-1 ring-black ring-opacity-5 py-1 bg-white">
+                                    <x-dropdown-link :href="route('finance.summary')">{{ __('Finance') }}</x-dropdown-link>
+                                    <x-dropdown-link :href="route('activity-log.index')">{{ __('Activity Log') }}</x-dropdown-link>
+                                    <x-dropdown-link :href="route('users.index')">{{ __('Staff') }}</x-dropdown-link>
+                                    <x-dropdown-link :href="route('student-correction-requests.index')">{{ __('Correction Requests') }}</x-dropdown-link>
+                                </div>
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
