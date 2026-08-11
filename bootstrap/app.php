@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureDirectorHasTwoFactorEnabled;
 use App\Http\Middleware\EnsureUserCanManageCourses;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsDirector;
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
             'director' => EnsureUserIsDirector::class,
             'course-manager' => EnsureUserCanManageCourses::class,
+            'two-factor-required' => EnsureDirectorHasTwoFactorEnabled::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

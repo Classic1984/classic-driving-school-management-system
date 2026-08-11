@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\TwoFactorAuthenticationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,10 +15,19 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request, TwoFactorAuthenticationService $twoFactor): View
     {
+        $user = $request->user();
+
+        // A secret exists but isn't confirmed yet while setup is in
+        // progress - that's the only time the QR code needs to be shown.
+        $qrCodeSvg = $user->two_factor_secret && ! $user->hasEnabledTwoFactorAuthentication()
+            ? $twoFactor->qrCodeSvg($user, $user->two_factor_secret)
+            : null;
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'qrCodeSvg' => $qrCodeSvg,
         ]);
     }
 
