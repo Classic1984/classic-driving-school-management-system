@@ -19,6 +19,22 @@ class StudentService extends Model
     use HasFactory;
 
     /**
+     * The stages a service's real-world processing can be in - entirely
+     * independent of how much of it has been paid for.
+     */
+    public const PROCESSING_STATUSES = ['not_started', 'processing', 'completed'];
+
+    /**
+     * Mirrors the column's DB-level default so a freshly instantiated
+     * model reflects it immediately, without waiting on a re-fetch.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'processing_status' => 'not_started',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -27,6 +43,7 @@ class StudentService extends Model
         'student_id',
         'service_id',
         'price',
+        'processing_status',
     ];
 
     /**
@@ -85,5 +102,14 @@ class StudentService extends Model
         }
 
         return $this->balance() > 0 ? 'part_payment' : 'paid';
+    }
+
+    /**
+     * A human-readable label for this service's real-world processing
+     * status, e.g. "Not Started", "Processing", "Completed".
+     */
+    public function processingStatusLabel(): string
+    {
+        return ucwords(str_replace('_', ' ', $this->processing_status));
     }
 }
