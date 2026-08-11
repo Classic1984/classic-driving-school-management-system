@@ -73,6 +73,19 @@ class Payment extends Model
     }
 
     /**
+     * A human-readable summary of what this payment paid for, e.g.
+     * "Training — Beginner Course, Learner's Permit" - built from its
+     * allocations so it's accurate whether this is a legacy single-course
+     * payment or a multi-service one.
+     */
+    public function description(): string
+    {
+        $labels = $this->allocations->map(fn (PaymentAllocation $allocation) => $allocation->label());
+
+        return $labels->isNotEmpty() ? $labels->implode(', ') : '—';
+    }
+
+    /**
      * receipt_number is deliberately not fillable: it's a permanent,
      * system-assigned identifier derived from the row's own auto-increment
      * id (like Certificate::certificate_number), in the form

@@ -37,7 +37,11 @@ class PaymentController extends Controller
     {
         $period = $this->period($request);
 
-        $payments = $this->query($period)->with(['student', 'course'])->latest('payment_date')->paginate(10)->appends($request->query());
+        $payments = $this->query($period)
+            ->with(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])
+            ->latest('payment_date')
+            ->paginate(10)
+            ->appends($request->query());
 
         $todayTotal = Payment::where('status', 'paid')
             ->whereDate('payment_date', today())
@@ -111,7 +115,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment): View
     {
-        $payment->load(['student', 'course']);
+        $payment->load(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service']);
 
         return view('payments.show', compact('payment'));
     }
