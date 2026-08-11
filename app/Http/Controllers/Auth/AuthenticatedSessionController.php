@@ -26,6 +26,21 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $user = Auth::user();
+
+        // Credentials are correct, but a two-factor-enabled account isn't
+        // fully logged in yet - park the pending login in the session and
+        // send them to the challenge instead, the same way Auth::attempt()
+        // itself is short-circuited by Fortify-style two-factor flows.
+        if ($user->hasEnabledTwoFactorAuthentication()) {
+            Auth::guard('web')->logout();
+
+            $request->session()->put('login.id', $user->getKey());
+            $request->session()->put('login.remember', $request->boolean('remember'));
+
+            return redirect()->route('two-factor.login');
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
