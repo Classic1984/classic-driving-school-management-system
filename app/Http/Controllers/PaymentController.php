@@ -115,7 +115,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment): View
     {
-        $payment->load(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service']);
+        $payment->load(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service', 'corrections.correctedBy']);
 
         return view('payments.show', compact('payment'));
     }

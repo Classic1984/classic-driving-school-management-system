@@ -15,6 +15,7 @@ use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
@@ -116,6 +117,8 @@ Route::middleware('auth')->group(function () {
     Route::post('payments/record', [PaymentAllocationController::class, 'store'])->name('payments.record.store');
     Route::resource('payments', PaymentController::class)->except(['destroy']);
     Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+    Route::get('payments/{payment}/correct', [PaymentCorrectionController::class, 'edit'])->name('payments.correct.edit');
+    Route::put('payments/{payment}/correct', [PaymentCorrectionController::class, 'update'])->name('payments.correct.update');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });
