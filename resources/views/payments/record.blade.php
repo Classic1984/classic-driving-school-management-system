@@ -40,6 +40,7 @@
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead>
                                         <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                            <th class="px-2 py-1"></th>
                                             <th class="px-2 py-1">{{ __('Charge') }}</th>
                                             <th class="px-2 py-1">{{ __('Full Price') }}</th>
                                             <th class="px-2 py-1">{{ __('Paid') }}</th>
@@ -49,7 +50,16 @@
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">
                                         @foreach ($charges as $index => $charge)
-                                            <tr>
+                                            <tr
+                                                x-data="{
+                                                    amount: @js(old("allocations.{$index}.amount", '')),
+                                                    get selected() { return this.amount !== '' && Number(this.amount) > 0; },
+                                                    toggle(checked) { this.amount = checked ? '{{ $charge['balance'] }}' : ''; },
+                                                }"
+                                            >
+                                                <td class="px-2 py-1 text-sm">
+                                                    <input type="checkbox" :checked="selected" @change="toggle($event.target.checked)" class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500" aria-label="{{ __('Pay :charge in full', ['charge' => $charge['label']]) }}">
+                                                </td>
                                                 <td class="px-2 py-1 text-sm">
                                                     {{ $charge['label'] }}
                                                     @if ($charge['type'] === 'new_service')
@@ -69,7 +79,7 @@
                                                         min="0"
                                                         max="{{ $charge['balance'] }}"
                                                         placeholder="0.00"
-                                                        value="{{ old("allocations.{$index}.amount") }}"
+                                                        x-model="amount"
                                                         class="block w-32 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm"
                                                     >
                                                     <x-input-error class="mt-1" :messages="$errors->get("allocations.{$index}.amount")" />

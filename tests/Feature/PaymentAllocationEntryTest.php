@@ -440,4 +440,20 @@ class PaymentAllocationEntryTest extends TestCase
         $this->assertSame(20000.0, $enrollment->fresh()->amountPaid());
         $this->assertDatabaseHas('student_services', ['student_id' => $student->id, 'service_id' => $service->id]);
     }
+
+    public function test_each_charge_row_renders_a_tick_box_that_can_auto_fill_its_full_balance(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'is_active' => true]);
+
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('type="checkbox"', false);
+        // The row's Alpine state seeds the checkbox's auto-fill target with the
+        // charge's own balance, so ticking it proposes a full payment while the
+        // amount field stays editable for a part payment.
+        $response->assertSee("checked ? '50000' : ''", false);
+    }
 }
