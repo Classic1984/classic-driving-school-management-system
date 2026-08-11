@@ -96,10 +96,12 @@ class StudentServiceChargeTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Available Service');
-        // "Already Charged Service" still appears once in the charges
-        // table itself, but must not appear a second time in the "charge
-        // for a new service" dropdown options.
+        // "Already Charged Service" still appears in the financial
+        // overview and services tables, but must not appear in the
+        // "charge for a new service" dropdown's options.
         $response->assertSee('Already Charged Service');
-        $this->assertSame(1, substr_count($response->getContent(), 'Already Charged Service'));
+        preg_match('/<select id="service_id".*?<\/select>/s', $response->getContent(), $matches);
+        $this->assertStringContainsString('Available Service', $matches[0]);
+        $this->assertStringNotContainsString('Already Charged Service', $matches[0]);
     }
 }
