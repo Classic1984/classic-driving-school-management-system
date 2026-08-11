@@ -25,12 +25,15 @@ class DiscountTest extends TestCase
         ], $overrides);
     }
 
-    public function test_secretary_can_apply_a_preset_discount_within_their_limit(): void
+    public function test_director_can_apply_a_preset_discount_within_the_secretary_limit(): void
     {
-        $secretary = User::factory()->secretary()->create();
+        // Enrollment (and any discount that comes with it) is Director-only
+        // - this preset is shared with Secretary's allowed list, but only a
+        // Director ever actually reaches the point of applying it.
+        $director = User::factory()->director()->create();
         $course = Course::factory()->create(['fee' => 95000]);
 
-        $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
+        $response = $this->actingAs($director)->post('/students', $this->registrationData([
             'course_id' => $course->id,
             'discount_choice' => '5000',
             'discount_reason' => 'promotional_offer',
@@ -44,14 +47,36 @@ class DiscountTest extends TestCase
         $this->assertSame(95000.0, $enrollment->originalFee());
         $this->assertSame(5000.0, (float) $enrollment->discount_amount);
         $this->assertSame(90000.0, $enrollment->fee());
-        $this->assertSame($secretary->id, $enrollment->discount_approved_by);
+        $this->assertSame($director->id, $enrollment->discount_approved_by);
 
         $this->assertDatabaseHas('discount_audit_logs', [
             'student_id' => $student->id,
-            'applied_by' => $secretary->id,
+            'applied_by' => $director->id,
             'discount_amount' => 5000,
             'reason' => 'promotional_offer',
         ]);
+    }
+
+    public function test_a_secretarys_course_and_discount_selection_is_ignored_at_registration(): void
+    {
+        // Assigning a training program is Director-only: the student is
+        // still registered, but course_id/discount_choice are silently
+        // dropped rather than honored, even though a Secretary can still
+        // pass the discount's own validation rules.
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
+            'course_id' => $course->id,
+            'discount_choice' => '5000',
+            'discount_reason' => 'promotional_offer',
+        ]));
+
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
+        $this->assertTrue($student->courses->isEmpty());
+        $this->assertDatabaseCount('discount_audit_logs', 0);
     }
 
     public function test_secretary_cannot_apply_a_discount_beyond_their_preset_limit(): void
@@ -209,10 +234,10 @@ class DiscountTest extends TestCase
 
     public function test_payments_and_balance_use_the_discounted_final_fee(): void
     {
-        $secretary = User::factory()->secretary()->create();
+        $director = User::factory()->director()->create();
         $course = Course::factory()->create(['fee' => 95000]);
 
-        $this->actingAs($secretary)->post('/students', $this->registrationData([
+        $this->actingAs($director)->post('/students', $this->registrationData([
             'course_id' => $course->id,
             'discount_choice' => '5000',
             'discount_reason' => 'promotional_offer',

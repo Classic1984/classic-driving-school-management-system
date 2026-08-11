@@ -83,54 +83,60 @@ class StudentController extends Controller
 
         $student = Student::create($data);
 
-        $course = Course::findOrFail($request->validated('course_id'));
-        $originalFee = (float) $course->fee;
-        [$discountPercentage, $discountAmount] = $this->resolveDiscount($request, $originalFee);
-        $finalFee = max(0, $originalFee - $discountAmount);
+        // Assigning a training program (and the discount/payment that ride
+        // along with it) is Director-only - a non-Director's course_id is
+        // ignored entirely, leaving the student registered but unenrolled,
+        // regardless of what a tampered request might contain.
+        if ($request->user()->isDirector() && $request->validated('course_id')) {
+            $course = Course::findOrFail($request->validated('course_id'));
+            $originalFee = (float) $course->fee;
+            [$discountPercentage, $discountAmount] = $this->resolveDiscount($request, $originalFee);
+            $finalFee = max(0, $originalFee - $discountAmount);
 
-        // A weekday student starting double period immediately burns through
-        // 4 training days in just 2 calendar days, so their balance is due
-        // that much sooner than the course's normal grace period.
-        $gracePeriodDays = (! $course->isWeekend() && $request->boolean('starts_double_period'))
-            ? 2
-            : $course->gracePeriodDays();
+            // A weekday student starting double period immediately burns through
+            // 4 training days in just 2 calendar days, so their balance is due
+            // that much sooner than the course's normal grace period.
+            $gracePeriodDays = (! $course->isWeekend() && $request->boolean('starts_double_period'))
+                ? 2
+                : $course->gracePeriodDays();
 
-        $student->courses()->attach($course->id, [
-            'enrolled_at' => $student->enrollment_date->toDateString(),
-            'due_date' => $student->enrollment_date->copy()->addDays($gracePeriodDays)->toDateString(),
-            'status' => 'active',
-            'fee' => $finalFee,
-            'original_fee' => $originalFee,
-            'discount_percentage' => $discountAmount > 0 ? $discountPercentage : null,
-            'discount_amount' => $discountAmount > 0 ? $discountAmount : null,
-            'discount_reason' => $discountAmount > 0 ? $request->validated('discount_reason') : null,
-            'discount_reason_note' => $discountAmount > 0 ? $request->validated('discount_reason_note') : null,
-            'discount_approved_by' => $discountAmount > 0 ? $request->user()->id : null,
-        ]);
-
-        if ($discountAmount > 0) {
-            DiscountAuditLog::create([
-                'student_id' => $student->id,
-                'course_id' => $course->id,
-                'applied_by' => $request->user()->id,
+            $student->courses()->attach($course->id, [
+                'enrolled_at' => $student->enrollment_date->toDateString(),
+                'due_date' => $student->enrollment_date->copy()->addDays($gracePeriodDays)->toDateString(),
+                'status' => 'active',
+                'fee' => $finalFee,
                 'original_fee' => $originalFee,
-                'discount_percentage' => $discountPercentage,
-                'discount_amount' => $discountAmount,
-                'final_fee' => $finalFee,
-                'reason' => $request->validated('discount_reason'),
-                'reason_note' => $request->validated('discount_reason_note'),
+                'discount_percentage' => $discountAmount > 0 ? $discountPercentage : null,
+                'discount_amount' => $discountAmount > 0 ? $discountAmount : null,
+                'discount_reason' => $discountAmount > 0 ? $request->validated('discount_reason') : null,
+                'discount_reason_note' => $discountAmount > 0 ? $request->validated('discount_reason_note') : null,
+                'discount_approved_by' => $discountAmount > 0 ? $request->user()->id : null,
             ]);
-        }
 
-        if ($amountPaid = $request->validated('amount_paid')) {
-            Payment::create([
-                'student_id' => $student->id,
-                'course_id' => $course->id,
-                'amount' => $amountPaid,
-                'payment_date' => $student->enrollment_date->toDateString(),
-                'payment_method' => $request->validated('payment_method'),
-                'status' => 'paid',
-            ]);
+            if ($discountAmount > 0) {
+                DiscountAuditLog::create([
+                    'student_id' => $student->id,
+                    'course_id' => $course->id,
+                    'applied_by' => $request->user()->id,
+                    'original_fee' => $originalFee,
+                    'discount_percentage' => $discountPercentage,
+                    'discount_amount' => $discountAmount,
+                    'final_fee' => $finalFee,
+                    'reason' => $request->validated('discount_reason'),
+                    'reason_note' => $request->validated('discount_reason_note'),
+                ]);
+            }
+
+            if ($amountPaid = $request->validated('amount_paid')) {
+                Payment::create([
+                    'student_id' => $student->id,
+                    'course_id' => $course->id,
+                    'amount' => $amountPaid,
+                    'payment_date' => $student->enrollment_date->toDateString(),
+                    'payment_method' => $request->validated('payment_method'),
+                    'status' => 'paid',
+                ]);
+            }
         }
 
         ActivityLog::record("Registered student {$student->name}");
@@ -209,6 +215,19 @@ class StudentController extends Controller
     }
 
     /**
+     * Fields that can only be changed by a Director once a student is
+     * already registered - changing them (especially the training
+     * program, handled separately via course enrollment) has downstream
+     * effects on training duration, payments, and certificates, so a
+     * non-Director's attempt to change them is silently discarded here
+     * regardless of what the request contains. Hidden/disabled inputs on
+     * the edit form back this up, but this is the real enforcement.
+     *
+     * @var list<string>
+     */
+    protected const DIRECTOR_LOCKED_FIELDS = ['name', 'date_of_birth', 'phone'];
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
@@ -224,7 +243,32 @@ class StudentController extends Controller
             $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
         }
 
+        $isDirector = $request->user()->isDirector();
+        $originalValues = $student->only(self::DIRECTOR_LOCKED_FIELDS);
+
+        if (! $isDirector) {
+            foreach (self::DIRECTOR_LOCKED_FIELDS as $field) {
+                unset($data[$field]);
+            }
+        }
+
         $student->update($data);
+
+        if ($isDirector) {
+            foreach (self::DIRECTOR_LOCKED_FIELDS as $field) {
+                $old = $field === 'date_of_birth' ? optional($originalValues[$field])->format('Y-m-d') : $originalValues[$field];
+                $new = $field === 'date_of_birth' ? optional($student->date_of_birth)->format('Y-m-d') : $student->{$field};
+
+                if ($old !== $new) {
+                    $label = match ($field) {
+                        'date_of_birth' => 'Date of Birth',
+                        default => ucfirst($field),
+                    };
+
+                    ActivityLog::record("Changed {$student->name}'s {$label}: {$old} → {$new}");
+                }
+            }
+        }
 
         ActivityLog::record("Updated student {$student->name}");
 

@@ -44,7 +44,14 @@ class CourseController extends Controller
         $course = Course::create($request->safe()->except(['instructors', 'students']));
 
         $course->instructors()->sync($request->validated('instructors', []));
-        $this->syncStudentEnrollments($course, $request->validated('students', []));
+
+        // Enrolling/moving students into a course - i.e. assigning or
+        // changing a student's training program - is Director-only; a
+        // non-Director's "students" selection is ignored entirely, not
+        // just hidden in the form.
+        if ($request->user()->isDirector()) {
+            $this->syncStudentEnrollments($course, $request->validated('students', []));
+        }
 
         ActivityLog::record("Created course {$course->name}");
 
@@ -81,7 +88,11 @@ class CourseController extends Controller
         $course->update($request->safe()->except(['instructors', 'students']));
 
         $course->instructors()->sync($request->validated('instructors', []));
-        $this->syncStudentEnrollments($course, $request->validated('students', []));
+
+        // See store(): enrollment/roster changes are Director-only.
+        if ($request->user()->isDirector()) {
+            $this->syncStudentEnrollments($course, $request->validated('students', []));
+        }
 
         // A duration_weeks change alters totalTrainingDays() for every
         // enrollment in this course - reconcile them all so a "Completed"
@@ -111,6 +122,7 @@ class CourseController extends Controller
      * Attach newly selected students as fresh enrollments (with a due date
      * computed from the course's grace period) and detach deselected ones,
      * without disturbing the enrollment data of students who remain selected.
+     * Director-only - see the isDirector() checks around both call sites.
      *
      * @param  array<int, int>  $selectedStudentIds
      */
@@ -122,7 +134,12 @@ class CourseController extends Controller
         $toAttach = array_diff($selectedStudentIds, $currentStudentIds);
 
         if (! empty($toDetach)) {
+            $detachedNames = Student::whereIn('id', $toDetach)->pluck('name');
             $course->students()->detach($toDetach);
+
+            foreach ($detachedNames as $name) {
+                ActivityLog::record("Removed {$name} from {$course->name}");
+            }
         }
 
         foreach ($toAttach as $studentId) {
@@ -133,9 +150,13 @@ class CourseController extends Controller
                 'fee' => $course->fee,
             ]);
 
-            // Reopens a previously "completed" student now that they have a
-            // new course in progress.
-            Student::find($studentId)?->refreshStatus();
+            if ($student = Student::find($studentId)) {
+                ActivityLog::record("Enrolled {$student->name} in {$course->name}");
+
+                // Reopens a previously "completed" student now that they
+                // have a new course in progress.
+                $student->refreshStatus();
+            }
         }
     }
 }

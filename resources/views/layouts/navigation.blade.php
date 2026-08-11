@@ -43,6 +43,9 @@
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                             {{ __('Staff') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
+                            {{ __('Correction Requests') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -126,6 +129,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                     {{ __('Staff') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
+                    {{ __('Correction Requests') }}
                 </x-responsive-nav-link>
             @endif
         </div>
