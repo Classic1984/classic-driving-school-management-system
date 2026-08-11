@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Student;
+use App\Models\StudentService;
 use App\Services\StudentChargeResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class PaymentAllocationController extends Controller
         // and therefore wouldn't be found - afterward.
         $charges = StudentChargeResolver::openCharges($student)->keyBy(fn ($charge) => "{$charge['type']}:{$charge['id']}");
 
-        $payment = DB::transaction(function () use ($request, $student, $allocations) {
+        $payment = DB::transaction(function () use ($request, $student, $allocations, $charges) {
             $payment = Payment::create([
                 'student_id' => $student->id,
                 'course_id' => null,
@@ -63,11 +64,28 @@ class PaymentAllocationController extends Controller
             ]);
 
             foreach ($allocations as $row) {
+                $type = $row['type'];
+                $id = $row['id'];
+
+                // A "new_service" row bills the student for a service
+                // they haven't been charged for before and pays for it in
+                // the same action - charge it now, then allocate against
+                // the charge just created.
+                if ($type === 'new_service') {
+                    $studentService = StudentService::firstOrCreate(
+                        ['student_id' => $student->id, 'service_id' => $id],
+                        ['price' => $charges->get("new_service:{$id}")['price']]
+                    );
+
+                    $type = 'service';
+                    $id = $studentService->id;
+                }
+
                 PaymentAllocation::create([
                     'payment_id' => $payment->id,
-                    'allocation_type' => $row['type'],
-                    'enrollment_id' => $row['type'] === 'service' ? null : $row['id'],
-                    'student_service_id' => $row['type'] === 'service' ? $row['id'] : null,
+                    'allocation_type' => $type,
+                    'enrollment_id' => $type === 'service' ? null : $id,
+                    'student_service_id' => $type === 'service' ? $id : null,
                     'amount' => $row['amount'],
                 ]);
             }

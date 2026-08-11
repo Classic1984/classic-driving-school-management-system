@@ -48,7 +48,7 @@ class StorePaymentAllocationRequest extends FormRequest
             'reference_number' => ['nullable', 'string', 'max:255', 'unique:payments,reference_number'],
             'notes' => ['nullable', 'string'],
             'allocations' => ['required', 'array', 'min:1'],
-            'allocations.*.type' => ['required', 'in:training,online_certificate,student_certificate,service'],
+            'allocations.*.type' => ['required', 'in:training,online_certificate,student_certificate,service,new_service'],
             'allocations.*.id' => ['required', 'integer'],
             'allocations.*.amount' => ['required', 'numeric', 'min:0.01'],
         ];
