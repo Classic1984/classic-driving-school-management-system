@@ -38,7 +38,7 @@ class PaymentController extends Controller
         $period = $this->period($request);
 
         $payments = $this->query($period)
-            ->with(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])
+            ->with(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service', 'reversal'])
             ->latest('payment_date')
             ->paginate(10)
             ->appends($request->query());
@@ -115,7 +115,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment): View
     {
-        $payment->load(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service', 'corrections.correctedBy']);
+        $payment->load(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service', 'corrections.correctedBy', 'reversal.reversedBy']);
 
         return view('payments.show', compact('payment'));
     }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Payment extends Model
@@ -79,6 +80,14 @@ class Payment extends Model
     public function corrections(): HasMany
     {
         return $this->hasMany(PaymentCorrectionLog::class)->latest();
+    }
+
+    /**
+     * The reversal that voided this payment, if it's ever been reversed.
+     */
+    public function reversal(): HasOne
+    {
+        return $this->hasOne(PaymentReversal::class);
     }
 
     /**
