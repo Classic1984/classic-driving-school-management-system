@@ -82,8 +82,8 @@
                                                         x-model="amount"
                                                         class="block w-32 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm"
                                                     >
-                                                    <x-input-error class="mt-1" :messages="$errors->get("allocations.{$index}.amount")" />
-                                                    <x-input-error class="mt-1" :messages="$errors->get("allocations.{$index}.id")" />
+                                                    <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.amount')" />
+                                                    <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.id')" />
                                                 </td>
                                             </tr>
                                         @endforeach
