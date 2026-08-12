@@ -41,7 +41,7 @@ class SendTheoryClassReminder extends Command
             return self::SUCCESS;
         }
 
-        $message = 'Classic Driving School: Reminder - theory class holds today (Thursday). Please be punctual.';
+        $message = 'Classic Driving School: Reminder - theory class holds today (Thursday) at 10am. Please be punctual.';
 
         $sent = $students->filter(fn (Student $student) => $this->sms->send($student->phone, $message))->count();
 
