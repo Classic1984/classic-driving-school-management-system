@@ -85,6 +85,8 @@ Route::middleware('auth')->group(function () {
         Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
         Route::get('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'showReactivateForm'])->name('enrollments.reactivate.create');
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
+        Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
+        Route::post('students/{student}/enroll', [EnrollmentController::class, 'store'])->name('students.enroll.store');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
