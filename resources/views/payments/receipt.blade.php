@@ -19,6 +19,7 @@
                     <div class="text-right">
                         <p class="text-xs uppercase tracking-widest text-gray-500">{{ __('Receipt No.') }}</p>
                         <p class="font-mono text-sm">{{ $payment->receipt_number }}</p>
+                        <x-qr-code :data="$payment->qrCodeSummary()" class="mt-2 inline-block [&_svg]:h-16 [&_svg]:w-16" />
                     </div>
                 </div>
 

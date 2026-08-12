@@ -134,7 +134,7 @@ class PaymentController extends Controller
      */
     public function receipt(Payment $payment): View
     {
-        $payment->load(['student', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service']);
+        $payment->load(['student.courses', 'course.instructors', 'recordedBy', 'allocations.enrollment.course.instructors', 'allocations.studentService.service']);
 
         $balances = $payment->allocations
             ->unique(fn (PaymentAllocation $allocation) => $allocation->chargeKey())
