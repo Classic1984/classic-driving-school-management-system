@@ -66,6 +66,7 @@ class PaymentAllocationController extends Controller
             foreach ($allocations as $row) {
                 $type = $row['type'];
                 $id = $row['id'];
+                $studentService = null;
 
                 // A "new_service" row bills the student for a service
                 // they haven't been charged for before and pays for it in
@@ -88,6 +89,10 @@ class PaymentAllocationController extends Controller
                     'student_service_id' => $type === 'service' ? $id : null,
                     'amount' => $row['amount'],
                 ]);
+
+                if ($type === 'service') {
+                    $this->autoStartProcessing($studentService ?? StudentService::find($id));
+                }
             }
 
             return $payment;
@@ -104,5 +109,28 @@ class PaymentAllocationController extends Controller
         ActivityLog::record('Recorded a payment of ₦'.number_format((float) $payment->amount, 2)." for {$student->name} ({$summary})");
 
         return Redirect::route('students.show', $student)->with('status', 'payment-created');
+    }
+
+    /**
+     * The first payment recorded toward a service with a tracked
+     * turnaround (e.g. Driver's License Processing) starts its
+     * processing clock automatically - staff no longer have to switch
+     * it to "Processing" by hand. A service already processing or
+     * completed, or one with no turnaround to track, is left alone.
+     */
+    protected function autoStartProcessing(StudentService $studentService): void
+    {
+        $studentService->loadMissing(['service', 'student']);
+
+        if ($studentService->service->processing_days === null || $studentService->processing_status !== 'not_started') {
+            return;
+        }
+
+        $studentService->update([
+            'processing_status' => 'processing',
+            'processing_started_at' => now(),
+        ]);
+
+        ActivityLog::record("Payment started processing for {$studentService->service->name} ({$studentService->student->name})");
     }
 }
