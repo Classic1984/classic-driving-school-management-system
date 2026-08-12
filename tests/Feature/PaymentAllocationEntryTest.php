@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Service;
 use App\Models\Student;
+use App\Models\StudentService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -455,5 +456,119 @@ class PaymentAllocationEntryTest extends TestCase
         // charge's own balance, so ticking it proposes a full payment while the
         // amount field stays editable for a part payment.
         $response->assertSee("checked ? '50000' : ''", false);
+    }
+
+    public function test_paying_for_a_tracked_service_automatically_starts_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30]);
+        $studentService = $student->studentServices()->create(['service_id' => $service->id, 'price' => 50000]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 20000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'service', 'id' => $studentService->id, 'amount' => 20000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $studentService->refresh();
+        $this->assertSame('processing', $studentService->processing_status);
+        $this->assertTrue($studentService->processing_started_at->isToday());
+    }
+
+    public function test_paying_for_an_untracked_service_does_not_start_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000, 'processing_days' => null]);
+        $studentService = $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 6000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'service', 'id' => $studentService->id, 'amount' => 6000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('not_started', $studentService->fresh()->processing_status);
+    }
+
+    public function test_a_second_payment_does_not_reset_an_already_processing_services_start_date(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['price' => 50000, 'processing_days' => 30]);
+        $startedAt = now()->subDays(10);
+        $studentService = $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => 50000,
+            'processing_status' => 'processing',
+            'processing_started_at' => $startedAt,
+        ]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 20000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'service', 'id' => $studentService->id, 'amount' => 20000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame($startedAt->timestamp, $studentService->fresh()->processing_started_at->timestamp);
+    }
+
+    public function test_paying_for_an_already_completed_service_does_not_revert_it_to_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['price' => 50000, 'processing_days' => 30]);
+        $studentService = $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => 50000,
+            'processing_status' => 'completed',
+            'processing_started_at' => now()->subDays(35),
+        ]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 10000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'service', 'id' => $studentService->id, 'amount' => 10000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('completed', $studentService->fresh()->processing_status);
+    }
+
+    public function test_billing_and_paying_a_new_tracked_service_in_one_step_also_starts_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 50000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'new_service', 'id' => $service->id, 'amount' => 50000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $studentService = StudentService::where('student_id', $student->id)->where('service_id', $service->id)->firstOrFail();
+        $this->assertSame('processing', $studentService->processing_status);
+        $this->assertNotNull($studentService->processing_started_at);
     }
 }
