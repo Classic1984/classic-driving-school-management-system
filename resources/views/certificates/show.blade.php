@@ -25,6 +25,7 @@
                 <div class="absolute top-6 right-6 text-right">
                     <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Certificate No.') }}</p>
                     <p class="text-sm font-mono">{{ $certificate->certificate_number }}</p>
+                    <x-qr-code :data="$certificate->qrCodeSummary()" class="mt-2 inline-block bg-white p-1 rounded [&_svg]:h-16 [&_svg]:w-16" />
                 </div>
 
                 <x-application-logo class="h-20 w-20 mx-auto" />

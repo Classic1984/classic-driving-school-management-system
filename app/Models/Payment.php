@@ -104,6 +104,62 @@ class Payment extends Model
     }
 
     /**
+     * The course this payment is most closely associated with, for
+     * display purposes (e.g. the receipt's QR code) - the legacy
+     * single-course payment's own course if set, otherwise the first
+     * training allocation's enrolled course, otherwise the student's
+     * most recently enrolled course. Null only for a student with no
+     * enrollment at all (e.g. a payment purely for a flat service).
+     */
+    public function primaryCourse(): ?Course
+    {
+        if ($this->course !== null) {
+            return $this->course;
+        }
+
+        $enrollment = $this->allocations
+            ->first(fn (PaymentAllocation $allocation) => $allocation->enrollment !== null)
+            ?->enrollment;
+
+        if ($enrollment !== null) {
+            return $enrollment->course;
+        }
+
+        return $this->student->courses()->latest('course_student.enrolled_at')->first();
+    }
+
+    /**
+     * The instructor to show alongside this payment's program, e.g. on
+     * the receipt's QR code - the first instructor assigned to its
+     * primary course, since a course can have more than one.
+     */
+    public function primaryInstructor(): ?Instructor
+    {
+        return $this->primaryCourse()?->instructors->first();
+    }
+
+    /**
+     * A plain-text summary of who this receipt belongs to and what
+     * program/instructor it relates to - encoded directly into the
+     * receipt's QR code so it can be read by scanning it, without needing
+     * a lookup page or an internet connection.
+     */
+    public function qrCodeSummary(): string
+    {
+        $course = $this->primaryCourse();
+        $instructor = $this->primaryInstructor();
+
+        return implode("\n", array_filter([
+            'Classic Driving School & Son Nigeria Limited',
+            "Receipt No.: {$this->receipt_number}",
+            "Name: {$this->student->name}",
+            "Student ID: {$this->student->student_id_number}",
+            $course ? "Program: {$course->name}" : null,
+            $instructor ? "Instructor: {$instructor->name}" : null,
+        ]));
+    }
+
+    /**
      * receipt_number is deliberately not fillable: it's a permanent,
      * system-assigned identifier derived from the row's own auto-increment
      * id (like Certificate::certificate_number), in the form

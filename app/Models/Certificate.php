@@ -53,6 +53,24 @@ class Certificate extends Model
     }
 
     /**
+     * A plain-text summary of this certificate's holder, program, and
+     * instructor - encoded directly into the certificate's QR code so it
+     * can be read by scanning it, without needing a lookup page or an
+     * internet connection.
+     */
+    public function qrCodeSummary(): string
+    {
+        return implode("\n", array_filter([
+            'Classic Driving School & Son Nigeria Limited',
+            "Certificate No.: {$this->certificate_number}",
+            "Name: {$this->student->name}",
+            "Student ID: {$this->student->student_id_number}",
+            "Program: {$this->course->name}",
+            $this->instructor ? "Instructor: {$this->instructor->name}" : null,
+        ]));
+    }
+
+    /**
      * certificate_number is deliberately not fillable: it's a permanent,
      * system-assigned identifier derived from the row's own auto-increment
      * id (like Student::student_id_number) so it's unique without a
