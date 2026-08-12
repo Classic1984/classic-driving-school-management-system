@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\StudentServiceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -44,6 +45,7 @@ class StudentService extends Model
         'service_id',
         'price',
         'processing_status',
+        'processing_started_at',
     ];
 
     /**
@@ -55,6 +57,7 @@ class StudentService extends Model
     {
         return [
             'price' => 'decimal:2',
+            'processing_started_at' => 'datetime',
         ];
     }
 
@@ -111,5 +114,52 @@ class StudentService extends Model
     public function processingStatusLabel(): string
     {
         return ucwords(str_replace('_', ' ', $this->processing_status));
+    }
+
+    /**
+     * The date this service's processing is expected to be ready by,
+     * based on when it started plus its catalog service's typical
+     * turnaround - or null if processing hasn't started yet, or the
+     * service has no tracked turnaround (e.g. Learner's Permit).
+     */
+    public function expectedReadyAt(): ?Carbon
+    {
+        if ($this->processing_started_at === null || $this->service->processing_days === null) {
+            return null;
+        }
+
+        return $this->processing_started_at->copy()->addDays($this->service->processing_days);
+    }
+
+    /**
+     * How far through its expected turnaround this service's processing
+     * is, from 0 to 100 - or null if there's nothing to measure progress
+     * against. Once marked completed, progress is always full regardless
+     * of how much of the expected turnaround has actually elapsed.
+     */
+    public function processingProgressPercent(): ?int
+    {
+        if ($this->processing_status === 'completed') {
+            return 100;
+        }
+
+        if ($this->processing_started_at === null || $this->service->processing_days === null) {
+            return null;
+        }
+
+        $elapsedDays = $this->processing_started_at->diffInDays(now());
+
+        return (int) min(100, floor($elapsedDays / $this->service->processing_days * 100));
+    }
+
+    /**
+     * Whether this service has run past its expected turnaround without
+     * being marked completed.
+     */
+    public function isOverdueProcessing(): bool
+    {
+        $expectedReadyAt = $this->expectedReadyAt();
+
+        return $expectedReadyAt !== null && $expectedReadyAt->isPast() && $this->processing_status !== 'completed';
     }
 }

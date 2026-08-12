@@ -119,4 +119,43 @@ class ServiceManagementTest extends TestCase
             ])
             ->assertSessionHasNoErrors();
     }
+
+    public function test_a_director_can_set_a_services_processing_days(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)->post('/services', [
+            'name' => "Driver's License Processing",
+            'price' => 50000,
+            'processing_days' => 30,
+        ]);
+
+        $this->assertDatabaseHas('services', [
+            'name' => "Driver's License Processing",
+            'processing_days' => 30,
+        ]);
+    }
+
+    public function test_processing_days_is_optional(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)
+            ->post('/services', ['name' => "Learner's Permit", 'price' => 6000])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('services', [
+            'name' => "Learner's Permit",
+            'processing_days' => null,
+        ]);
+    }
+
+    public function test_processing_days_must_be_a_positive_integer(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)
+            ->post('/services', ['name' => 'Online Certificate', 'price' => 15000, 'processing_days' => 0])
+            ->assertSessionHasErrors('processing_days');
+    }
 }

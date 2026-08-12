@@ -8,6 +8,7 @@ use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\StudentService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -71,7 +72,17 @@ class DashboardController extends Controller
             'year' => $this->distinctStudentsTrained(now()->startOfYear(), now()->endOfYear()),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments'));
+        // Only services with a tracked turnaround (processing_days set)
+        // produce a meaningful progress figure - see
+        // StudentService::processingProgressPercent().
+        $serviceProcessing = StudentService::where('processing_status', 'processing')
+            ->whereHas('service', fn ($query) => $query->whereNotNull('processing_days'))
+            ->with(['student', 'service'])
+            ->get()
+            ->sortBy(fn (StudentService $studentService) => $studentService->expectedReadyAt())
+            ->values();
+
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing'));
     }
 
     /**

@@ -7,6 +7,7 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Payment;
+use App\Models\Service;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -362,5 +363,86 @@ class DashboardTest extends TestCase
         $adminResponse = $this->actingAs($admin)->get('/dashboard');
         $adminResponse->assertOk();
         $adminResponse->assertDontSee('Reactivate');
+    }
+
+    public function test_dashboard_shows_a_service_in_progress_with_a_tracked_turnaround(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Roe']);
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'processing_days' => 30]);
+        $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now()->subDays(15),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Service Processing');
+        $response->assertSee('Jane Roe');
+        $response->assertSee("Driver's License Processing");
+        $response->assertSee('50%');
+    }
+
+    public function test_dashboard_flags_overdue_service_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now()->subDays(45),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Overdue');
+    }
+
+    public function test_dashboard_does_not_show_a_service_with_no_tracked_turnaround(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'processing_days' => null]);
+        $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Service Processing');
+    }
+
+    public function test_dashboard_does_not_show_completed_or_not_started_service_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'completed',
+            'processing_started_at' => now()->subDays(31),
+        ]);
+        $otherService = Service::factory()->create(['processing_days' => 30]);
+        $student->studentServices()->create([
+            'service_id' => $otherService->id,
+            'price' => $otherService->price,
+            'processing_status' => 'not_started',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Service Processing');
     }
 }
