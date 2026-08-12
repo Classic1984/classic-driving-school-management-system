@@ -26,6 +26,7 @@ class StoreServiceRequest extends FormRequest
             'name' => ['required', 'string', 'max:255', 'unique:services,name'],
             'price' => ['required', 'numeric', 'min:0.01'],
             'is_active' => ['boolean'],
+            'processing_days' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }

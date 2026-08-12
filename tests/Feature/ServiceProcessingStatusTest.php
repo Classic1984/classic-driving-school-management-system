@@ -115,4 +115,153 @@ class ServiceProcessingStatusTest extends TestCase
         $response->assertSee('Processing Status');
         $response->assertSee('selected', false);
     }
+
+    public function test_marking_processing_in_progress_stamps_the_start_date(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create();
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+        ]);
+
+        $this->assertNull($studentService->processing_started_at);
+
+        $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
+            'processing_status' => 'processing',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertNotNull($studentService->fresh()->processing_started_at);
+        $this->assertTrue($studentService->fresh()->processing_started_at->isToday());
+    }
+
+    public function test_resetting_to_not_started_clears_the_start_date(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create();
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now()->subDays(5),
+        ]);
+
+        $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
+            'processing_status' => 'not_started',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertNull($studentService->fresh()->processing_started_at);
+    }
+
+    public function test_re_entering_processing_does_not_reset_an_already_running_start_date(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create();
+        $startedAt = now()->subDays(5);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => $startedAt,
+        ]);
+
+        $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
+            'processing_status' => 'processing',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame($startedAt->timestamp, $studentService->fresh()->processing_started_at->timestamp);
+    }
+
+    public function test_expected_ready_at_is_null_without_a_tracked_turnaround(): void
+    {
+        $service = Service::factory()->create(['processing_days' => null]);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now(),
+        ]);
+
+        $this->assertNull($studentService->expectedReadyAt());
+        $this->assertNull($studentService->processingProgressPercent());
+    }
+
+    public function test_expected_ready_at_is_the_start_date_plus_the_services_processing_days(): void
+    {
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'processing_days' => 30]);
+        $startedAt = now()->startOfDay();
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => $startedAt,
+        ]);
+
+        $this->assertTrue($studentService->expectedReadyAt()->equalTo($startedAt->copy()->addDays(30)));
+    }
+
+    public function test_processing_progress_percent_reflects_elapsed_time(): void
+    {
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now()->subDays(15),
+        ]);
+
+        $this->assertSame(50, $studentService->processingProgressPercent());
+    }
+
+    public function test_processing_progress_percent_never_exceeds_100(): void
+    {
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now()->subDays(45),
+        ]);
+
+        $this->assertSame(100, $studentService->processingProgressPercent());
+    }
+
+    public function test_completed_processing_is_always_full_progress_regardless_of_elapsed_time(): void
+    {
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'completed',
+            'processing_started_at' => now()->subDays(2),
+        ]);
+
+        $this->assertSame(100, $studentService->processingProgressPercent());
+    }
+
+    public function test_processing_past_its_expected_ready_date_is_flagged_overdue(): void
+    {
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => now()->subDays(45),
+        ]);
+
+        $this->assertTrue($studentService->isOverdueProcessing());
+    }
+
+    public function test_completed_processing_is_never_flagged_overdue(): void
+    {
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $studentService = Student::factory()->create()->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'completed',
+            'processing_started_at' => now()->subDays(45),
+        ]);
+
+        $this->assertFalse($studentService->isOverdueProcessing());
+    }
 }

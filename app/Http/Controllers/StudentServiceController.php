@@ -57,7 +57,19 @@ class StudentServiceController extends Controller
         ]);
 
         $studentService->load('service');
-        $studentService->update(['processing_status' => $data['processing_status']]);
+
+        $updates = ['processing_status' => $data['processing_status']];
+
+        // Stamp the moment processing (re)starts so progress toward the
+        // service's expected turnaround can be tracked; clear it on reset
+        // back to not started rather than leaving a stale start date.
+        if ($data['processing_status'] === 'processing' && $studentService->processing_status !== 'processing') {
+            $updates['processing_started_at'] = now();
+        } elseif ($data['processing_status'] === 'not_started') {
+            $updates['processing_started_at'] = null;
+        }
+
+        $studentService->update($updates);
 
         ActivityLog::record("Updated {$studentService->service->name} processing status to \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name}");
 

@@ -34,6 +34,7 @@
                             <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <th class="px-4 py-2">{{ __('Name') }}</th>
                                 <th class="px-4 py-2">{{ __('Price') }}</th>
+                                <th class="px-4 py-2">{{ __('Processing Days') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
@@ -43,6 +44,7 @@
                                 <tr>
                                     <td class="px-4 py-2">{{ $service->name }}</td>
                                     <td class="px-4 py-2">{{ number_format($service->price, 2) }}</td>
+                                    <td class="px-4 py-2">{{ $service->processing_days ?? '—' }}</td>
                                     <td class="px-4 py-2">
                                         @if ($service->is_active)
                                             <x-badge color="green">{{ __('Active') }}</x-badge>
@@ -56,7 +58,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500">{{ __('No services yet. Add one to make it billable to students.') }}</td>
+                                    <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">{{ __('No services yet. Add one to make it billable to students.') }}</td>
                                 </tr>
                             @endforelse
                         </tbody>

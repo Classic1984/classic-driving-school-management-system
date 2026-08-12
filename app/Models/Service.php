@@ -28,6 +28,7 @@ class Service extends Model
         'name',
         'price',
         'is_active',
+        'processing_days',
     ];
 
     /**
@@ -40,6 +41,7 @@ class Service extends Model
         return [
             'price' => 'decimal:2',
             'is_active' => 'boolean',
+            'processing_days' => 'integer',
         ];
     }
 

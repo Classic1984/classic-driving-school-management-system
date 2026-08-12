@@ -407,6 +407,17 @@
                                                     @endforeach
                                                 </select>
                                             </form>
+                                            @if ($studentService->processingProgressPercent() !== null)
+                                                <div class="mt-1 text-xs text-gray-500">
+                                                    {{ $studentService->processingProgressPercent() }}%
+                                                    @if ($studentService->expectedReadyAt())
+                                                        &middot; {{ __('Ready by :date', ['date' => $studentService->expectedReadyAt()->format('M j, Y')]) }}
+                                                    @endif
+                                                    @if ($studentService->isOverdueProcessing())
+                                                        <x-badge color="red" class="ms-1">{{ __('Overdue') }}</x-badge>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

@@ -27,6 +27,7 @@ class UpdateServiceRequest extends FormRequest
             'name' => ['required', 'string', 'max:255', Rule::unique('services', 'name')->ignore($this->route('service'))],
             'price' => ['required', 'numeric', 'min:0.01'],
             'is_active' => ['boolean'],
+            'processing_days' => ['nullable', 'integer', 'min:1'],
         ];
     }
 }
