@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Course;
 use App\Models\Student;
+use App\Models\TheoryClassCancellation;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -48,5 +50,46 @@ class TheoryClassReminderTest extends TestCase
         $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
 
         Http::assertNothingSent();
+    }
+
+    public function test_a_cancellation_for_today_sends_a_cancellation_notice_instead_of_the_reminder(): void
+    {
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        TheoryClassCancellation::factory()->create([
+            'class_date' => today(),
+            'reason' => 'Public holiday',
+            'cancelled_by' => User::factory()->director()->create()->id,
+        ]);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
+            && str_contains($request['sms'], 'CANCELLED')
+            && str_contains($request['sms'], 'Public holiday'));
+    }
+
+    public function test_a_cancellation_for_a_different_date_does_not_affect_todays_reminder(): void
+    {
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        TheoryClassCancellation::factory()->create([
+            'class_date' => today()->addWeek(),
+            'cancelled_by' => User::factory()->director()->create()->id,
+        ]);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
+            && str_contains($request['sms'], 'Please be punctual')
+            && ! str_contains($request['sms'], 'CANCELLED'));
     }
 }

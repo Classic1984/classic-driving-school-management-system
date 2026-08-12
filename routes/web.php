@@ -24,6 +24,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
 use App\Http\Controllers\StudentRegistrationReportController;
 use App\Http\Controllers\StudentServiceController;
+use App\Http\Controllers\TheoryClassCancellationController;
 use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
 use App\Http\Controllers\UserController;
@@ -87,6 +88,7 @@ Route::middleware('auth')->group(function () {
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
+        Route::resource('theory-class-cancellations', TheoryClassCancellationController::class)->only(['index', 'store', 'destroy']);
 
         // Reviewing and resolving/rejecting correction requests is
         // Director-only; submitting one (below, outside this group) is

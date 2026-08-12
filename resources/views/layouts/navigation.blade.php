@@ -40,6 +40,9 @@
                         <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                             {{ __('Services') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('theory-class-cancellations.index')" :active="request()->routeIs('theory-class-cancellations.*')">
+                            {{ __('Theory Class') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
                             {{ __('Activity Log') }}
                         </x-nav-link>
@@ -129,6 +132,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                     {{ __('Services') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('theory-class-cancellations.index')" :active="request()->routeIs('theory-class-cancellations.*')">
+                    {{ __('Theory Class') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
                     {{ __('Activity Log') }}

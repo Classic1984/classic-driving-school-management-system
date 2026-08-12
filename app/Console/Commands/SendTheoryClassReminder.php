@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Student;
+use App\Models\TheoryClassCancellation;
 use App\Services\TermiiSmsService;
 use Illuminate\Console\Command;
 
@@ -20,7 +21,7 @@ class SendTheoryClassReminder extends Command
      *
      * @var string
      */
-    protected $description = "Text every actively enrolled student a reminder about today's theory class";
+    protected $description = "Text every actively enrolled student a reminder - or cancellation notice - about today's theory class";
 
     public function __construct(protected TermiiSmsService $sms)
     {
@@ -41,11 +42,21 @@ class SendTheoryClassReminder extends Command
             return self::SUCCESS;
         }
 
-        $message = 'Classic Driving School: Reminder - theory class holds today (Thursday). Please be punctual.';
+        $cancellation = TheoryClassCancellation::whereDate('class_date', today())->first();
+
+        if ($cancellation !== null) {
+            $message = 'Classic Driving School: Notice - today\'s theory class (Thursday) has been CANCELLED.'
+                .($cancellation->reason ? " Reason: {$cancellation->reason}." : '')
+                .' We apologize for the inconvenience.';
+            $label = 'cancellation notice';
+        } else {
+            $message = 'Classic Driving School: Reminder - theory class holds today (Thursday) at 10am. Please be punctual.';
+            $label = 'reminder';
+        }
 
         $sent = $students->filter(fn (Student $student) => $this->sms->send($student->phone, $message))->count();
 
-        $this->info("Theory class reminder sent to {$sent} of {$students->count()} student(s).");
+        $this->info("Theory class {$label} sent to {$sent} of {$students->count()} student(s).");
 
         return self::SUCCESS;
     }
