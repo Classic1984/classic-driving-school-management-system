@@ -2,17 +2,51 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\StoreReactivationRequest;
 use App\Models\ActivityLog;
+use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
 use App\Models\ReactivationAuditLog;
+use App\Models\Student;
+use App\Services\EnrollmentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class EnrollmentController extends Controller
 {
+    /**
+     * Show the Director-only form for enrolling an already-registered
+     * student into a course - the same course/discount/initial-payment
+     * fields offered at registration time, for a student who was
+     * registered without one (registering a student and assigning them a
+     * program are two separately gated actions; a Secretary can do the
+     * former but not the latter).
+     */
+    public function create(Student $student): View
+    {
+        $enrolledCourseIds = $student->courses()->pluck('courses.id');
+        $courses = Course::where('status', 'active')->whereNotIn('id', $enrolledCourseIds)->orderBy('name')->get();
+
+        return view('enrollments.create', compact('student', 'courses'));
+    }
+
+    /**
+     * Enroll the student into the course.
+     */
+    public function store(StoreEnrollmentRequest $request, Student $student, EnrollmentService $enrollmentService): RedirectResponse
+    {
+        $course = Course::findOrFail($request->validated('course_id'));
+
+        $enrollmentService->enroll($student, $course, $request->user(), now(), $request->validated());
+
+        ActivityLog::record("Enrolled {$student->name} in {$course->name}");
+
+        return Redirect::route('students.show', $student)->with('status', 'student-enrolled');
+    }
+
     /**
      * Mark an enrollment as completed, automatically issuing the student's
      * certificate for it. Requires both the required training days to have

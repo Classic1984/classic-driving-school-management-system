@@ -214,12 +214,14 @@
                 <div>
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-sm font-medium text-gray-500">{{ __('Enrollments') }}</h3>
-                        @unless (auth()->user()->isDirector())
+                        @if (auth()->user()->isDirector())
+                            <a href="{{ route('students.enroll.create', $student) }}" class="text-xs text-amber-600 hover:underline">{{ __('+ Enroll in a Course') }}</a>
+                        @else
                             <span class="text-xs text-gray-400">
                                 {{ __('🔒 Director-controlled') }} ·
                                 <a href="{{ route('student-correction-requests.create', ['student' => $student, 'field' => 'program']) }}" class="text-amber-600 hover:underline">{{ __('Request a Correction') }}</a>
                             </span>
-                        @endunless
+                        @endif
                     </div>
 
                     @if (session('status') === 'enrollment-completed')

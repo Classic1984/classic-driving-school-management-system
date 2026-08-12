@@ -6,11 +6,10 @@ use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\ActivityLog;
 use App\Models\Course;
-use App\Models\DiscountAuditLog;
 use App\Models\Instructor;
-use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
+use App\Services\EnrollmentService;
 use App\Services\StudentChargeResolver;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -70,7 +69,7 @@ class StudentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStudentRequest $request): RedirectResponse
+    public function store(StoreStudentRequest $request, EnrollmentService $enrollmentService): RedirectResponse
     {
         $data = $request->validated();
         unset(
@@ -87,108 +86,27 @@ class StudentController extends Controller
 
         // Assigning a training program (and the discount/payment that ride
         // along with it) is Director-only - a non-Director's course_id is
-        // ignored entirely, leaving the student registered but unenrolled,
-        // regardless of what a tampered request might contain.
+        // ignored entirely, leaving the student registered but unenrolled.
+        // A Director can enroll them into a course afterward from the
+        // student's page.
         if ($request->user()->isDirector() && $request->validated('course_id')) {
             $course = Course::findOrFail($request->validated('course_id'));
-            $originalFee = (float) $course->fee;
-            [$discountPercentage, $discountAmount] = $this->resolveDiscount($request, $originalFee);
-            $finalFee = max(0, $originalFee - $discountAmount);
 
-            // A weekday student starting double period immediately burns through
-            // 4 training days in just 2 calendar days, so their balance is due
-            // that much sooner than the course's normal grace period.
-            $gracePeriodDays = (! $course->isWeekend() && $request->boolean('starts_double_period'))
-                ? 2
-                : $course->gracePeriodDays();
-
-            $student->courses()->attach($course->id, [
-                'enrolled_at' => $student->enrollment_date->toDateString(),
-                'due_date' => $student->enrollment_date->copy()->addDays($gracePeriodDays)->toDateString(),
-                'status' => 'active',
-                'fee' => $finalFee,
-                'original_fee' => $originalFee,
-                'discount_percentage' => $discountAmount > 0 ? $discountPercentage : null,
-                'discount_amount' => $discountAmount > 0 ? $discountAmount : null,
-                'discount_reason' => $discountAmount > 0 ? $request->validated('discount_reason') : null,
-                'discount_reason_note' => $discountAmount > 0 ? $request->validated('discount_reason_note') : null,
-                'discount_approved_by' => $discountAmount > 0 ? $request->user()->id : null,
-                // Certificate fees are part of the course outline, not an
-                // opt-in add-on - every student enrolling in a course that
-                // offers a certificate is charged for it from day one, the
-                // same way the training fee itself is locked in here.
-                'online_certificate_fee' => $course->online_certificate_fee,
-                'student_certificate_fee' => $course->student_certificate_fee,
+            $enrollmentService->enroll($student, $course, $request->user(), $student->enrollment_date, [
+                'starts_double_period' => $request->boolean('starts_double_period'),
+                'discount_choice' => $request->validated('discount_choice'),
+                'custom_discount_percentage' => $request->validated('custom_discount_percentage'),
+                'custom_discount_amount' => $request->validated('custom_discount_amount'),
+                'discount_reason' => $request->validated('discount_reason'),
+                'discount_reason_note' => $request->validated('discount_reason_note'),
+                'amount_paid' => $request->validated('amount_paid'),
+                'payment_method' => $request->validated('payment_method'),
             ]);
-
-            if ($discountAmount > 0) {
-                DiscountAuditLog::create([
-                    'student_id' => $student->id,
-                    'course_id' => $course->id,
-                    'applied_by' => $request->user()->id,
-                    'original_fee' => $originalFee,
-                    'discount_percentage' => $discountPercentage,
-                    'discount_amount' => $discountAmount,
-                    'final_fee' => $finalFee,
-                    'reason' => $request->validated('discount_reason'),
-                    'reason_note' => $request->validated('discount_reason_note'),
-                ]);
-            }
-
-            if ($amountPaid = $request->validated('amount_paid')) {
-                Payment::create([
-                    'student_id' => $student->id,
-                    'course_id' => $course->id,
-                    'amount' => $amountPaid,
-                    'payment_date' => $student->enrollment_date->toDateString(),
-                    'payment_method' => $request->validated('payment_method'),
-                    'status' => 'paid',
-                    'recorded_by' => $request->user()->id,
-                ]);
-            }
         }
 
         ActivityLog::record("Registered student {$student->name}");
 
         return Redirect::route('students.show', $student)->with('status', 'student-created');
-    }
-
-    /**
-     * Work out the discount percentage and naira amount for this
-     * registration from the validated discount fields.
-     *
-     * @return array{0: ?float, 1: float}
-     */
-    protected function resolveDiscount(StoreStudentRequest $request, float $originalFee): array
-    {
-        $choice = $request->validated('discount_choice');
-
-        if (! $choice) {
-            return [null, 0.0];
-        }
-
-        if ($choice === 'custom') {
-            if ($amount = $request->validated('custom_discount_amount')) {
-                $amount = min((float) $amount, $originalFee);
-
-                return [
-                    $originalFee > 0 ? round($amount / $originalFee * 100, 2) : 0.0,
-                    round($amount, 2),
-                ];
-            }
-
-            $percentage = (float) $request->validated('custom_discount_percentage');
-
-            return [$percentage, round($originalFee * $percentage / 100, 2)];
-        }
-
-        // Presets are fixed naira amounts, not percentages.
-        $amount = min((float) $choice, $originalFee);
-
-        return [
-            $originalFee > 0 ? round($amount / $originalFee * 100, 2) : 0.0,
-            round($amount, 2),
-        ];
     }
 
     /**
