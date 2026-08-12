@@ -121,6 +121,19 @@ class StudentTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_the_create_form_offers_course_enrollment_to_a_secretary_too(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        Course::factory()->create(['name' => 'Beginner Training']);
+
+        $response = $this->actingAs($secretary)->get('/students/create');
+
+        $response->assertOk();
+        $response->assertSee('Course Enrollment');
+        $response->assertSee('Beginner Training');
+        $response->assertDontSee('Assigning a training program is Director-only');
+    }
+
     public function test_authenticated_user_can_store_a_student(): void
     {
         $user = User::factory()->create();
@@ -453,12 +466,10 @@ class StudentTest extends TestCase
         $this->assertDatabaseCount('students', 0);
     }
 
-    public function test_a_secretary_can_register_a_student_without_a_course(): void
+    public function test_a_secretary_can_register_a_student_and_enroll_them_in_a_course(): void
     {
-        // Assigning a training program is Director-only, so a Secretary
-        // registering a student isn't even required to pick one - the
-        // student is simply registered unenrolled.
         $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
 
         $response = $this->actingAs($secretary)->post('/students', [
             'name' => 'John Smith',
@@ -468,11 +479,13 @@ class StudentTest extends TestCase
             'course_type' => 'manual',
             'enrollment_date' => now()->toDateString(),
             'status' => 'active',
+            'course_id' => $course->id,
         ]);
 
         $response->assertSessionHasNoErrors();
         $student = Student::where('email', 'john.smith@example.com')->firstOrFail();
-        $this->assertTrue($student->courses->isEmpty());
+        $this->assertTrue($student->courses->isNotEmpty());
+        $this->assertSame(95000.0, (float) $student->courses->first()->pivot->fee);
     }
 
     public function test_storing_a_student_requires_a_payment_method_when_an_amount_is_paid(): void
