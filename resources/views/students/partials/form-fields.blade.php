@@ -239,13 +239,7 @@
     <x-input-error class="mt-2" :messages="$errors->get('photo')" />
 </div>
 
-@if (! $student && ! auth()->user()->isDirector())
-    <div class="rounded-md bg-gray-50 border border-gray-200 p-4">
-        <p class="text-sm text-gray-600">{{ __('🔒 Assigning a training program is Director-only. This student will be registered without one - a Director can enroll them afterward.') }}</p>
-    </div>
-@endif
-
-@if (! $student && auth()->user()->isDirector())
+@if (! $student)
     @include('students.partials.enrollment-fields', ['courses' => $courses])
 @endif
 

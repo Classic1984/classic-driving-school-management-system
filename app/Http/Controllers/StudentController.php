@@ -84,12 +84,7 @@ class StudentController extends Controller
 
         $student = Student::create($data);
 
-        // Assigning a training program (and the discount/payment that ride
-        // along with it) is Director-only - a non-Director's course_id is
-        // ignored entirely, leaving the student registered but unenrolled.
-        // A Director can enroll them into a course afterward from the
-        // student's page.
-        if ($request->user()->isDirector() && $request->validated('course_id')) {
+        if ($request->validated('course_id')) {
             $course = Course::findOrFail($request->validated('course_id'));
 
             $enrollmentService->enroll($student, $course, $request->user(), $student->enrollment_date, [

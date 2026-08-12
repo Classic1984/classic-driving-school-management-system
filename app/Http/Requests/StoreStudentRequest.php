@@ -71,11 +71,7 @@ class StoreStudentRequest extends FormRequest
             'referral_source_other' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'max:4096'],
             'enrollment_date' => ['required', 'date', 'date_equals:today'],
-            // Assigning a training program is Director-only (see
-            // StudentController::store()) - a non-Director's course_id
-            // and everything that depends on it below is ignored
-            // entirely, so it's optional here rather than required.
-            'course_id' => [$this->user()?->isDirector() ? 'required' : 'nullable', 'integer', 'exists:courses,id'],
+            'course_id' => ['required', 'integer', 'exists:courses,id'],
             'starts_double_period' => ['nullable', 'boolean'],
             'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
             'payment_method' => ['required_with:amount_paid', 'nullable', 'in:cash,card,bank_transfer,mobile_money'],
