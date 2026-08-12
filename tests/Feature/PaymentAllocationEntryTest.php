@@ -458,6 +458,37 @@ class PaymentAllocationEntryTest extends TestCase
         $response->assertSee("checked ? '50000' : ''", false);
     }
 
+    public function test_a_validation_error_on_an_allocation_row_renders_as_compiled_html_not_a_raw_tag(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+        $enrollment = $student->courses()->first()->pivot;
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 100000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'training', 'id' => $enrollment->id, 'amount' => 100000],
+            ],
+        ])->assertSessionHasErrors('allocations.0.amount');
+
+        // The <x-input-error> tag inside the allocations loop must actually
+        // compile to its <ul class="text-red-600">...</ul> output - a stray
+        // double-quoted $errors->get("...") call inside that attribute once
+        // broke Blade's component-tag parser, which silently left the raw
+        // "<x-input-error ...>" tag text in the response and corrupted the
+        // page's HTML/JS parsing from that point on.
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('<x-input-error', false);
+        $response->assertSee('This exceeds the remaining balance', false);
+    }
+
     public function test_paying_for_a_tracked_service_automatically_starts_processing(): void
     {
         $user = User::factory()->create();
