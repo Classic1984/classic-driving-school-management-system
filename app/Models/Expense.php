@@ -26,6 +26,16 @@ class Expense extends Model
         'electricity' => 'Electricity',
         'internet' => 'Internet',
         'office_tools_repair' => 'Office Tools Repair',
+        'food' => 'Food',
+        'clothes_shoes' => 'Clothes & Shoes',
+        'house_materials' => 'House Materials',
+        'kids' => 'Kids',
+        'debt' => 'Debt',
+        'dssp_payment' => 'DSSP Payment',
+        'laundry' => 'Laundry',
+        'perfume' => 'Perfume',
+        'investment_saving' => 'Investment/Saving',
+        'gift' => 'Gift',
     ];
 
     /**

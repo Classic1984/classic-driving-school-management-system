@@ -66,6 +66,35 @@ class ExpenseTest extends TestCase
         ]);
     }
 
+    public function test_director_can_store_an_expense_in_each_new_category(): void
+    {
+        $director = User::factory()->director()->create();
+        $categories = ['food', 'clothes_shoes', 'house_materials', 'kids', 'debt', 'dssp_payment', 'laundry', 'perfume', 'investment_saving', 'gift'];
+
+        foreach ($categories as $category) {
+            $response = $this->actingAs($director)->post('/expenses', [
+                'category' => $category,
+                'amount' => 5000,
+                'expense_date' => now()->toDateString(),
+            ]);
+
+            $response->assertSessionHasNoErrors();
+            $this->assertDatabaseHas('expenses', ['category' => $category, 'amount' => 5000]);
+        }
+    }
+
+    public function test_the_expense_form_lists_the_new_categories(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/expenses/create');
+
+        $response->assertOk();
+        foreach (['Food', 'Clothes & Shoes', 'House Materials', 'Kids', 'Debt', 'DSSP Payment', 'Laundry', 'Perfume', 'Investment/Saving', 'Gift'] as $label) {
+            $response->assertSee($label);
+        }
+    }
+
     public function test_storing_an_expense_requires_valid_data(): void
     {
         $director = User::factory()->director()->create();
