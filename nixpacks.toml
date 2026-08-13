@@ -10,5 +10,10 @@ cmds = ["npm ci", "npm run build"]
 # jobs like payment reminders and the database backup actually fire - a
 # plain "php artisan serve" never triggers Laravel's scheduler on its own),
 # then serve on the port Railway assigns via $PORT.
+#
+# schedule:work is backgrounded directly in this shell (not inside a
+# "(cmd &)" subshell) and detached with nohup - the subshell form silently
+# never launched the process in production, leaving no scheduled job
+# (backups, reminders) running while the app itself worked fine.
 [start]
-cmd = "php artisan migrate --force && (php artisan schedule:work >> storage/logs/schedule.log 2>&1 &) && php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan migrate --force || exit 1; nohup php artisan schedule:work >> storage/logs/schedule.log 2>&1 & php artisan serve --host=0.0.0.0 --port=$PORT"
