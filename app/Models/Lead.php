@@ -24,6 +24,23 @@ class Lead extends Model
     ];
 
     /**
+     * The fixed set of options offered for "how they heard about us" - kept
+     * as a plain string column rather than a lookup table, so this list is
+     * just what the dropdown offers, not an enforced constraint.
+     *
+     * @var list<string>
+     */
+    public const SOURCES = [
+        'Walk-in',
+        'Referral',
+        'Phone Call',
+        'Social Media',
+        'Website',
+        'Advertisement',
+        'Other',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
