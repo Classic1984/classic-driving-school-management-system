@@ -9,6 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('app:refresh-enrollment-locks')->daily();
-Schedule::command('backup:database')->dailyAt('02:00');
+Schedule::command('backup:database')->twiceDaily(2, 14);
 Schedule::command('app:send-theory-class-reminder')->weeklyOn(4, '08:00');
 Schedule::command('app:send-balance-reminder')->weeklyOn(1, '09:00');
