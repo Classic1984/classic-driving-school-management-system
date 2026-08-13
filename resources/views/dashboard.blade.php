@@ -30,7 +30,7 @@
 
                 <hr class="my-6">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
 
                     <div class="bg-black text-amber-400 p-6 rounded-lg">
                         <h3 class="text-xl font-bold">Students</h3>
@@ -51,6 +51,11 @@
                         <h3 class="text-xl font-bold">Certificates</h3>
                         <p class="text-3xl mt-3">{{ number_format($stats['certificates']) }}</p>
                     </div>
+
+                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="bg-black text-amber-400 p-6 rounded-lg block hover:bg-gray-900">
+                        <h3 class="text-xl font-bold">{{ __('New Leads') }}</h3>
+                        <p class="text-3xl mt-3">{{ number_format($stats['new_leads']) }}</p>
+                    </a>
 
                 </div>
 
