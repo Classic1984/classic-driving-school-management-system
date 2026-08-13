@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Course;
 use App\Models\Lead;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -131,5 +132,36 @@ class LeadTest extends TestCase
         $response->assertOk();
         $response->assertSee('value="Prefill Test"', false);
         $response->assertSee('value="08099999999"', false);
+    }
+
+    public function test_the_create_form_offers_course_and_source_dropdowns(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        Course::factory()->create(['name' => 'Standard Driving Course']);
+
+        $response = $this->actingAs($secretary)->get('/leads/create');
+
+        $response->assertOk();
+        $response->assertSee('<select id="course_interested"', false);
+        $response->assertSee('Standard Driving Course');
+        $response->assertSee('<select id="source"', false);
+        foreach (Lead::SOURCES as $source) {
+            $response->assertSee($source);
+        }
+    }
+
+    public function test_the_edit_form_still_offers_a_leads_existing_value_even_if_no_longer_a_current_option(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $lead = Lead::factory()->create([
+            'course_interested' => 'A Discontinued Course',
+            'source' => 'A Custom Source',
+        ]);
+
+        $response = $this->actingAs($secretary)->get("/leads/{$lead->id}/edit");
+
+        $response->assertOk();
+        $response->assertSee('A Discontinued Course');
+        $response->assertSee('A Custom Source');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreLeadRequest;
 use App\Http\Requests\UpdateLeadRequest;
 use App\Models\ActivityLog;
+use App\Models\Course;
 use App\Models\Lead;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,9 @@ class LeadController extends Controller
      */
     public function create(): View
     {
-        return view('leads.create');
+        $courses = Course::orderBy('name')->pluck('name');
+
+        return view('leads.create', compact('courses'));
     }
 
     /**
@@ -54,7 +57,9 @@ class LeadController extends Controller
      */
     public function edit(Lead $lead): View
     {
-        return view('leads.edit', compact('lead'));
+        $courses = Course::orderBy('name')->pluck('name');
+
+        return view('leads.edit', compact('lead', 'courses'));
     }
 
     /**

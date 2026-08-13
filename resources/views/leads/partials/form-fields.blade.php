@@ -1,4 +1,9 @@
 @php($lead = $lead ?? null)
+@php($courses = $courses ?? collect())
+@php($selectedCourse = old('course_interested', $lead?->course_interested))
+@php($courseOptions = $selectedCourse && ! $courses->contains($selectedCourse) ? $courses->push($selectedCourse) : $courses)
+@php($selectedSource = old('source', $lead?->source))
+@php($sourceOptions = $selectedSource && ! in_array($selectedSource, \App\Models\Lead::SOURCES, true) ? [...\App\Models\Lead::SOURCES, $selectedSource] : \App\Models\Lead::SOURCES)
 
 <div>
     <x-input-label for="name" :value="__('Name')" />
@@ -14,13 +19,23 @@
 
 <div>
     <x-input-label for="course_interested" :value="__('Course Interested In')" />
-    <x-text-input id="course_interested" name="course_interested" type="text" class="mt-1 block w-full" :value="old('course_interested', $lead?->course_interested)" />
+    <select id="course_interested" name="course_interested" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select a course') }}</option>
+        @foreach ($courseOptions as $course)
+            <option value="{{ $course }}" @selected($selectedCourse === $course)>{{ $course }}</option>
+        @endforeach
+    </select>
     <x-input-error class="mt-2" :messages="$errors->get('course_interested')" />
 </div>
 
 <div>
     <x-input-label for="source" :value="__('How They Heard About Us')" />
-    <x-text-input id="source" name="source" type="text" class="mt-1 block w-full" :value="old('source', $lead?->source)" placeholder="{{ __('e.g. Walk-in, Referral, Social Media') }}" />
+    <select id="source" name="source" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select a source') }}</option>
+        @foreach ($sourceOptions as $source)
+            <option value="{{ $source }}" @selected($selectedSource === $source)>{{ $source }}</option>
+        @endforeach
+    </select>
     <x-input-error class="mt-2" :messages="$errors->get('source')" />
 </div>
 
