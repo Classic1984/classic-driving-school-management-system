@@ -92,4 +92,58 @@ class TheoryClassReminderTest extends TestCase
             && str_contains($request['sms'], 'Please be punctual')
             && ! str_contains($request['sms'], 'CANCELLED'));
     }
+
+    public function test_it_falls_back_to_whatsapp_when_sms_fails(): void
+    {
+        config([
+            'services.twilio.account_sid' => 'AC-fake',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+            'services.twilio.whatsapp_templates.theory_class_reminder' => 'HXreminder',
+        ]);
+        Http::fake([
+            'api.ng.termii.com/*' => Http::response(['message' => 'blocked'], 401),
+            'api.twilio.com/*' => Http::response(['sid' => 'SM1'], 201),
+        ]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        Http::assertSent(fn ($request) => str_contains($request->url(), 'api.twilio.com')
+            && $request['To'] === 'whatsapp:+2348031234567'
+            && $request['ContentSid'] === 'HXreminder');
+    }
+
+    public function test_a_cancellation_falls_back_to_whatsapp_with_the_reason_as_a_variable(): void
+    {
+        config([
+            'services.twilio.account_sid' => 'AC-fake',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+            'services.twilio.whatsapp_templates.theory_class_cancellation' => 'HXcancel',
+        ]);
+        Http::fake([
+            'api.ng.termii.com/*' => Http::response(['message' => 'blocked'], 401),
+            'api.twilio.com/*' => Http::response(['sid' => 'SM1'], 201),
+        ]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        TheoryClassCancellation::factory()->create([
+            'class_date' => today(),
+            'reason' => 'Public holiday',
+            'cancelled_by' => User::factory()->director()->create()->id,
+        ]);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        Http::assertSent(fn ($request) => str_contains($request->url(), 'api.twilio.com')
+            && $request['ContentSid'] === 'HXcancel'
+            && $request['ContentVariables'] === json_encode(['1' => 'Public holiday']));
+    }
 }
