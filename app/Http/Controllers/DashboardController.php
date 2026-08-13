@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Enrollment;
 use App\Models\Instructor;
+use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\StudentService;
@@ -21,6 +22,7 @@ class DashboardController extends Controller
             'payments' => Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount'),
             'instructors' => Instructor::count(),
             'certificates' => Certificate::count(),
+            'new_leads' => Lead::where('status', 'new')->count(),
         ];
 
         $newStudentTotals = [

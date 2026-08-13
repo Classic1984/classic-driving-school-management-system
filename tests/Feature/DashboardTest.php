@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
+use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
@@ -63,6 +64,20 @@ class DashboardTest extends TestCase
         $response->assertSee('800.00');
         $response->assertSee('2');
         $response->assertSee('4');
+    }
+
+    public function test_dashboard_shows_a_new_leads_count_linking_to_the_filtered_lead_list(): void
+    {
+        $user = User::factory()->create();
+
+        Lead::factory()->count(2)->create(['status' => 'new']);
+        Lead::factory()->create(['status' => 'contacted']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('New Leads');
+        $response->assertSee(route('leads.index', ['status' => 'new']), false);
     }
 
     public function test_dashboard_shows_new_students_today_this_week_this_month_and_this_year(): void
