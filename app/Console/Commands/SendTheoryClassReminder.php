@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Student;
 use App\Models\TheoryClassCancellation;
 use App\Services\TermiiSmsService;
+use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
 
 class SendTheoryClassReminder extends Command
@@ -23,7 +24,7 @@ class SendTheoryClassReminder extends Command
      */
     protected $description = "Text every actively enrolled student a reminder - or cancellation notice - about today's theory class";
 
-    public function __construct(protected TermiiSmsService $sms)
+    public function __construct(protected TermiiSmsService $sms, protected WhatsAppService $whatsapp)
     {
         parent::__construct();
     }
@@ -49,12 +50,22 @@ class SendTheoryClassReminder extends Command
                 .($cancellation->reason ? " Reason: {$cancellation->reason}." : '')
                 .' We apologize for the inconvenience.';
             $label = 'cancellation notice';
+            $templateKey = 'theory_class_cancellation';
+            $variables = ['1' => $cancellation->reason ?: 'No reason given'];
         } else {
             $message = 'Classic Driving School: Reminder - theory class holds today (Thursday) at 10am. Please be punctual.';
             $label = 'reminder';
+            $templateKey = 'theory_class_reminder';
+            $variables = [];
         }
 
-        $sent = $students->filter(fn (Student $student) => $this->sms->send($student->phone, $message))->count();
+        $sent = $students->filter(function (Student $student) use ($message, $templateKey, $variables) {
+            if ($this->sms->send($student->phone, $message)) {
+                return true;
+            }
+
+            return $this->whatsapp->send($student->phone, config("services.twilio.whatsapp_templates.{$templateKey}"), $variables);
+        })->count();
 
         $this->info("Theory class {$label} sent to {$sent} of {$students->count()} student(s).");
 

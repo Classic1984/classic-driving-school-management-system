@@ -92,4 +92,29 @@ class BalanceReminderTest extends TestCase
 
         Http::assertNothingSent();
     }
+
+    public function test_it_falls_back_to_whatsapp_when_sms_fails(): void
+    {
+        config([
+            'services.twilio.account_sid' => 'AC-fake',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+            'services.twilio.whatsapp_templates.balance_reminder' => 'HXbalance',
+        ]);
+        Http::fake([
+            'api.ng.termii.com/*' => Http::response(['message' => 'blocked'], 401),
+            'api.twilio.com/*' => Http::response(['sid' => 'SM1'], 201),
+        ]);
+
+        $course = Course::factory()->create(['fee' => 95000]);
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+
+        $this->artisan('app:send-balance-reminder')->assertExitCode(0);
+
+        Http::assertSent(fn ($request) => str_contains($request->url(), 'api.twilio.com')
+            && $request['To'] === 'whatsapp:+2348031234567'
+            && $request['ContentSid'] === 'HXbalance'
+            && $request['ContentVariables'] === json_encode(['1' => '95,000.00']));
+    }
 }

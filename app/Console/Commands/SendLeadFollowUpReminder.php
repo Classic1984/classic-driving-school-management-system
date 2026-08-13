@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Lead;
 use App\Services\TermiiSmsService;
+use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
 
 class SendLeadFollowUpReminder extends Command
@@ -29,7 +30,7 @@ class SendLeadFollowUpReminder extends Command
      */
     protected const FOLLOW_UP_INTERVAL_DAYS = 4;
 
-    public function __construct(protected TermiiSmsService $sms)
+    public function __construct(protected TermiiSmsService $sms, protected WhatsAppService $whatsapp)
     {
         parent::__construct();
     }
@@ -60,7 +61,11 @@ class SendLeadFollowUpReminder extends Command
                 ? "Hi {$lead->name}, just checking in from Classic Driving School about your interest in {$lead->course_interested}. Reply or call us to get started!"
                 : "Hi {$lead->name}, just checking in from Classic Driving School about your inquiry. Reply or call us to get started!";
 
-            $wasSent = $this->sms->send($lead->phone, $message);
+            $wasSent = $this->sms->send($lead->phone, $message) || $this->whatsapp->send(
+                $lead->phone,
+                config('services.twilio.whatsapp_templates.lead_follow_up'),
+                ['1' => $lead->name, '2' => $lead->course_interested ?: 'your inquiry']
+            );
 
             if ($wasSent) {
                 $lead->update(['last_reminded_at' => now()]);

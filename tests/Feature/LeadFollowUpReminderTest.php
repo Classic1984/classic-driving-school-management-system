@@ -136,4 +136,33 @@ class LeadFollowUpReminderTest extends TestCase
 
         Http::assertNothingSent();
     }
+
+    public function test_it_falls_back_to_whatsapp_when_sms_fails(): void
+    {
+        config([
+            'services.twilio.account_sid' => 'AC-fake',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+            'services.twilio.whatsapp_templates.lead_follow_up' => 'HXlead',
+        ]);
+        Http::fake([
+            'api.ng.termii.com/*' => Http::response(['message' => 'blocked'], 401),
+            'api.twilio.com/*' => Http::response(['sid' => 'SM1'], 201),
+        ]);
+
+        Lead::factory()->create([
+            'name' => 'Jane Prospect',
+            'phone' => '08031234567',
+            'course_interested' => 'Standard Driving Course',
+            'status' => 'new',
+            'created_at' => now()->subDays(5),
+        ]);
+
+        $this->artisan('app:send-lead-follow-up-reminder')->assertExitCode(0);
+
+        Http::assertSent(fn ($request) => str_contains($request->url(), 'api.twilio.com')
+            && $request['To'] === 'whatsapp:+2348031234567'
+            && $request['ContentSid'] === 'HXlead'
+            && $request['ContentVariables'] === json_encode(['1' => 'Jane Prospect', '2' => 'Standard Driving Course']));
+    }
 }

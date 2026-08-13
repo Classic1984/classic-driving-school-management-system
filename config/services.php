@@ -40,4 +40,20 @@ return [
         'sender_id' => env('TERMII_SENDER_ID', 'N-Alert'),
     ],
 
+    'twilio' => [
+        'account_sid' => env('TWILIO_ACCOUNT_SID'),
+        'auth_token' => env('TWILIO_AUTH_TOKEN'),
+        'whatsapp_from' => env('TWILIO_WHATSAPP_FROM'),
+        // Twilio Content Template SIDs (HXxxxxxxxx...), created and
+        // approved in the Twilio console - required because these
+        // reminders are business-initiated, not replies. Left blank,
+        // WhatsApp sending for that reminder is silently skipped.
+        'whatsapp_templates' => [
+            'balance_reminder' => env('TWILIO_WHATSAPP_BALANCE_REMINDER_TEMPLATE_SID'),
+            'theory_class_reminder' => env('TWILIO_WHATSAPP_THEORY_REMINDER_TEMPLATE_SID'),
+            'theory_class_cancellation' => env('TWILIO_WHATSAPP_THEORY_CANCELLATION_TEMPLATE_SID'),
+            'lead_follow_up' => env('TWILIO_WHATSAPP_LEAD_FOLLOWUP_TEMPLATE_SID'),
+        ],
+    ],
+
 ];
