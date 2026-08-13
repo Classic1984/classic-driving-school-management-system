@@ -10,6 +10,14 @@
                     </a>
                 </div>
 
+                @php
+                    $trainingActive = request()->routeIs('courses.*') || request()->routeIs('instructors.*') || request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record');
+                    $adminActive = request()->routeIs('finance.*') || request()->routeIs('expenses.*') || request()->routeIs('services.*') || request()->routeIs('theory-class-cancellations.*') || request()->routeIs('activity-log.*') || request()->routeIs('users.*') || request()->routeIs('student-correction-requests.*');
+                    $navGroupTriggerClasses = fn ($active) => $active
+                        ? 'inline-flex items-center px-1 pt-1 border-b-2 border-amber-500 text-sm font-medium leading-5 text-white focus:outline-none focus:border-amber-400 transition duration-150 ease-in-out'
+                        : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-400 hover:text-amber-400 hover:border-gray-500 focus:outline-none focus:text-amber-400 focus:border-gray-500 transition duration-150 ease-in-out';
+                @endphp
+
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -21,40 +29,48 @@
                     <x-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
                         {{ __('Leads') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
-                        {{ __('Courses') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('instructors.index')" :active="request()->routeIs('instructors.*')">
-                        {{ __('Instructors') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
-                        {{ __('Student Login Training') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
                         {{ __('Payments') }}
                     </x-nav-link>
                     <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
                         {{ __('Certificates') }}
                     </x-nav-link>
+
+                    <x-dropdown align="left" width="w-56">
+                        <x-slot name="trigger">
+                            <button type="button" class="{{ $navGroupTriggerClasses($trainingActive) }}">
+                                {{ __('Training') }}
+                                <svg class="ms-1 fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('courses.index')">{{ __('Courses') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('instructors.index')">{{ __('Instructors') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('enrolled-trainees.index')">{{ __('Student Login Training') }}</x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+
                     @if (auth()->user()->isDirector())
-                        <x-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
-                            {{ __('Finance') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
-                            {{ __('Services') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('theory-class-cancellations.index')" :active="request()->routeIs('theory-class-cancellations.*')">
-                            {{ __('Theory Class') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
-                            {{ __('Activity Log') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                            {{ __('Staff') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                            {{ __('Corrections') }}
-                        </x-nav-link>
+                        <x-dropdown align="left" width="w-56">
+                            <x-slot name="trigger">
+                                <button type="button" class="{{ $navGroupTriggerClasses($adminActive) }}">
+                                    {{ __('Admin') }}
+                                    <svg class="ms-1 fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('finance.summary')">{{ __('Finance') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('services.index')">{{ __('Services') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('theory-class-cancellations.index')">{{ __('Theory Class') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('activity-log.index')">{{ __('Activity Log') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('users.index')">{{ __('Staff') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('student-correction-requests.index')">{{ __('Corrections') }}</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
                     @endif
                 </div>
             </div>
@@ -117,6 +133,14 @@
             <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
                 {{ __('Leads') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
+                {{ __('Payments') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+                {{ __('Certificates') }}
+            </x-responsive-nav-link>
+
+            <p class="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Training') }}</p>
             <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
                 {{ __('Courses') }}
             </x-responsive-nav-link>
@@ -126,13 +150,9 @@
             <x-responsive-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
                 {{ __('Student Login Training') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
-                {{ __('Payments') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
-                {{ __('Certificates') }}
-            </x-responsive-nav-link>
+
             @if (auth()->user()->isDirector())
+                <p class="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Admin') }}</p>
                 <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
                     {{ __('Finance') }}
                 </x-responsive-nav-link>
