@@ -35,5 +35,18 @@ class Lead extends Model
         'source',
         'notes',
         'status',
+        'last_reminded_at',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'last_reminded_at' => 'datetime',
+        ];
+    }
 }

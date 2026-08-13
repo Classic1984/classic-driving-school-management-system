@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Lead;
+use App\Services\TermiiSmsService;
+use Illuminate\Console\Command;
+
+class SendLeadFollowUpReminder extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:send-lead-follow-up-reminder';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Text every open lead (New or Contacted) a follow-up every 4 days until they are marked Converted or Lost';
+
+    /**
+     * How often a still-open lead gets a follow-up text, counted from
+     * whichever is more recent: when they were first logged, or their last
+     * reminder.
+     */
+    protected const FOLLOW_UP_INTERVAL_DAYS = 4;
+
+    public function __construct(protected TermiiSmsService $sms)
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     */
+    public function handle(): int
+    {
+        $dueAt = now()->subDays(self::FOLLOW_UP_INTERVAL_DAYS);
+
+        $leads = Lead::whereIn('status', ['new', 'contacted'])
+            ->where(function ($query) use ($dueAt) {
+                $query->whereNull('last_reminded_at')
+                    ->orWhere('last_reminded_at', '<=', $dueAt);
+            })
+            ->where('created_at', '<=', $dueAt)
+            ->get();
+
+        if ($leads->isEmpty()) {
+            $this->warn('No leads are due for a follow-up.');
+
+            return self::SUCCESS;
+        }
+
+        $sent = $leads->filter(function (Lead $lead) {
+            $message = $lead->course_interested
+                ? "Hi {$lead->name}, just checking in from Classic Driving School about your interest in {$lead->course_interested}. Reply or call us to get started!"
+                : "Hi {$lead->name}, just checking in from Classic Driving School about your inquiry. Reply or call us to get started!";
+
+            $wasSent = $this->sms->send($lead->phone, $message);
+
+            if ($wasSent) {
+                $lead->update(['last_reminded_at' => now()]);
+            }
+
+            return $wasSent;
+        })->count();
+
+        $this->info("Lead follow-up sent to {$sent} of {$leads->count()} lead(s).");
+
+        return self::SUCCESS;
+    }
+}
