@@ -68,7 +68,7 @@
                                 <x-dropdown-link :href="route('theory-class-cancellations.index')">{{ __('Theory Class') }}</x-dropdown-link>
                                 <x-dropdown-link :href="route('activity-log.index')">{{ __('Activity Log') }}</x-dropdown-link>
                                 <x-dropdown-link :href="route('users.index')">{{ __('Staff') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('student-correction-requests.index')">{{ __('Corrections') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('student-correction-requests.index')">{{ __('Report Correction') }}</x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
                     @endif
@@ -169,7 +169,7 @@
                     {{ __('Staff') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                    {{ __('Corrections') }}
+                    {{ __('Report Correction') }}
                 </x-responsive-nav-link>
             @endif
         </div>
