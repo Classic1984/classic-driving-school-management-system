@@ -26,13 +26,13 @@
 @else
     <div>
         <x-input-label for="name" :value="__('Name')" />
-        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $student?->name)" required autofocus />
+        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $student?->name ?? request('name'))" required autofocus />
         <x-input-error class="mt-2" :messages="$errors->get('name')" />
     </div>
 
     <div>
         <x-input-label for="phone" :value="__('Phone')" />
-        <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $student?->phone)" required />
+        <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $student?->phone ?? request('phone'))" required />
         <x-input-error class="mt-2" :messages="$errors->get('phone')" />
     </div>
 
