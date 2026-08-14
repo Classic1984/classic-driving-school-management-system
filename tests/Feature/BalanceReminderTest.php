@@ -33,6 +33,14 @@ class BalanceReminderTest extends TestCase
         $this->artisan('app:send-balance-reminder')->assertExitCode(0);
 
         Http::assertSent(fn ($request) => $request['to'] === '2348031234567' && str_contains($request['sms'], '95,000.00'));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'balance_reminder',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
     }
 
     public function test_it_does_not_text_a_fully_paid_student(): void
@@ -116,5 +124,33 @@ class BalanceReminderTest extends TestCase
             && $request['To'] === 'whatsapp:+2348031234567'
             && $request['ContentSid'] === 'HXbalance'
             && $request['ContentVariables'] === json_encode(['1' => '95,000.00']));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'balance_reminder',
+            'channel' => 'whatsapp',
+            'status' => 'sent',
+        ]);
+    }
+
+    public function test_it_logs_a_failed_delivery_when_no_channel_is_configured(): void
+    {
+        config(['services.termii.api_key' => null]);
+        Http::fake();
+
+        $course = Course::factory()->create(['fee' => 95000]);
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+
+        $this->artisan('app:send-balance-reminder')->assertExitCode(0);
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'balance_reminder',
+            'channel' => null,
+            'status' => 'failed',
+        ]);
     }
 }

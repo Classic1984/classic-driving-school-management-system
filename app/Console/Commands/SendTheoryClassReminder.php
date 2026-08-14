@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\MessageLog;
 use App\Models\Student;
 use App\Models\TheoryClassCancellation;
 use App\Services\TermiiSmsService;
@@ -60,11 +61,24 @@ class SendTheoryClassReminder extends Command
         }
 
         $sent = $students->filter(function (Student $student) use ($message, $templateKey, $variables) {
-            if ($this->sms->send($student->phone, $message)) {
-                return true;
-            }
+            $channel = match (true) {
+                $this->sms->send($student->phone, $message) => 'sms',
+                $this->whatsapp->send($student->phone, config("services.twilio.whatsapp_templates.{$templateKey}"), $variables) => 'whatsapp',
+                default => null,
+            };
 
-            return $this->whatsapp->send($student->phone, config("services.twilio.whatsapp_templates.{$templateKey}"), $variables);
+            MessageLog::create([
+                'recipient_type' => 'student',
+                'recipient_id' => $student->id,
+                'recipient_name' => $student->name,
+                'recipient_phone' => $student->phone,
+                'purpose' => $templateKey,
+                'channel' => $channel,
+                'status' => $channel ? 'sent' : 'failed',
+                'message' => $message,
+            ]);
+
+            return $channel !== null;
         })->count();
 
         $this->info("Theory class {$label} sent to {$sent} of {$students->count()} student(s).");

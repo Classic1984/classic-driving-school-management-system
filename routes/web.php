@@ -14,6 +14,7 @@ use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\MessageLogController;
 use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentCorrectionController;
@@ -92,6 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
         Route::post('students/{student}/enroll', [EnrollmentController::class, 'store'])->name('students.enroll.store');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+        Route::get('message-log', [MessageLogController::class, 'index'])->name('message-log.index');
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
         Route::resource('theory-class-cancellations', TheoryClassCancellationController::class)->only(['index', 'store', 'destroy']);

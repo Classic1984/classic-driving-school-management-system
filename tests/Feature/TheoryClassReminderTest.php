@@ -41,6 +41,14 @@ class TheoryClassReminderTest extends TestCase
         Http::assertSent(fn ($request) => $request['to'] === '2348031234567');
         Http::assertNotSent(fn ($request) => $request['to'] === '2348039876543');
         Http::assertNotSent(fn ($request) => $request['to'] === '2348035555555');
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $active->id,
+            'purpose' => 'theory_class_reminder',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
     }
 
     public function test_it_does_nothing_when_there_are_no_actively_enrolled_students(): void
@@ -71,6 +79,14 @@ class TheoryClassReminderTest extends TestCase
         Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
             && str_contains($request['sms'], 'CANCELLED')
             && str_contains($request['sms'], 'Public holiday'));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'theory_class_cancellation',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
     }
 
     public function test_a_cancellation_for_a_different_date_does_not_affect_todays_reminder(): void

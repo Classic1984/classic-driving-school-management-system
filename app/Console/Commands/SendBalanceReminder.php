@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\MessageLog;
 use App\Models\Student;
 use App\Services\StudentChargeResolver;
 use App\Services\TermiiSmsService;
@@ -48,18 +49,28 @@ class SendBalanceReminder extends Command
         }
 
         $sent = $students->filter(function (array $entry) {
+            $student = $entry['student'];
             $formattedBalance = number_format($entry['balance'], 2);
             $message = "Classic Driving School: Reminder - you have an outstanding balance of ₦{$formattedBalance}. Kindly make payment at your earliest convenience.";
 
-            if ($this->sms->send($entry['student']->phone, $message)) {
-                return true;
-            }
+            $channel = match (true) {
+                $this->sms->send($student->phone, $message) => 'sms',
+                $this->whatsapp->send($student->phone, config('services.twilio.whatsapp_templates.balance_reminder'), ['1' => $formattedBalance]) => 'whatsapp',
+                default => null,
+            };
 
-            return $this->whatsapp->send(
-                $entry['student']->phone,
-                config('services.twilio.whatsapp_templates.balance_reminder'),
-                ['1' => $formattedBalance]
-            );
+            MessageLog::create([
+                'recipient_type' => 'student',
+                'recipient_id' => $student->id,
+                'recipient_name' => $student->name,
+                'recipient_phone' => $student->phone,
+                'purpose' => 'balance_reminder',
+                'channel' => $channel,
+                'status' => $channel ? 'sent' : 'failed',
+                'message' => $message,
+            ]);
+
+            return $channel !== null;
         })->count();
 
         $this->info("Balance reminder sent to {$sent} of {$students->count()} student(s).");
