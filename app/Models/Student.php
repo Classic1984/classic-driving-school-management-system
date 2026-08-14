@@ -44,6 +44,7 @@ class Student extends Model
         'photo_path',
         'enrollment_date',
         'status',
+        'last_absence_reminder_sent_at',
     ];
 
     /**
@@ -58,6 +59,7 @@ class Student extends Model
             'enrollment_date' => 'date',
             'has_driving_experience' => 'boolean',
             'wears_glasses' => 'boolean',
+            'last_absence_reminder_sent_at' => 'datetime',
         ];
     }
 
