@@ -53,6 +53,34 @@ class PaymentTest extends TestCase
         $response->assertSee('800.00');
     }
 
+    public function test_a_secretary_does_not_see_the_week_month_or_all_time_totals(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+
+        $response = $this->actingAs($secretary)->get('/payments');
+
+        $response->assertOk();
+        $response->assertSee("Today's Total");
+        $response->assertDontSee('This Week');
+        $response->assertDontSee('This Month');
+        $response->assertDontSee('All Time');
+    }
+
+    public function test_a_director_sees_the_week_month_and_all_time_totals(): void
+    {
+        $director = User::factory()->director()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/payments');
+
+        $response->assertOk();
+        $response->assertSee("Today's Total");
+        $response->assertSee('This Week');
+        $response->assertSee('This Month');
+        $response->assertSee('All Time');
+    }
+
     public function test_the_weekly_period_filters_payments_to_this_week_only(): void
     {
         $user = User::factory()->create();

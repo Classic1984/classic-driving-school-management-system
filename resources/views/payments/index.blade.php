@@ -24,14 +24,16 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 mb-4">
-                    @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $value => $tabLabel)
-                        <a
-                            href="{{ route('payments.index', ['period' => $value]) }}"
-                            class="px-3 py-1.5 text-sm rounded-md {{ $period === $value ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
-                        >{{ __($tabLabel) }}</a>
-                    @endforeach
-                </div>
+                @if (auth()->user()->isDirector())
+                    <div class="flex items-center gap-2 mb-4">
+                        @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $value => $tabLabel)
+                            <a
+                                href="{{ route('payments.index', ['period' => $value]) }}"
+                                class="px-3 py-1.5 text-sm rounded-md {{ $period === $value ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                            >{{ __($tabLabel) }}</a>
+                        @endforeach
+                    </div>
+                @endif
 
                 @if (session('status') === 'payment-created')
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Payment recorded successfully.') }}</p>
@@ -46,10 +48,12 @@
                         <span class="text-sm font-medium">{{ __("Today's Total") }}</span>
                         <span class="text-2xl font-bold">₦{{ number_format($todayTotal, 2) }}</span>
                     </div>
-                    <div class="bg-amber-500 text-black rounded-lg p-4 inline-flex items-baseline gap-2">
-                        <span class="text-sm font-medium">{{ __($periodLabel) }} {{ __('Total') }}</span>
-                        <span class="text-2xl font-bold">₦{{ number_format($periodTotal, 2) }}</span>
-                    </div>
+                    @if (auth()->user()->isDirector())
+                        <div class="bg-amber-500 text-black rounded-lg p-4 inline-flex items-baseline gap-2">
+                            <span class="text-sm font-medium">{{ __($periodLabel) }} {{ __('Total') }}</span>
+                            <span class="text-2xl font-bold">₦{{ number_format($periodTotal, 2) }}</span>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="overflow-x-auto">
