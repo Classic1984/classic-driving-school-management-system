@@ -105,6 +105,38 @@ class TrainingReportTest extends TestCase
         $response->assertSee('Completed');
     }
 
+    public function test_students_trained_on_different_days_are_grouped_under_separate_date_headings(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+        $mondayStudent = Student::factory()->create(['name' => 'Monday Trainee']);
+        $tuesdayStudent = Student::factory()->create(['name' => 'Tuesday Trainee']);
+
+        $monday = now()->startOfWeek();
+        $tuesday = $monday->copy()->addDay();
+
+        Attendance::factory()->create([
+            'student_id' => $mondayStudent->id,
+            'course_id' => $course->id,
+            'date' => $monday->toDateString(),
+            'status' => 'present',
+        ]);
+        Attendance::factory()->create([
+            'student_id' => $tuesdayStudent->id,
+            'course_id' => $course->id,
+            'date' => $tuesday->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response = $this->actingAs($user)->get('/training-report?period=week');
+
+        $response->assertOk();
+        $response->assertSee($monday->format('l, j F Y'));
+        $response->assertSee($tuesday->format('l, j F Y'));
+        $response->assertSee('Monday Trainee');
+        $response->assertSee('Tuesday Trainee');
+    }
+
     public function test_an_invalid_period_falls_back_to_today(): void
     {
         $user = User::factory()->create();

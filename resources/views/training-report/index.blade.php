@@ -36,55 +36,59 @@
                     &middot; {{ __('Training logins') }}: <span class="font-semibold text-gray-900">{{ $attendances->count() }}</span>
                 </p>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <th class="px-4 py-2">{{ __('Student ID') }}</th>
-                                <th class="px-4 py-2">{{ __('Student Name') }}</th>
-                                <th class="px-4 py-2">{{ __('Training Date') }}</th>
-                                <th class="px-4 py-2">{{ __('Type') }}</th>
-                                <th class="px-4 py-2">{{ __('Duration') }}</th>
-                                <th class="px-4 py-2">{{ __('Instructor') }}</th>
-                                <th class="px-4 py-2">{{ __('Training Status') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse ($attendances as $attendance)
-                                <tr>
-                                    <td class="px-4 py-2 font-mono text-sm">{{ $attendance->student->student_id_number }}</td>
-                                    <td class="px-4 py-2 text-sm">
-                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline print:text-gray-900 print:no-underline">
-                                            {{ $attendance->student->name }}
-                                        </a>
-                                    </td>
-                                    <td class="px-4 py-2 text-sm">{{ $attendance->date->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-2 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $attendance->duration ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                    <td class="px-4 py-2 text-sm">
-                                        @php $trainingStatus = $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? null; @endphp
-                                        @if ($trainingStatus)
-                                            <x-badge :color="match ($trainingStatus) {
-                                                'Completed' => 'blue',
-                                                'Expired' => 'red',
-                                                default => 'green',
-                                            }">{{ $trainingStatus }}</x-badge>
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">
-                                        {{ __('No students trained during this period.') }}
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                @forelse ($attendancesByDate as $date => $dayAttendances)
+                    <div class="mb-6 last:mb-0">
+                        <h4 class="text-sm font-semibold text-gray-800 mb-2">
+                            {{ \Illuminate\Support\Carbon::parse($date)->format('l, j F Y') }}
+                            <span class="font-normal text-gray-500">&middot; {{ trans_choice('{0} :count students|{1} :count student|[2,*] :count students', $dayAttendances->count(), ['count' => $dayAttendances->count()]) }}</span>
+                        </h4>
+                        <div class="overflow-x-auto rounded-md ring-1 ring-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50">
+                                        <th class="px-4 py-2">{{ __('Student ID') }}</th>
+                                        <th class="px-4 py-2">{{ __('Student Name') }}</th>
+                                        <th class="px-4 py-2">{{ __('Type') }}</th>
+                                        <th class="px-4 py-2">{{ __('Duration') }}</th>
+                                        <th class="px-4 py-2">{{ __('Instructor') }}</th>
+                                        <th class="px-4 py-2">{{ __('Training Status') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @foreach ($dayAttendances as $attendance)
+                                        <tr>
+                                            <td class="px-4 py-2 font-mono text-sm">{{ $attendance->student->student_id_number }}</td>
+                                            <td class="px-4 py-2 text-sm">
+                                                <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline print:text-gray-900 print:no-underline">
+                                                    {{ $attendance->student->name }}
+                                                </a>
+                                            </td>
+                                            <td class="px-4 py-2 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm">{{ $attendance->duration ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm">
+                                                @php $trainingStatus = $enrollmentStatuses["{$attendance->student_id}:{$attendance->course_id}"] ?? null; @endphp
+                                                @if ($trainingStatus)
+                                                    <x-badge :color="match ($trainingStatus) {
+                                                        'Completed' => 'blue',
+                                                        'Expired' => 'red',
+                                                        default => 'green',
+                                                    }">{{ $trainingStatus }}</x-badge>
+                                                @else
+                                                    —
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @empty
+                    <p class="px-4 py-6 text-center text-sm text-gray-500">
+                        {{ __('No students trained during this period.') }}
+                    </p>
+                @endforelse
             </div>
         </div>
     </div>
