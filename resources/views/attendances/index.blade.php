@@ -33,10 +33,13 @@
                         <thead>
                             <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <th class="px-4 py-2">{{ __('Date') }}</th>
+                                <th class="px-4 py-2">{{ __('Time') }}</th>
+                                <th class="px-4 py-2">{{ __('Session') }}</th>
                                 <th class="px-4 py-2">{{ __('Student') }}</th>
                                 <th class="px-4 py-2">{{ __('Course') }}</th>
                                 <th class="px-4 py-2">{{ __('Type') }}</th>
                                 <th class="px-4 py-2">{{ __('Instructor') }}</th>
+                                <th class="px-4 py-2">{{ __('Vehicle') }}</th>
                                 <th class="px-4 py-2">{{ __('Duration') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2"></th>
@@ -46,10 +49,13 @@
                             @forelse ($attendances as $attendance)
                                 <tr>
                                     <td class="px-4 py-2">{{ $attendance->date->format('Y-m-d') }}</td>
+                                    <td class="px-4 py-2">{{ $attendance->created_at->format('H:i') }}</td>
+                                    <td class="px-4 py-2">{{ $attendance->sessionPeriod() ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->student->name }}</td>
                                     <td class="px-4 py-2">{{ $attendance->course->name }}</td>
                                     <td class="px-4 py-2 capitalize">{{ $attendance->type ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->instructor?->name ?? '—' }}</td>
+                                    <td class="px-4 py-2">{{ $attendance->vehicle?->name ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $attendance->duration ?? '—' }}</td>
                                     <td class="px-4 py-2">
                                         <x-badge :color="match ($attendance->status) {
@@ -76,7 +82,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="11" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No training logins yet.') }}
                                     </td>
                                 </tr>

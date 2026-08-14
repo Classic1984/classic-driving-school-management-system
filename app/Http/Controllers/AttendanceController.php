@@ -10,6 +10,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Student;
+use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -21,7 +22,7 @@ class AttendanceController extends Controller
      */
     public function index(): View
     {
-        $attendances = Attendance::with(['student', 'course', 'instructor'])->latest('date')->paginate(10);
+        $attendances = Attendance::with(['student', 'course', 'instructor', 'vehicle'])->latest('date')->paginate(10);
 
         return view('attendances.index', compact('attendances'));
     }
@@ -68,7 +69,7 @@ class AttendanceController extends Controller
      */
     public function show(Attendance $attendance): View
     {
-        $attendance->load(['student', 'course', 'instructor']);
+        $attendance->load(['student', 'course', 'instructor', 'vehicle']);
 
         return view('attendances.show', compact('attendance'));
     }
@@ -146,6 +147,7 @@ class AttendanceController extends Controller
             'students' => Student::orderBy('name')->get(),
             'courses' => Course::orderBy('name')->get(),
             'instructors' => Instructor::orderBy('name')->get(),
+            'vehicles' => Vehicle::where('status', 'active')->orderBy('name')->get(),
         ];
     }
 }

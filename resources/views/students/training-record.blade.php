@@ -11,7 +11,6 @@
                 @if (session('status') === 'training-logged')
                     <p class="text-sm font-medium text-green-600">{{ __('Training logged successfully.') }}</p>
                 @endif
-                <x-input-error :messages="$errors->get('student_id')" />
 
                 <dl class="divide-y divide-gray-100">
                     <div class="py-2 grid grid-cols-3 gap-4">
@@ -49,10 +48,12 @@
                                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     <th class="px-2 py-1">{{ __('S/N') }}</th>
                                     <th class="px-2 py-1">{{ __('Date of Training') }}</th>
+                                    <th class="px-2 py-1">{{ __('Time') }}</th>
+                                    <th class="px-2 py-1">{{ __('Session') }}</th>
                                     <th class="px-2 py-1">{{ __('Type') }}</th>
                                     <th class="px-2 py-1">{{ __('Duration') }}</th>
                                     <th class="px-2 py-1">{{ __('Instructor') }}</th>
-                                    <th class="px-2 py-1">{{ __('Date Logged') }}</th>
+                                    <th class="px-2 py-1">{{ __('Vehicle') }}</th>
                                     <th class="px-2 py-1">{{ __('Logged By') }}</th>
                                 </tr>
                             </thead>
@@ -61,15 +62,17 @@
                                     <tr>
                                         <td class="px-2 py-1 text-sm">{{ $index + 1 }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->date->format('Y-m-d') }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $attendance->created_at->format('H:i') }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $attendance->sessionPeriod() ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->duration ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
-                                        <td class="px-2 py-1 text-sm">{{ $attendance->created_at->format('Y-m-d H:i') }}</td>
+                                        <td class="px-2 py-1 text-sm">{{ $attendance->vehicle?->name ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->loggedBy?->name ?? '—' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
+                                        <td colspan="9" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -78,7 +81,9 @@
 
                     @if (auth()->user()->canManageCourses())
                     @if ($student->courses->isNotEmpty())
-                        <form method="post" action="{{ route('attendances.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
+                        <x-input-error class="mt-2" :messages="$errors->get('student_id')" />
+
+                        <form method="post" action="{{ route('attendances.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-6 gap-4 items-end">
                             @csrf
                             <input type="hidden" name="student_id" value="{{ $student->id }}">
                             <input type="hidden" name="redirect_to_training_record" value="1">
@@ -109,6 +114,16 @@
                                     <option value="">{{ __('None') }}</option>
                                     @foreach ($instructors as $availableInstructor)
                                         <option value="{{ $availableInstructor->id }}">{{ $availableInstructor->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <x-input-label for="record_vehicle_id" :value="__('Vehicle')" />
+                                <select id="record_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                                    <option value="">{{ __('None') }}</option>
+                                    @foreach ($vehicles as $availableVehicle)
+                                        <option value="{{ $availableVehicle->id }}">{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
                                     @endforeach
                                 </select>
                             </div>

@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -63,6 +64,50 @@ class StudentTrainingRecordTest extends TestCase
         $response->assertOk();
         $response->assertSee("<option value=\"{$course->id}\" selected>Weekend Program</option>", false);
         $response->assertSee('<option value="practical" selected>Practical</option>', false);
+    }
+
+    public function test_the_training_log_form_offers_active_vehicles_to_choose_from(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Vehicle::factory()->create(['name' => 'Toyota Corolla', 'plate_number' => 'ABC-123XY', 'status' => 'active']);
+        Vehicle::factory()->create(['name' => 'Retired Van', 'plate_number' => 'OLD-999ZZ', 'status' => 'inactive']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}/training-record");
+
+        $response->assertOk();
+        $response->assertSee('Toyota Corolla (ABC-123XY)');
+        $response->assertDontSee('Retired Van');
+    }
+
+    public function test_logging_a_second_training_session_for_the_same_student_today_shows_a_friendly_warning(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['name' => 'John Doe']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+        ]);
+
+        $this->actingAs($user)->get("/students/{$student->id}/training-record");
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+            'redirect_to_training_record' => '1',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'student_id' => 'John Doe has already logged training today.',
+        ]);
+        $response->assertRedirect(route('students.training-record', $student));
     }
 
     public function test_logging_training_from_the_record_page_records_who_logged_it_and_redirects_back(): void

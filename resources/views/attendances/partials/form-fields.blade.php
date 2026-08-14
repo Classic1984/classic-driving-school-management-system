@@ -34,6 +34,17 @@
 </div>
 
 <div>
+    <x-input-label for="vehicle_id" :value="__('Vehicle')" />
+    <select id="vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('None') }}</option>
+        @foreach ($vehicles as $availableVehicle)
+            <option value="{{ $availableVehicle->id }}" @selected((int) old('vehicle_id', $attendance?->vehicle_id) === $availableVehicle->id)>{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
+        @endforeach
+    </select>
+    <x-input-error class="mt-2" :messages="$errors->get('vehicle_id')" />
+</div>
+
+<div>
     <x-input-label for="date" :value="__('Date')" />
     <x-text-input id="date" name="date" type="date" class="mt-1 block w-full" :value="old('date', optional($attendance?->date)->format('Y-m-d') ?? now()->format('Y-m-d'))" required />
     <x-input-error class="mt-2" :messages="$errors->get('date')" />

@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
+use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,6 +25,7 @@ class AttendanceFactory extends Factory
             'student_id' => Student::factory(),
             'course_id' => Course::factory(),
             'instructor_id' => Instructor::factory(),
+            'vehicle_id' => Vehicle::factory(),
             'date' => fake()->date(),
             'status' => fake()->randomElement(['present', 'absent', 'late', 'excused']),
             'type' => fake()->optional()->randomElement(['practical', 'classroom']),

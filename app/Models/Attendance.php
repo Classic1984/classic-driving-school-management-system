@@ -21,6 +21,7 @@ class Attendance extends Model
         'student_id',
         'course_id',
         'instructor_id',
+        'vehicle_id',
         'date',
         'status',
         'type',
@@ -28,6 +29,25 @@ class Attendance extends Model
         'notes',
         'logged_by',
     ];
+
+    /**
+     * Morning/Afternoon/Evening, derived from when this record was actually
+     * saved (created_at) rather than a separately entered field - the
+     * training login is logged in real time, so the save timestamp already
+     * is the time of day the training happened.
+     */
+    public function sessionPeriod(): ?string
+    {
+        if ($this->created_at === null) {
+            return null;
+        }
+
+        return match (true) {
+            $this->created_at->hour < 12 => 'Morning',
+            $this->created_at->hour < 17 => 'Afternoon',
+            default => 'Evening',
+        };
+    }
 
     /**
      * Get the attributes that should be cast.
@@ -54,6 +74,11 @@ class Attendance extends Model
     public function instructor(): BelongsTo
     {
         return $this->belongsTo(Instructor::class);
+    }
+
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
     }
 
     /**
