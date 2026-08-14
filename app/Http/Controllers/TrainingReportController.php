@@ -36,9 +36,10 @@ class TrainingReportController extends Controller
 
         $attendances = $this->query($period)->with(['student', 'course', 'instructor'])->latest('date')->get();
         $enrollmentStatuses = $this->enrollmentStatuses($attendances);
+        $attendancesByDate = $this->groupByDate($attendances);
         $label = self::LABELS[$period];
 
-        return view('training-report.index', compact('attendances', 'enrollmentStatuses', 'period', 'label'));
+        return view('training-report.index', compact('attendances', 'attendancesByDate', 'enrollmentStatuses', 'period', 'label'));
     }
 
     /**
@@ -71,9 +72,10 @@ class TrainingReportController extends Controller
         $period = $this->period($request);
         $attendances = $this->query($period)->with(['student', 'course', 'instructor'])->latest('date')->get();
         $enrollmentStatuses = $this->enrollmentStatuses($attendances);
+        $attendancesByDate = $this->groupByDate($attendances);
         $label = self::LABELS[$period];
 
-        $pdf = Pdf::loadView('training-report.pdf', compact('attendances', 'enrollmentStatuses', 'label'));
+        $pdf = Pdf::loadView('training-report.pdf', compact('attendancesByDate', 'enrollmentStatuses', 'label'));
 
         return $pdf->download("training-report-{$period}.pdf");
     }
@@ -97,6 +99,17 @@ class TrainingReportController extends Controller
         return Attendance::where('status', 'present')
             ->whereDate('date', '>=', $from->toDateString())
             ->whereDate('date', '<=', $to->toDateString());
+    }
+
+    /**
+     * Group attendance rows by training date - the report shows a roster of
+     * student names per day rather than one flat row per record. Relies on
+     * the caller having already sorted by "latest('date')", so groups come
+     * out most-recent-day-first.
+     */
+    protected function groupByDate(Collection $attendances): Collection
+    {
+        return $attendances->groupBy(fn (Attendance $attendance) => $attendance->date->format('Y-m-d'));
     }
 
     /**
