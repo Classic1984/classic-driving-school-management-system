@@ -29,6 +29,7 @@ use App\Http\Controllers\TheoryClassCancellationController;
 use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -59,12 +60,14 @@ Route::middleware('auth')->group(function () {
     Route::middleware('course-manager')->group(function () {
         Route::resource('courses', CourseController::class)->except(['index', 'show', 'destroy']);
         Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
+        Route::resource('vehicles', VehicleController::class)->except(['index', 'show', 'destroy']);
         Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
     });
 
     Route::middleware('admin')->group(function () {
         Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
         Route::delete('instructors/{instructor}', [InstructorController::class, 'destroy'])->name('instructors.destroy');
+        Route::delete('vehicles/{vehicle}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
         Route::delete('students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
         Route::delete('attendances/{attendance}', [AttendanceController::class, 'destroy'])->name('attendances.destroy');
         Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
@@ -111,6 +114,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
+    Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
     Route::resource('attendances', AttendanceController::class)->only(['index', 'show']);
     Route::get('training-progress', [TrainingProgressController::class, 'index'])->name('training-progress.index');
     Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');

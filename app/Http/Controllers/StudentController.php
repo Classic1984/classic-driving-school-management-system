@@ -9,6 +9,7 @@ use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Service;
 use App\Models\Student;
+use App\Models\Vehicle;
 use App\Services\EnrollmentService;
 use App\Services\StudentChargeResolver;
 use Illuminate\Http\RedirectResponse;
@@ -131,10 +132,11 @@ class StudentController extends Controller
      */
     public function trainingRecord(Student $student): View
     {
-        $student->load(['courses', 'attendances' => fn ($query) => $query->with(['instructor', 'loggedBy'])->latest('date')]);
+        $student->load(['courses', 'attendances' => fn ($query) => $query->with(['instructor', 'vehicle', 'loggedBy'])->latest('date')]);
         $instructors = Instructor::orderBy('name')->get();
+        $vehicles = Vehicle::where('status', 'active')->orderBy('name')->get();
 
-        return view('students.training-record', compact('student', 'instructors'));
+        return view('students.training-record', compact('student', 'instructors', 'vehicles'));
     }
 
     /**

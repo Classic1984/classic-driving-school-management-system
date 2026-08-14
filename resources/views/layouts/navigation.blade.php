@@ -11,7 +11,7 @@
                 </div>
 
                 @php
-                    $trainingActive = request()->routeIs('courses.*') || request()->routeIs('instructors.*') || request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record');
+                    $trainingActive = request()->routeIs('courses.*') || request()->routeIs('instructors.*') || request()->routeIs('vehicles.*') || request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record');
                     $adminActive = request()->routeIs('finance.*') || request()->routeIs('expenses.*') || request()->routeIs('services.*') || request()->routeIs('theory-class-cancellations.*') || request()->routeIs('activity-log.*') || request()->routeIs('users.*') || request()->routeIs('student-correction-requests.*');
                     $navGroupTriggerClasses = fn ($active) => $active
                         ? 'inline-flex items-center px-1 pt-1 border-b-2 border-amber-500 text-sm font-medium leading-5 text-white focus:outline-none focus:border-amber-400 transition duration-150 ease-in-out'
@@ -48,6 +48,7 @@
                         <x-slot name="content">
                             <x-dropdown-link :href="route('courses.index')">{{ __('Courses') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('instructors.index')">{{ __('Instructors') }}</x-dropdown-link>
+                            <x-dropdown-link :href="route('vehicles.index')">{{ __('Vehicles') }}</x-dropdown-link>
                             <x-dropdown-link :href="route('enrolled-trainees.index')">{{ __('Student Login Training') }}</x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
@@ -146,6 +147,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('instructors.index')" :active="request()->routeIs('instructors.*')">
                 {{ __('Instructors') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('vehicles.index')" :active="request()->routeIs('vehicles.*')">
+                {{ __('Vehicles') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
                 {{ __('Student Login Training') }}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Student;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,6 +35,7 @@ class UpdateAttendanceRequest extends FormRequest
             ],
             'course_id' => ['required', 'integer', 'exists:courses,id'],
             'instructor_id' => ['nullable', 'integer', 'exists:instructors,id'],
+            'vehicle_id' => ['nullable', 'integer', 'exists:vehicles,id'],
             'date' => ['required', 'date'],
             'status' => ['required', 'in:present,absent,late,excused'],
             'type' => ['nullable', 'in:practical,classroom'],
@@ -50,7 +52,22 @@ class UpdateAttendanceRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student_id.unique' => 'An attendance record already exists for this student, course, and date.',
+            'student_id.unique' => $this->duplicateMessage(),
         ];
+    }
+
+    /**
+     * A friendly, student-named message when the duplicate is for today,
+     * falling back to a generic message for a backdated entry.
+     */
+    protected function duplicateMessage(): string
+    {
+        $student = Student::find($this->input('student_id'));
+
+        if ($student && $this->input('date') === now()->toDateString()) {
+            return "{$student->name} has already logged training today.";
+        }
+
+        return 'An attendance record already exists for this student, course, and date.';
     }
 }

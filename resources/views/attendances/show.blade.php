@@ -14,6 +14,14 @@
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->date->format('Y-m-d') }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Time') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->created_at->format('H:i') }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Session') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->sessionPeriod() ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Student') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->student->name }}</dd>
                     </div>
@@ -28,6 +36,10 @@
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Instructor') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->instructor?->name ?? '—' }}</dd>
+                    </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Vehicle') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ $attendance->vehicle?->name ?? '—' }}</dd>
                     </div>
                     <div class="py-2 grid grid-cols-3 gap-4">
                         <dt class="text-sm font-medium text-gray-500">{{ __('Duration') }}</dt>

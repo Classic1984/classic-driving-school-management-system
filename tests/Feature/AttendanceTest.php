@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -189,8 +190,55 @@ class AttendanceTest extends TestCase
             'status' => 'absent',
         ]);
 
-        $response->assertSessionHasErrors('student_id');
+        $response->assertSessionHasErrors([
+            'student_id' => 'An attendance record already exists for this student, course, and date.',
+        ]);
         $this->assertDatabaseCount('attendances', 1);
+    }
+
+    public function test_storing_a_duplicate_attendance_record_for_today_shows_a_friendly_named_warning(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'John Doe']);
+        $existing = Attendance::factory()->create([
+            'student_id' => $student->id,
+            'date' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $existing->student_id,
+            'course_id' => $existing->course_id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response->assertSessionHasErrors([
+            'student_id' => 'John Doe has already logged training today.',
+        ]);
+        $this->assertDatabaseCount('attendances', 1);
+    }
+
+    public function test_storing_an_attendance_record_captures_the_vehicle_used(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $vehicle = Vehicle::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->post('/attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'vehicle_id' => $vehicle->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('attendances', [
+            'student_id' => $student->id,
+            'vehicle_id' => $vehicle->id,
+        ]);
     }
 
     public function test_authenticated_user_can_view_an_attendance_record(): void
