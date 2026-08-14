@@ -15,3 +15,7 @@ Schedule::command('app:send-balance-reminder')->weeklyOn(1, '09:00');
 // Checked daily; SendLeadFollowUpReminder itself only texts a lead once at
 // least 4 days have passed since they were logged (or last reminded).
 Schedule::command('app:send-lead-follow-up-reminder')->dailyAt('10:00');
+// Checked daily; SendAbsenceCheckInReminder itself only texts a student
+// once they've gone 4+ days without a training login, and only once per
+// absence spell.
+Schedule::command('app:send-absence-check-in-reminder')->dailyAt('11:00');
