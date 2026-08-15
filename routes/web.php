@@ -14,6 +14,7 @@ use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\LeadConversionReportController;
 use App\Http\Controllers\MessageLogController;
 use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
@@ -135,6 +136,9 @@ Route::middleware('auth')->group(function () {
     Route::get('instructor-activity-report', [InstructorActivityReportController::class, 'index'])->name('instructor-activity-report.index');
     Route::get('instructor-activity-report/export', [InstructorActivityReportController::class, 'export'])->name('instructor-activity-report.export');
     Route::get('instructor-activity-report/export-pdf', [InstructorActivityReportController::class, 'exportPdf'])->name('instructor-activity-report.export-pdf');
+    Route::get('lead-conversion-report', [LeadConversionReportController::class, 'index'])->name('lead-conversion-report.index');
+    Route::get('lead-conversion-report/export', [LeadConversionReportController::class, 'export'])->name('lead-conversion-report.export');
+    Route::get('lead-conversion-report/export-pdf', [LeadConversionReportController::class, 'exportPdf'])->name('lead-conversion-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
     // above: "payments/export" and "payments/record" would otherwise be swallowed by
     // "payments/{payment}".
