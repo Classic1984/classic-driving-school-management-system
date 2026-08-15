@@ -21,6 +21,7 @@ use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
@@ -94,6 +95,9 @@ Route::middleware('auth')->group(function () {
         Route::post('students/{student}/enroll', [EnrollmentController::class, 'store'])->name('students.enroll.store');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::get('message-log', [MessageLogController::class, 'index'])->name('message-log.index');
+        Route::post('reminders/{type}/send', [ReminderController::class, 'send'])
+            ->whereIn('type', ['balance_reminder', 'theory_class_reminder', 'lead_follow_up', 'absence_check_in'])
+            ->name('reminders.send');
         Route::resource('users', UserController::class)->except(['show']);
         Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
         Route::resource('theory-class-cancellations', TheoryClassCancellationController::class)->only(['index', 'store', 'destroy']);
