@@ -8,6 +8,13 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Ticks every minute purely so the app can tell whether the background
+// scheduler process is actually alive in production (surfaced on the
+// Activity Log page) - the same "schedule:work silently never started"
+// failure mode that once broke backups could just as easily break every
+// other scheduled job below without anything visibly erroring.
+Schedule::command('app:scheduler-heartbeat')->everyMinute();
+
 Schedule::command('app:refresh-enrollment-locks')->daily();
 Schedule::command('backup:database')->twiceDaily(2, 14);
 Schedule::command('app:send-theory-class-reminder')->weeklyOn(4, '08:00');

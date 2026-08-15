@@ -21,6 +21,20 @@
                     <p class="mb-4 text-sm font-medium {{ str_starts_with(session('status'), 'Backup email failed') ? 'text-red-600' : 'text-green-600' }}">{{ session('status') }}</p>
                 @endif
 
+                <div class="mb-4 flex items-center gap-2 text-sm">
+                    <span class="font-medium text-gray-500">{{ __('Background Scheduler') }}:</span>
+                    @if ($schedulerStatus['state'] === 'running')
+                        <x-badge color="green">{{ __('Running') }}</x-badge>
+                        <span class="text-gray-500">{{ __('last seen :time ago', ['time' => $schedulerStatus['last_seen_at']->diffForHumans(null, true)]) }}</span>
+                    @elseif ($schedulerStatus['state'] === 'stale')
+                        <x-badge color="red">{{ __('Not Running') }}</x-badge>
+                        <span class="text-gray-500">{{ __('last seen :time ago - reminders and backups are not firing automatically', ['time' => $schedulerStatus['last_seen_at']->diffForHumans(null, true)]) }}</span>
+                    @else
+                        <x-badge color="red">{{ __('Never Detected') }}</x-badge>
+                        <span class="text-gray-500">{{ __('reminders and backups are not firing automatically') }}</span>
+                    @endif
+                </div>
+
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>

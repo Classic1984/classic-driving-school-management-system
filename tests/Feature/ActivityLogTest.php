@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Console\Commands\RecordSchedulerHeartbeat;
 use App\Models\ActivityLog;
 use App\Models\Attendance;
 use App\Models\Certificate;
@@ -10,6 +11,7 @@ use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class ActivityLogTest extends TestCase
@@ -234,6 +236,39 @@ class ActivityLogTest extends TestCase
             'user_id' => $user->id,
             'description' => 'Added instructor Mr. Adebayo',
         ]);
+    }
+
+    public function test_it_shows_the_scheduler_as_running_when_the_heartbeat_is_recent(): void
+    {
+        $director = User::factory()->director()->create();
+        Cache::put(RecordSchedulerHeartbeat::CACHE_KEY, now()->subMinute());
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        $response->assertOk();
+        $response->assertSee('Running');
+    }
+
+    public function test_it_shows_the_scheduler_as_not_running_when_the_heartbeat_is_stale(): void
+    {
+        $director = User::factory()->director()->create();
+        Cache::put(RecordSchedulerHeartbeat::CACHE_KEY, now()->subMinutes(10));
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        $response->assertOk();
+        $response->assertSee('Not Running');
+    }
+
+    public function test_it_shows_the_scheduler_as_never_detected_when_there_is_no_heartbeat(): void
+    {
+        $director = User::factory()->director()->create();
+        Cache::forget(RecordSchedulerHeartbeat::CACHE_KEY);
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        $response->assertOk();
+        $response->assertSee('Never Detected');
     }
 
     public function test_recording_an_expense_is_logged(): void
