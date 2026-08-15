@@ -13,9 +13,14 @@
                         {{ __('Leads') }}
                     </h3>
 
-                    <a href="{{ route('leads.create') }}">
-                        <x-primary-button type="button">{{ __('Log an Inquiry') }}</x-primary-button>
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('lead-conversion-report.index') }}">
+                            <x-secondary-button type="button">{{ __('View Conversion Report') }}</x-secondary-button>
+                        </a>
+                        <a href="{{ route('leads.create') }}">
+                            <x-primary-button type="button">{{ __('Log an Inquiry') }}</x-primary-button>
+                        </a>
+                    </div>
                 </div>
 
                 @if (session('status') === 'lead-created')
