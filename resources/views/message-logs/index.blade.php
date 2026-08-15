@@ -10,6 +10,27 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <h3 class="text-lg font-semibold mb-4">{{ __('Message Delivery Log') }}</h3>
 
+                @if (session('status'))
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ session('status') }}</p>
+                @endif
+
+                <div class="mb-6">
+                    <p class="text-sm font-medium text-gray-500 mb-2">{{ __('Send Now') }}</p>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ([
+                            'balance_reminder' => 'Balance Reminder',
+                            'theory_class_reminder' => 'Theory Class Reminder',
+                            'lead_follow_up' => 'Lead Follow-Up',
+                            'absence_check_in' => 'Absence Check-In',
+                        ] as $type => $label)
+                            <form method="post" action="{{ route('reminders.send', $type) }}" onsubmit="return confirm('{{ __('This will immediately text every eligible recipient. Continue?') }}');">
+                                @csrf
+                                <x-secondary-button type="submit">{{ __('Send :label Now', ['label' => $label]) }}</x-secondary-button>
+                            </form>
+                        @endforeach
+                    </div>
+                </div>
+
                 <form method="get" action="{{ route('message-log.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div>
                         <x-input-label for="search" :value="__('Search')" />
