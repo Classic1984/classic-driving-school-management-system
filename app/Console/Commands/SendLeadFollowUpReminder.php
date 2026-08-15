@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Lead;
+use App\Models\MessageLog;
 use App\Services\TermiiSmsService;
 use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
@@ -61,17 +62,28 @@ class SendLeadFollowUpReminder extends Command
                 ? "Hi {$lead->name}, just checking in from Classic Driving School about your interest in {$lead->course_interested}. Reply or call us to get started!"
                 : "Hi {$lead->name}, just checking in from Classic Driving School about your inquiry. Reply or call us to get started!";
 
-            $wasSent = $this->sms->send($lead->phone, $message) || $this->whatsapp->send(
-                $lead->phone,
-                config('services.twilio.whatsapp_templates.lead_follow_up'),
-                ['1' => $lead->name, '2' => $lead->course_interested ?: 'your inquiry']
-            );
+            $channel = match (true) {
+                $this->sms->send($lead->phone, $message) => 'sms',
+                $this->whatsapp->send($lead->phone, config('services.twilio.whatsapp_templates.lead_follow_up'), ['1' => $lead->name, '2' => $lead->course_interested ?: 'your inquiry']) => 'whatsapp',
+                default => null,
+            };
 
-            if ($wasSent) {
+            MessageLog::create([
+                'recipient_type' => 'lead',
+                'recipient_id' => $lead->id,
+                'recipient_name' => $lead->name,
+                'recipient_phone' => $lead->phone,
+                'purpose' => 'lead_follow_up',
+                'channel' => $channel,
+                'status' => $channel ? 'sent' : 'failed',
+                'message' => $message,
+            ]);
+
+            if ($channel !== null) {
                 $lead->update(['last_reminded_at' => now()]);
             }
 
-            return $wasSent;
+            return $channel !== null;
         })->count();
 
         $this->info("Lead follow-up sent to {$sent} of {$leads->count()} lead(s).");

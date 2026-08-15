@@ -22,7 +22,7 @@ class LeadFollowUpReminderTest extends TestCase
     {
         Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
 
-        Lead::factory()->create([
+        $lead = Lead::factory()->create([
             'name' => 'Jane Prospect',
             'phone' => '08031234567',
             'course_interested' => 'Standard Driving Course',
@@ -36,6 +36,15 @@ class LeadFollowUpReminderTest extends TestCase
         Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
             && str_contains($request['sms'], 'Jane Prospect')
             && str_contains($request['sms'], 'Standard Driving Course'));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'lead',
+            'recipient_id' => $lead->id,
+            'recipient_name' => 'Jane Prospect',
+            'purpose' => 'lead_follow_up',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
     }
 
     public function test_it_does_not_text_a_lead_logged_less_than_4_days_ago(): void
@@ -150,7 +159,7 @@ class LeadFollowUpReminderTest extends TestCase
             'api.twilio.com/*' => Http::response(['sid' => 'SM1'], 201),
         ]);
 
-        Lead::factory()->create([
+        $lead = Lead::factory()->create([
             'name' => 'Jane Prospect',
             'phone' => '08031234567',
             'course_interested' => 'Standard Driving Course',
@@ -164,5 +173,13 @@ class LeadFollowUpReminderTest extends TestCase
             && $request['To'] === 'whatsapp:+2348031234567'
             && $request['ContentSid'] === 'HXlead'
             && $request['ContentVariables'] === json_encode(['1' => 'Jane Prospect', '2' => 'Standard Driving Course']));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'lead',
+            'recipient_id' => $lead->id,
+            'purpose' => 'lead_follow_up',
+            'channel' => 'whatsapp',
+            'status' => 'sent',
+        ]);
     }
 }

@@ -37,6 +37,14 @@ class AbsenceCheckInReminderTest extends TestCase
         $this->artisan('app:send-absence-check-in-reminder')->assertExitCode(0);
 
         Http::assertSent(fn ($request) => $request['to'] === '2348031234567' && str_contains($request['sms'], 'a few days'));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'absence_check_in',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
     }
 
     public function test_it_does_not_text_a_student_who_trained_within_the_last_4_days(): void
