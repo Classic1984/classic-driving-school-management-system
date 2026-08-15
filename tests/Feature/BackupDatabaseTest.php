@@ -77,4 +77,20 @@ class BackupDatabaseTest extends TestCase
 
         Mail::assertNothingSent();
     }
+
+    public function test_it_reports_a_clear_failure_instead_of_crashing_when_the_mailer_fails(): void
+    {
+        User::factory()->director()->create();
+
+        Mail::shouldReceive('to')
+            ->once()
+            ->andReturnSelf();
+        Mail::shouldReceive('send')
+            ->once()
+            ->andThrow(new \RuntimeException('Brevo API key invalid.'));
+
+        $this->artisan('backup:database')
+            ->expectsOutputToContain('Backup email failed to send: Brevo API key invalid.')
+            ->assertExitCode(1);
+    }
 }

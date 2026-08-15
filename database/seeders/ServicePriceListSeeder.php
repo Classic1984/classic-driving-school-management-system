@@ -17,14 +17,14 @@ class ServicePriceListSeeder extends Seeder
     public function run(): void
     {
         $services = [
-            ['name' => "Driver's License Processing", 'price' => 50000],
-            ['name' => "Learner's Permit", 'price' => 6000],
+            ['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30],
+            ['name' => "Learner's Permit", 'price' => 6000, 'processing_days' => null],
         ];
 
         foreach ($services as $service) {
             Service::updateOrCreate(
                 ['name' => $service['name']],
-                ['price' => $service['price'], 'is_active' => true]
+                ['price' => $service['price'], 'is_active' => true, 'processing_days' => $service['processing_days']]
             );
         }
     }

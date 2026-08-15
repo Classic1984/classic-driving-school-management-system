@@ -8,7 +8,18 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
-                <h3 class="text-lg font-semibold mb-4">{{ __('Activity Log') }}</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">{{ __('Activity Log') }}</h3>
+
+                    <form method="post" action="{{ route('backups.send') }}" onsubmit="return confirm('{{ __('Run the database backup now and email it to every Director?') }}');">
+                        @csrf
+                        <x-secondary-button type="submit">{{ __('Send Backup Now') }}</x-secondary-button>
+                    </form>
+                </div>
+
+                @if (session('status'))
+                    <p class="mb-4 text-sm font-medium {{ str_starts_with(session('status'), 'Backup email failed') ? 'text-red-600' : 'text-green-600' }}">{{ session('status') }}</p>
+                @endif
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
