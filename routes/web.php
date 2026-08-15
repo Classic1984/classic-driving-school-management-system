@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
 use App\Http\Controllers\CourseController;
@@ -95,6 +96,7 @@ Route::middleware('auth')->group(function () {
         Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
         Route::post('students/{student}/enroll', [EnrollmentController::class, 'store'])->name('students.enroll.store');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
+        Route::post('backups/send', [BackupController::class, 'send'])->name('backups.send');
         Route::get('message-log', [MessageLogController::class, 'index'])->name('message-log.index');
         Route::post('reminders/{type}/send', [ReminderController::class, 'send'])
             ->whereIn('type', ['balance_reminder', 'theory_class_reminder', 'lead_follow_up', 'absence_check_in'])

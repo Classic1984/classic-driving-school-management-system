@@ -49,7 +49,14 @@ class BackupDatabase extends Command
 
         $path = $this->createDump();
 
-        Mail::to($recipients->all())->send(new DatabaseBackupMail($path));
+        try {
+            Mail::to($recipients->all())->send(new DatabaseBackupMail($path));
+        } catch (\Throwable $e) {
+            unlink($path);
+            $this->error('Backup email failed to send: '.$e->getMessage());
+
+            return self::FAILURE;
+        }
 
         unlink($path);
 
