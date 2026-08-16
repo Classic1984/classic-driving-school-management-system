@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Services\TermiiSmsService;
 use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class SendAbsenceCheckInReminder extends Command
 {
@@ -72,30 +73,39 @@ class SendAbsenceCheckInReminder extends Command
         }
 
         $sent = $due->filter(function (Student $student) {
-            $message = "Hi {$student->name}, we noticed you haven't been to training in a few days. Is everything okay? Let us know if you'd like to reschedule your next session.";
+            try {
+                $message = "Hi {$student->name}, we noticed you haven't been to training in a few days. Is everything okay? Let us know if you'd like to reschedule your next session.";
 
-            $channel = match (true) {
-                $this->sms->send($student->phone, $message) => 'sms',
-                $this->whatsapp->send($student->phone, config('services.twilio.whatsapp_templates.absence_check_in'), ['1' => $student->name]) => 'whatsapp',
-                default => null,
-            };
+                $channel = match (true) {
+                    $this->sms->send($student->phone, $message) => 'sms',
+                    $this->whatsapp->send($student->phone, config('services.twilio.whatsapp_templates.absence_check_in'), ['1' => $student->name]) => 'whatsapp',
+                    default => null,
+                };
 
-            MessageLog::create([
-                'recipient_type' => 'student',
-                'recipient_id' => $student->id,
-                'recipient_name' => $student->name,
-                'recipient_phone' => $student->phone,
-                'purpose' => 'absence_check_in',
-                'channel' => $channel,
-                'status' => $channel ? 'sent' : 'failed',
-                'message' => $message,
-            ]);
+                MessageLog::create([
+                    'recipient_type' => 'student',
+                    'recipient_id' => $student->id,
+                    'recipient_name' => $student->name,
+                    'recipient_phone' => $student->phone,
+                    'purpose' => 'absence_check_in',
+                    'channel' => $channel,
+                    'status' => $channel ? 'sent' : 'failed',
+                    'message' => $message,
+                ]);
 
-            if ($channel !== null) {
-                $student->update(['last_absence_reminder_sent_at' => now()]);
+                if ($channel !== null) {
+                    $student->update(['last_absence_reminder_sent_at' => now()]);
+                }
+
+                return $channel !== null;
+            } catch (\Throwable $e) {
+                // One student's check-in failing outright must not stop
+                // every student after them in this run from being checked
+                // on.
+                Log::error("Failed to send absence check-in to student #{$student->id}: {$e->getMessage()}", ['exception' => $e]);
+
+                return false;
             }
-
-            return $channel !== null;
         })->count();
 
         $this->info("Absence check-in sent to {$sent} of {$due->count()} student(s).");

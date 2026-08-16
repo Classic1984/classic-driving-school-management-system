@@ -8,6 +8,7 @@ use App\Services\StudentChargeResolver;
 use App\Services\TermiiSmsService;
 use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class SendBalanceReminder extends Command
 {
@@ -50,27 +51,37 @@ class SendBalanceReminder extends Command
 
         $sent = $students->filter(function (array $entry) {
             $student = $entry['student'];
-            $formattedBalance = number_format($entry['balance'], 2);
-            $message = "Classic Driving School: Reminder - you have an outstanding balance of ₦{$formattedBalance}. Kindly make payment at your earliest convenience.";
 
-            $channel = match (true) {
-                $this->sms->send($student->phone, $message) => 'sms',
-                $this->whatsapp->send($student->phone, config('services.twilio.whatsapp_templates.balance_reminder'), ['1' => $formattedBalance]) => 'whatsapp',
-                default => null,
-            };
+            try {
+                $formattedBalance = number_format($entry['balance'], 2);
+                $message = "Classic Driving School: Reminder - you have an outstanding balance of ₦{$formattedBalance}. Kindly make payment at your earliest convenience.";
 
-            MessageLog::create([
-                'recipient_type' => 'student',
-                'recipient_id' => $student->id,
-                'recipient_name' => $student->name,
-                'recipient_phone' => $student->phone,
-                'purpose' => 'balance_reminder',
-                'channel' => $channel,
-                'status' => $channel ? 'sent' : 'failed',
-                'message' => $message,
-            ]);
+                $channel = match (true) {
+                    $this->sms->send($student->phone, $message) => 'sms',
+                    $this->whatsapp->send($student->phone, config('services.twilio.whatsapp_templates.balance_reminder'), ['1' => $formattedBalance]) => 'whatsapp',
+                    default => null,
+                };
 
-            return $channel !== null;
+                MessageLog::create([
+                    'recipient_type' => 'student',
+                    'recipient_id' => $student->id,
+                    'recipient_name' => $student->name,
+                    'recipient_phone' => $student->phone,
+                    'purpose' => 'balance_reminder',
+                    'channel' => $channel,
+                    'status' => $channel ? 'sent' : 'failed',
+                    'message' => $message,
+                ]);
+
+                return $channel !== null;
+            } catch (\Throwable $e) {
+                // One student's reminder failing outright (an SMS/WhatsApp
+                // API timeout, etc.) must not stop every student after them
+                // in this run from being reminded.
+                Log::error("Failed to send balance reminder to student #{$student->id}: {$e->getMessage()}", ['exception' => $e]);
+
+                return false;
+            }
         })->count();
 
         $this->info("Balance reminder sent to {$sent} of {$students->count()} student(s).");

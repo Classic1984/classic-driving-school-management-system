@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Lead;
+use App\Services\TermiiSmsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class LeadFollowUpReminderTest extends TestCase
@@ -181,5 +183,20 @@ class LeadFollowUpReminderTest extends TestCase
             'channel' => 'whatsapp',
             'status' => 'sent',
         ]);
+    }
+
+    public function test_one_leads_follow_up_throwing_does_not_stop_the_rest_from_being_attempted(): void
+    {
+        Log::spy();
+        $this->mock(TermiiSmsService::class, function ($mock) {
+            $mock->shouldReceive('send')->andThrow(new \RuntimeException('Termii is down.'));
+        });
+
+        Lead::factory()->create(['status' => 'new', 'created_at' => now()->subDays(5)]);
+        Lead::factory()->create(['status' => 'new', 'created_at' => now()->subDays(5)]);
+
+        $this->artisan('app:send-lead-follow-up-reminder')->assertExitCode(0);
+
+        Log::shouldHaveReceived('error')->twice();
     }
 }

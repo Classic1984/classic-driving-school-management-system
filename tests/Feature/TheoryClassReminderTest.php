@@ -6,8 +6,10 @@ use App\Models\Course;
 use App\Models\Student;
 use App\Models\TheoryClassCancellation;
 use App\Models\User;
+use App\Services\TermiiSmsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class TheoryClassReminderTest extends TestCase
@@ -161,5 +163,23 @@ class TheoryClassReminderTest extends TestCase
         Http::assertSent(fn ($request) => str_contains($request->url(), 'api.twilio.com')
             && $request['ContentSid'] === 'HXcancel'
             && $request['ContentVariables'] === json_encode(['1' => 'Public holiday']));
+    }
+
+    public function test_one_students_reminder_throwing_does_not_stop_the_rest_from_being_attempted(): void
+    {
+        Log::spy();
+        $this->mock(TermiiSmsService::class, function ($mock) {
+            $mock->shouldReceive('send')->andThrow(new \RuntimeException('Termii is down.'));
+        });
+
+        $course = Course::factory()->create();
+        $studentA = Student::factory()->create();
+        $studentA->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $studentB = Student::factory()->create();
+        $studentB->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        Log::shouldHaveReceived('error')->twice();
     }
 }

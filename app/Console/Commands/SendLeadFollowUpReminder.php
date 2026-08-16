@@ -7,6 +7,7 @@ use App\Models\MessageLog;
 use App\Services\TermiiSmsService;
 use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class SendLeadFollowUpReminder extends Command
 {
@@ -58,32 +59,40 @@ class SendLeadFollowUpReminder extends Command
         }
 
         $sent = $leads->filter(function (Lead $lead) {
-            $message = $lead->course_interested
-                ? "Hi {$lead->name}, just checking in from Classic Driving School about your interest in {$lead->course_interested}. Reply or call us to get started!"
-                : "Hi {$lead->name}, just checking in from Classic Driving School about your inquiry. Reply or call us to get started!";
+            try {
+                $message = $lead->course_interested
+                    ? "Hi {$lead->name}, just checking in from Classic Driving School about your interest in {$lead->course_interested}. Reply or call us to get started!"
+                    : "Hi {$lead->name}, just checking in from Classic Driving School about your inquiry. Reply or call us to get started!";
 
-            $channel = match (true) {
-                $this->sms->send($lead->phone, $message) => 'sms',
-                $this->whatsapp->send($lead->phone, config('services.twilio.whatsapp_templates.lead_follow_up'), ['1' => $lead->name, '2' => $lead->course_interested ?: 'your inquiry']) => 'whatsapp',
-                default => null,
-            };
+                $channel = match (true) {
+                    $this->sms->send($lead->phone, $message) => 'sms',
+                    $this->whatsapp->send($lead->phone, config('services.twilio.whatsapp_templates.lead_follow_up'), ['1' => $lead->name, '2' => $lead->course_interested ?: 'your inquiry']) => 'whatsapp',
+                    default => null,
+                };
 
-            MessageLog::create([
-                'recipient_type' => 'lead',
-                'recipient_id' => $lead->id,
-                'recipient_name' => $lead->name,
-                'recipient_phone' => $lead->phone,
-                'purpose' => 'lead_follow_up',
-                'channel' => $channel,
-                'status' => $channel ? 'sent' : 'failed',
-                'message' => $message,
-            ]);
+                MessageLog::create([
+                    'recipient_type' => 'lead',
+                    'recipient_id' => $lead->id,
+                    'recipient_name' => $lead->name,
+                    'recipient_phone' => $lead->phone,
+                    'purpose' => 'lead_follow_up',
+                    'channel' => $channel,
+                    'status' => $channel ? 'sent' : 'failed',
+                    'message' => $message,
+                ]);
 
-            if ($channel !== null) {
-                $lead->update(['last_reminded_at' => now()]);
+                if ($channel !== null) {
+                    $lead->update(['last_reminded_at' => now()]);
+                }
+
+                return $channel !== null;
+            } catch (\Throwable $e) {
+                // One lead's follow-up failing outright must not stop every
+                // lead after them in this run from being followed up with.
+                Log::error("Failed to send lead follow-up to lead #{$lead->id}: {$e->getMessage()}", ['exception' => $e]);
+
+                return false;
             }
-
-            return $channel !== null;
         })->count();
 
         $this->info("Lead follow-up sent to {$sent} of {$leads->count()} lead(s).");

@@ -13,8 +13,10 @@ use App\Notifications\GracePeriodEndingSoonNotification;
 use App\Notifications\PaymentReminderNotification;
 use App\Notifications\TrainingCompletedNotification;
 use App\Notifications\TrainingDaysRemainingNotification;
+use App\Services\TermiiSmsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
@@ -328,5 +330,42 @@ class EnrollmentNotificationTest extends TestCase
         $enrollment->fresh()->refreshStatus();
 
         Notification::assertSentToTimes($admin, TrainingCompletedNotification::class, 1);
+    }
+
+    public function test_one_enrollments_reminder_failing_does_not_stop_other_enrollments_from_being_refreshed(): void
+    {
+        Log::spy();
+        $this->mock(TermiiSmsService::class, function ($mock) {
+            $mock->shouldReceive('send')->andThrow(new \RuntimeException('Termii is down.'));
+        });
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+
+        // This one's SMS reminder throws, since its due date lands on the
+        // "due today" branch that calls the (mocked, always-throwing) SMS
+        // service.
+        $failingStudent = Student::factory()->create();
+        $course->students()->attach($failingStudent->id, [
+            'enrolled_at' => now()->toDateString(),
+            'due_date' => now()->toDateString(),
+            'status' => 'active',
+        ]);
+
+        // This one doesn't touch the SMS path at all - it's simply overdue
+        // and should still get locked even though the enrollment above blew
+        // up.
+        $overdueStudent = Student::factory()->create();
+        $course->students()->attach($overdueStudent->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $this->artisan('app:refresh-enrollment-locks')->assertExitCode(0);
+
+        $overdueEnrollment = Enrollment::where('student_id', $overdueStudent->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertSame('locked', $overdueEnrollment->status);
+
+        Log::shouldHaveReceived('error')->once();
     }
 }

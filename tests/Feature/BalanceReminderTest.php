@@ -7,8 +7,10 @@ use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Service;
 use App\Models\Student;
+use App\Services\TermiiSmsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class BalanceReminderTest extends TestCase
@@ -152,5 +154,23 @@ class BalanceReminderTest extends TestCase
             'channel' => null,
             'status' => 'failed',
         ]);
+    }
+
+    public function test_one_students_reminder_throwing_does_not_stop_the_rest_from_being_attempted(): void
+    {
+        Log::spy();
+        $this->mock(TermiiSmsService::class, function ($mock) {
+            $mock->shouldReceive('send')->andThrow(new \RuntimeException('Termii is down.'));
+        });
+
+        $course = Course::factory()->create(['fee' => 95000]);
+        $studentA = Student::factory()->create();
+        $studentA->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+        $studentB = Student::factory()->create();
+        $studentB->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+
+        $this->artisan('app:send-balance-reminder')->assertExitCode(0);
+
+        Log::shouldHaveReceived('error')->twice();
     }
 }

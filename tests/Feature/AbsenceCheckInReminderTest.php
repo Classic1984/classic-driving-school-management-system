@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Student;
+use App\Services\TermiiSmsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class AbsenceCheckInReminderTest extends TestCase
@@ -195,5 +197,23 @@ class AbsenceCheckInReminderTest extends TestCase
         $this->artisan('app:send-absence-check-in-reminder')->assertExitCode(0);
 
         Http::assertNothingSent();
+    }
+
+    public function test_one_students_check_in_throwing_does_not_stop_the_rest_from_being_attempted(): void
+    {
+        Log::spy();
+        $this->mock(TermiiSmsService::class, function ($mock) {
+            $mock->shouldReceive('send')->andThrow(new \RuntimeException('Termii is down.'));
+        });
+
+        $course = Course::factory()->create();
+        $studentA = Student::factory()->create(['enrollment_date' => now()->subDays(10)]);
+        $studentA->courses()->attach($course->id, ['enrolled_at' => now()->subDays(10), 'status' => 'active']);
+        $studentB = Student::factory()->create(['enrollment_date' => now()->subDays(10)]);
+        $studentB->courses()->attach($course->id, ['enrolled_at' => now()->subDays(10), 'status' => 'active']);
+
+        $this->artisan('app:send-absence-check-in-reminder')->assertExitCode(0);
+
+        Log::shouldHaveReceived('error')->twice();
     }
 }
