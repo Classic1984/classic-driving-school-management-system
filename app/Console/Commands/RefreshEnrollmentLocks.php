@@ -8,6 +8,7 @@ use App\Notifications\GracePeriodEndingSoonNotification;
 use App\Notifications\PaymentReminderNotification;
 use App\Services\TermiiSmsService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class RefreshEnrollmentLocks extends Command
@@ -37,29 +38,38 @@ class RefreshEnrollmentLocks extends Command
     public function handle(): int
     {
         $enrollments = Enrollment::all();
+        $failures = 0;
 
         foreach ($enrollments as $enrollment) {
-            // Payment reminders keep firing even once training is completed,
-            // since an outstanding balance remains a financial matter that's
-            // independent of training status.
-            if (in_array($enrollment->status, ['active', 'completed'], true) && $enrollment->balance() > 0) {
-                if ($enrollment->due_date?->isTomorrow()) {
-                    Notification::send(User::admins()->get(), new GracePeriodEndingSoonNotification($enrollment));
+            try {
+                // Payment reminders keep firing even once training is completed,
+                // since an outstanding balance remains a financial matter that's
+                // independent of training status.
+                if (in_array($enrollment->status, ['active', 'completed'], true) && $enrollment->balance() > 0) {
+                    if ($enrollment->due_date?->isTomorrow()) {
+                        Notification::send(User::admins()->get(), new GracePeriodEndingSoonNotification($enrollment));
+                    }
+
+                    if ($enrollment->due_date?->isSameDay(now()->addDays(3))) {
+                        $enrollment->student->notify(new PaymentReminderNotification($enrollment, 'upcoming'));
+                        $this->sms->send($enrollment->student->phone, $this->smsText($enrollment, 'upcoming'));
+                    } elseif ($enrollment->due_date?->isToday()) {
+                        $enrollment->student->notify(new PaymentReminderNotification($enrollment, 'due_today'));
+                        $this->sms->send($enrollment->student->phone, $this->smsText($enrollment, 'due_today'));
+                    }
                 }
 
-                if ($enrollment->due_date?->isSameDay(now()->addDays(3))) {
-                    $enrollment->student->notify(new PaymentReminderNotification($enrollment, 'upcoming'));
-                    $this->sms->send($enrollment->student->phone, $this->smsText($enrollment, 'upcoming'));
-                } elseif ($enrollment->due_date?->isToday()) {
-                    $enrollment->student->notify(new PaymentReminderNotification($enrollment, 'due_today'));
-                    $this->sms->send($enrollment->student->phone, $this->smsText($enrollment, 'due_today'));
-                }
+                $enrollment->refreshStatus();
+            } catch (\Throwable $e) {
+                // One enrollment failing (a mail hiccup, an SMS timeout, bad
+                // data) must not abort the whole run - every enrollment after
+                // it still needs its lock status refreshed today.
+                $failures++;
+                Log::error("Failed to refresh enrollment #{$enrollment->id}: {$e->getMessage()}", ['exception' => $e]);
             }
-
-            $enrollment->refreshStatus();
         }
 
-        $this->info("Refreshed {$enrollments->count()} enrollment(s).");
+        $this->info("Refreshed {$enrollments->count()} enrollment(s)".($failures > 0 ? " ({$failures} failed, see logs)" : '').'.');
 
         return self::SUCCESS;
     }
