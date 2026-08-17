@@ -226,6 +226,8 @@
 
                     @if (session('status') === 'enrollment-completed')
                         <p class="mb-2 text-sm font-medium text-green-600">{{ __('Course marked as completed.') }}</p>
+                    @elseif (session('status') === 'enrollment-removed')
+                        <p class="mb-2 text-sm font-medium text-green-600">{{ __('Enrollment removed.') }}</p>
                     @endif
                     <x-input-error class="mb-2" :messages="$errors->get('enrollment')" />
 
@@ -285,6 +287,13 @@
                                             @endif
                                             @if ($enrolledCourse->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
                                                 <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                            @endif
+                                            @if (auth()->user()->isDirector() && $enrolledCourse->pivot->amountPaid() <= 0)
+                                                <form method="post" action="{{ route('enrollments.destroy', $enrolledCourse->pivot->id) }}" class="inline" onsubmit="return confirm('{{ __('Remove this enrollment? This cannot be undone.') }}');">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Remove') }}</button>
+                                                </form>
                                             @endif
                                         </td>
                                     </tr>

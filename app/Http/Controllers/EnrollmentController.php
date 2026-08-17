@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEnrollmentRequest;
 use App\Http\Requests\StoreReactivationRequest;
 use App\Models\ActivityLog;
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -45,6 +46,40 @@ class EnrollmentController extends Controller
         ActivityLog::record("Enrolled {$student->name} in {$course->name}");
 
         return Redirect::route('students.show', $student)->with('status', 'student-enrolled');
+    }
+
+    /**
+     * Permanently remove an enrollment - for a duplicate or mistaken entry
+     * only. Refused if any payment has ever been recorded against it, or
+     * if training has already been logged for it, since either means this
+     * is real history rather than a mistake, and should be corrected some
+     * other way (a payment reversal, or simply left as-is) instead of
+     * deleted outright.
+     */
+    public function destroy(Enrollment $enrollment): RedirectResponse
+    {
+        $enrollment->load(['student', 'course']);
+
+        if ($enrollment->amountPaid() > 0) {
+            return Redirect::back()->withErrors([
+                'enrollment' => 'Cannot remove this enrollment: a payment of ₦'.number_format($enrollment->amountPaid(), 2).' has already been recorded against it.',
+            ]);
+        }
+
+        if (Attendance::where('student_id', $enrollment->student_id)->where('course_id', $enrollment->course_id)->exists()) {
+            return Redirect::back()->withErrors([
+                'enrollment' => 'Cannot remove this enrollment: training has already been logged against it.',
+            ]);
+        }
+
+        $studentId = $enrollment->student_id;
+        $description = "Removed {$enrollment->student->name}'s enrollment in {$enrollment->course->name} (no payments or training recorded)";
+
+        $enrollment->delete();
+
+        ActivityLog::record($description);
+
+        return Redirect::route('students.show', $studentId)->with('status', 'enrollment-removed');
     }
 
     /**
