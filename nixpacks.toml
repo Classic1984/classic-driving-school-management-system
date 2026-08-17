@@ -6,14 +6,19 @@
 [phases.build]
 cmds = ["npm ci", "npm run build"]
 
-# Run pending migrations, start the scheduler in the background (so daily
-# jobs like payment reminders and the database backup actually fire - a
-# plain "php artisan serve" never triggers Laravel's scheduler on its own),
-# then serve on the port Railway assigns via $PORT.
+# Run pending migrations, then serve on the port Railway assigns via $PORT.
 #
-# schedule:work is backgrounded directly in this shell (not inside a
-# "(cmd &)" subshell) and detached with nohup - the subshell form silently
-# never launched the process in production, leaving no scheduled job
-# (backups, reminders) running while the app itself worked fine.
+# The scheduler (daily/weekly reminders, the database backup) does NOT run
+# in this container. It previously tried to via a backgrounded
+# "nohup php artisan schedule:work &" alongside this same "php artisan
+# serve" process, but that silently stopped running in production more
+# than once with nothing visibly erroring - a background child process in
+# the same container is fragile (it can die to a restart, a health check,
+# or a resource limit without the main process noticing). Scheduled jobs
+# now run on a dedicated Railway Cron Job service instead, configured
+# separately in the Railway dashboard with its own start command
+# ("php artisan schedule:run") on a recurring cron trigger - see the
+# Activity Log page's "Background Scheduler" status to confirm it's
+# actually running.
 [start]
-cmd = "php artisan migrate --force || exit 1; nohup php artisan schedule:work >> storage/logs/schedule.log 2>&1 & php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan migrate --force || exit 1; php artisan serve --host=0.0.0.0 --port=$PORT"
