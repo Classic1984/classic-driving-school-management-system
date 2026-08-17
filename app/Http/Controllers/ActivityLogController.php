@@ -11,11 +11,13 @@ use Illuminate\View\View;
 class ActivityLogController extends Controller
 {
     /**
-     * How stale the last heartbeat can be (given it's meant to tick every
-     * minute) before the background scheduler is considered not running,
-     * rather than just between ticks.
+     * How stale the last heartbeat can be before the background scheduler
+     * is considered not running, rather than just between ticks. The
+     * scheduler runs on a dedicated Railway Cron Job service that wakes up
+     * every 15 minutes (Railway has no finer-grained cron interval), so
+     * this allows a full interval plus a buffer for a slow-starting tick.
      */
-    protected const STALE_AFTER_MINUTES = 5;
+    protected const STALE_AFTER_MINUTES = 20;
 
     /**
      * Director-only "who did what and when" trail across the system's

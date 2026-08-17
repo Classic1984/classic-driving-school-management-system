@@ -249,10 +249,21 @@ class ActivityLogTest extends TestCase
         $response->assertSee('Running');
     }
 
+    public function test_it_still_shows_the_scheduler_as_running_between_15_minute_cron_ticks(): void
+    {
+        $director = User::factory()->director()->create();
+        Cache::put(RecordSchedulerHeartbeat::CACHE_KEY, now()->subMinutes(14));
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        $response->assertOk();
+        $response->assertSee('Running');
+    }
+
     public function test_it_shows_the_scheduler_as_not_running_when_the_heartbeat_is_stale(): void
     {
         $director = User::factory()->director()->create();
-        Cache::put(RecordSchedulerHeartbeat::CACHE_KEY, now()->subMinutes(10));
+        Cache::put(RecordSchedulerHeartbeat::CACHE_KEY, now()->subMinutes(25));
 
         $response = $this->actingAs($director)->get('/activity-log');
 
