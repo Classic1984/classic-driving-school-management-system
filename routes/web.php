@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
         Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
         Route::post('students/{student}/enroll', [EnrollmentController::class, 'store'])->name('students.enroll.store');
+        Route::delete('enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::post('backups/send', [BackupController::class, 'send'])->name('backups.send');
         Route::get('message-log', [MessageLogController::class, 'index'])->name('message-log.index');
