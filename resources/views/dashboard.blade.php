@@ -203,14 +203,14 @@
                                             </a>
                                         </td>
                                         <td class="py-2 pr-4">{{ $studentService->service->name }}</td>
-                                        <td class="py-2 pr-4">{{ $studentService->processing_started_at->format('M j, Y') }}</td>
-                                        <td class="py-2 pr-4">{{ $studentService->expectedReadyAt()->format('M j, Y') }}</td>
+                                        <td class="py-2 pr-4">{{ $studentService->processing_started_at?->format('M j, Y') ?? '—' }}</td>
+                                        <td class="py-2 pr-4">{{ $studentService->expectedReadyAt()?->format('M j, Y') ?? '—' }}</td>
                                         <td class="py-2 pr-4 w-40">
                                             <div class="flex items-center gap-2">
                                                 <div class="flex-1 bg-gray-100 rounded-full h-2">
-                                                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ $studentService->processingProgressPercent() }}%"></div>
+                                                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ $studentService->processingProgressPercent() ?? 0 }}%"></div>
                                                 </div>
-                                                <span class="text-xs text-gray-500 whitespace-nowrap">{{ $studentService->processingProgressPercent() }}%</span>
+                                                <span class="text-xs text-gray-500 whitespace-nowrap">{{ $studentService->processingProgressPercent() ?? 0 }}%</span>
                                             </div>
                                         </td>
                                         <td class="py-2">

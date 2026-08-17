@@ -401,6 +401,27 @@ class DashboardTest extends TestCase
         $response->assertSee('50%');
     }
 
+    public function test_dashboard_does_not_crash_on_a_processing_service_with_no_started_at(): void
+    {
+        // Data inconsistency (e.g. legacy data predating processing_started_at
+        // always being stamped alongside processing_status) must degrade
+        // gracefully rather than 500 the whole dashboard.
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'No Start Date']);
+        $service = Service::factory()->create(['processing_days' => 30]);
+        $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'processing',
+            'processing_started_at' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('No Start Date');
+    }
+
     public function test_dashboard_flags_overdue_service_processing(): void
     {
         $user = User::factory()->create();
