@@ -6,6 +6,7 @@ use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
 use App\Models\ActivityLog;
 use App\Models\Course;
+use App\Models\DiscountRequest;
 use App\Models\Instructor;
 use App\Models\Service;
 use App\Models\Student;
@@ -84,6 +85,7 @@ class StudentController extends Controller
         }
 
         $student = Student::create($data);
+        $discountPending = false;
 
         if ($request->validated('course_id')) {
             $course = Course::findOrFail($request->validated('course_id'));
@@ -98,11 +100,17 @@ class StudentController extends Controller
                 'amount_paid' => $request->validated('amount_paid'),
                 'payment_method' => $request->validated('payment_method'),
             ]);
+
+            $discountPending = DiscountRequest::where('student_id', $student->id)
+                ->where('course_id', $course->id)
+                ->where('status', 'pending')
+                ->exists();
         }
 
         ActivityLog::record("Registered student {$student->name}");
 
-        return Redirect::route('students.show', $student)->with('status', 'student-created');
+        return Redirect::route('students.show', $student)
+            ->with('status', $discountPending ? 'student-created-discount-pending' : 'student-created');
     }
 
     /**

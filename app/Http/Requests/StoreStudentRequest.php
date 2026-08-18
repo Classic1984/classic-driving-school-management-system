@@ -20,22 +20,27 @@ class StoreStudentRequest extends FormRequest
 
     /**
      * The discount presets this request's user is allowed to apply.
-     * Discounts are Director-only - every other role gets an empty list,
-     * so any discount_choice they submit fails validation.
+     * Everyone can pick from the standard tier - EnrollmentService holds a
+     * non-Director's choice as a pending DiscountRequest rather than
+     * applying it outright, so this isn't a trust boundary the way it is
+     * for the higher tier and "custom" (a hand-entered percentage or fixed
+     * amount), which stay Director-only and apply immediately.
      *
      * @return list<string>
      */
     protected function allowedDiscountChoices(): array
     {
-        if (! $this->user()?->isDirector()) {
-            return [];
+        $choices = array_map('strval', config('discounts.standard_presets'));
+
+        if ($this->user()?->isDirector()) {
+            $choices = [
+                ...$choices,
+                ...array_map('strval', config('discounts.director_presets')),
+                'custom',
+            ];
         }
 
-        return [
-            ...array_map('strval', config('discounts.standard_presets')),
-            ...array_map('strval', config('discounts.director_presets')),
-            'custom',
-        ];
+        return $choices;
     }
 
     /**
