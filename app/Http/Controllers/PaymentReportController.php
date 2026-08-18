@@ -134,7 +134,7 @@ class PaymentReportController extends Controller
     protected function outstandingReport(): Collection
     {
         return Student::orderBy('name')->get()
-            ->flatMap(fn (Student $student) => StudentChargeResolver::openCharges($student)
+            ->flatMap(fn (Student $student) => StudentChargeResolver::outstandingCharges($student)
                 ->map(fn (array $charge) => [
                     'student' => $student->name,
                     'student_id' => $student->id,

@@ -58,9 +58,21 @@ class StudentChargeResolver
      */
     public static function openCharges(Student $student): Collection
     {
-        $charges = self::allCharges($student)->filter(fn (array $charge) => $charge['balance'] > 0)->values();
+        return self::outstandingCharges($student)->concat(self::availableServices($student));
+    }
 
-        return $charges->concat(self::availableServices($student));
+    /**
+     * Charges actually billed to this student that still have a balance
+     * owed - what "outstanding" means for reporting purposes. Unlike
+     * openCharges(), this never includes a catalog service the student
+     * hasn't been charged for yet: a service the school could optionally
+     * bill isn't a debt until it's actually charged.
+     *
+     * @return Collection<int, array{type: string, id: int, label: string, price: float, paid: float, balance: float, status: string}>
+     */
+    public static function outstandingCharges(Student $student): Collection
+    {
+        return self::allCharges($student)->filter(fn (array $charge) => $charge['balance'] > 0)->values();
     }
 
     /**
