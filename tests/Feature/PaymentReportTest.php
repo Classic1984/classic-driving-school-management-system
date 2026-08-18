@@ -133,6 +133,26 @@ class PaymentReportTest extends TestCase
         $response->assertDontSee('Paid Up Student');
     }
 
+    public function test_the_outstanding_report_excludes_services_the_student_was_never_charged_for(): void
+    {
+        $director = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License", 'price' => 50000, 'is_active' => true]);
+
+        $paidStudent = Student::factory()->create(['name' => 'Fully Paid Student']);
+        $paidCourse = Course::factory()->create();
+        $paidStudent->courses()->attach($paidCourse->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+        Payment::factory()->create(['student_id' => $paidStudent->id, 'course_id' => $paidCourse->id, 'amount' => 50000, 'status' => 'paid']);
+
+        $response = $this->actingAs($director)->get('/payment-reports');
+
+        $response->assertOk();
+        // The student is fully paid up on training and was never charged
+        // for the Driver's License service - it being in the catalog and
+        // "available to bill" doesn't make it a debt.
+        $response->assertDontSee('Fully Paid Student');
+        $response->assertDontSee($service->name);
+    }
+
     public function test_an_invalid_date_falls_back_to_today(): void
     {
         $director = User::factory()->create();
