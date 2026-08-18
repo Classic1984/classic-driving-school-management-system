@@ -54,19 +54,36 @@ class DiscountTest extends TestCase
         ]);
     }
 
-    public function test_a_secretary_cannot_apply_any_discount_at_registration(): void
+    public function test_a_secretarys_standard_discount_becomes_a_pending_request_at_full_fee(): void
     {
         $secretary = User::factory()->secretary()->create();
         $course = Course::factory()->create(['fee' => 95000]);
 
         $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '1000',
+            'discount_choice' => '5000',
             'discount_reason' => 'promotional_offer',
         ]));
 
-        $response->assertSessionHasErrors('discount_choice');
-        $this->assertDatabaseCount('students', 0);
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
+        $enrollment = $student->courses->first()->pivot;
+
+        // The enrollment sits at the full fee - the discount hasn't taken
+        // effect - until a Director approves the pending request.
+        $this->assertFalse($enrollment->hasDiscount());
+        $this->assertSame(95000.0, $enrollment->fee());
+        $this->assertDatabaseCount('discount_audit_logs', 0);
+
+        $this->assertDatabaseHas('discount_requests', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'enrollment_id' => $enrollment->id,
+            'requested_by' => $secretary->id,
+            'discount_amount' => 5000,
+            'status' => 'pending',
+        ]);
     }
 
     public function test_secretary_cannot_apply_a_discount_beyond_their_preset_limit(): void
@@ -243,13 +260,16 @@ class DiscountTest extends TestCase
         $this->assertSame(50000.0, $enrollment->balance());
     }
 
-    public function test_the_registration_form_only_shows_the_discount_field_to_a_director(): void
+    public function test_the_registration_form_shows_the_discount_field_to_everyone_but_the_custom_option_only_to_a_director(): void
     {
         $director = User::factory()->director()->create();
         $secretary = User::factory()->secretary()->create();
 
         $this->actingAs($director)->get('/students/create')->assertSee('id="discount_choice"', false);
-        $this->actingAs($secretary)->get('/students/create')->assertDontSee('id="discount_choice"', false);
+        $this->actingAs($secretary)->get('/students/create')->assertSee('id="discount_choice"', false);
+
+        $this->actingAs($director)->get('/students/create')->assertSee('id="custom_discount_percentage"', false);
+        $this->actingAs($secretary)->get('/students/create')->assertDontSee('id="custom_discount_percentage"', false);
     }
 
     public function test_a_preset_discount_cannot_exceed_the_course_fee(): void

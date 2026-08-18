@@ -10,6 +10,10 @@
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 @if (session('status') === 'student-created')
                     <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
+                @elseif (session('status') === 'student-created-discount-pending')
+                    <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
+                    <p class="text-sm font-medium text-amber-600">{{ __('The requested discount is pending Director approval - the student is enrolled at the full fee until then.') }}</p>
+                    <script>alert({!! json_encode(__('Student registered successfully. The requested discount still needs Director approval before it applies - the student is currently enrolled at the full course fee.')) !!});</script>
                 @elseif (session('status') === 'student-updated')
                     <p class="text-sm font-medium text-green-600">{{ __('Student updated successfully.') }}</p>
                 @elseif (session('status') === 'payment-created')

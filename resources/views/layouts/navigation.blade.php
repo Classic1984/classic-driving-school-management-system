@@ -12,7 +12,7 @@
 
                 @php
                     $trainingActive = request()->routeIs('courses.*') || request()->routeIs('instructors.*') || request()->routeIs('vehicles.*') || request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record');
-                    $adminActive = request()->routeIs('finance.*') || request()->routeIs('expenses.*') || request()->routeIs('services.*') || request()->routeIs('theory-class-cancellations.*') || request()->routeIs('activity-log.*') || request()->routeIs('message-log.*') || request()->routeIs('users.*') || request()->routeIs('student-correction-requests.*');
+                    $adminActive = request()->routeIs('finance.*') || request()->routeIs('expenses.*') || request()->routeIs('services.*') || request()->routeIs('theory-class-cancellations.*') || request()->routeIs('activity-log.*') || request()->routeIs('message-log.*') || request()->routeIs('users.*') || request()->routeIs('student-correction-requests.*') || request()->routeIs('discount-requests.*');
                     $navGroupTriggerClasses = fn ($active) => $active
                         ? 'inline-flex items-center px-1 pt-1 border-b-2 border-amber-500 text-sm font-medium leading-5 text-white focus:outline-none focus:border-amber-400 transition duration-150 ease-in-out'
                         : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-400 hover:text-amber-400 hover:border-gray-500 focus:outline-none focus:text-amber-400 focus:border-gray-500 transition duration-150 ease-in-out';
@@ -71,6 +71,7 @@
                                 <x-dropdown-link :href="route('message-log.index')">{{ __('Message Log') }}</x-dropdown-link>
                                 <x-dropdown-link :href="route('users.index')">{{ __('Staff') }}</x-dropdown-link>
                                 <x-dropdown-link :href="route('student-correction-requests.index')">{{ __('Report Correction') }}</x-dropdown-link>
+                                <x-dropdown-link :href="route('discount-requests.index')">{{ __('Discount Requests') }}</x-dropdown-link>
                             </x-slot>
                         </x-dropdown>
                     @endif
@@ -178,6 +179,9 @@
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
                     {{ __('Report Correction') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('discount-requests.index')" :active="request()->routeIs('discount-requests.*')">
+                    {{ __('Discount Requests') }}
                 </x-responsive-nav-link>
             @endif
         </div>

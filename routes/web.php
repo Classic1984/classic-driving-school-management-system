@@ -8,6 +8,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DiscountRequestController;
 use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\ExpenseController;
@@ -112,6 +113,14 @@ Route::middleware('auth')->group(function () {
         Route::get('correction-requests', [StudentCorrectionRequestController::class, 'index'])->name('student-correction-requests.index');
         Route::patch('correction-requests/{correctionRequest}/resolve', [StudentCorrectionRequestController::class, 'resolve'])->name('student-correction-requests.resolve');
         Route::patch('correction-requests/{correctionRequest}/reject', [StudentCorrectionRequestController::class, 'reject'])->name('student-correction-requests.reject');
+
+        // Approving/rejecting a pending discount request is Director-only,
+        // same as reviewing correction requests above; raising one in the
+        // first place happens inline during registration (open to any
+        // authenticated role) rather than through a dedicated route.
+        Route::get('discount-requests', [DiscountRequestController::class, 'index'])->name('discount-requests.index');
+        Route::patch('discount-requests/{discountRequest}/approve', [DiscountRequestController::class, 'approve'])->name('discount-requests.approve');
+        Route::patch('discount-requests/{discountRequest}/reject', [DiscountRequestController::class, 'reject'])->name('discount-requests.reject');
     });
 
     Route::resource('leads', LeadController::class)->except(['show']);
