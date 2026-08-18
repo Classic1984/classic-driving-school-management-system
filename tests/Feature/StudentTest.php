@@ -875,6 +875,27 @@ class StudentTest extends TestCase
         $this->assertDatabaseHas('payments', ['student_id' => $student->id, 'amount' => 200]);
     }
 
+    public function test_a_validation_error_on_the_quick_payment_form_is_shown_on_the_student_page(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 500]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $this->actingAs($user)->post('/payments', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => '',
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'status' => 'paid',
+            'redirect_to_student' => '1',
+        ])->assertSessionHasErrors('amount');
+
+        $this->get("/students/{$student->id}")->assertSee('The amount field is required.');
+        $this->assertDatabaseCount('payments', 0);
+    }
+
     public function test_authenticated_user_can_view_edit_form(): void
     {
         $user = User::factory()->create();
