@@ -157,7 +157,7 @@ class ServiceCatalogTest extends TestCase
     {
         $this->seed(ServicePriceListSeeder::class);
 
-        $this->assertDatabaseCount('services', 2);
+        $this->assertDatabaseCount('services', 4);
         $this->assertDatabaseHas('services', [
             'name' => "Driver's License Processing",
             'price' => 50000,
@@ -168,6 +168,16 @@ class ServiceCatalogTest extends TestCase
             'price' => 6000,
             'is_active' => true,
         ]);
+        $this->assertDatabaseHas('services', [
+            'name' => 'Online Certificate',
+            'price' => 20000,
+            'is_active' => true,
+        ]);
+        $this->assertDatabaseHas('services', [
+            'name' => 'Student Certificate',
+            'price' => 1000,
+            'is_active' => true,
+        ]);
     }
 
     public function test_running_the_service_price_list_seeder_twice_does_not_duplicate_services(): void
@@ -175,7 +185,7 @@ class ServiceCatalogTest extends TestCase
         $this->seed(ServicePriceListSeeder::class);
         $this->seed(ServicePriceListSeeder::class);
 
-        $this->assertDatabaseCount('services', 2);
+        $this->assertDatabaseCount('services', 4);
     }
 
     public function test_a_student_can_only_be_charged_once_for_the_same_service(): void

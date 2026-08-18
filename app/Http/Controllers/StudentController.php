@@ -11,6 +11,7 @@ use App\Models\Instructor;
 use App\Models\Service;
 use App\Models\Student;
 use App\Models\Vehicle;
+use App\Services\AdditionalOfferService;
 use App\Services\EnrollmentService;
 use App\Services\StudentChargeResolver;
 use Illuminate\Http\RedirectResponse;
@@ -64,20 +65,22 @@ class StudentController extends Controller
     public function create(): View
     {
         $courses = Course::orderBy('name')->get();
+        $additionalOffers = Service::where('is_active', true)->orderBy('name')->get();
 
-        return view('students.create', compact('courses'));
+        return view('students.create', compact('courses', 'additionalOffers'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreStudentRequest $request, EnrollmentService $enrollmentService): RedirectResponse
+    public function store(StoreStudentRequest $request, EnrollmentService $enrollmentService, AdditionalOfferService $additionalOfferService): RedirectResponse
     {
         $data = $request->validated();
         unset(
             $data['photo'], $data['course_id'], $data['starts_double_period'], $data['amount_paid'], $data['payment_method'],
             $data['discount_choice'], $data['custom_discount_percentage'], $data['custom_discount_amount'],
             $data['discount_reason'], $data['discount_reason_note'],
+            $data['service_ids'], $data['training_amount'], $data['service_amounts'],
         );
 
         if ($request->hasFile('photo')) {
@@ -89,22 +92,41 @@ class StudentController extends Controller
 
         if ($request->validated('course_id')) {
             $course = Course::findOrFail($request->validated('course_id'));
+            $serviceIds = $request->validated('service_ids') ?? [];
+            $hasOffers = ! empty($serviceIds);
 
-            $enrollmentService->enroll($student, $course, $request->user(), $student->enrollment_date, [
+            $enrollment = $enrollmentService->enroll($student, $course, $request->user(), $student->enrollment_date, [
                 'starts_double_period' => $request->boolean('starts_double_period'),
                 'discount_choice' => $request->validated('discount_choice'),
                 'custom_discount_percentage' => $request->validated('custom_discount_percentage'),
                 'custom_discount_amount' => $request->validated('custom_discount_amount'),
                 'discount_reason' => $request->validated('discount_reason'),
                 'discount_reason_note' => $request->validated('discount_reason_note'),
-                'amount_paid' => $request->validated('amount_paid'),
-                'payment_method' => $request->validated('payment_method'),
+                // Once Additional Offers are ticked, any initial payment is
+                // recorded afterward as one allocation spanning Training and
+                // the offers together, instead of enroll()'s own
+                // training-only Payment - so it's left out of enroll() here.
+                'amount_paid' => $hasOffers ? null : $request->validated('amount_paid'),
+                'payment_method' => $hasOffers ? null : $request->validated('payment_method'),
             ]);
 
             $discountPending = DiscountRequest::where('student_id', $student->id)
                 ->where('course_id', $course->id)
                 ->where('status', 'pending')
                 ->exists();
+
+            if ($hasOffers) {
+                $additionalOfferService->chargeAndAllocate(
+                    $student,
+                    $enrollment,
+                    $serviceIds,
+                    $request->validated('service_amounts') ?? [],
+                    $request->validated('training_amount') ? (float) $request->validated('training_amount') : null,
+                    $request->validated('payment_method'),
+                    $request->user(),
+                    $student->enrollment_date,
+                );
+            }
         }
 
         ActivityLog::record("Registered student {$student->name}");

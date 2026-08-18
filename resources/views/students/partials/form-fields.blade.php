@@ -240,7 +240,7 @@
 </div>
 
 @if (! $student)
-    @include('students.partials.enrollment-fields', ['courses' => $courses])
+    @include('students.partials.enrollment-fields', ['courses' => $courses, 'additionalOffers' => $additionalOffers ?? collect()])
 @endif
 
 <div>
