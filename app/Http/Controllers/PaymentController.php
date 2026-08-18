@@ -103,10 +103,6 @@ class PaymentController extends Controller
 
         ActivityLog::record('Recorded a payment of ₦'.number_format((float) $payment->amount, 2)." for {$payment->student->name} ({$payment->course->name})");
 
-        if ($request->boolean('redirect_to_student')) {
-            return Redirect::route('students.show', $payment->student_id)->with('status', 'payment-created');
-        }
-
         return Redirect::route('payments.index')->with('status', 'payment-created');
     }
 

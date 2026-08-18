@@ -628,54 +628,6 @@
                             @endif
                         </table>
                     </div>
-
-                    @if ($student->courses->isNotEmpty())
-                        <form method="post" action="{{ route('payments.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
-                            @csrf
-                            <input type="hidden" name="student_id" value="{{ $student->id }}">
-                            <input type="hidden" name="redirect_to_student" value="1">
-                            <input type="hidden" name="status" value="paid">
-
-                            <div>
-                                <x-input-label for="quick_course_id" :value="__('Course')" />
-                                <select id="quick_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
-                                    @foreach ($student->courses as $enrolledCourse)
-                                        <option value="{{ $enrolledCourse->id }}" @selected(old('course_id') ? (string) old('course_id') === (string) $enrolledCourse->id : $loop->first)>{{ $enrolledCourse->name }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
-                                <x-input-error class="mt-2" :messages="$errors->get('student_id')" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="quick_amount" :value="__('Amount')" />
-                                <x-text-input id="quick_amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full" :value="old('amount')" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('amount')" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="quick_payment_date" :value="__('Date')" />
-                                <x-text-input id="quick_payment_date" name="payment_date" type="date" class="mt-1 block w-full" :value="old('payment_date', now()->toDateString())" required />
-                                <x-input-error class="mt-2" :messages="$errors->get('payment_date')" />
-                            </div>
-
-                            <div>
-                                <x-input-label for="quick_payment_method" :value="__('Method')" />
-                                <select id="quick_payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
-                                    @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
-                                        <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
-                                    @endforeach
-                                </select>
-                                <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
-                            </div>
-
-                            <div>
-                                <x-primary-button type="submit">{{ __('Record Payment') }}</x-primary-button>
-                            </div>
-                        </form>
-                    @else
-                        <p class="mt-4 text-sm text-gray-500">{{ __('Enroll this student in a course before recording a payment.') }}</p>
-                    @endif
                 </div>
 
                 <div class="flex items-center gap-4">
