@@ -162,4 +162,24 @@ class StudentService extends Model
 
         return $expectedReadyAt !== null && $expectedReadyAt->isPast() && $this->processing_status !== 'completed';
     }
+
+    /**
+     * The first payment recorded toward this service starts its
+     * processing clock automatically, if it has a tracked turnaround and
+     * hasn't started yet - staff don't have to switch it to "Processing"
+     * by hand. A service already processing or completed, or one with no
+     * turnaround to track, is left alone.
+     */
+    public function maybeAutoStartProcessing(): void
+    {
+        $this->loadMissing(['service', 'student']);
+
+        if ($this->service->processing_days === null || $this->processing_status !== 'not_started') {
+            return;
+        }
+
+        $this->update(['processing_status' => 'processing', 'processing_started_at' => now()]);
+
+        ActivityLog::record("Payment started processing for {$this->service->name} ({$this->student->name})");
+    }
 }

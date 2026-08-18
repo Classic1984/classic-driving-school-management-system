@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Course;
+use App\Models\Service;
 use App\Rules\ValidLocalGovernmentArea;
+use App\Services\EnrollmentService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -83,6 +86,19 @@ class StoreStudentRequest extends FormRequest
             'custom_discount_amount' => ['nullable', 'numeric', 'min:0.01'],
             'discount_reason' => ['nullable', Rule::in(array_keys(config('discounts.reasons')))],
             'discount_reason_note' => ['nullable', 'string', 'max:255'],
+            // Additional Offers: any active catalog service ticked at
+            // registration, each billed as its own separately-tracked
+            // charge rather than folded into the course fee.
+            'service_ids' => ['nullable', 'array'],
+            'service_ids.*' => ['integer', Rule::exists('services', 'id')->where('is_active', true)],
+            // Once at least one offer is ticked, the form switches from
+            // the single amount_paid/payment_method pair above to a
+            // per-charge allocation: how much (if anything) to pay toward
+            // Training and toward each ticked offer right now, all under
+            // one shared payment_method.
+            'training_amount' => ['nullable', 'numeric', 'min:0.01'],
+            'service_amounts' => ['nullable', 'array'],
+            'service_amounts.*' => ['nullable', 'numeric', 'min:0.01'],
         ];
     }
 
@@ -96,6 +112,22 @@ class StoreStudentRequest extends FormRequest
         return [
             'discount_choice.in' => 'You are not authorized to apply that discount.',
         ];
+    }
+
+    /**
+     * Drop any service_amounts entry for a service that isn't actually
+     * ticked in service_ids - a stray amount for an offer the form never
+     * offered to pay for is ignored rather than validated.
+     */
+    protected function prepareForValidation(): void
+    {
+        $serviceIds = array_map('intval', (array) $this->input('service_ids', []));
+        $serviceAmounts = collect((array) $this->input('service_amounts', []))
+            ->only($serviceIds)
+            ->filter(fn ($amount) => $amount !== null && $amount !== '')
+            ->all();
+
+        $this->merge(['service_amounts' => $serviceAmounts]);
     }
 
     /**
@@ -122,6 +154,57 @@ class StoreStudentRequest extends FormRequest
             if ($this->input('discount_reason') === 'other' && ! $this->filled('discount_reason_note')) {
                 $validator->errors()->add('discount_reason_note', 'Please specify the reason.');
             }
+
+            $this->validatePaymentAllocation($validator);
         });
+    }
+
+    /**
+     * Once Additional Offers are involved, money is entered per charge
+     * (training_amount + service_amounts) instead of the single
+     * amount_paid field - validate each amount against what it could
+     * actually be paying for, and require a payment method whenever any
+     * money is entered at all.
+     */
+    protected function validatePaymentAllocation(Validator $validator): void
+    {
+        if ($validator->errors()->has('course_id')) {
+            return;
+        }
+
+        $trainingAmount = (float) $this->input('training_amount', 0);
+        $serviceAmounts = (array) $this->input('service_amounts', []);
+        $hasAllocatedPayment = $trainingAmount > 0 || collect($serviceAmounts)->sum() > 0;
+
+        if ($hasAllocatedPayment && ! $this->filled('payment_method')) {
+            $validator->errors()->add('payment_method', 'The payment method field is required.');
+        }
+
+        if ($trainingAmount > 0) {
+            $course = Course::find($this->input('course_id'));
+
+            if ($course !== null) {
+                $originalFee = (float) $course->fee;
+                [, $discountAmount] = app(EnrollmentService::class)->resolveDiscount(
+                    $this->input('discount_choice'),
+                    (float) $this->input('custom_discount_percentage', 0),
+                    (float) $this->input('custom_discount_amount', 0),
+                    $originalFee,
+                );
+                $finalFee = max(0, $originalFee - ($this->user()?->isDirector() ? $discountAmount : 0));
+
+                if ($trainingAmount > $finalFee + 0.001) {
+                    $validator->errors()->add('training_amount', 'This exceeds the course fee.');
+                }
+            }
+        }
+
+        foreach ($serviceAmounts as $serviceId => $amount) {
+            $service = Service::find($serviceId);
+
+            if ($service !== null && (float) $amount > (float) $service->price + 0.001) {
+                $validator->errors()->add("service_amounts.{$serviceId}", "This exceeds {$service->name}'s price.");
+            }
+        }
     }
 }

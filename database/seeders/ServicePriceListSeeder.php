@@ -19,6 +19,8 @@ class ServicePriceListSeeder extends Seeder
         $services = [
             ['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30],
             ['name' => "Learner's Permit", 'price' => 6000, 'processing_days' => null],
+            ['name' => 'Online Certificate', 'price' => 20000, 'processing_days' => null],
+            ['name' => 'Student Certificate', 'price' => 1000, 'processing_days' => null],
         ];
 
         foreach ($services as $service) {
