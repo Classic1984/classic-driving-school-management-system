@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * A record of every automatic SMS/WhatsApp reminder the system has
  * attempted to send (balance, theory class, lead follow-up, absence
- * check-in), regardless of whether it succeeded - giving staff visibility
- * into what actually went out.
+ * check-in, training days remaining, training completed), regardless of
+ * whether it succeeded - giving staff visibility into what actually went
+ * out.
  */
 class MessageLog extends Model
 {
@@ -44,5 +45,7 @@ class MessageLog extends Model
         'theory_class_cancellation' => 'Theory Class Cancellation',
         'lead_follow_up' => 'Lead Follow-Up',
         'absence_check_in' => 'Absence Check-In',
+        'training_days_remaining' => 'Training Days Remaining',
+        'training_completed' => 'Training Completed',
     ];
 }

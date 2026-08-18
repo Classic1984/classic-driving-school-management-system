@@ -5,8 +5,11 @@ namespace App\Models;
 use App\Notifications\EnrollmentLockedNotification;
 use App\Notifications\TrainingCompletedNotification;
 use App\Notifications\TrainingDaysRemainingNotification;
+use App\Services\TermiiSmsService;
+use App\Services\WhatsAppService;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class Enrollment extends Pivot
@@ -320,6 +323,11 @@ class Enrollment extends Pivot
         );
 
         Notification::send(User::admins()->get(), new TrainingCompletedNotification($this));
+        $this->textStudent(
+            'training_completed',
+            "Classic Driving School: Congratulations! You have completed your training program in {$this->course->name}. Your certificate is ready for collection at the school office.",
+            ['1' => $this->course->name]
+        );
 
         $this->student->refreshStatus();
     }
@@ -426,9 +434,48 @@ class Enrollment extends Pivot
 
         if ($withinThreshold && $this->training_reminder_sent_at === null) {
             Notification::send(User::admins()->get(), new TrainingDaysRemainingNotification($this));
+            $this->textStudent(
+                'training_days_remaining',
+                "Classic Driving School: You have {$remaining} training day(s) remaining in {$this->course->name}. Keep up the great work!",
+                ['1' => (string) $remaining, '2' => $this->course->name]
+            );
             $this->forceFill(['training_reminder_sent_at' => now()])->save();
         } elseif (! $withinThreshold && $this->training_reminder_sent_at !== null) {
             $this->forceFill(['training_reminder_sent_at' => null])->save();
+        }
+    }
+
+    /**
+     * Text this enrollment's student directly (SMS, falling back to
+     * WhatsApp), logging the attempt the same way the scheduled reminder
+     * commands do - giving staff the same Message Log visibility into
+     * these student-facing texts. Failures are swallowed (and logged)
+     * rather than thrown, so a messaging provider outage never blocks the
+     * status change that triggered it.
+     */
+    protected function textStudent(string $purpose, string $message, array $whatsappVariables = []): void
+    {
+        $student = $this->student;
+
+        try {
+            $channel = match (true) {
+                app(TermiiSmsService::class)->send($student->phone, $message) => 'sms',
+                app(WhatsAppService::class)->send($student->phone, config("services.twilio.whatsapp_templates.{$purpose}"), $whatsappVariables) => 'whatsapp',
+                default => null,
+            };
+
+            MessageLog::create([
+                'recipient_type' => 'student',
+                'recipient_id' => $student->id,
+                'recipient_name' => $student->name,
+                'recipient_phone' => $student->phone,
+                'purpose' => $purpose,
+                'channel' => $channel,
+                'status' => $channel ? 'sent' : 'failed',
+                'message' => $message,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("Failed to text student #{$student->id} for enrollment #{$this->id} ({$purpose}): {$e->getMessage()}", ['exception' => $e]);
         }
     }
 }
