@@ -44,19 +44,21 @@ class PaymentCorrectionController extends Controller
         });
 
         $payment->refresh()->load(['allocations.enrollment.course', 'allocations.studentService.service']);
+        $newAllocations = $this->snapshot($payment);
 
         PaymentCorrectionLog::create([
             'payment_id' => $payment->id,
             'corrected_by' => $request->user()->id,
             'reason' => $request->validated('reason'),
             'original_allocations' => $originalAllocations,
-            'new_allocations' => $this->snapshot($payment),
+            'new_allocations' => $newAllocations,
         ]);
 
         $payment->allocations->pluck('enrollment_id')->filter()->unique()
             ->each(fn (int $enrollmentId) => Enrollment::find($enrollmentId)?->refreshStatus());
 
-        ActivityLog::record("Corrected the allocation for payment {$payment->receipt_number}");
+        $changes = $this->describeChanges($originalAllocations, $newAllocations);
+        ActivityLog::record("Corrected the allocation for payment {$payment->receipt_number}: {$changes}");
 
         return Redirect::route('payments.show', $payment)->with('status', 'payment-corrected');
     }
@@ -73,5 +75,24 @@ class PaymentCorrectionController extends Controller
             ->map(fn (PaymentAllocation $allocation) => ['label' => $allocation->label(), 'amount' => (float) $allocation->amount])
             ->values()
             ->all();
+    }
+
+    /**
+     * A human-readable "label ₦old → ₦new" summary of every allocation
+     * whose amount actually changed, for the general Activity Log entry -
+     * the correction re-splits the same total, so it's the per-allocation
+     * amounts (not the payment total) that tell the real story.
+     *
+     * @param  array<int, array{label: string, amount: float}>  $original
+     * @param  array<int, array{label: string, amount: float}>  $new
+     */
+    protected function describeChanges(array $original, array $new): string
+    {
+        $changes = collect($new)
+            ->filter(fn (array $allocation, int $index) => $allocation['amount'] !== $original[$index]['amount'])
+            ->map(fn (array $allocation, int $index) => "{$allocation['label']} ₦".number_format($original[$index]['amount'], 2).' → ₦'.number_format($allocation['amount'], 2))
+            ->values();
+
+        return $changes->isEmpty() ? 'no amounts changed' : $changes->implode(', ');
     }
 }
