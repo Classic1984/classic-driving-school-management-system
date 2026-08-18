@@ -392,6 +392,7 @@
                                     <th class="px-2 py-1">{{ __('Balance') }}</th>
                                     <th class="px-2 py-1">{{ __('Payment Status') }}</th>
                                     <th class="px-2 py-1">{{ __('Processing Status') }}</th>
+                                    <th class="px-2 py-1"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -430,15 +431,26 @@
                                                 </div>
                                             @endif
                                         </td>
+                                        <td class="px-2 py-1 text-sm">
+                                            @if (auth()->user()->isDirector() && $studentService->amountPaid() <= 0 && $studentService->processing_status === 'not_started')
+                                                <form method="post" action="{{ route('student-services.destroy', $studentService) }}" class="inline" onsubmit="return confirm('{{ __('Remove this charge? This cannot be undone.') }}');">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Remove') }}</button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="px-2 py-2 text-sm text-gray-500">{{ __('No service charges yet.') }}</td>
+                                        <td colspan="7" class="px-2 py-2 text-sm text-gray-500">{{ __('No service charges yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
+
+                    <x-input-error class="mt-2" :messages="$errors->get('studentService')" />
 
                     @if ($availableServices->isNotEmpty())
                         <form method="post" action="{{ route('students.services.store', $student) }}" class="mt-4 flex items-end gap-4">

@@ -75,4 +75,38 @@ class StudentServiceController extends Controller
 
         return Redirect::route('students.show', $studentService->student_id)->with('status', 'service-status-updated');
     }
+
+    /**
+     * Permanently remove a service charge - for a duplicate or mistaken
+     * entry only. Refused if any payment has ever been recorded against
+     * it, or if its processing has already started, since either means
+     * this is real activity rather than a mistake, and should be
+     * corrected some other way (a payment reversal, or simply left
+     * as-is) instead of deleted outright.
+     */
+    public function destroy(StudentService $studentService): RedirectResponse
+    {
+        $studentService->load(['student', 'service']);
+
+        if ($studentService->amountPaid() > 0) {
+            return Redirect::back()->withErrors([
+                'studentService' => 'Cannot remove this charge: a payment of ₦'.number_format($studentService->amountPaid(), 2).' has already been recorded against it.',
+            ]);
+        }
+
+        if ($studentService->processing_status !== 'not_started') {
+            return Redirect::back()->withErrors([
+                'studentService' => 'Cannot remove this charge: processing has already started for it.',
+            ]);
+        }
+
+        $studentId = $studentService->student_id;
+        $description = "Removed {$studentService->student->name}'s charge for {$studentService->service->name} (no payments or processing recorded)";
+
+        $studentService->delete();
+
+        ActivityLog::record($description);
+
+        return Redirect::route('students.show', $studentId)->with('status', 'service-removed');
+    }
 }
