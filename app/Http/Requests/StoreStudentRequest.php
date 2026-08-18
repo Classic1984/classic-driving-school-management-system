@@ -20,24 +20,22 @@ class StoreStudentRequest extends FormRequest
 
     /**
      * The discount presets this request's user is allowed to apply.
-     * Secretary is limited to a smaller set than Director; "custom" (a
-     * hand-entered percentage or fixed amount) is Director-only.
+     * Discounts are Director-only - every other role gets an empty list,
+     * so any discount_choice they submit fails validation.
      *
      * @return list<string>
      */
     protected function allowedDiscountChoices(): array
     {
-        $choices = array_map('strval', config('discounts.secretary_presets'));
-
-        if ($this->user()?->isDirector()) {
-            $choices = [
-                ...$choices,
-                ...array_map('strval', config('discounts.director_presets')),
-                'custom',
-            ];
+        if (! $this->user()?->isDirector()) {
+            return [];
         }
 
-        return $choices;
+        return [
+            ...array_map('strval', config('discounts.standard_presets')),
+            ...array_map('strval', config('discounts.director_presets')),
+            'custom',
+        ];
     }
 
     /**

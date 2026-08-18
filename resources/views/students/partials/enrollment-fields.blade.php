@@ -24,24 +24,22 @@
             <x-input-error class="mt-2" :messages="$errors->get('starts_double_period')" />
         </div>
 
-        <div>
-            <x-input-label for="discount_choice" :value="__('Discount')" />
-            <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('No Discount') }}</option>
-                @foreach (config('discounts.secretary_presets') as $preset)
-                    <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
-                @endforeach
-                @if (auth()->user()->isDirector())
+        @if (auth()->user()->isDirector())
+            <div>
+                <x-input-label for="discount_choice" :value="__('Discount')" />
+                <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('No Discount') }}</option>
+                    @foreach (config('discounts.standard_presets') as $preset)
+                        <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
+                    @endforeach
                     @foreach (config('discounts.director_presets') as $preset)
                         <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
                     @endforeach
-                    <option value="custom" @selected(old('discount_choice') === 'custom')>{{ __('Custom (Director Only)') }}</option>
-                @endif
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('discount_choice')" />
-        </div>
+                    <option value="custom" @selected(old('discount_choice') === 'custom')>{{ __('Custom') }}</option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('discount_choice')" />
+            </div>
 
-        @if (auth()->user()->isDirector())
             <div id="custom-discount-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <x-input-label for="custom_discount_percentage" :value="__('Custom Percentage (%)')" />
@@ -55,26 +53,26 @@
                 </div>
                 <p class="sm:col-span-2 text-xs text-gray-500">{{ __('Enter either a percentage or a fixed amount, not both.') }}</p>
             </div>
+
+            <div id="discount-reason-wrapper" class="hidden space-y-6">
+                <div>
+                    <x-input-label for="discount_reason" :value="__('Reason for Discount')" />
+                    <select id="discount_reason" name="discount_reason" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                        <option value="">{{ __('Select') }}</option>
+                        @foreach (config('discounts.reasons') as $value => $label)
+                            <option value="{{ $value }}" @selected(old('discount_reason') === $value)>{{ __($label) }}</option>
+                        @endforeach
+                    </select>
+                    <x-input-error class="mt-2" :messages="$errors->get('discount_reason')" />
+                </div>
+
+                <div id="discount-reason-note-wrapper" class="hidden">
+                    <x-input-label for="discount_reason_note" :value="__('Please Specify')" />
+                    <x-text-input id="discount_reason_note" name="discount_reason_note" type="text" class="mt-1 block w-full" :value="old('discount_reason_note')" />
+                    <x-input-error class="mt-2" :messages="$errors->get('discount_reason_note')" />
+                </div>
+            </div>
         @endif
-
-        <div id="discount-reason-wrapper" class="hidden space-y-6">
-            <div>
-                <x-input-label for="discount_reason" :value="__('Reason for Discount')" />
-                <select id="discount_reason" name="discount_reason" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                    <option value="">{{ __('Select') }}</option>
-                    @foreach (config('discounts.reasons') as $value => $label)
-                        <option value="{{ $value }}" @selected(old('discount_reason') === $value)>{{ __($label) }}</option>
-                    @endforeach
-                </select>
-                <x-input-error class="mt-2" :messages="$errors->get('discount_reason')" />
-            </div>
-
-            <div id="discount-reason-note-wrapper" class="hidden">
-                <x-input-label for="discount_reason_note" :value="__('Please Specify')" />
-                <x-text-input id="discount_reason_note" name="discount_reason_note" type="text" class="mt-1 block w-full" :value="old('discount_reason_note')" />
-                <x-input-error class="mt-2" :messages="$errors->get('discount_reason_note')" />
-            </div>
-        </div>
 
         <div id="fee-preview" class="bg-gray-50 border border-gray-200 rounded-md p-4 text-sm space-y-1">
             <div class="flex justify-between"><span>{{ __('Package Fee') }}</span><span id="preview-package-fee">₦0.00</span></div>
@@ -107,7 +105,10 @@
 
                 function recalculate() {
                     var fee = currentFee();
-                    var choice = discountSelect.value;
+                    // Non-Director users don't get a discount_choice field at
+                    // all (discounts are Director-only), so there's nothing to
+                    // subtract for them.
+                    var choice = discountSelect ? discountSelect.value : '';
                     var discountAmount = 0;
 
                     if (choice === 'custom') {
@@ -125,7 +126,7 @@
                         discountAmount = Math.min(presetAmount, fee);
                     }
 
-                    reasonWrapper.classList.toggle('hidden', ! choice);
+                    if (reasonWrapper) reasonWrapper.classList.toggle('hidden', ! choice);
 
                     previewPackageFee.textContent = formatNaira(fee);
                     previewDiscount.textContent = formatNaira(discountAmount);
@@ -133,14 +134,14 @@
                 }
 
                 function toggleReasonNote() {
-                    reasonNoteWrapper.classList.toggle('hidden', reasonSelect.value !== 'other');
+                    if (reasonNoteWrapper) reasonNoteWrapper.classList.toggle('hidden', reasonSelect.value !== 'other');
                 }
 
                 courseSelect.addEventListener('change', recalculate);
-                discountSelect.addEventListener('change', recalculate);
+                if (discountSelect) discountSelect.addEventListener('change', recalculate);
                 if (customPercentageInput) customPercentageInput.addEventListener('input', recalculate);
                 if (customAmountInput) customAmountInput.addEventListener('input', recalculate);
-                reasonSelect.addEventListener('change', toggleReasonNote);
+                if (reasonSelect) reasonSelect.addEventListener('change', toggleReasonNote);
 
                 recalculate();
                 toggleReasonNote();
