@@ -54,6 +54,8 @@ return [
             'theory_class_cancellation' => env('TWILIO_WHATSAPP_THEORY_CANCELLATION_TEMPLATE_SID'),
             'lead_follow_up' => env('TWILIO_WHATSAPP_LEAD_FOLLOWUP_TEMPLATE_SID'),
             'absence_check_in' => env('TWILIO_WHATSAPP_ABSENCE_CHECK_IN_TEMPLATE_SID'),
+            'training_days_remaining' => env('TWILIO_WHATSAPP_TRAINING_DAYS_REMAINING_TEMPLATE_SID'),
+            'training_completed' => env('TWILIO_WHATSAPP_TRAINING_COMPLETED_TEMPLATE_SID'),
         ],
     ],
 

@@ -203,6 +203,33 @@ class PaymentCorrectionTest extends TestCase
         $this->assertSame(55000.0, $enrollment->fresh()->balance());
     }
 
+    public function test_a_correction_logs_the_old_and_new_amounts_to_the_activity_log(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+        $enrollment = $student->courses()->first()->pivot;
+        $service = Service::factory()->create(['price' => 50000]);
+        $studentService = $student->studentServices()->create(['service_id' => $service->id, 'price' => 50000]);
+
+        $payment = $this->createSplitPayment($user, $student, $enrollment->id, $studentService->id);
+        $trainingAllocation = $payment->allocations()->where('allocation_type', 'training')->firstOrFail();
+        $serviceAllocation = $payment->allocations()->where('allocation_type', 'service')->firstOrFail();
+
+        $this->actingAs($user)->put("/payments/{$payment->id}/correct", [
+            'reason' => 'Staff mis-keyed the split at entry.',
+            'allocations' => [
+                ['id' => $trainingAllocation->id, 'amount' => 20000],
+                ['id' => $serviceAllocation->id, 'amount' => 30000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('activity_logs', [
+            'description' => "Corrected the allocation for payment {$payment->receipt_number}: Training — {$course->name} ₦30,000.00 → ₦20,000.00, {$service->name} ₦20,000.00 → ₦30,000.00",
+        ]);
+    }
+
     public function test_the_payment_page_shows_correction_history(): void
     {
         $user = User::factory()->create();

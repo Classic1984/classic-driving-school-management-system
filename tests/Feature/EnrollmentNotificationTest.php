@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\MessageLog;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\User;
@@ -276,6 +277,123 @@ class EnrollmentNotificationTest extends TestCase
         $enrollment->refreshStatus();
 
         Notification::assertNotSentTo($admin, TrainingDaysRemainingNotification::class);
+    }
+
+    public function test_the_student_is_texted_once_training_days_remaining_drop_to_the_threshold(): void
+    {
+        Notification::fake();
+        config(['services.termii.api_key' => 'fake-key']);
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create(['duration_weeks' => 1, 'name' => 'Beginner Training']);
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $course->students()->attach($student->id, ['enrolled_at' => now()->toDateString(), 'status' => 'active']);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        // A 1-week course requires 5 days; 2 attended leaves 3 remaining.
+        for ($day = 1; $day <= 2; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
+            && str_contains($request['sms'], 'You have 3 training day(s) remaining in Beginner Training'));
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_id' => $student->id,
+            'purpose' => 'training_days_remaining',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
+    }
+
+    public function test_no_days_remaining_text_is_sent_while_still_far_from_completion(): void
+    {
+        Notification::fake();
+        config(['services.termii.api_key' => 'fake-key']);
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create(['duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, ['enrolled_at' => now()->toDateString(), 'status' => 'active']);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+            'duration' => 1,
+        ]);
+        $enrollment->refreshStatus();
+
+        $this->assertDatabaseMissing('message_logs', ['purpose' => 'training_days_remaining']);
+    }
+
+    public function test_the_student_is_texted_congratulations_when_their_training_completes(): void
+    {
+        Notification::fake();
+        config(['services.termii.api_key' => 'fake-key']);
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1, 'name' => 'Beginner Training']);
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $course->students()->attach($student->id, ['enrolled_at' => now()->toDateString(), 'status' => 'active']);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 100, 'status' => 'paid']);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
+            && str_contains($request['sms'], 'Congratulations! You have completed your training program in Beginner Training'));
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_id' => $student->id,
+            'purpose' => 'training_completed',
+            'channel' => 'sms',
+            'status' => 'sent',
+        ]);
+    }
+
+    public function test_the_training_completed_text_is_not_resent_once_already_completed(): void
+    {
+        Notification::fake();
+        config(['services.termii.api_key' => 'fake-key']);
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, ['enrolled_at' => now()->toDateString(), 'status' => 'active']);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 100, 'status' => 'paid']);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+        $enrollment->fresh()->refreshStatus();
+        $enrollment->fresh()->refreshStatus();
+
+        $this->assertSame(1, MessageLog::where('purpose', 'training_completed')->count());
     }
 
     public function test_admins_are_notified_when_an_enrollments_training_completes(): void
