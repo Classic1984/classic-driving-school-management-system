@@ -35,7 +35,7 @@ class StoreEnrollmentRequest extends FormRequest
             'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
             'payment_method' => ['required_with:amount_paid', 'nullable', 'in:cash,card,bank_transfer,mobile_money'],
             'discount_choice' => ['nullable', Rule::in([
-                ...array_map('strval', config('discounts.secretary_presets')),
+                ...array_map('strval', config('discounts.standard_presets')),
                 ...array_map('strval', config('discounts.director_presets')),
                 'custom',
             ])],

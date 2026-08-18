@@ -54,28 +54,19 @@ class DiscountTest extends TestCase
         ]);
     }
 
-    public function test_a_secretary_can_apply_a_preset_discount_at_registration(): void
+    public function test_a_secretary_cannot_apply_any_discount_at_registration(): void
     {
         $secretary = User::factory()->secretary()->create();
         $course = Course::factory()->create(['fee' => 95000]);
 
         $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
             'course_id' => $course->id,
-            'discount_choice' => '5000',
+            'discount_choice' => '1000',
             'discount_reason' => 'promotional_offer',
         ]));
 
-        $response->assertSessionHasNoErrors();
-
-        $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
-        $enrollment = $student->courses->first()->pivot;
-
-        $this->assertSame(90000.0, $enrollment->fee());
-        $this->assertDatabaseHas('discount_audit_logs', [
-            'student_id' => $student->id,
-            'applied_by' => $secretary->id,
-            'discount_amount' => 5000,
-        ]);
+        $response->assertSessionHasErrors('discount_choice');
+        $this->assertDatabaseCount('students', 0);
     }
 
     public function test_secretary_cannot_apply_a_discount_beyond_their_preset_limit(): void
@@ -186,10 +177,10 @@ class DiscountTest extends TestCase
 
     public function test_discount_requires_a_reason(): void
     {
-        $secretary = User::factory()->secretary()->create();
+        $director = User::factory()->director()->create();
         $course = Course::factory()->create(['fee' => 95000]);
 
-        $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
+        $response = $this->actingAs($director)->post('/students', $this->registrationData([
             'course_id' => $course->id,
             'discount_choice' => '5000',
         ]));
@@ -200,10 +191,10 @@ class DiscountTest extends TestCase
 
     public function test_discount_reason_other_requires_a_note(): void
     {
-        $secretary = User::factory()->secretary()->create();
+        $director = User::factory()->director()->create();
         $course = Course::factory()->create(['fee' => 95000]);
 
-        $response = $this->actingAs($secretary)->post('/students', $this->registrationData([
+        $response = $this->actingAs($director)->post('/students', $this->registrationData([
             'course_id' => $course->id,
             'discount_choice' => '5000',
             'discount_reason' => 'other',
@@ -250,6 +241,15 @@ class DiscountTest extends TestCase
         // 95,000 - 5,000 discount = 90,000 final fee; 40,000 paid; 50,000 balance.
         $this->assertSame(90000.0, $enrollment->fee());
         $this->assertSame(50000.0, $enrollment->balance());
+    }
+
+    public function test_the_registration_form_only_shows_the_discount_field_to_a_director(): void
+    {
+        $director = User::factory()->director()->create();
+        $secretary = User::factory()->secretary()->create();
+
+        $this->actingAs($director)->get('/students/create')->assertSee('id="discount_choice"', false);
+        $this->actingAs($secretary)->get('/students/create')->assertDontSee('id="discount_choice"', false);
     }
 
     public function test_a_preset_discount_cannot_exceed_the_course_fee(): void
