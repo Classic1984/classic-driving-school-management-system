@@ -481,4 +481,107 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('Service Processing');
     }
+
+    protected function attendDays(Student $student, Course $course, int $days): void
+    {
+        for ($i = 0; $i < $days; $i++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'status' => 'present',
+                'duration' => 1,
+                'date' => now()->subDays($days - $i)->toDateString(),
+            ]);
+        }
+    }
+
+    public function test_dashboard_shows_upgrade_window_alerts_with_correct_statuses(): void
+    {
+        $director = User::factory()->director()->create();
+        $twoWeek = Course::factory()->create(['name' => 'Two Week Program', 'duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        $threeWeek = Course::factory()->create(['duration_weeks' => 3, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        Course::factory()->create(['duration_weeks' => 4, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+
+        $eligible = Student::factory()->create(['name' => 'John A']);
+        $eligible->courses()->attach($threeWeek->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => $threeWeek->fee]);
+        $this->attendDays($eligible, $threeWeek, 2);
+
+        $lastDay = Student::factory()->create(['name' => 'David C']);
+        $lastDay->courses()->attach($threeWeek->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => $threeWeek->fee]);
+        $this->attendDays($lastDay, $threeWeek, 5);
+
+        $closed = Student::factory()->create(['name' => 'Sarah D']);
+        $closed->courses()->attach($twoWeek->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => $twoWeek->fee]);
+        $this->attendDays($closed, $twoWeek, 6);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Programme Upgrade Window');
+        $response->assertSee('🔔 2');
+
+        $response->assertSee('John A');
+        $response->assertSee('🟢');
+        $response->assertSee('Eligible');
+
+        $response->assertSee('David C');
+        $response->assertSee('🟠');
+        $response->assertSee('Last Day');
+        $response->assertSee('closes today');
+
+        $response->assertSee('Sarah D');
+        $response->assertSee('🔴');
+        $response->assertSee('Closed');
+
+        $response->assertSee('Students Who Need Upgrade Reminder');
+    }
+
+    public function test_dashboard_does_not_list_an_enrollment_with_no_longer_programme_to_upgrade_into(): void
+    {
+        $user = User::factory()->create();
+        $fourWeek = Course::factory()->create(['duration_weeks' => 4, 'status' => 'active']);
+        $student = Student::factory()->create(['name' => 'Already Longest']);
+        $student->courses()->attach($fourWeek->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => $fourWeek->fee]);
+        $this->attendDays($student, $fourWeek, 2);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Programme Upgrade Window');
+    }
+
+    public function test_dashboard_stops_showing_an_enrollment_well_past_the_upgrade_window(): void
+    {
+        $user = User::factory()->create();
+        $twoWeek = Course::factory()->create(['duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        Course::factory()->create(['duration_weeks' => 4, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        $student = Student::factory()->create(['name' => 'Long Since Closed']);
+        $student->courses()->attach($twoWeek->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => $twoWeek->fee]);
+        $this->attendDays($student, $twoWeek, 10);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Programme Upgrade Window');
+    }
+
+    public function test_a_director_gets_a_direct_upgrade_link_from_the_dashboard(): void
+    {
+        $director = User::factory()->director()->create();
+        $secretary = User::factory()->secretary()->create();
+        $twoWeek = Course::factory()->create(['duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        Course::factory()->create(['duration_weeks' => 4, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        $student = Student::factory()->create();
+        $student->courses()->attach($twoWeek->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => $twoWeek->fee]);
+        $enrollment = $student->courses()->where('course_id', $twoWeek->id)->first()->pivot;
+        $this->attendDays($student, $twoWeek, 1);
+
+        $directorResponse = $this->actingAs($director)->get('/dashboard');
+        $directorResponse->assertOk();
+        $directorResponse->assertSee(route('enrollments.upgrade.create', $enrollment->id), false);
+
+        $secretaryResponse = $this->actingAs($secretary)->get('/dashboard');
+        $secretaryResponse->assertOk();
+        $secretaryResponse->assertDontSee(route('enrollments.upgrade.create', $enrollment->id), false);
+    }
 }
