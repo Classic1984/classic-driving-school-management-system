@@ -29,7 +29,14 @@
                 @elseif (session('status') === 'service-deleted')
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Service deleted successfully.') }}</p>
                 @elseif (session('status') === 'service-in-use')
-                    <p class="mb-4 text-sm font-medium text-red-600">{{ __('This service has already been charged to a student and cannot be deleted. Mark it inactive instead to hide it from new registrations.') }}</p>
+                    <div class="mb-4 text-sm font-medium text-red-600">
+                        <p>{{ __('This service has already been charged to the student(s) below, so it cannot be deleted. Mark it inactive instead to hide it from new registrations.') }}</p>
+                        <ul class="list-disc list-inside mt-1">
+                            @foreach (session('serviceInUseStudents', []) as $chargedStudent)
+                                <li><a href="{{ route('students.show', $chargedStudent['id']) }}" class="underline hover:no-underline">{{ $chargedStudent['name'] }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
 
                 <div class="overflow-x-auto">
