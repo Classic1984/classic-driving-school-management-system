@@ -84,7 +84,20 @@ class DashboardController extends Controller
             ->sortBy(fn (StudentService $studentService) => $studentService->expectedReadyAt())
             ->values();
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing'));
+        // Programme Upgrade Window alerts: enrollments still within (or just
+        // past) their five-day upgrade window that actually have a longer
+        // programme to upgrade into - a stale enrollment that closed weeks
+        // ago isn't news to staff, so only day 6 onward is shown as
+        // "Closed" here, one day past the window, rather than forever.
+        $upgradeAlerts = Enrollment::where('status', '!=', 'completed')
+            ->with(['student', 'course'])
+            ->get()
+            ->filter(fn (Enrollment $enrollment) => $enrollment->attendedDays() <= Enrollment::UPGRADE_WINDOW_DAYS + 1
+                && $enrollment->eligibleUpgradeCourses()->isNotEmpty())
+            ->sortBy(fn (Enrollment $enrollment) => $enrollment->attendedDays())
+            ->values();
+
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts'));
     }
 
     /**
