@@ -67,4 +67,27 @@ class ServiceController extends Controller
 
         return Redirect::route('services.index')->with('status', 'service-updated');
     }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * A service that has ever been charged to a student is left alone -
+     * student_services (and the payment_allocations built on top of it)
+     * cascade-delete with it, which would silently erase billing history
+     * for anyone who was charged for it. Deactivating it instead keeps
+     * that history intact while hiding it from new charges.
+     */
+    public function destroy(Service $service): RedirectResponse
+    {
+        if ($service->studentServices()->exists()) {
+            return Redirect::route('services.index')->with('status', 'service-in-use');
+        }
+
+        $name = $service->name;
+        $service->delete();
+
+        ActivityLog::record("Deleted a billable service ({$name})");
+
+        return Redirect::route('services.index')->with('status', 'service-deleted');
+    }
 }
