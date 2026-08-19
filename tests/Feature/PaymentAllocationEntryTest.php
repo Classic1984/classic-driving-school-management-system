@@ -455,7 +455,39 @@ class PaymentAllocationEntryTest extends TestCase
         // The row's Alpine state seeds the checkbox's auto-fill target with the
         // charge's own balance, so ticking it proposes a full payment while the
         // amount field stays editable for a part payment.
-        $response->assertSee("checked ? '50000' : ''", false);
+        $response->assertSee('balance\u0022:\u002250000', false);
+    }
+
+    public function test_a_charge_type_and_id_in_the_query_string_preselects_that_charges_full_balance(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+        $enrollment = $student->courses()->first()->pivot;
+        Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}&charge_type=training&charge_id={$enrollment->id}");
+
+        $response->assertOk();
+        // Only the preselected (training) row's amount is seeded with its
+        // balance - the unrelated Learner's Permit row stays blank.
+        $response->assertSee('amount\u0022:\u002295000\u0022,\u0022balance\u0022:\u002295000', false);
+        $response->assertSee('amount\u0022:\u0022\u0022,\u0022balance\u0022:\u00226000', false);
+    }
+
+    public function test_the_payment_amount_field_is_read_only_and_calculated_from_the_ticked_charges(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'is_active' => true]);
+
+        $response = $this->actingAs($user)->get("/payments/record?student_id={$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('id="amount"', false);
+        $response->assertSee('readonly', false);
+        $response->assertSee('Calculated automatically from the charges ticked above.');
     }
 
     public function test_a_validation_error_on_an_allocation_row_renders_as_compiled_html_not_a_raw_tag(): void

@@ -826,6 +826,54 @@ class StudentTest extends TestCase
         $response->assertSee('122,000.00');
     }
 
+    public function test_the_total_outstanding_box_links_straight_to_recording_a_payment(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee(route('payments.record.create', ['student_id' => $student->id]), false);
+    }
+
+    public function test_the_total_outstanding_box_is_not_a_link_once_fully_paid(): void
+    {
+        // A "Record a Payment" link elsewhere on the page (unrelated to
+        // this box) always points at the same base URL, so this checks
+        // the box's own click-through text rather than the raw href.
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 1000, 'status' => 'paid']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('Click to record a payment');
+    }
+
+    public function test_each_charge_rows_balance_links_directly_to_paying_that_charge(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+        $enrollment = $student->courses()->first()->pivot;
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee(route('payments.record.create', [
+            'student_id' => $student->id,
+            'charge_type' => 'training',
+            'charge_id' => $enrollment->id,
+        ]));
+    }
+
     public function test_authenticated_user_can_view_edit_form(): void
     {
         $user = User::factory()->create();
