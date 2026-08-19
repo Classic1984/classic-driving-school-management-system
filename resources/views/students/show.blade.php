@@ -132,7 +132,14 @@
                     $totalOutstanding = $financialOverview->sum('balance');
                 @endphp
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Financial Overview') }}</h3>
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-500">{{ __('Financial Overview') }}</h3>
+                        @if ($totalOutstanding > 0)
+                            <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}">
+                                <x-primary-button type="button">{{ __('Balance Payment') }}</x-primary-button>
+                            </a>
+                        @endif
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                         <div class="bg-black text-amber-400 rounded-lg p-4">
                             <p class="text-xs uppercase tracking-wider">{{ __('Total Charges') }}</p>
@@ -142,18 +149,10 @@
                             <p class="text-xs uppercase tracking-wider">{{ __('Total Paid') }}</p>
                             <p class="text-2xl font-bold mt-1">₦{{ number_format($totalOverviewPaid, 2) }}</p>
                         </div>
-                        @if ($totalOutstanding > 0)
-                            <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}" class="bg-amber-500 text-black rounded-lg p-4 hover:bg-amber-400">
-                                <p class="text-xs uppercase tracking-wider">{{ __('Total Outstanding') }}</p>
-                                <p class="text-2xl font-bold mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
-                                <p class="text-xs mt-1 underline">{{ __('Click to record a payment') }}</p>
-                            </a>
-                        @else
-                            <div class="bg-amber-500 text-black rounded-lg p-4">
-                                <p class="text-xs uppercase tracking-wider">{{ __('Total Outstanding') }}</p>
-                                <p class="text-2xl font-bold mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
-                            </div>
-                        @endif
+                        <div class="bg-amber-500 text-black rounded-lg p-4">
+                            <p class="text-xs uppercase tracking-wider">{{ __('Total Outstanding') }}</p>
+                            <p class="text-2xl font-bold mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
+                        </div>
                     </div>
 
                     @if ($financialOverview->isNotEmpty())
@@ -166,6 +165,7 @@
                                         <th class="px-2 py-1">{{ __('Paid') }}</th>
                                         <th class="px-2 py-1">{{ __('Balance') }}</th>
                                         <th class="px-2 py-1">{{ __('Status') }}</th>
+                                        <th class="px-2 py-1"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100">
@@ -174,21 +174,20 @@
                                             <td class="px-2 py-1 text-sm">{{ $charge['label'] }}</td>
                                             <td class="px-2 py-1 text-sm">{{ number_format($charge['price'], 2) }}</td>
                                             <td class="px-2 py-1 text-sm">{{ number_format($charge['paid'], 2) }}</td>
-                                            <td class="px-2 py-1 text-sm">
-                                                @if ($charge['balance'] > 0)
-                                                    <a href="{{ route('payments.record.create', ['student_id' => $student->id, 'charge_type' => $charge['type'], 'charge_id' => $charge['id']]) }}" class="text-amber-600 hover:underline">
-                                                        {{ number_format($charge['balance'], 2) }}
-                                                    </a>
-                                                @else
-                                                    {{ number_format($charge['balance'], 2) }}
-                                                @endif
-                                            </td>
+                                            <td class="px-2 py-1 text-sm">{{ number_format($charge['balance'], 2) }}</td>
                                             <td class="px-2 py-1 text-sm">
                                                 <x-badge :color="match ($charge['status']) {
                                                     'paid' => 'green',
                                                     'part_payment' => 'amber',
                                                     default => 'red',
                                                 }">{{ __(ucwords(str_replace('_', ' ', $charge['status']))) }}</x-badge>
+                                            </td>
+                                            <td class="px-2 py-1 text-sm whitespace-nowrap">
+                                                @if ($charge['balance'] > 0)
+                                                    <a href="{{ route('payments.record.create', ['student_id' => $student->id, 'charge_type' => $charge['type'], 'charge_id' => $charge['id']]) }}" class="text-sm text-amber-600 hover:underline">
+                                                        {{ __('Balance Payment') }}
+                                                    </a>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -200,6 +199,7 @@
                                         <td class="px-2 py-1 text-sm">{{ number_format($totalOverviewPaid, 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ number_format($totalOutstanding, 2) }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $totalOutstanding > 0 ? __('Outstanding') : __('Paid') }}</td>
+                                        <td class="px-2 py-1 text-sm"></td>
                                     </tr>
                                 </tfoot>
                             </table>
