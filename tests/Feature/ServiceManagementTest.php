@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Service;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -157,5 +158,40 @@ class ServiceManagementTest extends TestCase
         $this->actingAs($director)
             ->post('/services', ['name' => 'Online Certificate', 'price' => 15000, 'processing_days' => 0])
             ->assertSessionHasErrors('processing_days');
+    }
+
+    public function test_a_director_can_delete_a_service_that_has_never_been_charged(): void
+    {
+        $director = User::factory()->director()->create();
+        $service = Service::factory()->create(['name' => 'Duplicate Entry']);
+
+        $this->actingAs($director)
+            ->delete("/services/{$service->id}")
+            ->assertRedirect(route('services.index'));
+
+        $this->assertDatabaseMissing('services', ['id' => $service->id]);
+    }
+
+    public function test_a_service_already_charged_to_a_student_cannot_be_deleted(): void
+    {
+        $director = User::factory()->director()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing"]);
+        $student = Student::factory()->create();
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => $service->price]);
+
+        $response = $this->actingAs($director)->delete("/services/{$service->id}");
+
+        $response->assertRedirect(route('services.index'));
+        $this->assertDatabaseHas('services', ['id' => $service->id]);
+        $this->assertDatabaseHas('student_services', ['student_id' => $student->id, 'service_id' => $service->id]);
+    }
+
+    public function test_a_secretary_cannot_delete_a_service(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $service = Service::factory()->create();
+
+        $this->actingAs($secretary)->delete("/services/{$service->id}")->assertForbidden();
+        $this->assertDatabaseHas('services', ['id' => $service->id]);
     }
 }

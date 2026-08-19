@@ -105,7 +105,7 @@ Route::middleware('auth')->group(function () {
             ->whereIn('type', ['balance_reminder', 'theory_class_reminder', 'lead_follow_up', 'absence_check_in'])
             ->name('reminders.send');
         Route::resource('users', UserController::class)->except(['show']);
-        Route::resource('services', ServiceController::class)->except(['show', 'destroy']);
+        Route::resource('services', ServiceController::class)->except(['show']);
         Route::resource('theory-class-cancellations', TheoryClassCancellationController::class)->only(['index', 'store', 'destroy']);
 
         // Reviewing and resolving/rejecting correction requests is

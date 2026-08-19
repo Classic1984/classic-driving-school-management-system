@@ -26,6 +26,10 @@
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Service added successfully.') }}</p>
                 @elseif (session('status') === 'service-updated')
                     <p class="mb-4 text-sm font-medium text-green-600">{{ __('Service updated successfully.') }}</p>
+                @elseif (session('status') === 'service-deleted')
+                    <p class="mb-4 text-sm font-medium text-green-600">{{ __('Service deleted successfully.') }}</p>
+                @elseif (session('status') === 'service-in-use')
+                    <p class="mb-4 text-sm font-medium text-red-600">{{ __('This service has already been charged to a student and cannot be deleted. Mark it inactive instead to hide it from new registrations.') }}</p>
                 @endif
 
                 <div class="overflow-x-auto">
@@ -52,8 +56,13 @@
                                             <x-badge color="gray">{{ __('Inactive') }}</x-badge>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2 text-right whitespace-nowrap">
+                                    <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('services.edit', $service) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                        <form method="post" action="{{ route('services.destroy', $service) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to delete this service?') }}');">
+                                            @csrf
+                                            @method('delete')
+                                            <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                        </form>
                                     </td>
                                 </tr>
                             @empty
