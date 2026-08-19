@@ -2,15 +2,19 @@
 
 namespace App\Services;
 
+use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\DiscountAuditLog;
 use App\Models\DiscountRequest;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
+use App\Models\ProgrammeUpgradeLog;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\DiscountRequestedNotification;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 /**
@@ -120,6 +124,8 @@ class EnrollmentService
             ]);
         }
 
+        $enrollment->notifyUpgradeWindowIfEligible();
+
         return $enrollment;
     }
 
@@ -157,5 +163,104 @@ class EnrollmentService
             $originalFee > 0 ? round($amount / $originalFee * 100, 2) : 0.0,
             round($amount, 2),
         ];
+    }
+
+    /**
+     * Upgrade an enrollment to a longer programme, per the Programme
+     * Upgrade Policy: the student pays only the difference between the
+     * new programme's fee and what this enrollment's fee already was (an
+     * existing naira discount carries over onto the new fee), and their
+     * training progress is preserved by moving their existing attendance
+     * records onto the new course rather than resetting them. Eligibility
+     * (the five-day window, the course being a valid longer programme) is
+     * expected to already be validated by the caller - this method
+     * assumes it and just executes the change.
+     */
+    public function upgrade(Enrollment $enrollment, Course $newCourse, User $actor, float $amountToPayNow, ?string $paymentMethod, Carbon $upgradedAt): void
+    {
+        DB::transaction(function () use ($enrollment, $newCourse, $actor, $amountToPayNow, $paymentMethod, $upgradedAt) {
+            $previousFee = $enrollment->fee();
+            $newFee = $this->upgradedFee($enrollment, $newCourse);
+            $newOriginalFee = (float) $newCourse->fee;
+            $discountAmount = (float) ($enrollment->discount_amount ?? 0);
+            $upgradeCost = $this->upgradeCost($enrollment, $newCourse);
+            $attendedDaysAtUpgrade = $enrollment->attendedDays();
+            $fromCourseId = $enrollment->course_id;
+
+            // Preserve training progress: the days already attended toward
+            // the old course count toward the new (longer) one instead of
+            // resetting to zero.
+            Attendance::where('student_id', $enrollment->student_id)
+                ->where('course_id', $fromCourseId)
+                ->update(['course_id' => $newCourse->id]);
+
+            $enrollment->forceFill([
+                'course_id' => $newCourse->id,
+                'fee' => $newFee,
+                'original_fee' => $newOriginalFee,
+                'discount_percentage' => $discountAmount > 0 && $newOriginalFee > 0
+                    ? round($discountAmount / $newOriginalFee * 100, 2)
+                    : $enrollment->discount_percentage,
+                'due_date' => ($enrollment->enrolled_at ?? $upgradedAt)->copy()->addDays($newCourse->gracePeriodDays())->toDateString(),
+            ])->save();
+
+            $amountToPayNow = min(max(0, $amountToPayNow), $upgradeCost);
+
+            if ($amountToPayNow > 0) {
+                $payment = Payment::create([
+                    'student_id' => $enrollment->student_id,
+                    'course_id' => null,
+                    'amount' => $amountToPayNow,
+                    'payment_date' => $upgradedAt->toDateString(),
+                    'payment_method' => $paymentMethod,
+                    'status' => 'paid',
+                    'recorded_by' => $actor->id,
+                ]);
+
+                PaymentAllocation::create([
+                    'payment_id' => $payment->id,
+                    'allocation_type' => 'training',
+                    'enrollment_id' => $enrollment->id,
+                    'amount' => $amountToPayNow,
+                ]);
+            }
+
+            ProgrammeUpgradeLog::create([
+                'student_id' => $enrollment->student_id,
+                'enrollment_id' => $enrollment->id,
+                'from_course_id' => $fromCourseId,
+                'to_course_id' => $newCourse->id,
+                'upgraded_by' => $actor->id,
+                'attended_days_at_upgrade' => $attendedDaysAtUpgrade,
+                'previous_fee' => $previousFee,
+                'new_fee' => $newFee,
+                'amount_charged' => $upgradeCost,
+            ]);
+        });
+
+        $enrollment->load('course');
+        $enrollment->reconcile();
+    }
+
+    /**
+     * What this enrollment's fee would become after upgrading to the
+     * given course: the new course's fee, minus this enrollment's
+     * existing naira discount (if any) carried over as-is.
+     */
+    public function upgradedFee(Enrollment $enrollment, Course $newCourse): float
+    {
+        return max(0, (float) $newCourse->fee - (float) ($enrollment->discount_amount ?? 0));
+    }
+
+    /**
+     * How much more the student owes to upgrade this enrollment to the
+     * given course: the difference between the upgraded fee and what
+     * this enrollment's fee already is. Never negative - a course that
+     * isn't actually more expensive after the carried-over discount costs
+     * nothing extra.
+     */
+    public function upgradeCost(Enrollment $enrollment, Course $newCourse): float
+    {
+        return max(0, $this->upgradedFee($enrollment, $newCourse) - $enrollment->fee());
     }
 }

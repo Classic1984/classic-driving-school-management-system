@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEnrollmentRequest;
+use App\Http\Requests\StoreEnrollmentUpgradeRequest;
 use App\Http\Requests\StoreReactivationRequest;
 use App\Models\ActivityLog;
 use App\Models\Attendance;
@@ -186,5 +187,51 @@ class EnrollmentController extends Controller
         ActivityLog::record("Reactivated {$enrollment->student->name}'s enrollment in {$enrollment->course->name}");
 
         return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-reactivated');
+    }
+
+    /**
+     * Show the Director-only form for upgrading an enrollment to a longer
+     * programme, per the Programme Upgrade Policy - available only within
+     * the student's first five completed training days.
+     */
+    public function showUpgradeForm(Enrollment $enrollment): View
+    {
+        abort_unless($enrollment->canUpgrade(), 404);
+
+        $enrollment->load(['student', 'course']);
+        $eligibleCourses = $enrollment->eligibleUpgradeCourses();
+
+        return view('enrollments.upgrade', compact('enrollment', 'eligibleCourses'));
+    }
+
+    /**
+     * Upgrade the enrollment to the selected longer programme. The
+     * student is charged only the difference between the new programme's
+     * fee and what they've already been charged, and their training
+     * progress carries over rather than resetting.
+     */
+    public function upgrade(StoreEnrollmentUpgradeRequest $request, Enrollment $enrollment, EnrollmentService $enrollmentService): RedirectResponse
+    {
+        if (! $enrollment->canUpgrade()) {
+            return Redirect::back()->withErrors([
+                'enrollment' => 'Your programme upgrade period has ended. Programme upgrades are only available within your first five completed training days.',
+            ]);
+        }
+
+        $newCourse = Course::findOrFail($request->validated('course_id'));
+        $fromCourseName = $enrollment->course->name;
+
+        $enrollmentService->upgrade(
+            $enrollment,
+            $newCourse,
+            $request->user(),
+            (float) $request->validated('amount_paid', 0),
+            $request->validated('payment_method'),
+            now(),
+        );
+
+        ActivityLog::record("Upgraded {$enrollment->student->name}'s programme from {$fromCourseName} to {$newCourse->name}");
+
+        return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgraded');
     }
 }
