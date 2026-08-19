@@ -56,6 +56,7 @@ return [
             'absence_check_in' => env('TWILIO_WHATSAPP_ABSENCE_CHECK_IN_TEMPLATE_SID'),
             'training_days_remaining' => env('TWILIO_WHATSAPP_TRAINING_DAYS_REMAINING_TEMPLATE_SID'),
             'training_completed' => env('TWILIO_WHATSAPP_TRAINING_COMPLETED_TEMPLATE_SID'),
+            'programme_upgrade_window' => env('TWILIO_WHATSAPP_PROGRAMME_UPGRADE_TEMPLATE_SID'),
         ],
     ],
 

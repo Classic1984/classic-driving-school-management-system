@@ -232,6 +232,8 @@
                         <p class="mb-2 text-sm font-medium text-green-600">{{ __('Course marked as completed.') }}</p>
                     @elseif (session('status') === 'enrollment-removed')
                         <p class="mb-2 text-sm font-medium text-green-600">{{ __('Enrollment removed.') }}</p>
+                    @elseif (session('status') === 'enrollment-upgraded')
+                        <p class="mb-2 text-sm font-medium text-green-600">{{ __('Programme upgraded successfully.') }}</p>
                     @endif
                     <x-input-error class="mb-2" :messages="$errors->get('enrollment')" />
 
@@ -292,6 +294,9 @@
                                             @if ($enrolledCourse->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
                                                 <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
                                             @endif
+                                            @if ($enrolledCourse->pivot->canUpgrade() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade') }}</a>
+                                            @endif
                                             @if (auth()->user()->isDirector() && $enrolledCourse->pivot->amountPaid() <= 0)
                                                 <form method="post" action="{{ route('enrollments.destroy', $enrolledCourse->pivot->id) }}" class="inline" onsubmit="return confirm('{{ __('Remove this enrollment? This cannot be undone.') }}');">
                                                     @csrf
@@ -338,6 +343,20 @@
                                         {{ __('Start Date') }}: {{ optional($enrolledCourse->pivot->enrolled_at)->format('Y-m-d') ?? '—' }}
                                         &middot;
                                         {{ __('Expected Completion') }}: {{ optional($enrolledCourse->pivot->expectedCompletionDate())->format('Y-m-d') ?? '—' }}
+                                    </div>
+                                    @php($upgradeStatus = $enrolledCourse->pivot->upgradeStatusLabel())
+                                    <div class="mt-2 flex items-center gap-2 text-xs">
+                                        <span class="text-gray-500">{{ __('Upgrade Status') }}:</span>
+                                        <x-badge :color="match ($upgradeStatus) {
+                                            'Eligible' => 'green',
+                                            'Closed' => 'red',
+                                            default => 'gray',
+                                        }">{{ __($upgradeStatus) }}</x-badge>
+                                        @if ($upgradeStatus === 'Eligible')
+                                            <span class="text-gray-500">{{ $enrolledCourse->pivot->upgradeDaysRemaining() }} {{ __('day(s) remaining') }}</span>
+                                        @elseif ($enrolledCourse->pivot->upgradeStatusReason())
+                                            <span class="text-gray-500">{{ __($enrolledCourse->pivot->upgradeStatusReason()) }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach

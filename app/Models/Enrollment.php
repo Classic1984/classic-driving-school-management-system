@@ -34,6 +34,12 @@ class Enrollment extends Pivot
     public const TRAINING_DAYS_REMAINING_THRESHOLD = 3;
 
     /**
+     * A student may upgrade to a longer programme only through their
+     * fifth completed training day - see the Programme Upgrade Policy.
+     */
+    public const UPGRADE_WINDOW_DAYS = 5;
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -231,6 +237,86 @@ class Enrollment extends Pivot
     public function remainingTrainingDays(): int
     {
         return max(0, $this->course->totalTrainingDays() - $this->attendedDays());
+    }
+
+    /**
+     * Whether this enrollment is still within its five-completed-day
+     * programme upgrade window. Attended days 0 through 5 (inclusive) are
+     * eligible; day 6 onward, or a completed enrollment, are not.
+     */
+    public function isWithinUpgradeWindow(): bool
+    {
+        return $this->status !== 'completed' && $this->attendedDays() <= self::UPGRADE_WINDOW_DAYS;
+    }
+
+    /**
+     * How many completed training days remain in the upgrade window, 0
+     * once it has closed.
+     */
+    public function upgradeDaysRemaining(): int
+    {
+        return max(0, self::UPGRADE_WINDOW_DAYS - $this->attendedDays());
+    }
+
+    /**
+     * The longer programmes this enrollment could upgrade into: active
+     * courses of the same type and schedule (so an upgrade never changes
+     * the student's manual/automatic track or weekday/weekend slot) with
+     * more training weeks than the current course - e.g. a 2-week weekday
+     * manual course upgrades only into a longer weekday manual course.
+     */
+    public function eligibleUpgradeCourses()
+    {
+        return Course::where('status', 'active')
+            ->where('course_type', $this->course->course_type)
+            ->where('schedule', $this->course->schedule)
+            ->where('duration_weeks', '>', $this->course->duration_weeks)
+            ->orderBy('duration_weeks')
+            ->get();
+    }
+
+    /**
+     * Whether this enrollment can be upgraded right now: still within the
+     * five-day window, and at least one longer programme exists to
+     * upgrade into.
+     */
+    public function canUpgrade(): bool
+    {
+        return $this->isWithinUpgradeWindow() && $this->eligibleUpgradeCourses()->isNotEmpty();
+    }
+
+    /**
+     * The Director/staff-facing label for this enrollment's upgrade
+     * eligibility, per the Programme Upgrade Policy's staff view.
+     */
+    public function upgradeStatusLabel(): string
+    {
+        if ($this->status === 'completed' || $this->eligibleUpgradeCourses()->isEmpty()) {
+            return 'Not Available';
+        }
+
+        return $this->isWithinUpgradeWindow() ? 'Eligible' : 'Closed';
+    }
+
+    /**
+     * A short explanation for why the upgrade status above isn't
+     * "Eligible", for display next to it. Null while eligible.
+     */
+    public function upgradeStatusReason(): ?string
+    {
+        if ($this->status === 'completed') {
+            return 'Programme completed - new registration required.';
+        }
+
+        if ($this->eligibleUpgradeCourses()->isEmpty()) {
+            return 'No longer programme is available to upgrade into.';
+        }
+
+        if (! $this->isWithinUpgradeWindow()) {
+            return 'Five-day upgrade period exceeded.';
+        }
+
+        return null;
     }
 
     /**
@@ -443,6 +529,25 @@ class Enrollment extends Pivot
         } elseif (! $withinThreshold && $this->training_reminder_sent_at !== null) {
             $this->forceFill(['training_reminder_sent_at' => null])->save();
         }
+    }
+
+    /**
+     * Text the newly-enrolled student about the programme upgrade window,
+     * if this course actually has a longer variant to upgrade into.
+     * Called once, right after enrollment - see EnrollmentService::enroll().
+     */
+    public function notifyUpgradeWindowIfEligible(): void
+    {
+        if ($this->eligibleUpgradeCourses()->isEmpty()) {
+            return;
+        }
+
+        $this->textStudent(
+            'programme_upgrade_window',
+            'Welcome to Classic Driving School! If you wish to upgrade your training programme, you may do so within your first five completed training days. '
+                .'You can upgrade from 2 weeks to 3 or 4 weeks, or from 3 weeks to 4 weeks. '
+                .'After the fifth completed training day, programme upgrades will no longer be available. Please speak with the school office if you wish to upgrade.'
+        );
     }
 
     /**
