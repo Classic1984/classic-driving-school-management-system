@@ -6,6 +6,7 @@ use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\ActivityLog;
 use App\Models\Service;
+use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -79,8 +80,16 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service): RedirectResponse
     {
-        if ($service->studentServices()->exists()) {
-            return Redirect::route('services.index')->with('status', 'service-in-use');
+        $chargedStudents = Student::whereHas('studentServices', fn ($query) => $query->where('service_id', $service->id))
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Student $student) => ['id' => $student->id, 'name' => $student->name]);
+
+        if ($chargedStudents->isNotEmpty()) {
+            return Redirect::route('services.index')->with([
+                'status' => 'service-in-use',
+                'serviceInUseStudents' => $chargedStudents->all(),
+            ]);
         }
 
         $name = $service->name;

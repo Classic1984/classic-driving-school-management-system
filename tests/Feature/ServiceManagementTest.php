@@ -186,6 +186,22 @@ class ServiceManagementTest extends TestCase
         $this->assertDatabaseHas('student_services', ['student_id' => $student->id, 'service_id' => $service->id]);
     }
 
+    public function test_the_blocked_delete_message_names_the_charged_student(): void
+    {
+        $director = User::factory()->director()->create();
+        $service = Service::factory()->create(['name' => 'School Certificate']);
+        $student = Student::factory()->create(['name' => 'Charged Student']);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => $service->price]);
+
+        $this->actingAs($director)->delete("/services/{$service->id}");
+
+        $response = $this->actingAs($director)->get('/services');
+
+        $response->assertOk();
+        $response->assertSee('Charged Student');
+        $response->assertSee(route('students.show', $student), false);
+    }
+
     public function test_a_secretary_cannot_delete_a_service(): void
     {
         $secretary = User::factory()->secretary()->create();
