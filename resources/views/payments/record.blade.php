@@ -30,7 +30,32 @@
                     @if ($charges->isEmpty())
                         <p class="text-sm text-gray-500">{{ __('This student has no outstanding charges.') }}</p>
                     @else
-                        <form method="post" action="{{ route('payments.record.store') }}" class="space-y-6">
+                        @php
+                            $rowsData = $charges->values()->map(function ($charge, $index) use ($preselect) {
+                                $isPreselected = $preselect
+                                    && $preselect['type'] === $charge['type']
+                                    && (int) $preselect['id'] === (int) $charge['id'];
+
+                                return [
+                                    'amount' => old("allocations.{$index}.amount") ?? ($isPreselected ? (string) $charge['balance'] : ''),
+                                    'balance' => (string) $charge['balance'],
+                                ];
+                            })->all();
+                        @endphp
+                        <form
+                            method="post"
+                            action="{{ route('payments.record.store') }}"
+                            class="space-y-6"
+                            x-data="{
+                                rows: @js($rowsData),
+                                get total() {
+                                    return this.rows.reduce((sum, row) => sum + (parseFloat(row.amount) || 0), 0).toFixed(2);
+                                },
+                                toggle(i, checked) {
+                                    this.rows[i].amount = checked ? this.rows[i].balance : '';
+                                },
+                            }"
+                        >
                             @csrf
                             <input type="hidden" name="student_id" value="{{ $student->id }}">
 
@@ -50,15 +75,9 @@
                                     </thead>
                                     <tbody class="divide-y divide-gray-100">
                                         @foreach ($charges as $index => $charge)
-                                            <tr
-                                                x-data="{
-                                                    amount: @js(old("allocations.{$index}.amount", '')),
-                                                    get selected() { return this.amount !== '' && Number(this.amount) > 0; },
-                                                    toggle(checked) { this.amount = checked ? '{{ $charge['balance'] }}' : ''; },
-                                                }"
-                                            >
+                                            <tr>
                                                 <td class="px-2 py-1 text-sm">
-                                                    <input type="checkbox" :checked="selected" @change="toggle($event.target.checked)" class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500" aria-label="{{ __('Pay :charge in full', ['charge' => $charge['label']]) }}">
+                                                    <input type="checkbox" :checked="Number(rows[{{ $index }}].amount) > 0" @change="toggle({{ $index }}, $event.target.checked)" class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500" aria-label="{{ __('Pay :charge in full', ['charge' => $charge['label']]) }}">
                                                 </td>
                                                 <td class="px-2 py-1 text-sm">
                                                     {{ $charge['label'] }}
@@ -79,7 +98,7 @@
                                                         min="0"
                                                         max="{{ $charge['balance'] }}"
                                                         placeholder="0.00"
-                                                        x-model="amount"
+                                                        x-model="rows[{{ $index }}].amount"
                                                         class="block w-32 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm"
                                                     >
                                                     <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.amount')" />
@@ -94,7 +113,8 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <x-input-label for="amount" :value="__('Payment Amount')" />
-                                    <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full" :value="old('amount')" required />
+                                    <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full bg-gray-50" :value="old('amount')" x-bind:value="total" readonly required />
+                                    <p class="mt-1 text-xs text-gray-500">{{ __('Calculated automatically from the charges ticked above.') }}</p>
                                     <x-input-error class="mt-2" :messages="$errors->get('amount')" />
                                 </div>
 

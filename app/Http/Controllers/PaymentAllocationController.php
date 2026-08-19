@@ -28,13 +28,22 @@ class PaymentAllocationController extends Controller
         $students = Student::orderBy('name')->get();
         $student = null;
         $charges = collect();
+        $preselect = null;
 
         if ($request->filled('student_id')) {
             $student = Student::find($request->integer('student_id'));
             $charges = $student ? StudentChargeResolver::openCharges($student) : collect();
+
+            // Lets a "pay this" link elsewhere (e.g. a charge's balance on
+            // the student's page) land here with that one charge already
+            // ticked and its balance filled in, instead of staff having to
+            // find and select it themselves.
+            if ($request->filled('charge_type') && $request->filled('charge_id')) {
+                $preselect = ['type' => $request->string('charge_type')->toString(), 'id' => $request->integer('charge_id')];
+            }
         }
 
-        return view('payments.record', compact('students', 'student', 'charges'));
+        return view('payments.record', compact('students', 'student', 'charges', 'preselect'));
     }
 
     /**
