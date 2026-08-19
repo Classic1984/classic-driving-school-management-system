@@ -826,7 +826,7 @@ class StudentTest extends TestCase
         $response->assertSee('122,000.00');
     }
 
-    public function test_the_total_outstanding_box_links_straight_to_recording_a_payment(): void
+    public function test_a_balance_payment_button_appears_next_to_the_financial_overview_while_a_balance_is_owed(): void
     {
         $user = User::factory()->create();
         $student = Student::factory()->create();
@@ -836,14 +836,12 @@ class StudentTest extends TestCase
         $response = $this->actingAs($user)->get("/students/{$student->id}");
 
         $response->assertOk();
-        $response->assertSee(route('payments.record.create', ['student_id' => $student->id]), false);
+        $response->assertSee('Balance Payment');
+        $response->assertSee(route('payments.record.create', ['student_id' => $student->id]));
     }
 
-    public function test_the_total_outstanding_box_is_not_a_link_once_fully_paid(): void
+    public function test_no_balance_payment_button_appears_once_fully_paid(): void
     {
-        // A "Record a Payment" link elsewhere on the page (unrelated to
-        // this box) always points at the same base URL, so this checks
-        // the box's own click-through text rather than the raw href.
         $user = User::factory()->create();
         $student = Student::factory()->create();
         $course = Course::factory()->create(['fee' => 1000]);
@@ -853,10 +851,10 @@ class StudentTest extends TestCase
         $response = $this->actingAs($user)->get("/students/{$student->id}");
 
         $response->assertOk();
-        $response->assertDontSee('Click to record a payment');
+        $response->assertDontSee('Balance Payment');
     }
 
-    public function test_each_charge_rows_balance_links_directly_to_paying_that_charge(): void
+    public function test_each_outstanding_charge_row_gets_its_own_balance_payment_link(): void
     {
         $user = User::factory()->create();
         $student = Student::factory()->create();
@@ -868,6 +866,25 @@ class StudentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee(route('payments.record.create', [
+            'student_id' => $student->id,
+            'charge_type' => 'training',
+            'charge_id' => $enrollment->id,
+        ]));
+    }
+
+    public function test_a_fully_paid_charge_row_gets_no_balance_payment_link(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+        $enrollment = $student->courses()->first()->pivot;
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 1000, 'status' => 'paid']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertDontSee(route('payments.record.create', [
             'student_id' => $student->id,
             'charge_type' => 'training',
             'charge_id' => $enrollment->id,
