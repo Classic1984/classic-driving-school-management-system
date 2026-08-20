@@ -97,6 +97,35 @@ class ExpenseTest extends TestCase
         }
     }
 
+    public function test_director_can_store_an_expense_in_each_of_the_newly_added_categories(): void
+    {
+        $director = User::factory()->director()->create();
+        $categories = ['vehicle_insurance', 'vehicle_registration', 'marketing', 'miscellaneous'];
+
+        foreach ($categories as $category) {
+            $response = $this->actingAs($director)->post('/expenses', [
+                'category' => $category,
+                'amount' => 5000,
+                'expense_date' => now()->toDateString(),
+            ]);
+
+            $response->assertSessionHasNoErrors();
+            $this->assertDatabaseHas('expenses', ['category' => $category, 'amount' => 5000]);
+        }
+    }
+
+    public function test_the_expense_form_lists_the_newly_added_categories(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/expenses/create');
+
+        $response->assertOk();
+        foreach (['Vehicle Insurance', 'Vehicle Registration/Roadworthiness Renewal', 'Marketing/Advertising', 'Miscellaneous/Other'] as $label) {
+            $response->assertSee($label);
+        }
+    }
+
     public function test_storing_an_expense_requires_valid_data(): void
     {
         $director = User::factory()->director()->create();
