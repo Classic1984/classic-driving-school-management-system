@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -583,5 +584,173 @@ class DashboardTest extends TestCase
         $secretaryResponse = $this->actingAs($secretary)->get('/dashboard');
         $secretaryResponse->assertOk();
         $secretaryResponse->assertDontSee(route('enrollments.upgrade.create', $enrollment->id), false);
+    }
+
+    public function test_dashboard_greets_the_user_by_first_name_and_time_of_day(): void
+    {
+        $this->travelTo(now()->setTime(9, 0));
+        $user = User::factory()->create(['name' => 'Ada Okafor']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Good Morning', 'Ada']);
+    }
+
+    public function test_dashboard_greets_with_good_afternoon_and_good_evening_at_the_right_times(): void
+    {
+        $user = User::factory()->create();
+
+        $this->travelTo(now()->setTime(14, 0));
+        $this->actingAs($user)->get('/dashboard')->assertSee('Good Afternoon');
+
+        $this->travelTo(now()->setTime(20, 0));
+        $this->actingAs($user)->get('/dashboard')->assertSee('Good Evening');
+    }
+
+    public function test_dashboard_shows_the_kpi_cards(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create(['status' => 'active']);
+        Student::factory()->create(['status' => 'withdrawn']);
+        Vehicle::factory()->create(['status' => 'active']);
+        Vehicle::factory()->create(['status' => 'inactive']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Active Students');
+        $response->assertSee('Training Today');
+        $response->assertSee('Pending Payments');
+        $response->assertSee('Completed Training');
+        $response->assertSee('Active Vehicles');
+        $response->assertSee('Certificates Due');
+    }
+
+    public function test_the_active_students_kpi_only_counts_active_students(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->count(3)->create(['status' => 'active']);
+        Student::factory()->create(['status' => 'withdrawn']);
+        Student::factory()->create(['status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Active Students', '3']);
+    }
+
+    public function test_the_active_vehicles_kpi_only_counts_active_vehicles(): void
+    {
+        $user = User::factory()->create();
+        Vehicle::factory()->count(2)->create(['status' => 'active']);
+        Vehicle::factory()->create(['status' => 'inactive']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Active Vehicles', '2']);
+    }
+
+    public function test_the_certificates_due_kpi_counts_completed_enrollments_without_a_certificate(): void
+    {
+        $user = User::factory()->create();
+
+        $withCertificate = Student::factory()->create();
+        $courseA = Course::factory()->create();
+        $withCertificate->courses()->attach($courseA->id, ['enrolled_at' => now(), 'status' => 'completed', 'fee' => 1000]);
+        Certificate::factory()->create(['student_id' => $withCertificate->id, 'course_id' => $courseA->id]);
+
+        $withoutCertificate = Student::factory()->create();
+        $courseB = Course::factory()->create();
+        $withoutCertificate->courses()->attach($courseB->id, ['enrolled_at' => now(), 'status' => 'completed', 'fee' => 1000]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Certificates Due', '1']);
+    }
+
+    public function test_the_pending_payments_kpi_sums_every_outstanding_enrollment_balance(): void
+    {
+        $user = User::factory()->create();
+        $studentA = Student::factory()->create();
+        $courseA = Course::factory()->create();
+        $studentA->courses()->attach($courseA->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+        $studentB = Student::factory()->create();
+        $courseB = Course::factory()->create();
+        $studentB->courses()->attach($courseB->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 2500]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('3,500.00');
+    }
+
+    public function test_todays_operations_panel_shows_todays_activity(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $instructor = Instructor::factory()->create();
+        $vehicle = Vehicle::factory()->create();
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'instructor_id' => $instructor->id,
+            'vehicle_id' => $vehicle->id,
+            'date' => today(),
+            'status' => 'present',
+        ]);
+        // Not counted: a login from a different day.
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => today()->subDay(),
+            'status' => 'present',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee("Today's Operations");
+        $response->assertSeeInOrder(['1', 'student(s) trained today']);
+        $response->assertSeeInOrder(['1', 'training session(s) logged today']);
+        $response->assertSeeInOrder(['1', 'instructor(s) active today']);
+        $response->assertSeeInOrder(['1', 'vehicle(s) in use today']);
+    }
+
+    public function test_todays_operations_flags_students_approaching_completion_and_locked_students(): void
+    {
+        $user = User::factory()->create();
+
+        $nearlyDone = Student::factory()->create();
+        $course = Course::factory()->create(['duration_weeks' => 1]);
+        $nearlyDone->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+        for ($day = 1; $day <= 3; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $nearlyDone->id,
+                'course_id' => $course->id,
+                'date' => now()->subDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $locked = Student::factory()->create();
+        $lockedCourse = Course::factory()->create();
+        $locked->courses()->attach($lockedCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+            'fee' => 1000,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['1', 'student(s) approaching completion']);
+        $response->assertSeeInOrder(['1', 'student(s) locked']);
     }
 }

@@ -13,6 +13,94 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            @php
+                $greeting = match (true) {
+                    now()->hour < 12 => __('Good Morning'),
+                    now()->hour < 17 => __('Good Afternoon'),
+                    default => __('Good Evening'),
+                };
+                $firstName = \Illuminate\Support\Str::of(auth()->user()->name)->before(' ');
+            @endphp
+
+            <div class="bg-black text-white rounded-xl p-8 mb-6">
+                <h1 class="text-2xl font-bold text-amber-400">{{ $greeting }}, {{ $firstName }}</h1>
+                <p class="mt-1 text-sm text-gray-300">{{ now()->format('l, F j, Y') }}</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mt-6">
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Active Students') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['active_students']) }}</p>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Training Today') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['training_today']) }}</p>
+                    </div>
+                    <div class="rounded-lg p-4 {{ $kpis['pending_payments'] > 0 ? 'bg-amber-500 text-black' : 'bg-gray-900' }}">
+                        <p class="text-xs uppercase tracking-wider {{ $kpis['pending_payments'] > 0 ? 'text-black/70' : 'text-gray-400' }}">{{ __('Pending Payments') }}</p>
+                        <p class="text-2xl font-bold mt-1 {{ $kpis['pending_payments'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['pending_payments'], 2) }}</p>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Completed Training') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['completed_training']) }}</p>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Active Vehicles') }}</p>
+                        <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['active_vehicles']) }}</p>
+                    </div>
+                    <div class="rounded-lg p-4 {{ $kpis['certificates_due'] > 0 ? 'bg-amber-500 text-black' : 'bg-gray-900' }}">
+                        <p class="text-xs uppercase tracking-wider {{ $kpis['certificates_due'] > 0 ? 'text-black/70' : 'text-gray-400' }}">{{ __('Certificates Due') }}</p>
+                        <p class="text-2xl font-bold mt-1 {{ $kpis['certificates_due'] > 0 ? '' : 'text-amber-400' }}">{{ number_format($kpis['certificates_due']) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __("Today's Operations") }}</h3>
+
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-700">
+                    <li>
+                        <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
+                            {{ __(':count student(s) trained today', ['count' => $todaysOperations['students_trained']]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
+                            {{ __(':count training session(s) logged today', ['count' => $todaysOperations['training_sessions']]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('instructor-activity-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
+                            {{ __(':count instructor(s) active today', ['count' => $todaysOperations['instructors_active']]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('vehicles.index') }}" class="hover:text-amber-600 hover:underline">
+                            {{ __(':count vehicle(s) in use today', ['count' => $todaysOperations['vehicles_in_use']]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('payments.index') }}" class="hover:text-amber-600 hover:underline">
+                            {{ __('₦:amount received today', ['amount' => number_format($todaysOperations['payments_received_today'], 2)]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#outstanding-payments" class="{{ $todaysOperations['payments_pending_count'] > 0 ? 'text-red-600 font-medium' : 'text-gray-700' }} hover:underline">
+                            {{ __(':count payment(s) pending', ['count' => $todaysOperations['payments_pending_count']]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('training-progress.index') }}" class="{{ $todaysOperations['approaching_completion'] > 0 ? 'text-amber-600 font-medium' : 'text-gray-700' }} hover:underline">
+                            {{ __(':count student(s) approaching completion', ['count' => $todaysOperations['approaching_completion']]) }}
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#locked-students" class="{{ $todaysOperations['locked_students'] > 0 ? 'text-red-600 font-medium' : 'text-gray-700' }} hover:underline">
+                            {{ __(':count student(s) locked', ['count' => $todaysOperations['locked_students']]) }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
 
                 <h1 class="text-3xl font-bold text-gray-800">
@@ -101,7 +189,7 @@
             </div>
 
             @if ($outstandingPayments->isNotEmpty())
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                <div id="outstanding-payments" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Outstanding Payments') }}</h3>
 
                     <table class="min-w-full divide-y divide-gray-200">
@@ -211,7 +299,7 @@
             @endif
 
             @if ($lockedEnrollments->isNotEmpty())
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                <div id="locked-students" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Locked Students') }}</h3>
 
                     <div class="overflow-x-auto">
