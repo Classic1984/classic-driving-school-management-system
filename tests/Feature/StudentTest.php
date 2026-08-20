@@ -121,6 +121,18 @@ class StudentTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_the_create_form_offers_license_number_and_document_uploads(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/students/create');
+
+        $response->assertOk();
+        $response->assertSee('name="license_number"', false);
+        $response->assertSee('name="id_document"', false);
+        $response->assertSee('name="license_document"', false);
+    }
+
     public function test_the_create_form_offers_course_enrollment_to_a_secretary_too(): void
     {
         $secretary = User::factory()->secretary()->create();
@@ -590,6 +602,147 @@ class StudentTest extends TestCase
         $newPath = $student->fresh()->photo_path;
         $this->assertNotSame('student-photos/old.jpg', $newPath);
         Storage::disk('public')->assertExists($newPath);
+    }
+
+    public function test_authenticated_user_can_upload_identification_and_licence_documents_when_storing_a_student(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $response = $this->actingAs($user)->post('/students', [
+            'course_id' => $course->id,
+            'name' => 'Amaka Obi',
+            'email' => 'amaka@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+            'license_number' => 'LIC-12345',
+            'id_document' => UploadedFile::fake()->image('id.jpg'),
+            'license_document' => UploadedFile::fake()->create('license.pdf', 100),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'amaka@example.com')->firstOrFail();
+        $this->assertSame('LIC-12345', $student->license_number);
+        $this->assertNotNull($student->id_document_path);
+        $this->assertNotNull($student->license_document_path);
+        Storage::disk('public')->assertExists($student->id_document_path);
+        Storage::disk('public')->assertExists($student->license_document_path);
+    }
+
+    public function test_updating_a_student_with_a_new_id_document_deletes_the_old_one(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['id_document_path' => 'student-documents/old-id.jpg']);
+        Storage::disk('public')->put('student-documents/old-id.jpg', 'old-contents');
+
+        $response = $this->actingAs($user)->put("/students/{$student->id}", [
+            'name' => $student->name,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'date_of_birth' => $student->date_of_birth->format('Y-m-d'),
+            'course_type' => $student->course_type,
+            'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
+            'status' => $student->status,
+            'id_document' => UploadedFile::fake()->image('new-id.jpg'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        Storage::disk('public')->assertMissing('student-documents/old-id.jpg');
+        $newPath = $student->fresh()->id_document_path;
+        $this->assertNotSame('student-documents/old-id.jpg', $newPath);
+        Storage::disk('public')->assertExists($newPath);
+    }
+
+    public function test_updating_a_student_with_a_new_licence_document_deletes_the_old_one(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['license_document_path' => 'student-documents/old-license.pdf']);
+        Storage::disk('public')->put('student-documents/old-license.pdf', 'old-contents');
+
+        $response = $this->actingAs($user)->put("/students/{$student->id}", [
+            'name' => $student->name,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'date_of_birth' => $student->date_of_birth->format('Y-m-d'),
+            'course_type' => $student->course_type,
+            'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
+            'status' => $student->status,
+            'license_document' => UploadedFile::fake()->create('new-license.pdf', 100),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        Storage::disk('public')->assertMissing('student-documents/old-license.pdf');
+        $newPath = $student->fresh()->license_document_path;
+        $this->assertNotSame('student-documents/old-license.pdf', $newPath);
+        Storage::disk('public')->assertExists($newPath);
+    }
+
+    public function test_a_document_must_be_an_image_or_pdf(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $response = $this->actingAs($user)->post('/students', [
+            'course_id' => $course->id,
+            'name' => 'Amaka Obi',
+            'email' => 'amaka@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'status' => 'active',
+            'id_document' => UploadedFile::fake()->create('id.exe', 100),
+        ]);
+
+        $response->assertSessionHasErrors('id_document');
+        $this->assertDatabaseMissing('students', ['email' => 'amaka@example.com']);
+    }
+
+    public function test_deleting_a_student_removes_its_uploaded_documents(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $student = Student::factory()->create([
+            'photo_path' => 'student-photos/photo.jpg',
+            'id_document_path' => 'student-documents/id.jpg',
+            'license_document_path' => 'student-documents/license.pdf',
+        ]);
+        Storage::disk('public')->put('student-photos/photo.jpg', 'contents');
+        Storage::disk('public')->put('student-documents/id.jpg', 'contents');
+        Storage::disk('public')->put('student-documents/license.pdf', 'contents');
+
+        $this->actingAs($user)->delete("/students/{$student->id}")->assertRedirect('/students');
+
+        Storage::disk('public')->assertMissing('student-photos/photo.jpg');
+        Storage::disk('public')->assertMissing('student-documents/id.jpg');
+        Storage::disk('public')->assertMissing('student-documents/license.pdf');
+    }
+
+    public function test_the_documents_tab_shows_uploaded_documents_and_licence_number(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create([
+            'license_number' => 'LIC-98765',
+            'id_document_path' => 'student-documents/id.jpg',
+            'license_document_path' => 'student-documents/license.pdf',
+        ]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('LIC-98765');
+        $response->assertSee(Storage::url('student-documents/id.jpg'), false);
+        $response->assertSee(Storage::url('student-documents/license.pdf'), false);
     }
 
     public function test_storing_a_student_rejects_a_local_government_area_that_does_not_belong_to_the_state(): void

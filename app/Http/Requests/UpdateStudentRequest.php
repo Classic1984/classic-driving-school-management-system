@@ -40,6 +40,8 @@ class UpdateStudentRequest extends FormRequest
             'next_of_kin_phone' => ['nullable', 'string', 'max:20'],
             'next_of_kin_email' => ['nullable', 'string', 'email', 'max:255'],
             'license_number' => ['nullable', 'string', 'max:50', Rule::unique('students', 'license_number')->ignore($this->route('student'))],
+            'id_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
+            'license_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
             'course_type' => ['required', 'in:manual,automatic,both'],
             'vehicle_class' => ['nullable', 'in:light,heavy'],
             'has_driving_experience' => ['nullable', 'boolean'],
