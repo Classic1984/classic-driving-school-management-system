@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\Expense;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ExpenseController extends Controller
@@ -35,7 +36,14 @@ class ExpenseController extends Controller
      */
     public function store(StoreExpenseRequest $request): RedirectResponse
     {
-        $expense = Expense::create($request->validated());
+        $data = $request->validated();
+        unset($data['receipt_photo']);
+
+        if ($request->hasFile('receipt_photo')) {
+            $data['receipt_photo_path'] = $request->file('receipt_photo')->store('expense-receipts', 'public');
+        }
+
+        $expense = Expense::create($data);
 
         ActivityLog::record('Recorded an expense of ₦'.number_format((float) $expense->amount, 2)." ({$expense->category})");
 
@@ -63,7 +71,18 @@ class ExpenseController extends Controller
      */
     public function update(UpdateExpenseRequest $request, Expense $expense): RedirectResponse
     {
-        $expense->update($request->validated());
+        $data = $request->validated();
+        unset($data['receipt_photo']);
+
+        if ($request->hasFile('receipt_photo')) {
+            if ($expense->receipt_photo_path) {
+                Storage::disk('public')->delete($expense->receipt_photo_path);
+            }
+
+            $data['receipt_photo_path'] = $request->file('receipt_photo')->store('expense-receipts', 'public');
+        }
+
+        $expense->update($data);
 
         ActivityLog::record("Updated an expense ({$expense->category})");
 
@@ -75,6 +94,10 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense): RedirectResponse
     {
+        if ($expense->receipt_photo_path) {
+            Storage::disk('public')->delete($expense->receipt_photo_path);
+        }
+
         $category = $expense->category;
         $expense->delete();
 

@@ -25,6 +25,18 @@
                         <dt class="text-sm font-medium text-gray-500">{{ __('Description') }}</dt>
                         <dd class="text-sm text-gray-900 col-span-2">{{ $expense->description ?? '—' }}</dd>
                     </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('Receipt Photo') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            @if ($expense->receipt_photo_path)
+                                <a href="{{ Storage::url($expense->receipt_photo_path) }}" target="_blank" rel="noopener">
+                                    <img src="{{ Storage::url($expense->receipt_photo_path) }}" alt="{{ __('Receipt') }}" class="h-24 w-24 object-cover rounded-md border border-gray-200 hover:opacity-80">
+                                </a>
+                            @else
+                                —
+                            @endif
+                        </dd>
+                    </div>
                 </dl>
 
                 <div class="flex items-center gap-4">

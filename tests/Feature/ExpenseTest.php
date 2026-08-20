@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Expense;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ExpenseTest extends TestCase
@@ -138,5 +140,108 @@ class ExpenseTest extends TestCase
 
         $response->assertRedirect('/expenses');
         $this->assertDatabaseMissing('expenses', ['id' => $expense->id]);
+    }
+
+    public function test_director_can_attach_a_receipt_photo_when_recording_an_expense(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->post('/expenses', [
+            'category' => 'fuel',
+            'amount' => 5000,
+            'expense_date' => now()->toDateString(),
+            'receipt_photo' => UploadedFile::fake()->image('receipt.jpg'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $expense = Expense::where('category', 'fuel')->firstOrFail();
+        $this->assertNotNull($expense->receipt_photo_path);
+        Storage::disk('public')->assertExists($expense->receipt_photo_path);
+    }
+
+    public function test_recording_an_expense_without_a_receipt_photo_still_works(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->post('/expenses', [
+            'category' => 'fuel',
+            'amount' => 5000,
+            'expense_date' => now()->toDateString(),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $expense = Expense::where('category', 'fuel')->firstOrFail();
+        $this->assertNull($expense->receipt_photo_path);
+    }
+
+    public function test_updating_an_expense_with_a_new_receipt_photo_deletes_the_old_one(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+        $expense = Expense::factory()->create(['receipt_photo_path' => 'expense-receipts/old.jpg']);
+        Storage::disk('public')->put('expense-receipts/old.jpg', 'old-contents');
+
+        $response = $this->actingAs($director)->put("/expenses/{$expense->id}", [
+            'category' => $expense->category,
+            'amount' => $expense->amount,
+            'expense_date' => $expense->expense_date->format('Y-m-d'),
+            'receipt_photo' => UploadedFile::fake()->image('new-receipt.jpg'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        Storage::disk('public')->assertMissing('expense-receipts/old.jpg');
+        $newPath = $expense->fresh()->receipt_photo_path;
+        $this->assertNotSame('expense-receipts/old.jpg', $newPath);
+        Storage::disk('public')->assertExists($newPath);
+    }
+
+    public function test_updating_an_expense_without_a_new_photo_keeps_the_existing_one(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+        $expense = Expense::factory()->create(['receipt_photo_path' => 'expense-receipts/existing.jpg']);
+        Storage::disk('public')->put('expense-receipts/existing.jpg', 'contents');
+
+        $response = $this->actingAs($director)->put("/expenses/{$expense->id}", [
+            'category' => $expense->category,
+            'amount' => $expense->amount,
+            'expense_date' => $expense->expense_date->format('Y-m-d'),
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame('expense-receipts/existing.jpg', $expense->fresh()->receipt_photo_path);
+        Storage::disk('public')->assertExists('expense-receipts/existing.jpg');
+    }
+
+    public function test_deleting_an_expense_removes_its_receipt_photo(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+        $expense = Expense::factory()->create(['receipt_photo_path' => 'expense-receipts/to-delete.jpg']);
+        Storage::disk('public')->put('expense-receipts/to-delete.jpg', 'contents');
+
+        $this->actingAs($director)->delete("/expenses/{$expense->id}")->assertRedirect('/expenses');
+
+        Storage::disk('public')->assertMissing('expense-receipts/to-delete.jpg');
+    }
+
+    public function test_a_receipt_photo_must_be_an_image(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->post('/expenses', [
+            'category' => 'fuel',
+            'amount' => 5000,
+            'expense_date' => now()->toDateString(),
+            'receipt_photo' => UploadedFile::fake()->create('receipt.pdf', 100),
+        ]);
+
+        $response->assertSessionHasErrors('receipt_photo');
+        $this->assertDatabaseCount('expenses', 0);
     }
 }

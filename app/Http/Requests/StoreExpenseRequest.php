@@ -29,6 +29,7 @@ class StoreExpenseRequest extends FormRequest
             'amount' => ['required', 'numeric', 'min:0.01'],
             'expense_date' => ['required', 'date'],
             'description' => ['nullable', 'string'],
+            'receipt_photo' => ['nullable', 'image', 'max:4096'],
         ];
     }
 }
