@@ -48,6 +48,7 @@ class Expense extends Model
         'amount',
         'expense_date',
         'description',
+        'receipt_photo_path',
     ];
 
     /**
