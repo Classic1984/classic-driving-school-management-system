@@ -22,10 +22,15 @@ class Expense extends Model
         'salary' => 'Salary',
         'car_repair' => 'Car Repair',
         'car_bodywork' => 'Car Bodywork',
+        'new_car' => 'New Car',
+        'new_engine' => 'New Engine',
+        'vehicle_insurance' => 'Vehicle Insurance',
+        'vehicle_registration' => 'Vehicle Registration/Roadworthiness Renewal',
         'office_rent' => 'Office Rent',
         'electricity' => 'Electricity',
         'internet' => 'Internet',
         'office_tools_repair' => 'Office Tools Repair',
+        'marketing' => 'Marketing/Advertising',
         'food' => 'Food',
         'clothes_shoes' => 'Clothes & Shoes',
         'house_materials' => 'House Materials',
@@ -36,6 +41,7 @@ class Expense extends Model
         'perfume' => 'Perfume',
         'investment_saving' => 'Investment/Saving',
         'gift' => 'Gift',
+        'miscellaneous' => 'Miscellaneous/Other',
     ];
 
     /**
