@@ -22,6 +22,8 @@ class Expense extends Model
         'salary' => 'Salary',
         'car_repair' => 'Car Repair',
         'car_bodywork' => 'Car Bodywork',
+        'new_car' => 'New Car',
+        'new_engine' => 'New Engine',
         'vehicle_insurance' => 'Vehicle Insurance',
         'vehicle_registration' => 'Vehicle Registration/Roadworthiness Renewal',
         'office_rent' => 'Office Rent',
