@@ -1,214 +1,100 @@
-<nav x-data="{ open: false }" class="bg-black border-b border-gray-800">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto" />
-                    </a>
-                </div>
+<!-- Mobile backdrop -->
+<div @click="sidebarOpen = false" :class="{ 'block': sidebarOpen, 'hidden': ! sidebarOpen }" class="hidden fixed inset-0 z-40 bg-black/50 lg:hidden"></div>
 
-                @php
-                    $trainingActive = request()->routeIs('courses.*') || request()->routeIs('instructors.*') || request()->routeIs('vehicles.*') || request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record');
-                    $adminActive = request()->routeIs('finance.*') || request()->routeIs('expenses.*') || request()->routeIs('services.*') || request()->routeIs('theory-class-cancellations.*') || request()->routeIs('activity-log.*') || request()->routeIs('message-log.*') || request()->routeIs('users.*') || request()->routeIs('student-correction-requests.*') || request()->routeIs('discount-requests.*');
-                    $navGroupTriggerClasses = fn ($active) => $active
-                        ? 'inline-flex items-center px-1 pt-1 border-b-2 border-amber-500 text-sm font-medium leading-5 text-white focus:outline-none focus:border-amber-400 transition duration-150 ease-in-out'
-                        : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-400 hover:text-amber-400 hover:border-gray-500 focus:outline-none focus:text-amber-400 focus:border-gray-500 transition duration-150 ease-in-out';
-                @endphp
-
-                <!-- Navigation Links -->
-                <div class="hidden items-center space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
-                        {{ __('Students') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
-                        {{ __('Leads') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
-                        {{ __('Payments') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
-                        {{ __('Certificates') }}
-                    </x-nav-link>
-
-                    <x-dropdown align="left" width="w-56">
-                        <x-slot name="trigger">
-                            <button type="button" class="{{ $navGroupTriggerClasses($trainingActive) }}">
-                                {{ __('Training') }}
-                                <svg class="ms-1 fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </x-slot>
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('courses.index')">{{ __('Courses') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('instructors.index')">{{ __('Instructors') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('vehicles.index')">{{ __('Vehicles') }}</x-dropdown-link>
-                            <x-dropdown-link :href="route('enrolled-trainees.index')">{{ __('Student Login Training') }}</x-dropdown-link>
-                        </x-slot>
-                    </x-dropdown>
-
-                    @if (auth()->user()->isDirector())
-                        <x-dropdown align="left" width="w-56">
-                            <x-slot name="trigger">
-                                <button type="button" class="{{ $navGroupTriggerClasses($adminActive) }}">
-                                    {{ __('Admin') }}
-                                    <svg class="ms-1 fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </x-slot>
-                            <x-slot name="content">
-                                <x-dropdown-link :href="route('finance.summary')">{{ __('Finance') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('services.index')">{{ __('Services') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('theory-class-cancellations.index')">{{ __('Theory Class') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('activity-log.index')">{{ __('Activity Log') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('message-log.index')">{{ __('Message Log') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('users.index')">{{ __('Staff') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('student-correction-requests.index')">{{ __('Report Correction') }}</x-dropdown-link>
-                                <x-dropdown-link :href="route('discount-requests.index')">{{ __('Discount Requests') }}</x-dropdown-link>
-                            </x-slot>
-                        </x-dropdown>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-300 bg-black hover:text-amber-400 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-amber-400 hover:bg-gray-800 focus:outline-none focus:bg-gray-800 focus:text-amber-400 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+<!-- Sidebar -->
+<aside
+    :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': ! sidebarOpen }"
+    class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col bg-black transition-transform duration-200 ease-in-out lg:translate-x-0"
+>
+    <div class="flex h-16 shrink-0 items-center justify-between px-4 border-b border-gray-800">
+        <a href="{{ route('dashboard') }}">
+            <x-application-logo class="block h-9 w-auto" />
+        </a>
+        <button @click="sidebarOpen = false" class="text-gray-400 hover:text-amber-400 lg:hidden">
+            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-black">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+    <nav class="flex-1 overflow-y-auto px-2 py-4 space-y-1">
+        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            {{ __('Dashboard') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
+            {{ __('Students') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
+            {{ __('Leads') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
+            {{ __('Payments') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
+            {{ __('Certificates') }}
+        </x-responsive-nav-link>
+
+        <p class="px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Training') }}</p>
+        <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
+            {{ __('Courses') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('instructors.index')" :active="request()->routeIs('instructors.*')">
+            {{ __('Instructors') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('vehicles.index')" :active="request()->routeIs('vehicles.*')">
+            {{ __('Vehicles') }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
+            {{ __('Student Login Training') }}
+        </x-responsive-nav-link>
+
+        @if (auth()->user()->isDirector())
+            <p class="px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Admin') }}</p>
+            <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
+                {{ __('Finance') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
-                {{ __('Students') }}
+            <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
+                {{ __('Services') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
-                {{ __('Leads') }}
+            <x-responsive-nav-link :href="route('theory-class-cancellations.index')" :active="request()->routeIs('theory-class-cancellations.*')">
+                {{ __('Theory Class') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
-                {{ __('Payments') }}
+            <x-responsive-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
+                {{ __('Activity Log') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">
-                {{ __('Certificates') }}
+            <x-responsive-nav-link :href="route('message-log.index')" :active="request()->routeIs('message-log.*')">
+                {{ __('Message Log') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                {{ __('Staff') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
+                {{ __('Report Correction') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('discount-requests.index')" :active="request()->routeIs('discount-requests.*')">
+                {{ __('Discount Requests') }}
+            </x-responsive-nav-link>
+        @endif
+    </nav>
+
+    <div class="shrink-0 border-t border-gray-800 p-4">
+        <div class="font-medium text-sm text-white truncate">{{ Auth::user()->name }}</div>
+        <div class="font-medium text-xs text-gray-400 truncate">{{ Auth::user()->email }}</div>
+
+        <div class="mt-3 space-y-1">
+            <x-responsive-nav-link :href="route('profile.edit')">
+                {{ __('Profile') }}
             </x-responsive-nav-link>
 
-            <p class="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Training') }}</p>
-            <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
-                {{ __('Courses') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('instructors.index')" :active="request()->routeIs('instructors.*')">
-                {{ __('Instructors') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('vehicles.index')" :active="request()->routeIs('vehicles.*')">
-                {{ __('Vehicles') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
-                {{ __('Student Login Training') }}
-            </x-responsive-nav-link>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
 
-            @if (auth()->user()->isDirector())
-                <p class="px-4 pt-3 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Admin') }}</p>
-                <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
-                    {{ __('Finance') }}
+                <x-responsive-nav-link :href="route('logout')"
+                        onclick="event.preventDefault();
+                                    this.closest('form').submit();">
+                    {{ __('Log Out') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
-                    {{ __('Services') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('theory-class-cancellations.index')" :active="request()->routeIs('theory-class-cancellations.*')">
-                    {{ __('Theory Class') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('activity-log.index')" :active="request()->routeIs('activity-log.*')">
-                    {{ __('Activity Log') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('message-log.index')" :active="request()->routeIs('message-log.*')">
-                    {{ __('Message Log') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
-                    {{ __('Staff') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                    {{ __('Report Correction') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('discount-requests.index')" :active="request()->routeIs('discount-requests.*')">
-                    {{ __('Discount Requests') }}
-                </x-responsive-nav-link>
-            @endif
-        </div>
-
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-700">
-            <div class="px-4">
-                <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-400">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
+            </form>
         </div>
     </div>
-</nav>
+</aside>
