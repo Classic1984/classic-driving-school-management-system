@@ -10,6 +10,7 @@ use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\StudentService;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -49,9 +50,11 @@ class DashboardController extends Controller
             ];
         }
 
-        $outstandingPayments = Enrollment::with(['student', 'course'])
+        $outstandingEnrollments = Enrollment::with(['student', 'course'])
             ->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0)
+            ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0);
+
+        $outstandingPayments = $outstandingEnrollments
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)
             ->take(10)
             ->values();
@@ -97,7 +100,40 @@ class DashboardController extends Controller
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->attendedDays())
             ->values();
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts'));
+        $completedEnrollments = Enrollment::where('status', 'completed')->get();
+
+        // Top-line KPI cards: the numbers a Director should see at a glance
+        // without reading any of the detail widgets below.
+        $kpis = [
+            'active_students' => Student::where('status', 'active')->count(),
+            'training_today' => $trainingStats['today'],
+            'pending_payments' => $outstandingEnrollments->sum(fn (Enrollment $enrollment) => $enrollment->balance()),
+            'completed_training' => $completedEnrollments->count(),
+            'active_vehicles' => Vehicle::where('status', 'active')->count(),
+            'certificates_due' => $completedEnrollments->filter(fn (Enrollment $enrollment) => ! $enrollment->hasCertificate())->count(),
+        ];
+
+        $todaysAttendance = Attendance::where('status', 'present')->whereDate('date', today());
+
+        // Today's Operations: a same-day snapshot, distinct from the KPI
+        // cards above (which are cumulative/current totals) - what
+        // actually happened or needs attention today specifically.
+        $todaysOperations = [
+            'students_trained' => $trainingStats['today'],
+            'training_sessions' => (clone $todaysAttendance)->count(),
+            'instructors_active' => (clone $todaysAttendance)->distinct('instructor_id')->count('instructor_id'),
+            'vehicles_in_use' => (clone $todaysAttendance)->whereNotNull('vehicle_id')->distinct('vehicle_id')->count('vehicle_id'),
+            'payments_received_today' => $stats['payments'],
+            'payments_pending_count' => $outstandingEnrollments->count(),
+            'approaching_completion' => Enrollment::where('status', 'active')
+                ->get()
+                ->filter(fn (Enrollment $enrollment) => $enrollment->remainingTrainingDays() > 0
+                    && $enrollment->remainingTrainingDays() <= Enrollment::TRAINING_DAYS_REMAINING_THRESHOLD)
+                ->count(),
+            'locked_students' => Enrollment::where('status', 'locked')->count(),
+        ];
+
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations'));
     }
 
     /**
