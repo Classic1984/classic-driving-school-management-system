@@ -77,7 +77,8 @@ class StudentController extends Controller
     {
         $data = $request->validated();
         unset(
-            $data['photo'], $data['course_id'], $data['starts_double_period'], $data['amount_paid'], $data['payment_method'],
+            $data['photo'], $data['id_document'], $data['license_document'],
+            $data['course_id'], $data['starts_double_period'], $data['amount_paid'], $data['payment_method'],
             $data['discount_choice'], $data['custom_discount_percentage'], $data['custom_discount_amount'],
             $data['discount_reason'], $data['discount_reason_note'],
             $data['service_ids'], $data['training_amount'], $data['service_amounts'],
@@ -85,6 +86,14 @@ class StudentController extends Controller
 
         if ($request->hasFile('photo')) {
             $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
+        }
+
+        if ($request->hasFile('id_document')) {
+            $data['id_document_path'] = $request->file('id_document')->store('student-documents', 'public');
+        }
+
+        if ($request->hasFile('license_document')) {
+            $data['license_document_path'] = $request->file('license_document')->store('student-documents', 'public');
         }
 
         $student = Student::create($data);
@@ -196,7 +205,7 @@ class StudentController extends Controller
     public function update(UpdateStudentRequest $request, Student $student): RedirectResponse
     {
         $data = $request->validated();
-        unset($data['photo']);
+        unset($data['photo'], $data['id_document'], $data['license_document']);
 
         if ($request->hasFile('photo')) {
             if ($student->photo_path) {
@@ -204,6 +213,22 @@ class StudentController extends Controller
             }
 
             $data['photo_path'] = $request->file('photo')->store('student-photos', 'public');
+        }
+
+        if ($request->hasFile('id_document')) {
+            if ($student->id_document_path) {
+                Storage::disk('public')->delete($student->id_document_path);
+            }
+
+            $data['id_document_path'] = $request->file('id_document')->store('student-documents', 'public');
+        }
+
+        if ($request->hasFile('license_document')) {
+            if ($student->license_document_path) {
+                Storage::disk('public')->delete($student->license_document_path);
+            }
+
+            $data['license_document_path'] = $request->file('license_document')->store('student-documents', 'public');
         }
 
         $isDirector = $request->user()->isDirector();
@@ -245,6 +270,14 @@ class StudentController extends Controller
     {
         if ($student->photo_path) {
             Storage::disk('public')->delete($student->photo_path);
+        }
+
+        if ($student->id_document_path) {
+            Storage::disk('public')->delete($student->id_document_path);
+        }
+
+        if ($student->license_document_path) {
+            Storage::disk('public')->delete($student->license_document_path);
         }
 
         $name = $student->name;

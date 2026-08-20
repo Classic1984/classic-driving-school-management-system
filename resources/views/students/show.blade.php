@@ -53,6 +53,7 @@
                         <button type="button" @click="tab = 'attendance'" :class="tab === 'attendance' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-1 pb-2 text-sm font-medium border-b-2">{{ __('Attendance') }}</button>
                         <button type="button" @click="tab = 'payments'" :class="tab === 'payments' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-1 pb-2 text-sm font-medium border-b-2">{{ __('Payments') }}</button>
                         <button type="button" @click="tab = 'certificates'" :class="tab === 'certificates' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-1 pb-2 text-sm font-medium border-b-2">{{ __('Certificates') }}</button>
+                        <button type="button" @click="tab = 'documents'" :class="tab === 'documents' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-1 pb-2 text-sm font-medium border-b-2">{{ __('Documents') }}</button>
                     </nav>
 
                     <div x-show="tab === 'overview'" class="space-y-4">
@@ -695,6 +696,47 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+
+                    <div x-show="tab === 'documents'">
+                        <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Documents') }}</h3>
+                        <dl class="divide-y divide-gray-100">
+                            <div class="py-3 grid grid-cols-3 gap-4 items-center">
+                                <dt class="text-sm font-medium text-gray-500">{{ __('Passport Photo') }}</dt>
+                                <dd class="text-sm text-gray-900 col-span-2">
+                                    @if ($student->photo_path)
+                                        <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-md border border-gray-200">
+                                    @else
+                                        <span class="text-gray-400">{{ __('Not uploaded') }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                            <div class="py-3 grid grid-cols-3 gap-4 items-center">
+                                <dt class="text-sm font-medium text-gray-500">{{ __('Identification Document') }}</dt>
+                                <dd class="text-sm text-gray-900 col-span-2">
+                                    @if ($student->id_document_path)
+                                        <a href="{{ Storage::url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a>
+                                    @else
+                                        <span class="text-gray-400">{{ __('Not uploaded') }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                            <div class="py-3 grid grid-cols-3 gap-4 items-center">
+                                <dt class="text-sm font-medium text-gray-500">{{ __('Licence Document') }}</dt>
+                                <dd class="text-sm text-gray-900 col-span-2">
+                                    @if ($student->license_document_path)
+                                        <a href="{{ Storage::url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a>
+                                    @else
+                                        <span class="text-gray-400">{{ __('Not uploaded') }}</span>
+                                    @endif
+                                </dd>
+                            </div>
+                            <div class="py-3 grid grid-cols-3 gap-4 items-center">
+                                <dt class="text-sm font-medium text-gray-500">{{ __('Licence Number') }}</dt>
+                                <dd class="text-sm text-gray-900 col-span-2">{{ $student->license_number ?? '—' }}</dd>
+                            </div>
+                        </dl>
+                        <a href="{{ route('students.edit', $student) }}" class="mt-4 inline-block text-sm text-amber-600 hover:underline">{{ __('Upload or replace a document') }}</a>
                     </div>
                 </div>
 

@@ -42,6 +42,8 @@ class Student extends Model
         'referral_source',
         'referral_source_other',
         'photo_path',
+        'id_document_path',
+        'license_document_path',
         'enrollment_date',
         'status',
         'last_absence_reminder_sent_at',

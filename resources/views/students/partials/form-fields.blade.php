@@ -161,6 +161,12 @@
     <x-input-error class="mt-2" :messages="$errors->get('vehicle_class')" />
 </div>
 
+<div>
+    <x-input-label for="license_number" :value="__('License Number')" />
+    <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number)" />
+    <x-input-error class="mt-2" :messages="$errors->get('license_number')" />
+</div>
+
 @php($hasDrivingExperience = old('has_driving_experience', $student?->has_driving_experience))
 <div>
     <x-input-label for="has_driving_experience" :value="__('Do You Have Any Previous Knowledge of Driving?')" />
@@ -237,6 +243,24 @@
     @endif
     <input id="photo" name="photo" type="file" accept="image/*" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
     <x-input-error class="mt-2" :messages="$errors->get('photo')" />
+</div>
+
+<div>
+    <x-input-label for="id_document" :value="__('Identification Document')" />
+    @if ($student?->id_document_path)
+        <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
+    @endif
+    <input id="id_document" name="id_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+    <x-input-error class="mt-2" :messages="$errors->get('id_document')" />
+</div>
+
+<div>
+    <x-input-label for="license_document" :value="__('Licence Document')" />
+    @if ($student?->license_document_path)
+        <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
+    @endif
+    <input id="license_document" name="license_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+    <x-input-error class="mt-2" :messages="$errors->get('license_document')" />
 </div>
 
 @if (! $student)
