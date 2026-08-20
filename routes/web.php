@@ -93,6 +93,8 @@ Route::middleware('auth')->group(function () {
         Route::get('payment-reports', [PaymentReportController::class, 'index'])->name('payment-reports.index');
         Route::get('payment-reports/export', [PaymentReportController::class, 'export'])->name('payment-reports.export');
         Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
+        Route::get('payments/{payment}/correct', [PaymentCorrectionController::class, 'edit'])->name('payments.correct.edit');
+        Route::put('payments/{payment}/correct', [PaymentCorrectionController::class, 'update'])->name('payments.correct.update');
         Route::get('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'showReactivateForm'])->name('enrollments.reactivate.create');
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
         Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
@@ -167,8 +169,6 @@ Route::middleware('auth')->group(function () {
     Route::post('payments/record', [PaymentAllocationController::class, 'store'])->name('payments.record.store');
     Route::resource('payments', PaymentController::class)->except(['destroy']);
     Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
-    Route::get('payments/{payment}/correct', [PaymentCorrectionController::class, 'edit'])->name('payments.correct.edit');
-    Route::put('payments/{payment}/correct', [PaymentCorrectionController::class, 'update'])->name('payments.correct.update');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });
