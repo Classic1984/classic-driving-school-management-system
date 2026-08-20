@@ -217,7 +217,7 @@
                                         @if ($enrollment->isOverdue())
                                             <x-badge color="red">{{ __('Overdue') }}</x-badge>
                                         @else
-                                            <x-badge color="gray">{{ __('Upcoming') }}</x-badge>
+                                            <x-badge color="amber">{{ __('Upcoming') }}</x-badge>
                                         @endif
                                     </td>
                                 </tr>
