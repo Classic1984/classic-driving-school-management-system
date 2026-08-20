@@ -26,7 +26,7 @@
                 <h1 class="text-2xl font-bold text-amber-400">{{ $greeting }}, {{ $firstName }}</h1>
                 <p class="mt-1 text-sm text-gray-300">{{ now()->format('l, F j, Y') }}</p>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mt-6">
+                <div class="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4 mt-6">
                     <div class="bg-gray-900 rounded-lg p-4">
                         <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Active Students') }}</p>
                         <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['active_students']) }}</p>
