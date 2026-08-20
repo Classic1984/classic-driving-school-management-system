@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ApprovalCentreController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\BackupController;
@@ -110,18 +111,22 @@ Route::middleware('auth')->group(function () {
         Route::resource('services', ServiceController::class)->except(['show']);
         Route::resource('theory-class-cancellations', TheoryClassCancellationController::class)->only(['index', 'store', 'destroy']);
 
-        // Reviewing and resolving/rejecting correction requests is
-        // Director-only; submitting one (below, outside this group) is
-        // open to any authenticated user.
-        Route::get('correction-requests', [StudentCorrectionRequestController::class, 'index'])->name('student-correction-requests.index');
+        // Unified inbox aggregating every pending approval type below into
+        // one screen, so a Director doesn't have to visit each type's own
+        // page to see what's waiting.
+        Route::get('approvals', [ApprovalCentreController::class, 'index'])->name('approvals.index');
+
+        // Resolving/rejecting correction requests is Director-only;
+        // submitting one (below, outside this group) is open to any
+        // authenticated user. The pending inbox itself lives at
+        // approvals.index above, not a dedicated listing route.
         Route::patch('correction-requests/{correctionRequest}/resolve', [StudentCorrectionRequestController::class, 'resolve'])->name('student-correction-requests.resolve');
         Route::patch('correction-requests/{correctionRequest}/reject', [StudentCorrectionRequestController::class, 'reject'])->name('student-correction-requests.reject');
 
         // Approving/rejecting a pending discount request is Director-only,
-        // same as reviewing correction requests above; raising one in the
-        // first place happens inline during registration (open to any
+        // same as correction requests above; raising one in the first
+        // place happens inline during registration (open to any
         // authenticated role) rather than through a dedicated route.
-        Route::get('discount-requests', [DiscountRequestController::class, 'index'])->name('discount-requests.index');
         Route::patch('discount-requests/{discountRequest}/approve', [DiscountRequestController::class, 'approve'])->name('discount-requests.approve');
         Route::patch('discount-requests/{discountRequest}/reject', [DiscountRequestController::class, 'reject'])->name('discount-requests.reject');
     });

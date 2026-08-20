@@ -58,6 +58,13 @@
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __("Today's Operations") }}</h3>
 
                 <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-700">
+                    @if (auth()->user()->isDirector())
+                        <li>
+                            <a href="{{ route('approvals.index') }}" class="{{ $todaysOperations['pending_approvals'] > 0 ? 'text-red-600 font-medium' : 'text-gray-700' }} hover:underline">
+                                {{ __(':count approval(s) pending', ['count' => $todaysOperations['pending_approvals']]) }}
+                            </a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
                             {{ __(':count student(s) trained today', ['count' => $todaysOperations['students_trained']]) }}
