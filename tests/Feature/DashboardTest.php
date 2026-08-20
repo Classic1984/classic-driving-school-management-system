@@ -5,11 +5,13 @@ namespace Tests\Feature;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
+use App\Models\DiscountRequest;
 use App\Models\Instructor;
 use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
+use App\Models\StudentCorrectionRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -752,5 +754,28 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSeeInOrder(['1', 'student(s) approaching completion']);
         $response->assertSeeInOrder(['1', 'student(s) locked']);
+    }
+
+    public function test_a_director_sees_the_pending_approvals_count_on_the_dashboard(): void
+    {
+        $director = User::factory()->director()->create();
+        DiscountRequest::factory()->create();
+        StudentCorrectionRequest::factory()->create();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['2', 'approval(s) pending']);
+    }
+
+    public function test_a_secretary_does_not_see_the_pending_approvals_link(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        DiscountRequest::factory()->create();
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('approval(s) pending');
     }
 }

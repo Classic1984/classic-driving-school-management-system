@@ -17,20 +17,6 @@ use Illuminate\View\View;
 class StudentCorrectionRequestController extends Controller
 {
     /**
-     * Director-only inbox of every pending correction request across all
-     * students.
-     */
-    public function index(): View
-    {
-        $correctionRequests = StudentCorrectionRequest::with(['student', 'requestedBy'])
-            ->where('status', 'pending')
-            ->latest()
-            ->paginate(20);
-
-        return view('student-correction-requests.index', compact('correctionRequests'));
-    }
-
-    /**
      * Show the form for requesting a correction to one of a student's
      * Director-locked fields.
      */
@@ -85,7 +71,7 @@ class StudentCorrectionRequestController extends Controller
 
         ActivityLog::record("Resolved a correction request for {$correctionRequest->student->name}'s {$correctionRequest->fieldLabel()}");
 
-        return Redirect::route('student-correction-requests.index')->with('status', 'correction-request-resolved');
+        return Redirect::route('approvals.index')->with('status', 'correction-request-resolved');
     }
 
     /**
@@ -101,7 +87,7 @@ class StudentCorrectionRequestController extends Controller
 
         ActivityLog::record("Rejected a correction request for {$correctionRequest->student->name}'s {$correctionRequest->fieldLabel()}");
 
-        return Redirect::route('student-correction-requests.index')->with('status', 'correction-request-rejected');
+        return Redirect::route('approvals.index')->with('status', 'correction-request-rejected');
     }
 
     /**

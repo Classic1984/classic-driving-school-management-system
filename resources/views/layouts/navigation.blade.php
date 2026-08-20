@@ -50,6 +50,9 @@
 
         @if (auth()->user()->isDirector())
             <p class="px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Admin') }}</p>
+            <x-responsive-nav-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')">
+                {{ __('Approval Centre') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
                 {{ __('Finance') }}
             </x-responsive-nav-link>
@@ -67,12 +70,6 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                 {{ __('Staff') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('student-correction-requests.index')" :active="request()->routeIs('student-correction-requests.*')">
-                {{ __('Report Correction') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('discount-requests.index')" :active="request()->routeIs('discount-requests.*')">
-                {{ __('Discount Requests') }}
             </x-responsive-nav-link>
         @endif
     </nav>
