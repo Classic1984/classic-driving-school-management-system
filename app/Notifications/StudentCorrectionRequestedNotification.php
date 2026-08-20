@@ -33,6 +33,6 @@ class StudentCorrectionRequestedNotification extends Notification
             ->line("Current value: {$request->current_value}")
             ->line("Requested value: {$request->requested_value}")
             ->when($request->reason, fn ($mail) => $mail->line("Reason: {$request->reason}"))
-            ->action('Review Request', route('student-correction-requests.index'));
+            ->action('Review Request', route('approvals.index'));
     }
 }

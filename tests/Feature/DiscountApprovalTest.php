@@ -28,18 +28,6 @@ class DiscountApprovalTest extends TestCase
         ], $overrides);
     }
 
-    public function test_guests_are_redirected_to_login(): void
-    {
-        $this->get('/discount-requests')->assertRedirect('/login');
-    }
-
-    public function test_a_secretary_cannot_view_the_discount_requests_inbox(): void
-    {
-        $secretary = User::factory()->secretary()->create();
-
-        $this->actingAs($secretary)->get('/discount-requests')->assertForbidden();
-    }
-
     public function test_directors_are_notified_when_a_secretary_requests_a_discount(): void
     {
         Notification::fake();
@@ -109,7 +97,7 @@ class DiscountApprovalTest extends TestCase
 
         $response = $this->actingAs($director)->patch("/discount-requests/{$discountRequest->id}/approve");
 
-        $response->assertRedirect(route('discount-requests.index'));
+        $response->assertRedirect(route('approvals.index'));
 
         $enrollment = $student->courses->first()->pivot;
         $this->assertSame(90000.0, $enrollment->fee());
@@ -141,7 +129,7 @@ class DiscountApprovalTest extends TestCase
 
         $response = $this->actingAs($director)->patch("/discount-requests/{$discountRequest->id}/reject");
 
-        $response->assertRedirect(route('discount-requests.index'));
+        $response->assertRedirect(route('approvals.index'));
 
         $enrollment = $student->courses->first()->pivot;
         $this->assertSame(95000.0, $enrollment->fee());
@@ -174,17 +162,5 @@ class DiscountApprovalTest extends TestCase
 
         $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
         $this->assertSame(90000.0, $student->courses->first()->pivot->fee());
-    }
-
-    public function test_the_pending_discount_requests_inbox_lists_a_request(): void
-    {
-        $director = User::factory()->director()->create();
-        $discountRequest = DiscountRequest::factory()->create();
-
-        $response = $this->actingAs($director)->get('/discount-requests');
-
-        $response->assertOk();
-        $response->assertSee($discountRequest->student->name);
-        $response->assertSee($discountRequest->course->name);
     }
 }

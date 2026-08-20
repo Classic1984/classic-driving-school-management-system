@@ -21,7 +21,6 @@ class StudentCorrectionRequestTest extends TestCase
 
         $this->get("/students/{$student->id}/correction-requests/create")->assertRedirect('/login');
         $this->post("/students/{$student->id}/correction-requests", [])->assertRedirect('/login');
-        $this->get('/correction-requests')->assertRedirect('/login');
     }
 
     public function test_a_secretary_can_submit_a_correction_request_and_directors_are_notified(): void
@@ -79,13 +78,6 @@ class StudentCorrectionRequestTest extends TestCase
         $response->assertSessionHasErrors(['field', 'requested_value']);
     }
 
-    public function test_a_secretary_cannot_view_the_correction_requests_inbox(): void
-    {
-        $secretary = User::factory()->secretary()->create();
-
-        $this->actingAs($secretary)->get('/correction-requests')->assertForbidden();
-    }
-
     public function test_a_secretary_cannot_resolve_or_reject_correction_requests(): void
     {
         $secretary = User::factory()->secretary()->create();
@@ -96,19 +88,6 @@ class StudentCorrectionRequestTest extends TestCase
         $this->assertSame('pending', $correctionRequest->fresh()->status);
     }
 
-    public function test_a_director_can_view_pending_correction_requests(): void
-    {
-        $director = User::factory()->director()->create();
-        $pending = StudentCorrectionRequest::factory()->create();
-        $resolved = StudentCorrectionRequest::factory()->resolved()->create();
-
-        $response = $this->actingAs($director)->get('/correction-requests');
-
-        $response->assertOk();
-        $response->assertSee($pending->student->name);
-        $response->assertDontSee($resolved->student->name);
-    }
-
     public function test_a_director_can_mark_a_correction_request_resolved(): void
     {
         $director = User::factory()->director()->create();
@@ -116,7 +95,7 @@ class StudentCorrectionRequestTest extends TestCase
 
         $response = $this->actingAs($director)->patch("/correction-requests/{$correctionRequest->id}/resolve");
 
-        $response->assertRedirect('/correction-requests');
+        $response->assertRedirect(route('approvals.index'));
         $correctionRequest->refresh();
         $this->assertSame('resolved', $correctionRequest->status);
         $this->assertSame($director->id, $correctionRequest->resolved_by);
@@ -130,7 +109,7 @@ class StudentCorrectionRequestTest extends TestCase
 
         $response = $this->actingAs($director)->patch("/correction-requests/{$correctionRequest->id}/reject");
 
-        $response->assertRedirect('/correction-requests');
+        $response->assertRedirect(route('approvals.index'));
         $this->assertSame('rejected', $correctionRequest->fresh()->status);
     }
 

@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\DiscountRequest;
 use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Student;
+use App\Models\StudentCorrectionRequest;
 use App\Models\StudentService;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
@@ -131,6 +133,8 @@ class DashboardController extends Controller
                     && $enrollment->remainingTrainingDays() <= Enrollment::TRAINING_DAYS_REMAINING_THRESHOLD)
                 ->count(),
             'locked_students' => Enrollment::where('status', 'locked')->count(),
+            'pending_approvals' => DiscountRequest::where('status', 'pending')->count()
+                + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
         return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations'));
