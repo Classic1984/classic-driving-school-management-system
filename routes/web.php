@@ -25,6 +25,7 @@ use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReferralSourceReportController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StudentController;
@@ -161,6 +162,9 @@ Route::middleware('auth')->group(function () {
     Route::get('lead-conversion-report', [LeadConversionReportController::class, 'index'])->name('lead-conversion-report.index');
     Route::get('lead-conversion-report/export', [LeadConversionReportController::class, 'export'])->name('lead-conversion-report.export');
     Route::get('lead-conversion-report/export-pdf', [LeadConversionReportController::class, 'exportPdf'])->name('lead-conversion-report.export-pdf');
+    Route::get('referral-source-report', [ReferralSourceReportController::class, 'index'])->name('referral-source-report.index');
+    Route::get('referral-source-report/export', [ReferralSourceReportController::class, 'export'])->name('referral-source-report.export');
+    Route::get('referral-source-report/export-pdf', [ReferralSourceReportController::class, 'exportPdf'])->name('referral-source-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
     // above: "payments/export" and "payments/record" would otherwise be swallowed by
     // "payments/{payment}".
