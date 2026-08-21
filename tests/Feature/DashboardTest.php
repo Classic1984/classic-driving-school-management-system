@@ -778,4 +778,46 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('approval(s) pending');
     }
+
+    public function test_dashboard_lists_a_pending_learners_permit_request(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Pending Permit']);
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'not_started']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee("Learner's Permit Requests");
+        $response->assertSee('Pending Permit');
+        $response->assertSee('Mark Obtained');
+    }
+
+    public function test_dashboard_does_not_list_an_already_obtained_learners_permit(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Already Obtained']);
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee("Learner's Permit Requests");
+        $response->assertDontSee('Already Obtained');
+    }
+
+    public function test_dashboard_does_not_list_a_pending_service_that_is_not_a_learners_permit(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Other Service Student']);
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 50000, 'processing_status' => 'not_started']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee("Learner's Permit Requests");
+    }
 }

@@ -89,6 +89,17 @@ class DashboardController extends Controller
             ->sortBy(fn (StudentService $studentService) => $studentService->expectedReadyAt())
             ->values();
 
+        // Learner's Permit has no tracked turnaround (it's usually issued
+        // same-day), so it never appears in the Service Processing widget
+        // above - this is its own list of students still waiting on
+        // theirs, oldest charge first, so a request that's lingered past
+        // the usual same-day turnaround stands out.
+        $learnersPermitRequests = StudentService::whereHas('service', fn ($query) => $query->where('name', "Learner's Permit"))
+            ->where('processing_status', '!=', 'completed')
+            ->with(['student', 'service'])
+            ->oldest('created_at')
+            ->get();
+
         // Programme Upgrade Window alerts: enrollments still within (or just
         // past) their five-day upgrade window that actually have a longer
         // programme to upgrade into - a stale enrollment that closed weeks
@@ -137,7 +148,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'learnersPermitRequests'));
     }
 
     /**

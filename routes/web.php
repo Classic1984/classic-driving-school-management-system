@@ -18,6 +18,7 @@ use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadConversionReportController;
+use App\Http\Controllers\LearnersPermitReportController;
 use App\Http\Controllers\MessageLogController;
 use App\Http\Controllers\PaymentAllocationController;
 use App\Http\Controllers\PaymentController;
@@ -165,6 +166,9 @@ Route::middleware('auth')->group(function () {
     Route::get('referral-source-report', [ReferralSourceReportController::class, 'index'])->name('referral-source-report.index');
     Route::get('referral-source-report/export', [ReferralSourceReportController::class, 'export'])->name('referral-source-report.export');
     Route::get('referral-source-report/export-pdf', [ReferralSourceReportController::class, 'exportPdf'])->name('referral-source-report.export-pdf');
+    Route::get('learners-permit-report', [LearnersPermitReportController::class, 'index'])->name('learners-permit-report.index');
+    Route::get('learners-permit-report/export', [LearnersPermitReportController::class, 'export'])->name('learners-permit-report.export');
+    Route::get('learners-permit-report/export-pdf', [LearnersPermitReportController::class, 'exportPdf'])->name('learners-permit-report.export-pdf');
     // Registered before the resource below for the same reason as the admin-only group
     // above: "payments/export" and "payments/record" would otherwise be swallowed by
     // "payments/{payment}".
