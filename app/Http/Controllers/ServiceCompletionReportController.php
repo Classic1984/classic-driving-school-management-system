@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Service;
 use App\Models\StudentService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,11 +11,11 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class LearnersPermitReportController extends Controller
+class ServiceCompletionReportController extends Controller
 {
     /**
-     * Periods this report can be filtered by, applied to when the permit
-     * was marked obtained. There's no dedicated "obtained at" column -
+     * Periods this report can be filtered by, applied to when the charge
+     * was marked completed. There's no dedicated "completed at" column -
      * processing_status only ever changes via the explicit status update
      * action, so updated_at doubles as that date.
      */
@@ -29,54 +30,56 @@ class LearnersPermitReportController extends Controller
     ];
 
     /**
-     * How many students actually obtained a Learner's Permit during the
-     * selected period - the historical counterpart to the dashboard's
-     * Learner's Permit Requests widget, which only shows what's still
-     * pending.
+     * How many students actually obtained/completed a given catalog
+     * service during the selected period - the historical counterpart to
+     * a dashboard "requests" widget, which only shows what's still
+     * pending. Works for any service (Learner's Permit, Driver's License
+     * Processing, Online Certificate, or any other charged the same way),
+     * not just one hardcoded by name.
      */
-    public function index(Request $request): View
+    public function index(Request $request, Service $service): View
     {
         $period = $this->period($request);
 
-        $obtained = $this->query($period)->with('student')->latest('updated_at')->get();
+        $completed = $this->query($period, $service)->with('student')->latest('updated_at')->get();
         $label = self::LABELS[$period];
 
-        return view('learners-permit-report.index', compact('obtained', 'period', 'label'));
+        return view('service-reports.index', compact('service', 'completed', 'period', 'label'));
     }
 
     /**
      * Download a CSV (Excel-compatible) export of the same list.
      */
-    public function export(Request $request): StreamedResponse
+    public function export(Request $request, Service $service): StreamedResponse
     {
         $period = $this->period($request);
-        $obtained = $this->query($period)->with('student')->latest('updated_at')->get();
+        $completed = $this->query($period, $service)->with('student')->latest('updated_at')->get();
 
-        return response()->streamDownload(function () use ($obtained) {
+        return response()->streamDownload(function () use ($completed) {
             $handle = fopen('php://output', 'w');
 
-            fputcsv($handle, ['Student ID', 'Student Name', 'Charged Date', 'Obtained Date']);
+            fputcsv($handle, ['Student ID', 'Student Name', 'Charged Date', 'Completed Date']);
 
-            foreach ($obtained as $studentService) {
+            foreach ($completed as $studentService) {
                 fputcsv($handle, $this->row($studentService));
             }
 
             fclose($handle);
-        }, "learners-permit-report-{$period}.csv", ['Content-Type' => 'text/csv']);
+        }, "{$service->name}-report-{$period}.csv", ['Content-Type' => 'text/csv']);
     }
 
     /**
      * Download a printable PDF export of the same list.
      */
-    public function exportPdf(Request $request): Response
+    public function exportPdf(Request $request, Service $service): Response
     {
         $period = $this->period($request);
-        $obtained = $this->query($period)->with('student')->latest('updated_at')->get();
+        $completed = $this->query($period, $service)->with('student')->latest('updated_at')->get();
         $label = self::LABELS[$period];
 
-        $pdf = Pdf::loadView('learners-permit-report.pdf', compact('obtained', 'label'));
+        $pdf = Pdf::loadView('service-reports.pdf', compact('service', 'completed', 'label'));
 
-        return $pdf->download("learners-permit-report-{$period}.pdf");
+        return $pdf->download("{$service->name}-report-{$period}.pdf");
     }
 
     protected function period(Request $request): string
@@ -86,9 +89,9 @@ class LearnersPermitReportController extends Controller
         return in_array($period, self::PERIODS, true) ? $period : 'all_time';
     }
 
-    protected function query(string $period): Builder
+    protected function query(string $period, Service $service): Builder
     {
-        $query = StudentService::whereHas('service', fn ($q) => $q->where('name', "Learner's Permit"))
+        $query = StudentService::where('service_id', $service->id)
             ->where('processing_status', 'completed');
 
         [$from, $to] = match ($period) {

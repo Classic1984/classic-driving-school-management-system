@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __("Learner's Permit Report") }} — {{ __($label) }}
+            {{ $service->name }} {{ __('Report') }} — {{ __($label) }}
         </h2>
     </x-slot>
 
@@ -12,7 +12,7 @@
                     <div class="flex items-center gap-2">
                         @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year', 'all_time' => 'All Time'] as $value => $tabLabel)
                             <a
-                                href="{{ route('learners-permit-report.index', ['period' => $value]) }}"
+                                href="{{ route('service-reports.index', ['service' => $service, 'period' => $value]) }}"
                                 class="px-3 py-1.5 text-sm rounded-md {{ $period === $value ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
                             >{{ __($tabLabel) }}</a>
                         @endforeach
@@ -22,18 +22,18 @@
                         <button type="button" onclick="window.print()">
                             <x-secondary-button type="button">{{ __('Print') }}</x-secondary-button>
                         </button>
-                        <a href="{{ route('learners-permit-report.export', ['period' => $period]) }}">
+                        <a href="{{ route('service-reports.export', ['service' => $service, 'period' => $period]) }}">
                             <x-secondary-button type="button">{{ __('Export Excel') }}</x-secondary-button>
                         </a>
-                        <a href="{{ route('learners-permit-report.export-pdf', ['period' => $period]) }}">
+                        <a href="{{ route('service-reports.export-pdf', ['service' => $service, 'period' => $period]) }}">
                             <x-secondary-button type="button">{{ __('Download PDF') }}</x-secondary-button>
                         </a>
                     </div>
                 </div>
 
                 <div class="bg-black text-amber-400 rounded-lg p-4 mb-6 inline-block">
-                    <p class="text-xs uppercase tracking-wider">{{ __("Learner's Permits Obtained") }}</p>
-                    <p class="text-2xl font-bold mt-1">{{ $obtained->count() }}</p>
+                    <p class="text-xs uppercase tracking-wider">{{ $service->name }} {{ __('Completed') }}</p>
+                    <p class="text-2xl font-bold mt-1">{{ $completed->count() }}</p>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -43,11 +43,11 @@
                                 <th class="px-4 py-2">{{ __('Student ID') }}</th>
                                 <th class="px-4 py-2">{{ __('Student Name') }}</th>
                                 <th class="px-4 py-2">{{ __('Charged Date') }}</th>
-                                <th class="px-4 py-2">{{ __('Obtained Date') }}</th>
+                                <th class="px-4 py-2">{{ __('Completed Date') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @forelse ($obtained as $studentService)
+                            @forelse ($completed as $studentService)
                                 <tr>
                                     <td class="px-4 py-2 text-sm font-mono">{{ $studentService->student->student_id_number }}</td>
                                     <td class="px-4 py-2 text-sm">
@@ -59,7 +59,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500">
-                                        {{ __("No Learner's Permits were obtained during this period.") }}
+                                        {{ __('No :service charges were completed during this period.', ['service' => $service->name]) }}
                                     </td>
                                 </tr>
                             @endforelse

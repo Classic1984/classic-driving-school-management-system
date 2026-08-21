@@ -13,6 +13,7 @@ use App\Models\Student;
 use App\Models\StudentCorrectionRequest;
 use App\Models\StudentService;
 use App\Models\Vehicle;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -89,13 +90,21 @@ class DashboardController extends Controller
             ->sortBy(fn (StudentService $studentService) => $studentService->expectedReadyAt())
             ->values();
 
-        // Learner's Permit has no tracked turnaround (it's usually issued
-        // same-day), so it never appears in the Service Processing widget
-        // above - this is its own list of students still waiting on
-        // theirs, oldest charge first, so a request that's lingered past
-        // the usual same-day turnaround stands out.
-        $learnersPermitRequests = StudentService::whereHas('service', fn ($query) => $query->where('name', "Learner's Permit"))
-            ->where('processing_status', '!=', 'completed')
+        // Learner's Permit and Online Certificate both have no tracked
+        // turnaround (they're usually issued same-day), so neither ever
+        // appears in the Service Processing widget above - this is their
+        // own list of students still waiting, oldest charge first, so a
+        // request that's lingered past the usual same-day turnaround
+        // stands out.
+        $learnersPermitRequests = $this->pendingRequestsFor("Learner's Permit");
+        $onlineCertificateRequests = $this->pendingRequestsFor('Online Certificate');
+
+        // Driver's License Processing does have a tracked turnaround, so
+        // once it's marked "processing" it already shows above with a
+        // progress bar - this only covers the gap before that: charged,
+        // but processing hasn't been started yet.
+        $driversLicenseRequests = StudentService::whereHas('service', fn ($query) => $query->where('name', "Driver's License Processing"))
+            ->where('processing_status', 'not_started')
             ->with(['student', 'service'])
             ->oldest('created_at')
             ->get();
@@ -148,7 +157,25 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'learnersPermitRequests'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests'));
+    }
+
+    /**
+     * Every not-yet-completed charge for the named catalog service,
+     * oldest first - shared by the Learner's Permit and Online
+     * Certificate widgets, which (unlike Driver's License Processing)
+     * have no tracked turnaround and so never appear in the Service
+     * Processing widget in any state.
+     *
+     * @return Collection<int, StudentService>
+     */
+    protected function pendingRequestsFor(string $serviceName): Collection
+    {
+        return StudentService::whereHas('service', fn ($query) => $query->where('name', $serviceName))
+            ->where('processing_status', '!=', 'completed')
+            ->with(['student', 'service'])
+            ->oldest('created_at')
+            ->get();
     }
 
     /**

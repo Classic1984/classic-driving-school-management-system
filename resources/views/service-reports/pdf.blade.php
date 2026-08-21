@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Learner's Permit Report - {{ $label }}</title>
+    <title>{{ $service->name }} Report - {{ $label }}</title>
     <style>
         body { font-family: sans-serif; font-size: 12px; color: #111827; }
         h1 { font-size: 18px; margin-bottom: 0; }
@@ -14,8 +14,8 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Learner's Permit Report — {{ $label }} — Generated {{ now()->format('Y-m-d H:i') }}</h2>
-    <p><strong>Total obtained:</strong> {{ $obtained->count() }}</p>
+    <h2>{{ $service->name }} Report — {{ $label }} — Generated {{ now()->format('Y-m-d H:i') }}</h2>
+    <p><strong>Total completed:</strong> {{ $completed->count() }}</p>
 
     <table>
         <thead>
@@ -23,11 +23,11 @@
                 <th>Student ID</th>
                 <th>Student Name</th>
                 <th>Charged Date</th>
-                <th>Obtained Date</th>
+                <th>Completed Date</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($obtained as $studentService)
+            @forelse ($completed as $studentService)
                 <tr>
                     <td>{{ $studentService->student->student_id_number }}</td>
                     <td>{{ $studentService->student->name }}</td>
@@ -36,7 +36,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="4">No Learner's Permits were obtained during this period.</td>
+                    <td colspan="4">No {{ $service->name }} charges were completed during this period.</td>
                 </tr>
             @endforelse
         </tbody>
