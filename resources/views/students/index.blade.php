@@ -24,9 +24,14 @@
                         {{ __('Students') }}
                     </h3>
 
-                    <a href="{{ route('students.create') }}">
-                        <x-primary-button type="button">{{ __('Add Student') }}</x-primary-button>
-                    </a>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('referral-source-report.index') }}">
+                            <x-secondary-button type="button">{{ __('View Referral Source Report') }}</x-secondary-button>
+                        </a>
+                        <a href="{{ route('students.create') }}">
+                            <x-primary-button type="button">{{ __('Add Student') }}</x-primary-button>
+                        </a>
+                    </div>
                 </div>
 
                 @if (session('status') === 'student-created')
