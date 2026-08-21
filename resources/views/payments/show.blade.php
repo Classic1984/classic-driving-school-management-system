@@ -132,9 +132,11 @@
                     <a href="{{ route('payments.receipt', $payment) }}">
                         <x-secondary-button type="button">{{ __('View Receipt') }}</x-secondary-button>
                     </a>
-                    <a href="{{ route('payments.correct.edit', $payment) }}">
-                        <x-secondary-button type="button">{{ __('Correct Allocation') }}</x-secondary-button>
-                    </a>
+                    @if (auth()->user()->isDirector())
+                        <a href="{{ route('payments.correct.edit', $payment) }}">
+                            <x-secondary-button type="button">{{ __('Correct Allocation') }}</x-secondary-button>
+                        </a>
+                    @endif
                     <a href="{{ route('payments.edit', $payment) }}">
                         <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
                     </a>

@@ -39,6 +39,35 @@ class PaymentCorrectionTest extends TestCase
         $this->put("/payments/{$payment->id}/correct", [])->assertRedirect('/login');
     }
 
+    public function test_a_secretary_cannot_view_or_submit_a_correction(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $payment = Payment::factory()->create();
+
+        $this->actingAs($secretary)->get("/payments/{$payment->id}/correct")->assertForbidden();
+        $this->actingAs($secretary)->put("/payments/{$payment->id}/correct", [])->assertForbidden();
+    }
+
+    public function test_an_admin_cannot_view_or_submit_a_correction(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $payment = Payment::factory()->create();
+
+        $this->actingAs($admin)->get("/payments/{$payment->id}/correct")->assertForbidden();
+        $this->actingAs($admin)->put("/payments/{$payment->id}/correct", [])->assertForbidden();
+    }
+
+    public function test_the_correct_allocation_link_is_hidden_from_a_secretary_on_the_payment_page(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $payment = Payment::factory()->create();
+
+        $response = $this->actingAs($secretary)->get("/payments/{$payment->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('Correct Allocation');
+    }
+
     public function test_the_correction_form_shows_the_current_allocation(): void
     {
         $user = User::factory()->create();
