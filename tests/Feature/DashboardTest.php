@@ -779,6 +779,111 @@ class DashboardTest extends TestCase
         $response->assertDontSee('approval(s) pending');
     }
 
+    public function test_dashboard_lists_a_pending_learners_permit_request(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Pending Permit']);
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'not_started']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee("Learner's Permit Requests");
+        $response->assertSee('Pending Permit');
+        $response->assertSee('Mark Obtained');
+    }
+
+    public function test_dashboard_does_not_list_an_already_obtained_learners_permit(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Already Obtained']);
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee("Learner's Permit Requests");
+        $response->assertDontSee('Already Obtained');
+    }
+
+    public function test_dashboard_does_not_list_a_pending_service_that_is_not_a_learners_permit(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Other Service Student']);
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 50000, 'processing_status' => 'not_started']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee("Learner's Permit Requests");
+    }
+
+    public function test_dashboard_lists_a_pending_online_certificate_request(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Pending Certificate']);
+        $service = Service::factory()->create(['name' => 'Online Certificate', 'price' => 20000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 20000, 'processing_status' => 'not_started']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Online Certificate Requests');
+        $response->assertSee('Pending Certificate');
+        $response->assertSee('Mark Obtained');
+    }
+
+    public function test_dashboard_does_not_list_an_already_obtained_online_certificate(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Already Certified']);
+        $service = Service::factory()->create(['name' => 'Online Certificate', 'price' => 20000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 20000, 'processing_status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Online Certificate Requests');
+        $response->assertDontSee('Already Certified');
+    }
+
+    public function test_dashboard_lists_a_driving_license_charge_that_has_not_started_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Not Started Yet']);
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 50000, 'processing_status' => 'not_started']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee("Driver's License Requests");
+        $response->assertSee('Not Started Yet');
+        $response->assertSee('Start Processing');
+    }
+
+    public function test_dashboard_does_not_duplicate_a_driving_license_already_shown_in_service_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Already Processing']);
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30]);
+        $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => 50000,
+            'processing_status' => 'processing',
+            'processing_started_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Service Processing');
+        $response->assertDontSee("Driver's License Requests");
+    }
+
     public function test_revenue_leakage_flags_an_unpaid_certificate_fee_on_a_completed_enrollment(): void
     {
         $user = User::factory()->create();

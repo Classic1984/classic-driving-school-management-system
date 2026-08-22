@@ -431,6 +431,33 @@
                 </div>
             @endif
 
+            @if ($learnersPermitRequests->isNotEmpty())
+                @include('dashboard.partials.service-requests', [
+                    'title' => "Learner's Permit Requests",
+                    'requests' => $learnersPermitRequests,
+                    'actionLabel' => 'Mark Obtained',
+                    'actionStatus' => 'completed',
+                ])
+            @endif
+
+            @if ($onlineCertificateRequests->isNotEmpty())
+                @include('dashboard.partials.service-requests', [
+                    'title' => 'Online Certificate Requests',
+                    'requests' => $onlineCertificateRequests,
+                    'actionLabel' => 'Mark Obtained',
+                    'actionStatus' => 'completed',
+                ])
+            @endif
+
+            @if ($driversLicenseRequests->isNotEmpty())
+                @include('dashboard.partials.service-requests', [
+                    'title' => "Driver's License Requests",
+                    'requests' => $driversLicenseRequests,
+                    'actionLabel' => 'Start Processing',
+                    'actionStatus' => 'processing',
+                ])
+            @endif
+
             @if ($trainingProgress->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <div class="flex items-center justify-between mb-4">
