@@ -248,7 +248,7 @@
                         <h3 class="text-xl font-bold text-gray-800">{{ __('At-Risk Students') }}</h3>
                         <x-badge color="red">{{ $atRiskEnrollments->count() }} {{ __('Flagged') }}</x-badge>
                     </div>
-                    <p class="text-sm text-gray-500 mb-4">{{ __('Active students showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
+                    <p class="text-sm text-gray-500 mb-4">{{ __('Active students who still owe money and are also showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
 
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
