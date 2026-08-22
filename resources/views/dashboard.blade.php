@@ -26,7 +26,7 @@
                 <h1 class="text-2xl font-bold text-amber-400">{{ $greeting }}, {{ $firstName }}</h1>
                 <p class="mt-1 text-sm text-gray-300">{{ now()->format('l, F j, Y') }}</p>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-6 gap-4 mt-6">
+                <div class="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-7 gap-4 mt-6">
                     <div class="bg-gray-900 rounded-lg p-4">
                         <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Active Students') }}</p>
                         <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['active_students']) }}</p>
@@ -50,6 +50,10 @@
                     <div class="rounded-lg p-4 {{ $kpis['certificates_due'] > 0 ? 'bg-amber-500 text-black' : 'bg-gray-900' }}">
                         <p class="text-xs uppercase tracking-wider {{ $kpis['certificates_due'] > 0 ? 'text-black/70' : 'text-gray-400' }}">{{ __('Certificates Due') }}</p>
                         <p class="text-2xl font-bold mt-1 {{ $kpis['certificates_due'] > 0 ? '' : 'text-amber-400' }}">{{ number_format($kpis['certificates_due']) }}</p>
+                    </div>
+                    <div class="rounded-lg p-4 {{ $kpis['revenue_leakage'] > 0 ? 'bg-red-600 text-white' : 'bg-gray-900' }}">
+                        <p class="text-xs uppercase tracking-wider {{ $kpis['revenue_leakage'] > 0 ? 'text-white/70' : 'text-gray-400' }}">{{ __('Revenue Leakage') }}</p>
+                        <p class="text-2xl font-bold mt-1 {{ $kpis['revenue_leakage'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['revenue_leakage'], 2) }}</p>
                     </div>
                 </div>
             </div>
@@ -227,6 +231,41 @@
                                             <x-badge color="amber">{{ __('Upcoming') }}</x-badge>
                                         @endif
                                     </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
+            @if ($revenueLeakage->isNotEmpty())
+                <div id="revenue-leakage" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">{{ __('Revenue Leakage') }}</h3>
+                        <x-badge color="red">₦{{ number_format($revenueLeakage->sum('balance'), 2) }} {{ __('Uncollected') }}</x-badge>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">{{ __('Certificate fees on completed enrollments, and services already delivered, that are still unpaid — the work is done, so nothing will prompt collection unless staff act on it.') }}</p>
+
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="pb-2">{{ __('Student') }}</th>
+                                <th class="pb-2">{{ __('Item') }}</th>
+                                <th class="pb-2">{{ __('Balance') }}</th>
+                                <th class="pb-2">{{ __('Delivered') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach ($revenueLeakage as $leak)
+                                <tr>
+                                    <td class="py-2">
+                                        <a href="{{ route('students.show', $leak['student']->id) }}" class="text-amber-600 hover:underline">
+                                            {{ $leak['student']->name }}
+                                        </a>
+                                    </td>
+                                    <td class="py-2">{{ $leak['label'] }}</td>
+                                    <td class="py-2">₦{{ number_format($leak['balance'], 2) }}</td>
+                                    <td class="py-2">{{ $leak['since']->diffForHumans() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

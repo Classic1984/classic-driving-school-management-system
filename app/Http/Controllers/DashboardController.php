@@ -124,6 +124,54 @@ class DashboardController extends Controller
 
         $completedEnrollments = Enrollment::where('status', 'completed')->get();
 
+        // Revenue Leakage: money already earned but never collected. The
+        // training fee itself can never leak this way - an enrollment can't
+        // be marked completed while it still has a training balance (see
+        // EnrollmentController::complete()) - but a completed enrollment's
+        // certificate fees, and a service already marked "completed"
+        // (delivered), have no such guard, so they can sit unpaid
+        // indefinitely once nobody has a reason to look at that student
+        // again.
+        $leakedCertificateFees = $completedEnrollments->load(['student', 'course'])
+            ->flatMap(function (Enrollment $enrollment) {
+                $rows = collect();
+
+                if ($enrollment->onlineCertificateBalance() > 0) {
+                    $rows->push([
+                        'student' => $enrollment->student,
+                        'label' => "Online Certificate — {$enrollment->course->name}",
+                        'balance' => $enrollment->onlineCertificateBalance(),
+                        'since' => $enrollment->updated_at,
+                    ]);
+                }
+
+                if ($enrollment->studentCertificateBalance() > 0) {
+                    $rows->push([
+                        'student' => $enrollment->student,
+                        'label' => "Student Certificate — {$enrollment->course->name}",
+                        'balance' => $enrollment->studentCertificateBalance(),
+                        'since' => $enrollment->updated_at,
+                    ]);
+                }
+
+                return $rows;
+            });
+
+        $leakedServiceFees = StudentService::where('processing_status', 'completed')
+            ->with(['student', 'service'])
+            ->get()
+            ->filter(fn (StudentService $studentService) => $studentService->balance() > 0)
+            ->map(fn (StudentService $studentService) => [
+                'student' => $studentService->student,
+                'label' => $studentService->service->name,
+                'balance' => $studentService->balance(),
+                'since' => $studentService->updated_at,
+            ]);
+
+        $revenueLeakage = $leakedCertificateFees->concat($leakedServiceFees)
+            ->sortByDesc('balance')
+            ->values();
+
         // Top-line KPI cards: the numbers a Director should see at a glance
         // without reading any of the detail widgets below.
         $kpis = [
@@ -133,6 +181,7 @@ class DashboardController extends Controller
             'completed_training' => $completedEnrollments->count(),
             'active_vehicles' => Vehicle::where('status', 'active')->count(),
             'certificates_due' => $completedEnrollments->filter(fn (Enrollment $enrollment) => ! $enrollment->hasCertificate())->count(),
+            'revenue_leakage' => $revenueLeakage->sum('balance'),
         ];
 
         $todaysAttendance = Attendance::where('status', 'present')->whereDate('date', today());
@@ -157,7 +206,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests'));
     }
 
     /**

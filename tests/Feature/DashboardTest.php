@@ -799,7 +799,8 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Already Obtained']);
         $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
-        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+        // Paid in full so this doesn't also surface in the Revenue Leakage widget.
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 0, 'processing_status' => 'completed']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
@@ -841,7 +842,8 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Already Certified']);
         $service = Service::factory()->create(['name' => 'Online Certificate', 'price' => 20000]);
-        $student->studentServices()->create(['service_id' => $service->id, 'price' => 20000, 'processing_status' => 'completed']);
+        // Paid in full so this doesn't also surface in the Revenue Leakage widget.
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 0, 'processing_status' => 'completed']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
@@ -882,5 +884,108 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Service Processing');
         $response->assertDontSee("Driver's License Requests");
+    }
+
+    public function test_revenue_leakage_flags_an_unpaid_certificate_fee_on_a_completed_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Leaked Certificate']);
+        $course = Course::factory()->create(['fee' => 95000, 'online_certificate_fee' => 20000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'status' => 'completed',
+            'fee' => 95000,
+            'online_certificate_fee' => 20000,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Revenue Leakage');
+        $response->assertSee('Leaked Certificate');
+        $response->assertSee('Online Certificate — '.$course->name);
+        $response->assertSeeInOrder(['Revenue Leakage', '20,000.00']);
+    }
+
+    public function test_revenue_leakage_flags_an_unpaid_completed_service(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Leaked Service']);
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Leaked Service');
+        $response->assertSee("Learner's Permit");
+        $response->assertSeeInOrder(['Revenue Leakage', '6,000.00']);
+    }
+
+    public function test_revenue_leakage_ignores_a_fully_paid_certificate_fee(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Paid In Full']);
+        $course = Course::factory()->create(['fee' => 95000, 'online_certificate_fee' => 20000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'status' => 'completed',
+            'fee' => 95000,
+            'online_certificate_fee' => 20000,
+        ]);
+        $enrollment = $student->courses()->first()->pivot;
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 115000,
+            'status' => 'paid',
+        ])->allocations()->create([
+            'enrollment_id' => $enrollment->id,
+            'allocation_type' => 'online_certificate',
+            'amount' => 20000,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Revenue Leakage', '0.00']);
+        $response->assertDontSee('Online Certificate — '.$course->name);
+    }
+
+    public function test_revenue_leakage_ignores_a_service_still_processing(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Still Processing']);
+        $service = Service::factory()->create(['name' => 'Still Processing Service', 'price' => 6000]);
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'processing']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Revenue Leakage', '0.00']);
+        $response->assertDontSee('Still Processing Service');
+    }
+
+    public function test_the_revenue_leakage_kpi_sums_every_leaked_balance(): void
+    {
+        $user = User::factory()->create();
+
+        $studentA = Student::factory()->create();
+        $courseA = Course::factory()->create(['fee' => 95000, 'student_certificate_fee' => 1000]);
+        $studentA->courses()->attach($courseA->id, [
+            'enrolled_at' => now(),
+            'status' => 'completed',
+            'fee' => 95000,
+            'student_certificate_fee' => 1000,
+        ]);
+
+        $studentB = Student::factory()->create();
+        $service = Service::factory()->create(['price' => 6000]);
+        $studentB->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Revenue Leakage', '7,000.00']);
     }
 }
