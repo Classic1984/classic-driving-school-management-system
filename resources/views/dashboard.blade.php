@@ -26,7 +26,7 @@
                 <h1 class="text-2xl font-bold text-amber-400">{{ $greeting }}, {{ $firstName }}</h1>
                 <p class="mt-1 text-sm text-gray-300">{{ now()->format('l, F j, Y') }}</p>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-7 gap-4 mt-6">
+                <div class="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-8 gap-4 mt-6">
                     <div class="bg-gray-900 rounded-lg p-4">
                         <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Active Students') }}</p>
                         <p class="text-2xl font-bold mt-1 text-amber-400">{{ number_format($kpis['active_students']) }}</p>
@@ -54,6 +54,10 @@
                     <div class="rounded-lg p-4 {{ $kpis['revenue_leakage'] > 0 ? 'bg-red-600 text-white' : 'bg-gray-900' }}">
                         <p class="text-xs uppercase tracking-wider {{ $kpis['revenue_leakage'] > 0 ? 'text-white/70' : 'text-gray-400' }}">{{ __('Revenue Leakage') }}</p>
                         <p class="text-2xl font-bold mt-1 {{ $kpis['revenue_leakage'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['revenue_leakage'], 2) }}</p>
+                    </div>
+                    <div class="rounded-lg p-4 {{ $kpis['at_risk_students'] > 0 ? 'bg-red-600 text-white' : 'bg-gray-900' }}">
+                        <p class="text-xs uppercase tracking-wider {{ $kpis['at_risk_students'] > 0 ? 'text-white/70' : 'text-gray-400' }}">{{ __('At-Risk Students') }}</p>
+                        <p class="text-2xl font-bold mt-1 {{ $kpis['at_risk_students'] > 0 ? '' : 'text-amber-400' }}">{{ number_format($kpis['at_risk_students']) }}</p>
                     </div>
                 </div>
             </div>
@@ -235,6 +239,45 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+            @endif
+
+            @if ($atRiskEnrollments->isNotEmpty())
+                <div id="at-risk-students" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">{{ __('At-Risk Students') }}</h3>
+                        <x-badge color="red">{{ $atRiskEnrollments->count() }} {{ __('Flagged') }}</x-badge>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">{{ __('Active students showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Course') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Risk') }}</th>
+                                    <th class="pb-2">{{ __('Reason(s)') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($atRiskEnrollments as $enrollment)
+                                    <tr>
+                                        <td class="py-2 pr-4">
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
+                                                {{ $enrollment->student->name }}
+                                            </a>
+                                        </td>
+                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
+                                        <td class="py-2 pr-4">
+                                            <x-badge :color="$enrollment->riskLevel() === 'high' ? 'red' : 'amber'">{{ __(ucfirst($enrollment->riskLevel())) }}</x-badge>
+                                        </td>
+                                        <td class="py-2">{{ implode(' · ', $enrollment->riskReasons()) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             @endif
 
