@@ -37,7 +37,7 @@
                     </div>
                     <div class="rounded-lg p-4 {{ $kpis['pending_payments'] > 0 ? 'bg-amber-500 text-black' : 'bg-gray-900' }}">
                         <p class="text-xs uppercase tracking-wider {{ $kpis['pending_payments'] > 0 ? 'text-black/70' : 'text-gray-400' }}">{{ __('Pending Payments') }}</p>
-                        <p class="text-2xl font-bold mt-1 break-words {{ $kpis['pending_payments'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['pending_payments'], 2) }}</p>
+                        <p class="text-lg md:text-xl 2xl:text-2xl font-bold mt-1 whitespace-nowrap {{ $kpis['pending_payments'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['pending_payments'], 2) }}</p>
                     </div>
                     <div class="bg-gray-900 rounded-lg p-4">
                         <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Completed Training') }}</p>
@@ -53,7 +53,7 @@
                     </div>
                     <div class="rounded-lg p-4 {{ $kpis['revenue_leakage'] > 0 ? 'bg-red-600 text-white' : 'bg-gray-900' }}">
                         <p class="text-xs uppercase tracking-wider {{ $kpis['revenue_leakage'] > 0 ? 'text-white/70' : 'text-gray-400' }}">{{ __('Revenue Leakage') }}</p>
-                        <p class="text-2xl font-bold mt-1 break-words {{ $kpis['revenue_leakage'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['revenue_leakage'], 2) }}</p>
+                        <p class="text-lg md:text-xl 2xl:text-2xl font-bold mt-1 whitespace-nowrap {{ $kpis['revenue_leakage'] > 0 ? '' : 'text-amber-400' }}">₦{{ number_format($kpis['revenue_leakage'], 2) }}</p>
                     </div>
                     <div class="rounded-lg p-4 {{ $kpis['at_risk_students'] > 0 ? 'bg-red-600 text-white' : 'bg-gray-900' }}">
                         <p class="text-xs uppercase tracking-wider {{ $kpis['at_risk_students'] > 0 ? 'text-white/70' : 'text-gray-400' }}">{{ __('At-Risk Students') }}</p>
