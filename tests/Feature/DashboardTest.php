@@ -799,7 +799,8 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Already Obtained']);
         $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
-        $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+        // Paid in full so this doesn't also surface in the Revenue Leakage widget.
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 0, 'processing_status' => 'completed']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
@@ -841,7 +842,8 @@ class DashboardTest extends TestCase
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Already Certified']);
         $service = Service::factory()->create(['name' => 'Online Certificate', 'price' => 20000]);
-        $student->studentServices()->create(['service_id' => $service->id, 'price' => 20000, 'processing_status' => 'completed']);
+        // Paid in full so this doesn't also surface in the Revenue Leakage widget.
+        $student->studentServices()->create(['service_id' => $service->id, 'price' => 0, 'processing_status' => 'completed']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
