@@ -124,13 +124,16 @@ class DashboardController extends Controller
 
         $completedEnrollments = Enrollment::where('status', 'completed')->get();
 
-        // At-Risk Students: active enrollments showing early signs of
-        // dropping out (no training login well past the automatic
-        // check-in text) or defaulting (balance due soon, before it goes
-        // overdue and locks on its own) - a proactive watchlist for staff
-        // to follow up on, rather than only finding out after the fact
-        // once an enrollment is already locked. "High" risk (both signals
-        // at once) is shown before "medium" (either signal alone).
+        // At-Risk Students: active enrollments that still owe money and are
+        // also showing early signs of dropping out (no training login well
+        // past the automatic check-in text) or defaulting (balance due
+        // soon, before it goes overdue and locks on its own) - a proactive
+        // watchlist for staff to follow up on, rather than only finding out
+        // after the fact once an enrollment is already locked. A fully
+        // paid student who simply hasn't trained in a while is never
+        // flagged here - see Enrollment::isAttendanceRisk(). "High" risk
+        // (both signals at once) is shown before "medium" (either signal
+        // alone).
         $atRiskEnrollments = Enrollment::where('status', 'active')
             ->with(['student', 'course'])
             ->get()

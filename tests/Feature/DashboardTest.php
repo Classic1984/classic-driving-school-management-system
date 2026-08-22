@@ -989,10 +989,32 @@ class DashboardTest extends TestCase
         $response->assertSeeInOrder(['Revenue Leakage', '7,000.00']);
     }
 
+    public function test_dashboard_does_not_flag_a_fully_paid_student_no_matter_how_long_absent(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $student = Student::factory()->create(['name' => 'Paid And Quiet']);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(60)->toDateString(),
+            'status' => 'active',
+        ]);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 50000,
+            'status' => 'paid',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Flagged');
+    }
+
     public function test_dashboard_flags_a_student_absent_well_past_the_check_in_reminder_as_at_risk(): void
     {
         $user = User::factory()->create();
-        $course = Course::factory()->create(['fee' => 0]);
+        $course = Course::factory()->create(['fee' => 50000]);
         $student = Student::factory()->create(['name' => 'Gone Quiet']);
         $course->students()->attach($student->id, [
             'enrolled_at' => now()->subDays(9)->toDateString(),
@@ -1094,7 +1116,7 @@ class DashboardTest extends TestCase
     public function test_the_at_risk_students_kpi_counts_flagged_enrollments(): void
     {
         $user = User::factory()->create();
-        $course = Course::factory()->create(['fee' => 0]);
+        $course = Course::factory()->create(['fee' => 50000]);
         $student = Student::factory()->create();
         $course->students()->attach($student->id, [
             'enrolled_at' => now()->subDays(9)->toDateString(),

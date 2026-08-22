@@ -233,11 +233,16 @@ class Enrollment extends Pivot
 
     /**
      * Whether this active enrollment has gone quiet long enough to flag
-     * for dropout risk - see ABSENCE_RISK_THRESHOLD_DAYS.
+     * for dropout risk - see ABSENCE_RISK_THRESHOLD_DAYS. Only applies
+     * while a balance is still owed: a fully paid student who simply
+     * hasn't come in for a while isn't a risk to anything, since there's
+     * no money or unfinished obligation at stake either way.
      */
     public function isAttendanceRisk(): bool
     {
-        return $this->status === 'active' && $this->daysSinceLastTraining() >= self::ABSENCE_RISK_THRESHOLD_DAYS;
+        return $this->status === 'active'
+            && $this->balance() > 0
+            && $this->daysSinceLastTraining() >= self::ABSENCE_RISK_THRESHOLD_DAYS;
     }
 
     /**
