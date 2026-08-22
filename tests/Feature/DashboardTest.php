@@ -988,4 +988,122 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSeeInOrder(['Revenue Leakage', '7,000.00']);
     }
+
+    public function test_dashboard_flags_a_student_absent_well_past_the_check_in_reminder_as_at_risk(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 0]);
+        $student = Student::factory()->create(['name' => 'Gone Quiet']);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(9)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('At-Risk Students');
+        $response->assertSee('Gone Quiet');
+        $response->assertSee('Medium');
+        $response->assertSee('Absent 9 day(s)');
+    }
+
+    public function test_dashboard_flags_a_student_with_a_balance_due_soon_as_at_risk(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $student = Student::factory()->create(['name' => 'Due Soon']);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'due_date' => now()->addDays(2)->toDateString(),
+            'status' => 'active',
+        ]);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'status' => 'present',
+            'date' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Due Soon');
+        $response->assertSee('Payment due in 2 day(s)');
+    }
+
+    public function test_dashboard_marks_a_student_with_both_risk_signals_as_high_risk(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $student = Student::factory()->create(['name' => 'Double Trouble']);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(9)->toDateString(),
+            'due_date' => now()->addDays(2)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Double Trouble');
+        $response->assertSee('High');
+        $response->assertSee('Absent 9 day(s) · Payment due in 2 day(s)');
+    }
+
+    public function test_dashboard_does_not_flag_a_student_who_trained_recently_with_no_balance_due(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $student = Student::factory()->create(['name' => 'On Track']);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(2)->toDateString(),
+            'status' => 'active',
+        ]);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'status' => 'present',
+            'date' => now()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Flagged');
+    }
+
+    public function test_dashboard_does_not_flag_an_already_locked_enrollment_as_at_risk(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $student = Student::factory()->create(['name' => 'Already Locked']);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(20)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Flagged');
+    }
+
+    public function test_the_at_risk_students_kpi_counts_flagged_enrollments(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 0]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(9)->toDateString(),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['At-Risk Students', '1']);
+    }
 }

@@ -124,6 +124,21 @@ class DashboardController extends Controller
 
         $completedEnrollments = Enrollment::where('status', 'completed')->get();
 
+        // At-Risk Students: active enrollments showing early signs of
+        // dropping out (no training login well past the automatic
+        // check-in text) or defaulting (balance due soon, before it goes
+        // overdue and locks on its own) - a proactive watchlist for staff
+        // to follow up on, rather than only finding out after the fact
+        // once an enrollment is already locked. "High" risk (both signals
+        // at once) is shown before "medium" (either signal alone).
+        $atRiskEnrollments = Enrollment::where('status', 'active')
+            ->with(['student', 'course'])
+            ->get()
+            ->filter(fn (Enrollment $enrollment) => $enrollment->isAtRisk())
+            ->sortByDesc(fn (Enrollment $enrollment) => ($enrollment->riskLevel() === 'high' ? 1000 : 0) + $enrollment->daysSinceLastTraining())
+            ->take(15)
+            ->values();
+
         // Revenue Leakage: money already earned but never collected. The
         // training fee itself can never leak this way - an enrollment can't
         // be marked completed while it still has a training balance (see
@@ -182,6 +197,7 @@ class DashboardController extends Controller
             'active_vehicles' => Vehicle::where('status', 'active')->count(),
             'certificates_due' => $completedEnrollments->filter(fn (Enrollment $enrollment) => ! $enrollment->hasCertificate())->count(),
             'revenue_leakage' => $revenueLeakage->sum('balance'),
+            'at_risk_students' => $atRiskEnrollments->count(),
         ];
 
         $todaysAttendance = Attendance::where('status', 'present')->whereDate('date', today());
@@ -206,7 +222,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**

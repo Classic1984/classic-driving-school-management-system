@@ -40,6 +40,23 @@ class Enrollment extends Pivot
     public const UPGRADE_WINDOW_DAYS = 5;
 
     /**
+     * Days without a fresh training login before an active enrollment is
+     * flagged for dropout risk - deliberately higher than the 4-day
+     * threshold for the automatic absence check-in text (see
+     * SendAbsenceCheckInReminder), since this is meant to catch students
+     * that automatic nudge didn't bring back, not every normal gap
+     * between sessions.
+     */
+    public const ABSENCE_RISK_THRESHOLD_DAYS = 7;
+
+    /**
+     * How many days out from an unpaid balance's due date staff should be
+     * proactively warned, before the balance actually goes overdue and
+     * the enrollment locks on its own.
+     */
+    public const PAYMENT_RISK_WINDOW_DAYS = 5;
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -187,6 +204,102 @@ class Enrollment extends Pivot
         return $this->balance() > 0
             && $this->due_date !== null
             && now()->toDateString() > $this->due_date->toDateString();
+    }
+
+    /**
+     * This enrollment's most recent present training login for its
+     * course, or null if the student has never trained in it yet.
+     */
+    public function lastTrainingDate(): ?Carbon
+    {
+        return Attendance::where('student_id', $this->student_id)
+            ->where('course_id', $this->course_id)
+            ->where('status', 'present')
+            ->latest('date')
+            ->first()
+            ?->date;
+    }
+
+    /**
+     * Days since this enrollment's student last trained in this course,
+     * or since they enrolled if they've never trained in it at all.
+     */
+    public function daysSinceLastTraining(): int
+    {
+        $referenceDate = $this->lastTrainingDate() ?? $this->enrolled_at;
+
+        return $referenceDate === null ? 0 : $referenceDate->diffInDays(now()->startOfDay());
+    }
+
+    /**
+     * Whether this active enrollment has gone quiet long enough to flag
+     * for dropout risk - see ABSENCE_RISK_THRESHOLD_DAYS.
+     */
+    public function isAttendanceRisk(): bool
+    {
+        return $this->status === 'active' && $this->daysSinceLastTraining() >= self::ABSENCE_RISK_THRESHOLD_DAYS;
+    }
+
+    /**
+     * Whether this active enrollment's balance is due soon but not yet
+     * overdue - a proactive warning before it locks on its own (an
+     * already-overdue balance is surfaced separately, once it locks).
+     */
+    public function isPaymentRisk(): bool
+    {
+        if ($this->status !== 'active' || $this->balance() <= 0 || $this->due_date === null) {
+            return false;
+        }
+
+        $today = now()->toDateString();
+        $dueDate = $this->due_date->toDateString();
+        $warningStart = $this->due_date->copy()->subDays(self::PAYMENT_RISK_WINDOW_DAYS)->toDateString();
+
+        return $dueDate >= $today && $today >= $warningStart;
+    }
+
+    /**
+     * Human-readable reasons this enrollment is currently flagged at
+     * risk, for display next to it - empty when it isn't at risk.
+     */
+    public function riskReasons(): array
+    {
+        $reasons = [];
+
+        if ($this->isAttendanceRisk()) {
+            $reasons[] = "Absent {$this->daysSinceLastTraining()} day(s)";
+        }
+
+        if ($this->isPaymentRisk()) {
+            $daysUntilDue = now()->startOfDay()->diffInDays($this->due_date);
+            $reasons[] = $daysUntilDue > 0
+                ? "Payment due in {$daysUntilDue} day(s)"
+                : 'Payment due today';
+        }
+
+        return $reasons;
+    }
+
+    /**
+     * "high" when both the attendance and payment risk signals are
+     * present at once - these students are the most likely to be lost
+     * entirely - "medium" when only one signal is present, null when
+     * neither is (not at risk).
+     */
+    public function riskLevel(): ?string
+    {
+        $signals = (int) $this->isAttendanceRisk() + (int) $this->isPaymentRisk();
+
+        return match ($signals) {
+            2 => 'high',
+            1 => 'medium',
+            default => null,
+        };
+    }
+
+    public function isAtRisk(): bool
+    {
+        return $this->riskLevel() !== null;
     }
 
     public function isTrainingPeriodExpired(): bool
