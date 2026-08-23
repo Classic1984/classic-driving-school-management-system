@@ -22,6 +22,12 @@
                 $firstName = \Illuminate\Support\Str::of(auth()->user()->name)->before(' ');
             @endphp
 
+            @if (session('status') === 'service-status-updated')
+                <p class="text-sm font-medium text-green-600 mb-4">{{ __(session('serviceStatusMessage', 'Processing status updated successfully.')) }}</p>
+            @elseif (session('status') === 'service-status-unchanged')
+                <p class="text-sm font-medium text-amber-600 mb-4">⚠️ {{ __(session('serviceStatusMessage', 'No change - that status was already set.')) }}</p>
+            @endif
+
             <div class="bg-black text-white rounded-xl p-8 mb-6">
                 <h1 class="text-2xl font-bold text-amber-400">{{ $greeting }}, {{ $firstName }}</h1>
                 <p class="mt-1 text-sm text-gray-300">{{ now()->format('l, F j, Y') }}</p>

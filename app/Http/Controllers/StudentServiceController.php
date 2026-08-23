@@ -66,7 +66,7 @@ class StudentServiceController extends Controller
         // silently no-op'ing, so a mistaken click doesn't look like it did
         // nothing.
         if ($studentService->processing_status === $data['processing_status']) {
-            return Redirect::route('students.show', $studentService->student_id)
+            return Redirect::back()
                 ->with('status', 'service-status-unchanged')
                 ->with('serviceStatusMessage', "{$studentService->service->name} has already been marked as \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name} - no change made.");
         }
@@ -93,7 +93,7 @@ class StudentServiceController extends Controller
             ? "{$studentService->service->name} has been generated for {$studentService->student->name}."
             : "{$studentService->service->name} processing status updated to \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name}.";
 
-        return Redirect::route('students.show', $studentService->student_id)
+        return Redirect::back()
             ->with('status', 'service-status-updated')
             ->with('serviceStatusMessage', $confirmation);
     }
