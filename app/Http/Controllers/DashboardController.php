@@ -109,18 +109,24 @@ class DashboardController extends Controller
             ->oldest('created_at')
             ->get();
 
-        // Programme Upgrade Window alerts: enrollments still within their
-        // five-day upgrade window that actually have a longer programme to
-        // upgrade into. Once the window closes, the enrollment drops off
-        // this dashboard list entirely - a closed window isn't something
-        // staff need to act on, so it's surfaced prominently on the
-        // student's own profile instead (see Student::show), not here.
-        $upgradeAlerts = Enrollment::where('status', '!=', 'completed')
+        // Programme Upgrade Window: every active enrollment that actually has
+        // a longer programme to upgrade into, split into the two states
+        // staff care about - split here rather than in the view so each
+        // half can be counted and listed independently behind its own
+        // dashboard widget.
+        $upgradeCandidates = Enrollment::where('status', '!=', 'completed')
             ->with(['student', 'course'])
             ->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->isWithinUpgradeWindow()
-                && $enrollment->eligibleUpgradeCourses()->isNotEmpty())
+            ->filter(fn (Enrollment $enrollment) => $enrollment->eligibleUpgradeCourses()->isNotEmpty());
+
+        $upgradeEligible = $upgradeCandidates
+            ->filter(fn (Enrollment $enrollment) => $enrollment->isWithinUpgradeWindow())
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->attendedDays())
+            ->values();
+
+        $upgradeClosed = $upgradeCandidates
+            ->filter(fn (Enrollment $enrollment) => ! $enrollment->isWithinUpgradeWindow())
+            ->sortByDesc(fn (Enrollment $enrollment) => $enrollment->attendedDays())
             ->values();
 
         $completedEnrollments = Enrollment::where('status', 'completed')->get();
@@ -226,7 +232,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeAlerts', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**
