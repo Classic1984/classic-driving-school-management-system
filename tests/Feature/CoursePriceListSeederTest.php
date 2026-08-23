@@ -15,7 +15,7 @@ class CoursePriceListSeederTest extends TestCase
     {
         $this->seed(CoursePriceListSeeder::class);
 
-        $this->assertDatabaseCount('courses', 13);
+        $this->assertDatabaseCount('courses', 14);
 
         $this->assertDatabaseHas('courses', [
             'name' => 'Non-Experience (Auto & Manual) 4 Weeks',
@@ -26,6 +26,12 @@ class CoursePriceListSeederTest extends TestCase
         $this->assertDatabaseHas('courses', [
             'name' => "Learners' Permit Trainee",
             'fee' => 6000,
+        ]);
+
+        $this->assertDatabaseHas('courses', [
+            'name' => 'Executive Training without AC 4 Weeks',
+            'fee' => 155000,
+            'duration_weeks' => 4,
         ]);
     }
 
@@ -80,6 +86,6 @@ class CoursePriceListSeederTest extends TestCase
         $this->seed(CoursePriceListSeeder::class);
         $this->seed(CoursePriceListSeeder::class);
 
-        $this->assertDatabaseCount('courses', 13);
+        $this->assertDatabaseCount('courses', 14);
     }
 }

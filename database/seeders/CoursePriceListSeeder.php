@@ -25,6 +25,7 @@ class CoursePriceListSeeder extends Seeder
             ['name' => 'Weekend Program (Auto & Manual) 4 Weekends (AC)', 'schedule' => 'weekend', 'duration_weeks' => 4, 'duration_hours' => 32, 'fee' => 155000],
             ['name' => 'Executive Program with AC 3 Weeks', 'schedule' => 'weekday', 'duration_weeks' => 3, 'duration_hours' => 60, 'fee' => 155000],
             ['name' => 'Executive Training without AC 3 Weeks', 'schedule' => 'weekday', 'duration_weeks' => 3, 'duration_hours' => 60, 'fee' => 125000],
+            ['name' => 'Executive Training without AC 4 Weeks', 'schedule' => 'weekday', 'duration_weeks' => 4, 'duration_hours' => 80, 'fee' => 155000],
             ['name' => 'VIP Program (Personal Car) 3 Weeks', 'schedule' => 'weekday', 'duration_weeks' => 3, 'duration_hours' => 60, 'fee' => 125000],
             ['name' => "Learners' Permit Trainee", 'schedule' => 'weekday', 'duration_weeks' => 1, 'duration_hours' => 2, 'fee' => 6000],
             ['name' => "Driver's License Trainee", 'schedule' => 'weekday', 'duration_weeks' => 1, 'duration_hours' => 5, 'fee' => 50000],
