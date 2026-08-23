@@ -23,7 +23,9 @@
                 @elseif (session('status') === 'service-charged')
                     <p class="text-sm font-medium text-green-600">{{ __('Service charge added successfully.') }}</p>
                 @elseif (session('status') === 'service-status-updated')
-                    <p class="text-sm font-medium text-green-600">{{ __('Processing status updated successfully.') }}</p>
+                    <p class="text-sm font-medium text-green-600">{{ __(session('serviceStatusMessage', 'Processing status updated successfully.')) }}</p>
+                @elseif (session('status') === 'service-status-unchanged')
+                    <p class="text-sm font-medium text-amber-600">⚠️ {{ __(session('serviceStatusMessage', 'No change - that status was already set.')) }}</p>
                 @endif
 
                 @php
