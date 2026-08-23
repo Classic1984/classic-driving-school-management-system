@@ -25,6 +25,7 @@ use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicLeadController;
 use App\Http\Controllers\ReferralSourceReportController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ServiceCompletionReportController;
@@ -43,6 +44,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Public booking-inquiry capture for the marketing site
+// (classicdriving.com.ng) - no auth, cross-origin, rate-limited.
+Route::post('/public/leads', [PublicLeadController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('public-leads.store');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
