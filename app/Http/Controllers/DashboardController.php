@@ -109,15 +109,16 @@ class DashboardController extends Controller
             ->oldest('created_at')
             ->get();
 
-        // Programme Upgrade Window alerts: enrollments still within (or just
-        // past) their five-day upgrade window that actually have a longer
-        // programme to upgrade into - a stale enrollment that closed weeks
-        // ago isn't news to staff, so only day 6 onward is shown as
-        // "Closed" here, one day past the window, rather than forever.
+        // Programme Upgrade Window alerts: enrollments still within their
+        // five-day upgrade window that actually have a longer programme to
+        // upgrade into. Once the window closes, the enrollment drops off
+        // this dashboard list entirely - a closed window isn't something
+        // staff need to act on, so it's surfaced prominently on the
+        // student's own profile instead (see Student::show), not here.
         $upgradeAlerts = Enrollment::where('status', '!=', 'completed')
             ->with(['student', 'course'])
             ->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->attendedDays() <= Enrollment::UPGRADE_WINDOW_DAYS + 1
+            ->filter(fn (Enrollment $enrollment) => $enrollment->isWithinUpgradeWindow()
                 && $enrollment->eligibleUpgradeCourses()->isNotEmpty())
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->attendedDays())
             ->values();
