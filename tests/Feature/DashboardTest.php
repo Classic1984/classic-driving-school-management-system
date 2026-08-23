@@ -498,7 +498,7 @@ class DashboardTest extends TestCase
         }
     }
 
-    public function test_dashboard_shows_upgrade_window_alerts_with_correct_statuses(): void
+    public function test_dashboard_shows_upgrade_window_stat_boxes_with_correct_counts_and_modal_contents(): void
     {
         $director = User::factory()->director()->create();
         $twoWeek = Course::factory()->create(['name' => 'Two Week Program', 'duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
@@ -521,22 +521,19 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Programme Upgrade Window');
-        $response->assertSee('🔔 2');
 
+        // Two compact count boxes, not a table of names directly on the page.
+        $response->assertSee('Eligible for Upgrade');
+        $response->assertSee('Upgrade Window Closed');
+
+        // Eligible modal: both John (still days left) and David (last day).
         $response->assertSee('John A');
-        $response->assertSee('🟢');
-        $response->assertSee('Eligible');
-
         $response->assertSee('David C');
-        $response->assertSee('🟠');
-        $response->assertSee('Last Day');
-        $response->assertSee('closes today');
+        $response->assertSee('Closes today');
 
+        // Closed modal: Sarah's window ended, but she's still listed (behind
+        // the click, not directly on the page) rather than dropped entirely.
         $response->assertSee('Sarah D');
-        $response->assertSee('🔴');
-        $response->assertSee('Closed');
-
-        $response->assertSee('Students Who Need Upgrade Reminder');
     }
 
     public function test_dashboard_does_not_list_an_enrollment_with_no_longer_programme_to_upgrade_into(): void
@@ -553,7 +550,7 @@ class DashboardTest extends TestCase
         $response->assertDontSee('Programme Upgrade Window');
     }
 
-    public function test_dashboard_stops_showing_an_enrollment_well_past_the_upgrade_window(): void
+    public function test_dashboard_keeps_counting_an_enrollment_long_after_its_upgrade_window_closed(): void
     {
         $user = User::factory()->create();
         $twoWeek = Course::factory()->create(['duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
@@ -565,7 +562,9 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Programme Upgrade Window');
+        $response->assertSee('Upgrade Window Closed');
+        $response->assertSee('Long Since Closed');
+        $response->assertDontSee('Eligible for Upgrade');
     }
 
     public function test_a_director_gets_a_direct_upgrade_link_from_the_dashboard(): void

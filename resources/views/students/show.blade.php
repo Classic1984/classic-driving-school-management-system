@@ -312,15 +312,22 @@
                                                     default => 'gray',
                                                 };
                                             @endphp
-                                            <div class="mt-2 flex items-center gap-2 text-xs">
-                                                <span class="text-gray-500">{{ __('Upgrade Status') }}:</span>
-                                                <x-badge :color="$upgradeStatusColor">{{ __($upgradeStatus) }}</x-badge>
-                                                @if ($upgradeStatus === 'Eligible')
-                                                    <span class="text-gray-500">{{ $enrolledCourse->pivot->upgradeDaysRemaining() }} {{ __('day(s) remaining') }}</span>
-                                                @elseif ($enrolledCourse->pivot->upgradeStatusReason())
-                                                    <span class="text-gray-500">{{ __($enrolledCourse->pivot->upgradeStatusReason()) }}</span>
-                                                @endif
-                                            </div>
+                                            @if ($upgradeStatus === 'Closed')
+                                                <div class="mt-2 bg-red-50 border border-red-300 rounded-lg p-3">
+                                                    <p class="text-sm font-bold text-red-700">⛔ {{ __('Programme Upgrade Window Closed') }}</p>
+                                                    <p class="text-xs text-red-600 mt-0.5">{{ __($enrolledCourse->pivot->upgradeStatusReason()) }}</p>
+                                                </div>
+                                            @else
+                                                <div class="mt-2 flex items-center gap-2 text-xs">
+                                                    <span class="text-gray-500">{{ __('Upgrade Status') }}:</span>
+                                                    <x-badge :color="$upgradeStatusColor">{{ __($upgradeStatus) }}</x-badge>
+                                                    @if ($upgradeStatus === 'Eligible')
+                                                        <span class="text-gray-500">{{ $enrolledCourse->pivot->upgradeDaysRemaining() }} {{ __('day(s) remaining') }}</span>
+                                                    @elseif ($enrolledCourse->pivot->upgradeStatusReason())
+                                                        <span class="text-gray-500">{{ __($enrolledCourse->pivot->upgradeStatusReason()) }}</span>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
