@@ -257,7 +257,7 @@
                                     <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                         <div>
                                             <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                            <span class="text-gray-500"> — {{ $enrollment->course->name }} · ₦{{ number_format($enrollment->balance(), 2) }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 whitespace-nowrap">
                                             <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
