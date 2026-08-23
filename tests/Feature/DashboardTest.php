@@ -242,6 +242,35 @@ class DashboardTest extends TestCase
         $response->assertDontSee('Outstanding Payments');
     }
 
+    public function test_dashboard_shows_outstanding_payments_as_overdue_and_upcoming_count_boxes(): void
+    {
+        $user = User::factory()->create();
+        $overdue = Student::factory()->create(['name' => 'Overdue Payer']);
+        $overdueCourse = Course::factory()->create(['fee' => 1000]);
+        $overdue->courses()->attach($overdueCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'active',
+        ]);
+
+        $upcoming = Student::factory()->create(['name' => 'Upcoming Payer']);
+        $upcomingCourse = Course::factory()->create(['fee' => 2000]);
+        $upcoming->courses()->attach($upcomingCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(3),
+            'status' => 'active',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Outstanding Payments');
+        $response->assertSeeInOrder(['Overdue', '1']);
+        $response->assertSeeInOrder(['Upcoming', '1']);
+        $response->assertSee('Overdue Payer');
+        $response->assertSee('Upcoming Payer');
+    }
+
     public function test_dashboard_shows_student_training_progress(): void
     {
         $user = User::factory()->create();
@@ -340,6 +369,7 @@ class DashboardTest extends TestCase
         $response->assertSee('Overdue Balance');
         $response->assertSee('Expired Student');
         $response->assertSee('Training Period Expired');
+        $response->assertSeeInOrder(['Locked', '2']);
     }
 
     public function test_dashboard_does_not_show_the_locked_students_section_when_nobody_is_locked(): void

@@ -57,9 +57,17 @@ class DashboardController extends Controller
             ->get()
             ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0);
 
-        $outstandingPayments = $outstandingEnrollments
+        // Split the same way the Programme Upgrade Window widget does: a
+        // count box per state, with the actual names revealed in a modal
+        // rather than listed directly on the dashboard.
+        $overduePayments = $outstandingEnrollments
+            ->filter(fn (Enrollment $enrollment) => $enrollment->isOverdue())
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)
-            ->take(10)
+            ->values();
+
+        $upcomingPayments = $outstandingEnrollments
+            ->filter(fn (Enrollment $enrollment) => ! $enrollment->isOverdue())
+            ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)
             ->values();
 
         $trainingProgress = Enrollment::with(['student', 'course'])
@@ -70,7 +78,6 @@ class DashboardController extends Controller
         $lockedEnrollments = Enrollment::where('status', 'locked')
             ->with(['student', 'course'])
             ->latest('updated_at')
-            ->take(15)
             ->get();
 
         $trainingStats = [
@@ -232,7 +239,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'outstandingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'overduePayments', 'upcomingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**
