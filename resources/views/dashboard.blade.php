@@ -203,19 +203,11 @@
 
             </div>
 
-            @if ($overduePayments->isNotEmpty() || $upcomingPayments->isNotEmpty())
+            @if ($upcomingPayments->isNotEmpty() || $lockedEnrollments->isNotEmpty())
                 <div id="outstanding-payments" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Outstanding Payments') }}</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @if ($overduePayments->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'overdue-payments-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔴 {{ __('Overdue') }}</p>
-                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $overduePayments->count() }}</p>
-                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
-                        @endif
-
                         @if ($upcomingPayments->isNotEmpty())
                             <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="text-left rounded-lg p-5 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition">
                                 <p class="text-xs uppercase tracking-wider text-amber-700 font-semibold">🟠 {{ __('Upcoming') }}</p>
@@ -223,30 +215,16 @@
                                 <p class="text-xs text-amber-600 mt-1">{{ __('Click to view names') }}</p>
                             </button>
                         @endif
+
+                        @if ($lockedEnrollments->isNotEmpty())
+                            <button type="button" id="locked-students" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
+                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔒 {{ __('Locked') }}</p>
+                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $lockedEnrollments->count() }}</p>
+                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                            </button>
+                        @endif
                     </div>
                 </div>
-
-                @if ($overduePayments->isNotEmpty())
-                    <x-modal name="overdue-payments-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Overdue Payments') }}</h3>
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($overduePayments as $enrollment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
-                                        </div>
-                                        <span class="text-xs text-gray-500 whitespace-nowrap">₦{{ number_format($enrollment->balance(), 2) }} · {{ optional($enrollment->due_date)->format('Y-m-d') ?? '—' }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'overdue-payments-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
-                        </div>
-                    </x-modal>
-                @endif
 
                 @if ($upcomingPayments->isNotEmpty())
                     <x-modal name="upcoming-payments-modal">
@@ -265,6 +243,33 @@
                             </div>
                             <div class="mt-4 text-right">
                                 <x-secondary-button x-on:click="$dispatch('close-modal', 'upcoming-payments-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endif
+
+                @if ($lockedEnrollments->isNotEmpty())
+                    <x-modal name="locked-students-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Students') }}</h3>
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($lockedEnrollments as $enrollment)
+                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                        <div>
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 whitespace-nowrap">
+                                            <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
+                                            @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-students-modal')">{{ __('Close') }}</x-secondary-button>
                             </div>
                         </div>
                     </x-modal>
@@ -418,43 +423,6 @@
                         </div>
                     </x-modal>
                 @endif
-            @endif
-
-            @if ($lockedEnrollments->isNotEmpty())
-                <div id="locked-students" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Locked Students') }}</h3>
-
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition w-full sm:w-auto sm:inline-block">
-                        <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔒 {{ __('Locked') }}</p>
-                        <p class="text-3xl font-bold text-red-700 mt-1">{{ $lockedEnrollments->count() }}</p>
-                        <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
-                    </button>
-                </div>
-
-                <x-modal name="locked-students-modal">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Students') }}</h3>
-                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                            @foreach ($lockedEnrollments as $enrollment)
-                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                    <div>
-                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 whitespace-nowrap">
-                                        <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
-                                        @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
-                                            <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                        <div class="mt-4 text-right">
-                            <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-students-modal')">{{ __('Close') }}</x-secondary-button>
-                        </div>
-                    </div>
-                </x-modal>
             @endif
 
             @if ($serviceProcessing->isNotEmpty())

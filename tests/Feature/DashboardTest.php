@@ -242,17 +242,14 @@ class DashboardTest extends TestCase
         $response->assertDontSee('Outstanding Payments');
     }
 
-    public function test_dashboard_shows_outstanding_payments_as_overdue_and_upcoming_count_boxes(): void
+    public function test_dashboard_shows_outstanding_payments_as_upcoming_and_locked_count_boxes(): void
     {
+        // Once an enrollment actually goes overdue the system locks it on
+        // its own (Enrollment::applyLockingRules()), so there's no
+        // separate "overdue" state to show here - just still-active
+        // students who owe money (Upcoming) and the ones already locked
+        // over it (Locked), combined in one widget instead of two.
         $user = User::factory()->create();
-        $overdue = Student::factory()->create(['name' => 'Overdue Payer']);
-        $overdueCourse = Course::factory()->create(['fee' => 1000]);
-        $overdue->courses()->attach($overdueCourse->id, [
-            'enrolled_at' => now(),
-            'due_date' => now()->subDays(2),
-            'status' => 'active',
-        ]);
-
         $upcoming = Student::factory()->create(['name' => 'Upcoming Payer']);
         $upcomingCourse = Course::factory()->create(['fee' => 2000]);
         $upcoming->courses()->attach($upcomingCourse->id, [
@@ -261,14 +258,42 @@ class DashboardTest extends TestCase
             'status' => 'active',
         ]);
 
+        $locked = Student::factory()->create(['name' => 'Locked Payer']);
+        $lockedCourse = Course::factory()->create(['fee' => 1000]);
+        $locked->courses()->attach($lockedCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
         $response->assertSee('Outstanding Payments');
-        $response->assertSeeInOrder(['Overdue', '1']);
         $response->assertSeeInOrder(['Upcoming', '1']);
-        $response->assertSee('Overdue Payer');
+        $response->assertSeeInOrder(['Locked', '1']);
         $response->assertSee('Upcoming Payer');
+        $response->assertSee('Locked Payer');
+    }
+
+    public function test_dashboard_does_not_double_count_a_locked_enrollment_as_upcoming(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Only Locked']);
+        $course = Course::factory()->create(['fee' => 1000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Locked', '1']);
+        $response->assertDontSee('Upcoming');
     }
 
     public function test_dashboard_shows_student_training_progress(): void
