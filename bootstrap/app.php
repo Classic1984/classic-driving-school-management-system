@@ -19,6 +19,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'director' => EnsureUserIsDirector::class,
             'course-manager' => EnsureUserCanManageCourses::class,
         ]);
+
+        // The marketing site posts here cross-origin with no session, so it
+        // can never carry a CSRF token - CORS + rate limiting guard it instead.
+        $middleware->validateCsrfTokens(except: [
+            'public/leads',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
