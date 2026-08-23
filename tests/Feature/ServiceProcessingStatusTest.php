@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ActivityLog;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\Service;
@@ -263,5 +264,57 @@ class ServiceProcessingStatusTest extends TestCase
         ]);
 
         $this->assertFalse($studentService->isOverdueProcessing());
+    }
+
+    public function test_marking_a_service_completed_confirms_it_was_generated(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit"]);
+        $student = Student::factory()->create(['name' => 'Amaka Obi']);
+        $studentService = $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'not_started',
+        ]);
+
+        $response = $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
+            'processing_status' => 'completed',
+        ]);
+
+        $response->assertRedirect(route('students.show', $student->id));
+        $response->assertSessionHas('status', 'service-status-updated');
+
+        $followUp = $this->get(route('students.show', $student->id));
+        $followUp->assertSee("Learner's Permit has been generated for Amaka Obi.");
+
+        $this->assertSame('completed', $studentService->fresh()->processing_status);
+    }
+
+    public function test_marking_an_already_completed_service_again_warns_instead_of_re_processing(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit"]);
+        $student = Student::factory()->create(['name' => 'Bola Ade']);
+        $studentService = $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'completed',
+        ]);
+
+        $logCountBefore = ActivityLog::count();
+
+        $response = $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
+            'processing_status' => 'completed',
+        ]);
+
+        $response->assertRedirect(route('students.show', $student->id));
+        $response->assertSessionHas('status', 'service-status-unchanged');
+
+        $followUp = $this->get(route('students.show', $student->id));
+        $followUp->assertSee('already been marked');
+        $followUp->assertSee('Learner');
+
+        // No redundant activity entry for a click that changed nothing.
+        $this->assertSame($logCountBefore, ActivityLog::count());
     }
 }

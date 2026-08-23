@@ -56,7 +56,20 @@ class StudentServiceController extends Controller
             'processing_status' => ['required', Rule::in(StudentService::PROCESSING_STATUSES)],
         ]);
 
-        $studentService->load('service');
+        $studentService->load(['service', 'student']);
+
+        // A stale page (an old tab, the back button, a double-click before
+        // the redirect lands) can resubmit the same target status for a
+        // request that's already there - e.g. "Mark Obtained" on a permit
+        // that's already marked obtained. Catch that before it re-logs a
+        // redundant activity entry, and tell staff plainly rather than
+        // silently no-op'ing, so a mistaken click doesn't look like it did
+        // nothing.
+        if ($studentService->processing_status === $data['processing_status']) {
+            return Redirect::route('students.show', $studentService->student_id)
+                ->with('status', 'service-status-unchanged')
+                ->with('serviceStatusMessage', "{$studentService->service->name} has already been marked as \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name} - no change made.");
+        }
 
         $updates = ['processing_status' => $data['processing_status']];
 
@@ -73,7 +86,16 @@ class StudentServiceController extends Controller
 
         ActivityLog::record("Updated {$studentService->service->name} processing status to \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name}");
 
-        return Redirect::route('students.show', $studentService->student_id)->with('status', 'service-status-updated');
+        // Confirm in language that matches what staff just did - "generated"
+        // for a same-day item like a permit or certificate reads clearer
+        // than a generic "status updated" once it's actually done.
+        $confirmation = $data['processing_status'] === 'completed'
+            ? "{$studentService->service->name} has been generated for {$studentService->student->name}."
+            : "{$studentService->service->name} processing status updated to \"{$studentService->processingStatusLabel()}\" for {$studentService->student->name}.";
+
+        return Redirect::route('students.show', $studentService->student_id)
+            ->with('status', 'service-status-updated')
+            ->with('serviceStatusMessage', $confirmation);
     }
 
     /**
