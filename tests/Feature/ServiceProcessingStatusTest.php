@@ -266,7 +266,7 @@ class ServiceProcessingStatusTest extends TestCase
         $this->assertFalse($studentService->isOverdueProcessing());
     }
 
-    public function test_marking_a_service_completed_confirms_it_was_generated(): void
+    public function test_marking_a_service_completed_from_the_dashboard_confirms_it_was_generated_there(): void
     {
         $user = User::factory()->create();
         $service = Service::factory()->create(['name' => "Learner's Permit"]);
@@ -277,17 +277,45 @@ class ServiceProcessingStatusTest extends TestCase
             'processing_status' => 'not_started',
         ]);
 
-        $response = $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
-            'processing_status' => 'completed',
-        ]);
+        // The dashboard's own quick-action buttons submit this same route, so
+        // the confirmation needs to land back wherever staff actually clicked
+        // from - the dashboard here - not always the student's profile page.
+        $response = $this->actingAs($user)
+            ->from('/dashboard')
+            ->patch("/student-services/{$studentService->id}/processing-status", [
+                'processing_status' => 'completed',
+            ]);
 
-        $response->assertRedirect(route('students.show', $student->id));
+        $response->assertRedirect('/dashboard');
         $response->assertSessionHas('status', 'service-status-updated');
 
-        $followUp = $this->get(route('students.show', $student->id));
+        $followUp = $this->get('/dashboard');
         $followUp->assertSee("Learner's Permit has been generated for Amaka Obi.");
 
         $this->assertSame('completed', $studentService->fresh()->processing_status);
+    }
+
+    public function test_marking_a_service_completed_from_the_student_page_confirms_it_there(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit"]);
+        $student = Student::factory()->create(['name' => 'Amaka Obi']);
+        $studentService = $student->studentServices()->create([
+            'service_id' => $service->id,
+            'price' => $service->price,
+            'processing_status' => 'not_started',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('students.show', $student->id))
+            ->patch("/student-services/{$studentService->id}/processing-status", [
+                'processing_status' => 'completed',
+            ]);
+
+        $response->assertRedirect(route('students.show', $student->id));
+
+        $followUp = $this->get(route('students.show', $student->id));
+        $followUp->assertSee("Learner's Permit has been generated for Amaka Obi.");
     }
 
     public function test_marking_an_already_completed_service_again_warns_instead_of_re_processing(): void
@@ -303,14 +331,16 @@ class ServiceProcessingStatusTest extends TestCase
 
         $logCountBefore = ActivityLog::count();
 
-        $response = $this->actingAs($user)->patch("/student-services/{$studentService->id}/processing-status", [
-            'processing_status' => 'completed',
-        ]);
+        $response = $this->actingAs($user)
+            ->from('/dashboard')
+            ->patch("/student-services/{$studentService->id}/processing-status", [
+                'processing_status' => 'completed',
+            ]);
 
-        $response->assertRedirect(route('students.show', $student->id));
+        $response->assertRedirect('/dashboard');
         $response->assertSessionHas('status', 'service-status-unchanged');
 
-        $followUp = $this->get(route('students.show', $student->id));
+        $followUp = $this->get('/dashboard');
         $followUp->assertSee('already been marked');
         $followUp->assertSee('Learner');
 
