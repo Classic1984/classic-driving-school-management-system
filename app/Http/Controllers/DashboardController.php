@@ -57,16 +57,18 @@ class DashboardController extends Controller
             ->get()
             ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0);
 
-        // Split the same way the Programme Upgrade Window widget does: a
-        // count box per state, with the actual names revealed in a modal
-        // rather than listed directly on the dashboard.
-        $overduePayments = $outstandingEnrollments
-            ->filter(fn (Enrollment $enrollment) => $enrollment->isOverdue())
-            ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)
-            ->values();
-
+        // Once an enrollment actually goes overdue, the system locks it on
+        // its own (see Enrollment::applyLockingRules()) - so "overdue" was
+        // never really a third state distinct from "locked", just the same
+        // enrollment briefly caught before the lock refresh runs. Rather
+        // than surface that transient overlap as its own box (and risk the
+        // same student showing up in both an "Outstanding Payments" widget
+        // and the "Locked Students" widget at once), this is everyone who
+        // owes money and isn't locked - a completed enrollment can still
+        // owe a balance (training completion doesn't clear it), so only
+        // "locked" is excluded here, not "completed".
         $upcomingPayments = $outstandingEnrollments
-            ->filter(fn (Enrollment $enrollment) => ! $enrollment->isOverdue())
+            ->filter(fn (Enrollment $enrollment) => $enrollment->status !== 'locked')
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)
             ->values();
 
@@ -239,7 +241,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'overduePayments', 'upcomingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**
