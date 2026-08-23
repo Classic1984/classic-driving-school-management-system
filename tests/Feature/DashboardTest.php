@@ -370,7 +370,7 @@ class DashboardTest extends TestCase
     {
         $user = User::factory()->create();
         $overdueStudent = Student::factory()->create(['name' => 'Overdue Student']);
-        $overdueCourse = Course::factory()->create();
+        $overdueCourse = Course::factory()->create(['fee' => 15000]);
         $overdueStudent->courses()->attach($overdueCourse->id, [
             'enrolled_at' => now(),
             'due_date' => now()->subDays(2),
@@ -392,6 +392,7 @@ class DashboardTest extends TestCase
         $response->assertSee('Locked Students');
         $response->assertSee('Overdue Student');
         $response->assertSee('Overdue Balance');
+        $response->assertSee('15,000.00');
         $response->assertSee('Expired Student');
         $response->assertSee('Training Period Expired');
         $response->assertSeeInOrder(['Locked', '2']);
