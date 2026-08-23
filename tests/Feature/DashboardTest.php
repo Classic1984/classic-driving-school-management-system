@@ -532,9 +532,10 @@ class DashboardTest extends TestCase
         $response->assertSee('Last Day');
         $response->assertSee('closes today');
 
-        $response->assertSee('Sarah D');
-        $response->assertSee('🔴');
-        $response->assertSee('Closed');
+        // Sarah's window already closed (day 6 on a 5-day window) - the
+        // "Closed" badge no longer appears anywhere on the dashboard, since
+        // a closed window isn't something staff need to act on here.
+        $response->assertDontSee('🔴');
 
         $response->assertSee('Students Who Need Upgrade Reminder');
     }

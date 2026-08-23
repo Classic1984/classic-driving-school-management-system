@@ -316,14 +316,11 @@
                 </div>
             @endif
 
-            @php($upgradeEligible = $upgradeAlerts->filter(fn ($enrollment) => $enrollment->isWithinUpgradeWindow()))
             @if ($upgradeAlerts->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xl font-bold text-gray-800">{{ __('Programme Upgrade Window') }}</h3>
-                        @if ($upgradeEligible->isNotEmpty())
-                            <x-badge color="amber">🔔 {{ $upgradeEligible->count() }} {{ __('Student(s) Currently Eligible for Upgrade') }}</x-badge>
-                        @endif
+                        <x-badge color="amber">🔔 {{ $upgradeAlerts->count() }} {{ __('Student(s) Currently Eligible for Upgrade') }}</x-badge>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -353,37 +350,33 @@
                                         <td class="py-2 pr-4">
                                             @if ($daysCompleted < \App\Models\Enrollment::UPGRADE_WINDOW_DAYS)
                                                 <x-badge color="green">🟢 {{ __('Eligible') }}</x-badge>
-                                            @elseif ($daysCompleted === \App\Models\Enrollment::UPGRADE_WINDOW_DAYS)
+                                            @else
                                                 <x-badge color="amber">🟠 {{ __('Last Day') }}</x-badge>
                                                 <span class="block text-xs text-red-600 mt-0.5">⚠️ {{ __('Upgrade window closes today') }}</span>
-                                            @else
-                                                <x-badge color="red">🔴 {{ __('Closed') }}</x-badge>
                                             @endif
                                         </td>
-                                        <td class="py-2">{{ $enrollment->isWithinUpgradeWindow() ? $enrollment->upgradeDaysRemaining() : '—' }}</td>
+                                        <td class="py-2">{{ $enrollment->upgradeDaysRemaining() }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
 
-                    @if ($upgradeEligible->isNotEmpty())
-                        <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-                            <h4 class="text-sm font-semibold text-amber-800 mb-2">📢 {{ __('Students Who Need Upgrade Reminder') }}</h4>
-                            <ul class="text-sm text-amber-800 space-y-1 list-disc list-inside">
-                                @foreach ($upgradeEligible as $enrollment)
-                                    <li>
-                                        {{ $enrollment->student->name }} —
-                                        @if ($enrollment->upgradeDaysRemaining() > 0)
-                                            {{ $enrollment->upgradeDaysRemaining() }} {{ __('day(s) remaining') }}
-                                        @else
-                                            {{ __('upgrade closes today') }}
-                                        @endif
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                        <h4 class="text-sm font-semibold text-amber-800 mb-2">📢 {{ __('Students Who Need Upgrade Reminder') }}</h4>
+                        <ul class="text-sm text-amber-800 space-y-1 list-disc list-inside">
+                            @foreach ($upgradeAlerts as $enrollment)
+                                <li>
+                                    {{ $enrollment->student->name }} —
+                                    @if ($enrollment->upgradeDaysRemaining() > 0)
+                                        {{ $enrollment->upgradeDaysRemaining() }} {{ __('day(s) remaining') }}
+                                    @else
+                                        {{ __('upgrade closes today') }}
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
             @endif
 

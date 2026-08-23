@@ -320,7 +320,7 @@ class ProgrammeUpgradeTest extends TestCase
         $response = $this->actingAs($director)->get("/students/{$student->id}");
 
         $response->assertOk();
-        $response->assertSee('Closed');
+        $response->assertSee('Programme Upgrade Window Closed');
         $response->assertSee('Five-day upgrade period exceeded');
     }
 
