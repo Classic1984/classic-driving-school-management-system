@@ -95,6 +95,9 @@ Route::middleware('auth')->group(function () {
     // admin-only actions above, the whole section (including viewing it) is hidden
     // from Admin and Secretary alike.
     Route::middleware('director')->group(function () {
+        // Registered ahead of the resource route below so "last-updated"
+        // isn't swallowed by the {expense} show route's binding.
+        Route::get('expenses/last-updated', [ExpenseController::class, 'lastUpdated'])->name('expenses.last-updated');
         Route::resource('expenses', ExpenseController::class);
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
         Route::get('finance/export', [FinanceController::class, 'export'])->name('finance.export');

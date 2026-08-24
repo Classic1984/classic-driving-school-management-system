@@ -6,6 +6,7 @@ use App\Http\Requests\StoreExpenseRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Models\ActivityLog;
 use App\Models\Expense;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,20 @@ class ExpenseController extends Controller
         $expenses = Expense::latest('expense_date')->paginate(10);
 
         return view('expenses.index', compact('expenses'));
+    }
+
+    /**
+     * A cheap snapshot the on-screen expense-update reminder polls to
+     * decide whether anything changed since the last check. Count is
+     * included alongside the latest updated_at because a hard delete
+     * changes nothing's updated_at but does change the count.
+     */
+    public function lastUpdated(): JsonResponse
+    {
+        return response()->json([
+            'count' => Expense::count(),
+            'last_updated_at' => Expense::max('updated_at'),
+        ]);
     }
 
     /**
