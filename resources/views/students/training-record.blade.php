@@ -10,6 +10,8 @@
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 @if (session('status') === 'training-logged')
                     <p class="text-sm font-medium text-green-600">{{ __('Training logged successfully.') }}</p>
+                @elseif (session('status') === 'attendance-updated')
+                    <p class="text-sm font-medium text-green-600">{{ __('Training login updated successfully.') }}</p>
                 @endif
 
                 <dl class="divide-y divide-gray-100">
@@ -55,6 +57,7 @@
                                     <th class="px-2 py-1">{{ __('Instructor') }}</th>
                                     <th class="px-2 py-1">{{ __('Vehicle') }}</th>
                                     <th class="px-2 py-1">{{ __('Logged By') }}</th>
+                                    <th class="px-2 py-1"></th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
@@ -69,10 +72,22 @@
                                         <td class="px-2 py-1 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->vehicle?->name ?? '—' }}</td>
                                         <td class="px-2 py-1 text-sm">{{ $attendance->loggedBy?->name ?? '—' }}</td>
+                                        <td class="px-2 py-1 text-sm text-right whitespace-nowrap space-x-2">
+                                            @if (auth()->user()->canManageCourses())
+                                                <a href="{{ route('attendances.edit', $attendance) }}?redirect_to=training_record" class="text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                            @endif
+                                            @if (auth()->user()->isAdmin())
+                                                <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this training login?') }}');">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                                </form>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
+                                        <td colspan="10" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>

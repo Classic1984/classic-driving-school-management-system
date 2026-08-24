@@ -153,15 +153,16 @@ class StudentController extends Controller
             'courses',
             'payments' => fn ($query) => $query->with(['recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])->latest('payment_date'),
             'certificates' => fn ($query) => $query->with('course')->latest('issue_date'),
-            'attendances' => fn ($query) => $query->with('instructor')->latest('date'),
+            'attendances' => fn ($query) => $query->with(['instructor', 'vehicle'])->latest('date'),
             'studentServices' => fn ($query) => $query->with('service'),
         ]);
         $instructors = Instructor::orderBy('name')->get();
+        $vehicles = Vehicle::where('status', 'active')->orderBy('name')->get();
         $chargedServiceIds = $student->studentServices->pluck('service_id');
         $availableServices = Service::where('is_active', true)->whereNotIn('id', $chargedServiceIds)->orderBy('name')->get();
         $financialOverview = StudentChargeResolver::allCharges($student);
 
-        return view('students.show', compact('student', 'instructors', 'availableServices', 'financialOverview'));
+        return view('students.show', compact('student', 'instructors', 'vehicles', 'availableServices', 'financialOverview'));
     }
 
     /**

@@ -272,6 +272,63 @@ class AttendanceTest extends TestCase
         $this->assertSame('absent', $attendance->fresh()->status);
     }
 
+    public function test_editing_an_attendance_record_from_a_students_profile_redirects_back_there(): void
+    {
+        $user = User::factory()->create();
+        $attendance = Attendance::factory()->create(['status' => 'present']);
+
+        $response = $this->actingAs($user)->put("/attendances/{$attendance->id}", [
+            'student_id' => $attendance->student_id,
+            'course_id' => $attendance->course_id,
+            'instructor_id' => $attendance->instructor_id,
+            'date' => $attendance->date->format('Y-m-d'),
+            'status' => 'absent',
+            'redirect_to' => 'student',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('students.show', $attendance->student_id));
+        $response->assertSessionHas('status', 'attendance-updated');
+    }
+
+    public function test_editing_an_attendance_record_from_the_training_record_page_redirects_back_there(): void
+    {
+        $user = User::factory()->create();
+        $attendance = Attendance::factory()->create(['status' => 'present']);
+
+        $response = $this->actingAs($user)->put("/attendances/{$attendance->id}", [
+            'student_id' => $attendance->student_id,
+            'course_id' => $attendance->course_id,
+            'instructor_id' => $attendance->instructor_id,
+            'date' => $attendance->date->format('Y-m-d'),
+            'status' => 'absent',
+            'redirect_to' => 'training_record',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('students.training-record', $attendance->student_id));
+        $response->assertSessionHas('status', 'attendance-updated');
+    }
+
+    public function test_editing_an_attendance_record_can_change_the_vehicle_used(): void
+    {
+        $user = User::factory()->create();
+        $originalVehicle = Vehicle::factory()->create(['status' => 'active']);
+        $newVehicle = Vehicle::factory()->create(['status' => 'active']);
+        $attendance = Attendance::factory()->create(['vehicle_id' => $originalVehicle->id]);
+
+        $response = $this->actingAs($user)->put("/attendances/{$attendance->id}", [
+            'student_id' => $attendance->student_id,
+            'course_id' => $attendance->course_id,
+            'date' => $attendance->date->format('Y-m-d'),
+            'status' => $attendance->status,
+            'vehicle_id' => $newVehicle->id,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame($newVehicle->id, $attendance->fresh()->vehicle_id);
+    }
+
     public function test_authenticated_user_can_delete_an_attendance_record(): void
     {
         $user = User::factory()->create();
