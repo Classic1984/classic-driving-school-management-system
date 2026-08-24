@@ -83,7 +83,7 @@
                     },
                     init() {
                         this.check();
-                        setInterval(() => this.check(), 20 * 60 * 1000);
+                        setInterval(() => this.check(), 5 * 60 * 1000);
                     },
                 }"
                 x-show="show"
