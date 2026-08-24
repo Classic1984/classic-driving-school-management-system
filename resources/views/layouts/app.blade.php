@@ -50,5 +50,56 @@
                 </main>
             </div>
         </div>
+
+        @if (auth()->user()?->isDirector())
+            <div
+                x-data="{
+                    show: false,
+                    snapshotKey: 'cdsms-expense-snapshot',
+                    async check() {
+                        try {
+                            const response = await fetch('{{ route('expenses.last-updated') }}', {
+                                headers: { 'Accept': 'application/json' },
+                            });
+                            if (! response.ok) return;
+
+                            const data = await response.json();
+                            const snapshot = `${data.count}:${data.last_updated_at}`;
+                            const previous = localStorage.getItem(this.snapshotKey);
+
+                            // Only alert on a change from a snapshot we've
+                            // already seen - the very first check on a
+                            // fresh browser just establishes the baseline,
+                            // so opening the app doesn't itself look like
+                            // an update.
+                            if (previous !== null && previous !== snapshot) {
+                                this.show = true;
+                            }
+
+                            localStorage.setItem(this.snapshotKey, snapshot);
+                        } catch (error) {
+                            console.warn('Expense update check failed:', error);
+                        }
+                    },
+                    init() {
+                        this.check();
+                        setInterval(() => this.check(), 20 * 60 * 1000);
+                    },
+                }"
+                x-show="show"
+                x-transition
+                class="fixed bottom-6 right-6 z-50 max-w-sm rounded-lg bg-black px-5 py-4 text-white shadow-lg print:hidden"
+                style="display: none;"
+            >
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <p class="text-sm font-semibold text-amber-400">Expenses updated</p>
+                        <p class="mt-1 text-sm text-gray-300">Incurred expenses have changed since you last checked.</p>
+                        <a href="{{ route('expenses.index') }}" class="mt-2 inline-block text-sm font-medium text-amber-400 hover:text-amber-300">View Expenses &rarr;</a>
+                    </div>
+                    <button @click="show = false" class="text-gray-400 hover:text-white" aria-label="Dismiss">&times;</button>
+                </div>
+            </div>
+        @endif
     </body>
 </html>
