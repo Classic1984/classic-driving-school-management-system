@@ -82,6 +82,36 @@ class StudentTrainingRecordTest extends TestCase
         $response->assertDontSee('Retired Van');
     }
 
+    public function test_a_director_can_edit_or_delete_a_training_login_from_this_page(): void
+    {
+        $director = User::factory()->director()->create();
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $attendance = Attendance::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
+
+        $response = $this->actingAs($director)->get("/students/{$student->id}/training-record");
+
+        $response->assertOk();
+        $response->assertSee(route('attendances.edit', $attendance).'?redirect_to=training_record', false);
+        $response->assertSee(route('attendances.destroy', $attendance), false);
+    }
+
+    public function test_a_non_privileged_user_cannot_edit_or_delete_a_training_login_from_this_page(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $attendance = Attendance::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
+
+        $response = $this->actingAs($admin)->get("/students/{$student->id}/training-record");
+
+        $response->assertOk();
+        $response->assertDontSee(route('attendances.edit', $attendance).'?redirect_to=training_record', false);
+        $response->assertDontSee(route('attendances.destroy', $attendance), false);
+    }
+
     public function test_logging_a_second_training_session_for_the_same_student_today_shows_a_friendly_warning(): void
     {
         $user = User::factory()->create();

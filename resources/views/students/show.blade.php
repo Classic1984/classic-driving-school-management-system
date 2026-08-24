@@ -48,7 +48,7 @@
                     <x-badge :color="$studentStatusColor" class="capitalize">{{ $student->status }}</x-badge>
                 </div>
 
-                <div x-data="{ tab: 'overview' }">
+                <div x-data="{ tab: '{{ in_array(session('status'), ['training-logged', 'attendance-updated']) ? 'attendance' : 'overview' }}' }">
                     <nav class="flex flex-wrap gap-4 border-b border-gray-200 mb-4">
                         <button type="button" @click="tab = 'overview'" :class="tab === 'overview' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-1 pb-2 text-sm font-medium border-b-2">{{ __('Overview') }}</button>
                         <button type="button" @click="tab = 'training'" :class="tab === 'training' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="px-1 pb-2 text-sm font-medium border-b-2">{{ __('Training') }}</button>
@@ -342,6 +342,8 @@
 
                         @if (session('status') === 'training-logged')
                             <p class="mb-2 text-sm font-medium text-green-600">{{ __('Training logged successfully.') }}</p>
+                        @elseif (session('status') === 'attendance-updated')
+                            <p class="mb-2 text-sm font-medium text-green-600">{{ __('Training login updated successfully.') }}</p>
                         @endif
                         <x-input-error class="mb-2" :messages="$errors->get('student_id')" />
 
@@ -354,6 +356,8 @@
                                         <th class="px-2 py-1">{{ __('Type') }}</th>
                                         <th class="px-2 py-1">{{ __('Duration') }}</th>
                                         <th class="px-2 py-1">{{ __('Instructor') }}</th>
+                                        <th class="px-2 py-1">{{ __('Vehicle') }}</th>
+                                        <th class="px-2 py-1"></th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100">
@@ -364,10 +368,23 @@
                                             <td class="px-2 py-1 text-sm capitalize">{{ $attendance->type ?? '—' }}</td>
                                             <td class="px-2 py-1 text-sm">{{ $attendance->duration ?? '—' }}</td>
                                             <td class="px-2 py-1 text-sm">{{ $attendance->instructor?->name ?? '—' }}</td>
+                                            <td class="px-2 py-1 text-sm">{{ $attendance->vehicle?->name ?? '—' }}</td>
+                                            <td class="px-2 py-1 text-sm text-right whitespace-nowrap space-x-2">
+                                                @if (auth()->user()->canManageCourses())
+                                                    <a href="{{ route('attendances.edit', $attendance) }}?redirect_to=student" class="text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                                @endif
+                                                @if (auth()->user()->isAdmin())
+                                                    <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this training login?') }}');">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="submit" class="text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                                    </form>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
+                                            <td colspan="7" class="px-2 py-2 text-sm text-gray-500">{{ __('No training logins yet.') }}</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -376,7 +393,7 @@
 
                         @if (auth()->user()->canManageCourses())
                         @if ($student->courses->isNotEmpty())
-                            <form method="post" action="{{ route('attendances.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
+                            <form method="post" action="{{ route('attendances.store') }}" class="mt-4 grid grid-cols-1 sm:grid-cols-6 gap-4 items-end">
                                 @csrf
                                 <input type="hidden" name="student_id" value="{{ $student->id }}">
                                 <input type="hidden" name="redirect_to_student" value="1">
@@ -409,6 +426,16 @@
                                         <option value="">{{ __('None') }}</option>
                                         @foreach ($instructors as $availableInstructor)
                                             <option value="{{ $availableInstructor->id }}">{{ $availableInstructor->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <x-input-label for="quick_login_vehicle_id" :value="__('Vehicle')" />
+                                    <select id="quick_login_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                                        <option value="">{{ __('None') }}</option>
+                                        @foreach ($vehicles as $availableVehicle)
+                                            <option value="{{ $availableVehicle->id }}">{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
                                         @endforeach
                                     </select>
                                 </div>

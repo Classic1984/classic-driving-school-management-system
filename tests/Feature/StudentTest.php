@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -909,6 +910,52 @@ class StudentTest extends TestCase
         $response->assertSee('3 / 10');
         $response->assertSee('7');
         $response->assertSee('30%');
+    }
+
+    public function test_a_director_can_edit_or_delete_a_training_login_from_the_students_page(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $attendance = Attendance::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
+
+        $response = $this->actingAs($director)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee(route('attendances.edit', $attendance).'?redirect_to=student', false);
+        $response->assertSee(route('attendances.destroy', $attendance), false);
+    }
+
+    public function test_a_non_privileged_user_cannot_edit_or_delete_a_training_login_from_the_students_page(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $attendance = Attendance::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
+
+        $response = $this->actingAs($admin)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertDontSee(route('attendances.edit', $attendance).'?redirect_to=student', false);
+        $response->assertDontSee(route('attendances.destroy', $attendance), false);
+    }
+
+    public function test_the_quick_training_login_form_on_the_students_page_offers_active_vehicles(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Vehicle::factory()->create(['name' => 'Toyota Corolla', 'plate_number' => 'ABC-123XY', 'status' => 'active']);
+        Vehicle::factory()->create(['name' => 'Retired Van', 'plate_number' => 'OLD-999ZZ', 'status' => 'inactive']);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Toyota Corolla (ABC-123XY)');
+        $response->assertDontSee('Retired Van');
     }
 
     public function test_student_page_shows_an_issued_certificate(): void

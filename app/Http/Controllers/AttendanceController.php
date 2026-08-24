@@ -12,6 +12,7 @@ use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -77,9 +78,13 @@ class AttendanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Attendance $attendance): View
+    public function edit(Request $request, Attendance $attendance): View
     {
-        return view('attendances.edit', [...$this->formOptions(), 'attendance' => $attendance]);
+        return view('attendances.edit', [
+            ...$this->formOptions(),
+            'attendance' => $attendance,
+            'redirectTo' => $request->query('redirect_to'),
+        ]);
     }
 
     /**
@@ -101,7 +106,15 @@ class AttendanceController extends Controller
 
         ActivityLog::record("Updated a training attendance record for {$attendance->student->name} ({$attendance->course->name})");
 
-        return Redirect::route('attendances.index')->with('status', 'attendance-updated');
+        // Editing from a student's own page should return to that page
+        // rather than dumping staff onto the unrelated global list.
+        $redirect = match ($request->input('redirect_to')) {
+            'student' => Redirect::route('students.show', $attendance->student_id),
+            'training_record' => Redirect::route('students.training-record', $attendance->student_id),
+            default => Redirect::route('attendances.index'),
+        };
+
+        return $redirect->with('status', 'attendance-updated');
     }
 
     /**
