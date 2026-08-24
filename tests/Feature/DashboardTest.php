@@ -771,10 +771,10 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee("Today's Operations");
-        $response->assertSeeInOrder(['1', 'student(s) trained today']);
-        $response->assertSeeInOrder(['1', 'training session(s) logged today']);
-        $response->assertSeeInOrder(['1', 'instructor(s) active today']);
-        $response->assertSeeInOrder(['1', 'vehicle(s) in use today']);
+        $response->assertSeeInOrder(['1', 'Student(s) Trained Today']);
+        $response->assertSeeInOrder(['1', 'Training Session(s) Logged']);
+        $response->assertSeeInOrder(['1', 'Instructor(s) Active Today']);
+        $response->assertSeeInOrder(['1', 'Vehicle(s) In Use Today']);
     }
 
     public function test_todays_operations_flags_students_approaching_completion_and_locked_students(): void
@@ -807,8 +807,8 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSeeInOrder(['1', 'student(s) approaching completion']);
-        $response->assertSeeInOrder(['1', 'student(s) locked']);
+        $response->assertSeeInOrder(['1', 'Approaching Completion']);
+        $response->assertSeeInOrder(['1', 'Student(s) Locked']);
     }
 
     public function test_a_director_sees_the_pending_approvals_count_on_the_dashboard(): void
@@ -820,7 +820,7 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($director)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSeeInOrder(['2', 'approval(s) pending']);
+        $response->assertSeeInOrder(['2', 'Approval(s) Pending']);
     }
 
     public function test_a_secretary_does_not_see_the_pending_approvals_link(): void
@@ -831,7 +831,7 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($secretary)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('approval(s) pending');
+        $response->assertDontSee('Approval(s) Pending');
     }
 
     public function test_dashboard_lists_a_pending_learners_permit_request(): void

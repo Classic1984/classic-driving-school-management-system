@@ -68,58 +68,79 @@
                 </div>
             </div>
 
+            @php
+                $operationTileClasses = fn (string $state) => match ($state) {
+                    'alert' => 'bg-red-50 border-red-200 hover:bg-red-100',
+                    'warn' => 'bg-amber-50 border-amber-200 hover:bg-amber-100',
+                    default => 'bg-gray-50 border-gray-200 hover:bg-gray-100',
+                };
+                $operationLabelClasses = fn (string $state) => match ($state) {
+                    'alert' => 'text-red-600',
+                    'warn' => 'text-amber-600',
+                    default => 'text-gray-500',
+                };
+                $operationNumberClasses = fn (string $state) => match ($state) {
+                    'alert' => 'text-red-700',
+                    'warn' => 'text-amber-700',
+                    default => 'text-gray-800',
+                };
+            @endphp
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __("Today's Operations") }}</h3>
 
-                <ul class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm text-gray-700">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     @if (auth()->user()->isDirector())
-                        <li>
-                            <a href="{{ route('approvals.index') }}" class="{{ $todaysOperations['pending_approvals'] > 0 ? 'text-red-600 font-medium' : 'text-gray-700' }} hover:underline">
-                                {{ __(':count approval(s) pending', ['count' => $todaysOperations['pending_approvals']]) }}
-                            </a>
-                        </li>
+                        @php $state = $todaysOperations['pending_approvals'] > 0 ? 'alert' : 'ok'; @endphp
+                        <a href="{{ route('approvals.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
+                            <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['pending_approvals']) }}</p>
+                            <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approval(s) Pending') }}</p>
+                        </a>
                     @endif
-                    <li>
-                        <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
-                            {{ __(':count student(s) trained today', ['count' => $todaysOperations['students_trained']]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
-                            {{ __(':count training session(s) logged today', ['count' => $todaysOperations['training_sessions']]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('instructor-activity-report.index', ['period' => 'today']) }}" class="hover:text-amber-600 hover:underline">
-                            {{ __(':count instructor(s) active today', ['count' => $todaysOperations['instructors_active']]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('vehicles.index') }}" class="hover:text-amber-600 hover:underline">
-                            {{ __(':count vehicle(s) in use today', ['count' => $todaysOperations['vehicles_in_use']]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('payments.index') }}" class="hover:text-amber-600 hover:underline">
-                            {{ __('₦:amount received today', ['amount' => number_format($todaysOperations['payments_received_today'], 2)]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#outstanding-payments" class="{{ $todaysOperations['payments_pending_count'] > 0 ? 'text-red-600 font-medium' : 'text-gray-700' }} hover:underline">
-                            {{ __(':count payment(s) pending', ['count' => $todaysOperations['payments_pending_count']]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('training-progress.index') }}" class="{{ $todaysOperations['approaching_completion'] > 0 ? 'text-amber-600 font-medium' : 'text-gray-700' }} hover:underline">
-                            {{ __(':count student(s) approaching completion', ['count' => $todaysOperations['approaching_completion']]) }}
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#locked-students" class="{{ $todaysOperations['locked_students'] > 0 ? 'text-red-600 font-medium' : 'text-gray-700' }} hover:underline">
-                            {{ __(':count student(s) locked', ['count' => $todaysOperations['locked_students']]) }}
-                        </a>
-                    </li>
-                </ul>
+
+                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['students_trained']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Student(s) Trained Today') }}</p>
+                    </a>
+
+                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['training_sessions']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Training Session(s) Logged') }}</p>
+                    </a>
+
+                    <a href="{{ route('instructor-activity-report.index', ['period' => 'today']) }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['instructors_active']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Instructor(s) Active Today') }}</p>
+                    </a>
+
+                    <a href="{{ route('vehicles.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['vehicles_in_use']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Vehicle(s) In Use Today') }}</p>
+                    </a>
+
+                    <a href="{{ route('payments.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
+                        <p class="text-2xl font-bold whitespace-nowrap {{ $operationNumberClasses('ok') }}">₦{{ number_format($todaysOperations['payments_received_today'], 2) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Received Today') }}</p>
+                    </a>
+
+                    @php $state = $todaysOperations['payments_pending_count'] > 0 ? 'alert' : 'ok'; @endphp
+                    <a href="#outstanding-payments" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['payments_pending_count']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Payment(s) Pending') }}</p>
+                    </a>
+
+                    @php $state = $todaysOperations['approaching_completion'] > 0 ? 'warn' : 'ok'; @endphp
+                    <a href="{{ route('training-progress.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
+                    </a>
+
+                    @php $state = $todaysOperations['locked_students'] > 0 ? 'alert' : 'ok'; @endphp
+                    <a href="#locked-students" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
+                        <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['locked_students']) }}</p>
+                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Student(s) Locked') }}</p>
+                    </a>
+                </div>
             </div>
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
