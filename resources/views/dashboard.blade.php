@@ -454,48 +454,72 @@
 
             @if ($serviceProcessing->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Service Processing') }}</h3>
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-xl font-bold text-gray-800">{{ __('Service Processing') }}</h3>
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">{{ __(':count in progress', ['count' => $serviceProcessing->count()]) }}</span>
+                    </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Service') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Started') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Expected Ready') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Progress') }}</th>
-                                    <th class="pb-2"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($serviceProcessing as $studentService)
-                                    <tr>
-                                        <td class="py-2 pr-4">
-                                            <a href="{{ route('students.show', $studentService->student_id) }}" class="text-amber-600 hover:underline">
-                                                {{ $studentService->student->name }}
-                                            </a>
-                                        </td>
-                                        <td class="py-2 pr-4">{{ $studentService->service->name }}</td>
-                                        <td class="py-2 pr-4">{{ $studentService->processing_started_at?->format('M j, Y') ?? '—' }}</td>
-                                        <td class="py-2 pr-4">{{ $studentService->expectedReadyAt()?->format('M j, Y') ?? '—' }}</td>
-                                        <td class="py-2 pr-4 w-40">
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex-1 bg-gray-100 rounded-full h-2">
-                                                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ $studentService->processingProgressPercent() ?? 0 }}%"></div>
-                                                </div>
-                                                <span class="text-xs text-gray-500 whitespace-nowrap">{{ $studentService->processingProgressPercent() ?? 0 }}%</span>
-                                            </div>
-                                        </td>
-                                        <td class="py-2">
-                                            @if ($studentService->isOverdueProcessing())
-                                                <x-badge color="red">{{ __('Overdue') }}</x-badge>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        @foreach ($serviceProcessing as $studentService)
+                            @php
+                                $percent = $studentService->processingProgressPercent() ?? 0;
+                                $overdue = $studentService->isOverdueProcessing();
+                                $accent = match (true) {
+                                    $overdue => ['ring' => 'ring-red-200', 'bar' => 'from-red-500 to-red-600', 'edge' => 'bg-red-500'],
+                                    $percent >= 80 => ['ring' => 'ring-emerald-200', 'bar' => 'from-emerald-400 to-emerald-500', 'edge' => 'bg-emerald-500'],
+                                    $percent >= 40 => ['ring' => 'ring-amber-200', 'bar' => 'from-amber-400 to-amber-500', 'edge' => 'bg-amber-500'],
+                                    default => ['ring' => 'ring-gray-200', 'bar' => 'from-gray-400 to-gray-500', 'edge' => 'bg-gray-400'],
+                                };
+                                $initials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                            @endphp
+                            <a
+                                href="{{ route('students.show', $studentService->student_id) }}"
+                                class="group relative flex flex-col overflow-hidden rounded-xl bg-white p-5 ring-1 {{ $accent['ring'] }} shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                            >
+                                <span class="absolute inset-y-0 left-0 w-1 {{ $accent['edge'] }}"></span>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-sm font-bold text-amber-400">
+                                        {{ $initials }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <p class="truncate font-semibold text-gray-800 group-hover:text-amber-600">{{ $studentService->student->name }}</p>
+                                            @if ($overdue)
+                                                <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                                                    <svg class="h-2.5 w-2.5 fill-current" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+                                                    {{ __('Overdue') }}
+                                                </span>
                                             @endif
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </div>
+                                        <span class="inline-block mt-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 truncate max-w-full">
+                                            {{ $studentService->service->name }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="flex items-baseline justify-between">
+                                        <span class="text-xs font-medium text-gray-500">{{ __('Progress') }}</span>
+                                        <span class="text-sm font-bold text-gray-800">{{ $percent }}%</span>
+                                    </div>
+                                    <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                                        <div class="h-full rounded-full bg-gradient-to-r {{ $accent['bar'] }} transition-all" style="width: {{ $percent }}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 text-xs">
+                                    <div>
+                                        <p class="text-gray-400">{{ __('Started') }}</p>
+                                        <p class="font-medium text-gray-700">{{ $studentService->processing_started_at?->format('M j, Y') ?? '—' }}</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-gray-400">{{ __('Expected Ready') }}</p>
+                                        <p class="font-medium text-gray-700">{{ $studentService->expectedReadyAt()?->format('M j, Y') ?? '—' }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             @endif
