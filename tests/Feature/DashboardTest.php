@@ -320,8 +320,7 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Student Training Progress');
-        // Lean, operational columns: Student, Programme, Required, Completed, Remaining, %, Status.
-        $response->assertSee('Programme');
+        // Lean, operational stats on each card: Required, Completed, Remaining.
         $response->assertSee('Required');
         $response->assertSee('Remaining');
         $response->assertSee('Tobi Fashola');

@@ -553,49 +553,74 @@
 
             @if ($trainingProgress->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-5">
                         <h3 class="text-xl font-bold text-gray-800">{{ __('Student Training Progress') }}</h3>
-                        <a href="{{ route('training-progress.index') }}" class="text-sm text-amber-600 hover:underline">{{ __('View Full List') }}</a>
+                        <a href="{{ route('training-progress.index') }}" class="text-sm font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Programme') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Required') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Completed') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Remaining') }}</th>
-                                    <th class="pb-2 pr-4">%</th>
-                                    <th class="pb-2">{{ __('Status') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($trainingProgress as $enrollment)
-                                    <tr>
-                                        <td class="py-2 pr-4">
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
-                                                {{ $enrollment->student->name }}
-                                            </a>
-                                        </td>
-                                        <td class="py-2 pr-4">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }})</td>
-                                        <td class="py-2 pr-4">{{ $enrollment->course->totalTrainingDays() }}</td>
-                                        <td class="py-2 pr-4">{{ $enrollment->attendedDays() }}</td>
-                                        <td class="py-2 pr-4">{{ $enrollment->remainingTrainingDays() }}</td>
-                                        <td class="py-2 pr-4">{{ $enrollment->trainingCompletionPercentage() }}%</td>
-                                        <td class="py-2">
-                                            @php($label = $enrollment->trainingStatusLabel())
-                                            <x-badge :color="match ($label) {
-                                                'Completed' => 'blue',
-                                                'Expired' => 'red',
-                                                default => 'green',
-                                            }">{{ __($label) }}</x-badge>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        @foreach ($trainingProgress as $enrollment)
+                            @php
+                                $label = $enrollment->trainingStatusLabel();
+                                $percent = $enrollment->trainingCompletionPercentage();
+                                $accent = match (true) {
+                                    $label === 'Expired' => ['ring' => 'ring-red-200', 'bar' => 'from-red-500 to-red-600', 'edge' => 'bg-red-500', 'badge' => 'bg-red-100 text-red-700'],
+                                    $label === 'Completed' => ['ring' => 'ring-blue-200', 'bar' => 'from-blue-500 to-blue-600', 'edge' => 'bg-blue-500', 'badge' => 'bg-blue-100 text-blue-700'],
+                                    $percent >= 80 => ['ring' => 'ring-emerald-200', 'bar' => 'from-emerald-400 to-emerald-500', 'edge' => 'bg-emerald-500', 'badge' => 'bg-emerald-100 text-emerald-700'],
+                                    $percent >= 40 => ['ring' => 'ring-amber-200', 'bar' => 'from-amber-400 to-amber-500', 'edge' => 'bg-amber-500', 'badge' => 'bg-amber-100 text-amber-700'],
+                                    default => ['ring' => 'ring-gray-200', 'bar' => 'from-gray-400 to-gray-500', 'edge' => 'bg-gray-400', 'badge' => 'bg-gray-100 text-gray-600'],
+                                };
+                                $initials = collect(explode(' ', $enrollment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                            @endphp
+                            <a
+                                href="{{ route('students.show', $enrollment->student_id) }}"
+                                class="group relative flex flex-col overflow-hidden rounded-xl bg-white p-5 ring-1 {{ $accent['ring'] }} shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                            >
+                                <span class="absolute inset-y-0 left-0 w-1 {{ $accent['edge'] }}"></span>
+
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-sm font-bold text-amber-400">
+                                        {{ $initials }}
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <p class="truncate font-semibold text-gray-800 group-hover:text-amber-600">{{ $enrollment->student->name }}</p>
+                                            <span class="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $accent['badge'] }}">
+                                                {{ __($label) }}
+                                            </span>
+                                        </div>
+                                        <span class="inline-block mt-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 truncate max-w-full">
+                                            {{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }})
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="flex items-baseline justify-between">
+                                        <span class="text-xs font-medium text-gray-500">{{ __('Progress') }}</span>
+                                        <span class="text-sm font-bold text-gray-800">{{ $percent }}%</span>
+                                    </div>
+                                    <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                                        <div class="h-full rounded-full bg-gradient-to-r {{ $accent['bar'] }} transition-all" style="width: {{ $percent }}%"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 grid grid-cols-3 gap-2 border-t border-gray-100 pt-3 text-center text-xs">
+                                    <div>
+                                        <p class="font-bold text-gray-800">{{ $enrollment->course->totalTrainingDays() }}</p>
+                                        <p class="text-gray-400">{{ __('Required') }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-gray-800">{{ $enrollment->attendedDays() }}</p>
+                                        <p class="text-gray-400">{{ __('Completed') }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-gray-800">{{ $enrollment->remainingTrainingDays() }}</p>
+                                        <p class="text-gray-400">{{ __('Remaining') }}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             @endif
