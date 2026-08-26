@@ -140,9 +140,27 @@
     <x-input-error class="mt-2" :messages="$errors->get('occupation')" />
 </div>
 
-<div>
+@if (! $student)
+    @php($registrationType = (! old('course_id') && ! empty(old('service_ids'))) ? 'service' : 'course')
+    <div>
+        <x-input-label :value="__('Registration Type')" />
+        <div class="mt-2 space-y-2">
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="radio" name="registration_type" value="course" @checked($registrationType === 'course') @change="setRegistrationType('course')" class="border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                {{ __('Enroll in a Course') }}
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700">
+                <input type="radio" name="registration_type" value="service" @checked($registrationType === 'service') @change="setRegistrationType('service')" class="border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                {{ __("Register for a Service Only (Learner's Permit, Driver's Licence, Certificate) - no course") }}
+            </label>
+        </div>
+    </div>
+@endif
+
+<div @if (! $student) x-show="registrationType === 'course'" @endif>
     <x-input-label for="course_type" :value="__('Course Type')" />
-    <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+    <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+        <option value="">{{ __('Select') }}</option>
         @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
             <option value="{{ $value }}" @selected(old('course_type', $student?->course_type) === $value)>{{ __($label) }}</option>
         @endforeach
@@ -150,7 +168,7 @@
     <x-input-error class="mt-2" :messages="$errors->get('course_type')" />
 </div>
 
-<div>
+<div @if (! $student) x-show="registrationType === 'course'" @endif>
     <x-input-label for="vehicle_class" :value="__('Class of Vehicle You Wish to Operate After Training')" />
     <select id="vehicle_class" name="vehicle_class" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
         <option value="">{{ __('Select') }}</option>

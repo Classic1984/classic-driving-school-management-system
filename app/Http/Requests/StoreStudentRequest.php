@@ -71,7 +71,7 @@ class StoreStudentRequest extends FormRequest
             'license_number' => ['nullable', 'string', 'max:50', 'unique:students,license_number'],
             'id_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
             'license_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
-            'course_type' => ['required', 'in:manual,automatic,both'],
+            'course_type' => ['required_with:course_id', 'nullable', 'in:manual,automatic,both'],
             'vehicle_class' => ['nullable', 'in:light,heavy'],
             'has_driving_experience' => ['nullable', 'boolean'],
             'wears_glasses' => ['nullable', 'boolean'],
@@ -79,7 +79,12 @@ class StoreStudentRequest extends FormRequest
             'referral_source_other' => ['nullable', 'string', 'max:255'],
             'photo' => ['nullable', 'image', 'max:4096'],
             'enrollment_date' => ['required', 'date', 'date_equals:today'],
-            'course_id' => ['required', 'integer', 'exists:courses,id'],
+            // Not every registration enrolls in a course - a walk-in
+            // client registering only for a flat catalog service (a
+            // Learner's Permit, Driver's Licence Processing, a
+            // Certificate) has no course_id at all, so at least one of
+            // course_id or service_ids must be given.
+            'course_id' => ['required_without:service_ids', 'nullable', 'integer', 'exists:courses,id'],
             'starts_double_period' => ['nullable', 'boolean'],
             'amount_paid' => ['nullable', 'numeric', 'min:0.01'],
             'payment_method' => ['required_with:amount_paid', 'nullable', 'in:cash,card,bank_transfer,mobile_money'],
@@ -113,6 +118,7 @@ class StoreStudentRequest extends FormRequest
     {
         return [
             'discount_choice.in' => 'You are not authorized to apply that discount.',
+            'course_id.required_without' => 'Select a course, or choose at least one service to register this person for.',
         ];
     }
 
