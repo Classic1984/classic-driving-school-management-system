@@ -18,6 +18,12 @@
 </div>
 
 <div>
+    <x-input-label for="email" :value="__('Email')" />
+    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $lead?->email)" />
+    <x-input-error class="mt-2" :messages="$errors->get('email')" />
+</div>
+
+<div>
     <x-input-label for="course_interested" :value="__('Course Interested In')" />
     <select id="course_interested" name="course_interested" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
         <option value="">{{ __('Select a course') }}</option>

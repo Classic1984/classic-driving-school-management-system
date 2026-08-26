@@ -46,6 +46,7 @@
                             <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                 <th class="px-4 py-2">{{ __('Name') }}</th>
                                 <th class="px-4 py-2">{{ __('Phone') }}</th>
+                                <th class="px-4 py-2">{{ __('Email') }}</th>
                                 <th class="px-4 py-2">{{ __('Course Interested In') }}</th>
                                 <th class="px-4 py-2">{{ __('Source') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
@@ -57,6 +58,7 @@
                                 <tr>
                                     <td class="px-4 py-2">{{ $lead->name }}</td>
                                     <td class="px-4 py-2">{{ $lead->phone }}</td>
+                                    <td class="px-4 py-2">{{ $lead->email ?: '—' }}</td>
                                     <td class="px-4 py-2">{{ $lead->course_interested ?: '—' }}</td>
                                     <td class="px-4 py-2">{{ $lead->source ?: '—' }}</td>
                                     <td class="px-4 py-2">
@@ -79,7 +81,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No inquiries logged yet.') }}
                                     </td>
                                 </tr>

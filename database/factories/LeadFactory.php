@@ -20,6 +20,7 @@ class LeadFactory extends Factory
         return [
             'name' => fake()->name(),
             'phone' => fake()->phoneNumber(),
+            'email' => fake()->optional()->safeEmail(),
             'course_interested' => fake()->optional()->words(2, true),
             'source' => fake()->optional()->randomElement(['Walk-in', 'Referral', 'Phone Call', 'Social Media']),
             'notes' => fake()->optional()->sentence(),

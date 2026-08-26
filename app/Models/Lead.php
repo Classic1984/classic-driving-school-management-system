@@ -48,6 +48,7 @@ class Lead extends Model
     protected $fillable = [
         'name',
         'phone',
+        'email',
         'course_interested',
         'source',
         'notes',

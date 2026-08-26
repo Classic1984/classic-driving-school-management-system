@@ -27,6 +27,7 @@ class UpdateLeadRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'course_interested' => ['nullable', 'string', 'max:255'],
             'source' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],

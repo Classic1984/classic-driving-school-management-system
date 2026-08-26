@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Mail\BookingConfirmationMail;
 use App\Models\ActivityLog;
 use App\Models\Lead;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class PublicLeadCaptureTest extends TestCase
@@ -13,6 +15,8 @@ class PublicLeadCaptureTest extends TestCase
 
     public function test_a_booking_inquiry_creates_a_lead_without_authentication(): void
     {
+        Mail::fake();
+
         $response = $this->postJson('/public/leads', [
             'name' => 'Amaka Obi',
             'phone' => '08012345678',
@@ -30,19 +34,89 @@ class PublicLeadCaptureTest extends TestCase
         $this->assertDatabaseHas('leads', [
             'name' => 'Amaka Obi',
             'phone' => '08012345678',
+            'email' => 'amaka@example.com',
             'course_interested' => 'Non-Experience (Auto & Manual) — 4 Weeks — ₦95,000',
             'source' => 'Website',
             'status' => 'new',
         ]);
 
         $lead = Lead::first();
-        $this->assertStringContainsString('Email: amaka@example.com', $lead->notes);
         $this->assertStringContainsString('Transmission: Automatic', $lead->notes);
         $this->assertStringContainsString('Preferred date: 2026-09-01', $lead->notes);
         $this->assertStringContainsString('Preferred time: 10:00', $lead->notes);
         $this->assertStringContainsString('Message: I work weekdays, prefer mornings.', $lead->notes);
 
         $this->assertTrue(ActivityLog::query()->where('description', 'New website booking inquiry from Amaka Obi')->exists());
+    }
+
+    public function test_it_immediately_emails_the_customer_a_booking_confirmation(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/public/leads', [
+            'name' => 'Amaka Obi',
+            'phone' => '08012345678',
+            'email' => 'amaka@example.com',
+            'course' => 'Non-Experience (Auto & Manual) — 4 Weeks — ₦95,000',
+            'transmission' => 'Automatic',
+            'preferred_date' => '2026-09-01',
+        ])->assertCreated();
+
+        Mail::assertSent(BookingConfirmationMail::class, function (BookingConfirmationMail $mail) {
+            return $mail->hasTo('amaka@example.com')
+                && $mail->lead->name === 'Amaka Obi'
+                && $mail->programmeName === 'Non-Experience (Auto & Manual)'
+                && $mail->duration === '4 Weeks'
+                && $mail->startDate === 'September 1, 2026'
+                && $mail->trainingType === 'Automatic';
+        });
+    }
+
+    public function test_a_flat_service_booking_with_no_duration_still_emails_a_confirmation(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/public/leads', [
+            'name' => 'Chidi Okafor',
+            'phone' => '08011112222',
+            'email' => 'chidi@example.com',
+            'course' => "Learners' Permit Trainee — ₦6,000",
+            'transmission' => 'Manual',
+        ])->assertCreated();
+
+        Mail::assertSent(BookingConfirmationMail::class, function (BookingConfirmationMail $mail) {
+            return $mail->hasTo('chidi@example.com')
+                && $mail->programmeName === "Learners' Permit Trainee"
+                && $mail->duration === 'N/A';
+        });
+    }
+
+    public function test_no_confirmation_email_is_sent_when_no_email_was_given(): void
+    {
+        Mail::fake();
+
+        $this->postJson('/public/leads', [
+            'name' => 'No Email Person',
+            'phone' => '08033334444',
+        ])->assertCreated();
+
+        Mail::assertNothingSent();
+    }
+
+    public function test_a_mail_sending_failure_does_not_break_the_booking_response(): void
+    {
+        Mail::shouldReceive('to')->once()->andReturnSelf();
+        Mail::shouldReceive('send')->once()->andThrow(new \RuntimeException('SMTP down'));
+
+        $response = $this->postJson('/public/leads', [
+            'name' => 'Resilient Person',
+            'phone' => '08055556666',
+            'email' => 'resilient@example.com',
+        ]);
+
+        $response->assertCreated();
+        $response->assertJson(['success' => true]);
+        $this->assertDatabaseHas('leads', ['email' => 'resilient@example.com']);
     }
 
     public function test_it_requires_a_name_and_phone(): void
