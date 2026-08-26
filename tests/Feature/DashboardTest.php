@@ -347,8 +347,34 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Recently Absent Students');
+        $response->assertSee('Click to view names');
         $response->assertSee('Ngozi Chukwu');
         $response->assertSee('Weekend Program');
+    }
+
+    public function test_the_absent_students_tile_shows_a_count_of_distinct_students(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+        $repeatOffender = Student::factory()->create();
+        $repeatOffender->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create(['student_id' => $repeatOffender->id, 'course_id' => $course->id, 'date' => now()->subDays(1), 'status' => 'absent']);
+        Attendance::factory()->create(['student_id' => $repeatOffender->id, 'course_id' => $course->id, 'date' => now()->subDays(3), 'status' => 'absent']);
+
+        $anotherStudent = Student::factory()->create();
+        $anotherStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create(['student_id' => $anotherStudent->id, 'course_id' => $course->id, 'date' => now()->subDays(2), 'status' => 'absent']);
+
+        // Outside the 7-day window - must not be counted.
+        $staleStudent = Student::factory()->create();
+        $staleStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create(['student_id' => $staleStudent->id, 'course_id' => $course->id, 'date' => now()->subDays(10), 'status' => 'absent']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        // 2 distinct recently-absent students (the repeat offender counted once).
+        $response->assertSeeInOrder(['Absent (Last 7 Days)', '2']);
     }
 
     public function test_dashboard_does_not_show_the_absent_students_widget_when_nobody_is_absent(): void

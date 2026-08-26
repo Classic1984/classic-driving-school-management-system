@@ -551,10 +551,8 @@
                 ])
             @endif
 
-            @if ($trainingProgress->isNotEmpty() || $absentStudents->isNotEmpty())
-            <div class="space-y-6 mt-6">
-                @if ($trainingProgress->isNotEmpty())
-                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+            @if ($trainingProgress->isNotEmpty())
+                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mt-6">
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-bold text-gray-800">{{ __('Student Training Progress') }}</h3>
                             <a href="{{ route('training-progress.index') }}" class="text-sm font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
@@ -625,47 +623,38 @@
                             @endforeach
                         </div>
                     </div>
-                @endif
+            @endif
 
-                @if ($absentStudents->isNotEmpty())
-                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-gray-800">{{ __('Recently Absent Students') }}</h3>
-                            <a href="{{ route('attendances.index') }}" class="text-sm font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
-                        </div>
+            @if ($absentStudents->isNotEmpty())
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Recently Absent Students') }}</h3>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
+                        <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🚫 {{ __('Absent (Last 7 Days)') }}</p>
+                        <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentStudents->count() }}</p>
+                        <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                    </button>
+                </div>
+
+                <x-modal name="absent-students-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🚫 {{ __('Recently Absent Students') }}</h3>
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
                             @foreach ($absentStudents as $attendance)
-                                @php
-                                    $initials = collect(explode(' ', $attendance->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
-                                @endphp
-                                <a
-                                    href="{{ route('students.show', $attendance->student_id) }}"
-                                    class="group relative flex items-start gap-2 overflow-hidden rounded-lg bg-white p-3 ring-1 ring-red-200 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
-                                >
-                                    <span class="absolute inset-y-0 left-0 w-1 bg-red-500"></span>
-
-                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-xs font-bold text-amber-400">
-                                        {{ $initials }}
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <div>
+                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
+                                        <span class="text-gray-500"> — {{ $attendance->course->name }}</span>
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <p class="truncate text-sm font-semibold text-gray-800 group-hover:text-amber-600">{{ $attendance->student->name }}</p>
-                                            <span class="inline-flex shrink-0 items-center rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-700">
-                                                {{ __('Absent') }}
-                                            </span>
-                                        </div>
-                                        <span class="inline-block mt-0.5 rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 truncate max-w-full">
-                                            {{ $attendance->course->name }}
-                                        </span>
-                                        <p class="mt-1 text-[10px] text-gray-400">{{ $attendance->date->format('M j, Y') }}</p>
-                                    </div>
-                                </a>
+                                    <span class="text-xs text-gray-500 whitespace-nowrap">{{ $attendance->date->format('M j, Y') }}</span>
+                                </div>
                             @endforeach
                         </div>
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-students-modal')">{{ __('Close') }}</x-secondary-button>
+                        </div>
                     </div>
-                @endif
-            </div>
+                </x-modal>
             @endif
 
         </div>
