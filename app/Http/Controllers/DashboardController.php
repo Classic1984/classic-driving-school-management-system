@@ -74,7 +74,13 @@ class DashboardController extends Controller
 
         $trainingProgress = Enrollment::with(['student', 'course'])
             ->latest('enrolled_at')
-            ->take(15)
+            ->take(6)
+            ->get();
+
+        $absentStudents = Attendance::where('status', 'absent')
+            ->with(['student', 'course'])
+            ->latest('date')
+            ->take(6)
             ->get();
 
         $lockedEnrollments = Enrollment::where('status', 'locked')
@@ -241,7 +247,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'absentStudents', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**

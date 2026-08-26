@@ -330,6 +330,46 @@ class DashboardTest extends TestCase
         $response->assertSee('Active');
     }
 
+    public function test_dashboard_shows_recently_absent_students_in_their_own_widget(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Ngozi Chukwu']);
+        $course = Course::factory()->create(['name' => 'Weekend Program']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->subDay()->toDateString(),
+            'status' => 'absent',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Recently Absent Students');
+        $response->assertSee('Ngozi Chukwu');
+        $response->assertSee('Weekend Program');
+    }
+
+    public function test_dashboard_does_not_show_the_absent_students_widget_when_nobody_is_absent(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => now()->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Recently Absent Students');
+    }
+
     public function test_dashboard_shows_completed_training_status(): void
     {
         $user = User::factory()->create();
