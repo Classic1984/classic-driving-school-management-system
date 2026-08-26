@@ -552,15 +552,15 @@
             @endif
 
             @if ($trainingProgress->isNotEmpty() || $absentStudents->isNotEmpty())
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
+            <div class="space-y-6 mt-6">
                 @if ($trainingProgress->isNotEmpty())
-                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-base font-bold text-gray-800">{{ __('Student Training Progress') }}</h3>
-                            <a href="{{ route('training-progress.index') }}" class="text-xs font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
+                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">{{ __('Student Training Progress') }}</h3>
+                            <a href="{{ route('training-progress.index') }}" class="text-sm font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             @foreach ($trainingProgress as $enrollment)
                                 @php
                                     $label = $enrollment->trainingStatusLabel();
@@ -628,13 +628,13 @@
                 @endif
 
                 @if ($absentStudents->isNotEmpty())
-                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-4">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-base font-bold text-gray-800">{{ __('Recently Absent Students') }}</h3>
-                            <a href="{{ route('attendances.index') }}" class="text-xs font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
+                    <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">{{ __('Recently Absent Students') }}</h3>
+                            <a href="{{ route('attendances.index') }}" class="text-sm font-medium text-amber-600 hover:underline">{{ __('View Full List') }}</a>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             @foreach ($absentStudents as $attendance)
                                 @php
                                     $initials = collect(explode(' ', $attendance->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
