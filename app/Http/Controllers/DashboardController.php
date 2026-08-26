@@ -74,13 +74,13 @@ class DashboardController extends Controller
 
         $trainingProgress = Enrollment::with(['student', 'course'])
             ->latest('enrolled_at')
-            ->take(6)
+            ->take(8)
             ->get();
 
         $absentStudents = Attendance::where('status', 'absent')
             ->with(['student', 'course'])
             ->latest('date')
-            ->take(6)
+            ->take(8)
             ->get();
 
         $lockedEnrollments = Enrollment::where('status', 'locked')
