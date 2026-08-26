@@ -21,6 +21,11 @@ use Illuminate\Support\Facades\DB;
  * PaymentAllocationController::store()'s charge-then-allocate pattern,
  * adapted for a student/enrollment that was only just created in the
  * same request.
+ *
+ * The enrollment is optional: a walk-in client registered for catalog
+ * services only (no course) has nothing to allocate a Training charge
+ * against, so $enrollment is null and $trainingAmount is ignored in
+ * that case.
  */
 class AdditionalOfferService
 {
@@ -30,7 +35,7 @@ class AdditionalOfferService
      */
     public function chargeAndAllocate(
         Student $student,
-        Enrollment $enrollment,
+        ?Enrollment $enrollment,
         array $serviceIds,
         array $serviceAmounts,
         ?float $trainingAmount,
@@ -52,7 +57,8 @@ class AdditionalOfferService
                     return [$serviceId => $studentService];
                 });
 
-            $totalAmount = (float) $trainingAmount + array_sum($serviceAmounts);
+            $trainingAmount = $enrollment ? (float) $trainingAmount : 0.0;
+            $totalAmount = $trainingAmount + array_sum($serviceAmounts);
 
             if ($totalAmount <= 0) {
                 return;
@@ -102,6 +108,6 @@ class AdditionalOfferService
             ActivityLog::record('Recorded a payment of ₦'.number_format($totalAmount, 2)." for {$student->name} (".implode(', ', $paidFor).')');
         });
 
-        $enrollment->refreshStatus();
+        $enrollment?->refreshStatus();
     }
 }

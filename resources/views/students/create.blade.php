@@ -8,7 +8,23 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
-                <form method="post" action="{{ route('students.store') }}" class="space-y-6" enctype="multipart/form-data">
+                <form method="post" action="{{ route('students.store') }}" class="space-y-6" enctype="multipart/form-data" x-data="{
+                    registrationType: '{{ (! old('course_id') && ! empty(old('service_ids'))) ? 'service' : 'course' }}',
+                    setRegistrationType(type) {
+                        this.registrationType = type;
+                        // Switching to Service Only doesn't erase a course
+                        // already picked before the switch - clear it so
+                        // the server sees a clean service-only submission
+                        // rather than treating it as a course enrollment.
+                        if (type === 'service') {
+                            const courseSelect = document.getElementById('course_id');
+                            if (courseSelect) {
+                                courseSelect.value = '';
+                                courseSelect.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    },
+                }">
                     @csrf
 
                     @include('students.partials.form-fields')

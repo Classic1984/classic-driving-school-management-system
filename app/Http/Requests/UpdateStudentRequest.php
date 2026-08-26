@@ -42,7 +42,7 @@ class UpdateStudentRequest extends FormRequest
             'license_number' => ['nullable', 'string', 'max:50', Rule::unique('students', 'license_number')->ignore($this->route('student'))],
             'id_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
             'license_document' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
-            'course_type' => ['required', 'in:manual,automatic,both'],
+            'course_type' => ['nullable', 'in:manual,automatic,both'],
             'vehicle_class' => ['nullable', 'in:light,heavy'],
             'has_driving_experience' => ['nullable', 'boolean'],
             'wears_glasses' => ['nullable', 'boolean'],

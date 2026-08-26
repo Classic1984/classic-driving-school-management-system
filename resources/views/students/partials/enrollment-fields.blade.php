@@ -1,12 +1,15 @@
 @php($legend = $legend ?? __('Course Enrollment & Initial Payment'))
 
 <fieldset class="border border-gray-200 rounded-md p-4">
-    <legend class="text-sm font-medium text-gray-700 px-1">{{ $legend }}</legend>
+    <legend class="text-sm font-medium text-gray-700 px-1">
+        <span x-show="registrationType === 'course'">{{ $legend }}</span>
+        <span x-show="registrationType === 'service'">{{ __('Services & Initial Payment') }}</span>
+    </legend>
 
     <div class="space-y-6">
-        <div>
+        <div x-show="registrationType === 'course'">
             <x-input-label for="course_id" :value="__('Course')" />
-            <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+            <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                 <option value="">{{ __('Select a course') }}</option>
                 @foreach ($courses as $course)
                     <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} — {{ $course->isWeekend() ? 'Weekend' : 'Weekday' }} (₦{{ number_format($course->fee, 2) }})</option>
@@ -39,7 +42,7 @@
             @endif
         @endisset
 
-        <div>
+        <div x-show="registrationType === 'course'">
             <label class="flex items-center gap-2 text-sm text-gray-700">
                 <input type="checkbox" id="starts_double_period" name="starts_double_period" value="1" @checked(old('starts_double_period')) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
                 {{ __('Starting Double Period training immediately (weekday courses only)') }}
@@ -48,7 +51,7 @@
             <x-input-error class="mt-2" :messages="$errors->get('starts_double_period')" />
         </div>
 
-        <div>
+        <div x-show="registrationType === 'course'">
             <x-input-label for="discount_choice" :value="__('Discount')" />
             <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                 <option value="">{{ __('No Discount') }}</option>
@@ -69,7 +72,7 @@
         </div>
 
         @if (auth()->user()->isDirector())
-            <div id="custom-discount-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div id="custom-discount-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4" x-show="registrationType === 'course'">
                 <div>
                     <x-input-label for="custom_discount_percentage" :value="__('Custom Percentage (%)')" />
                     <x-text-input id="custom_discount_percentage" name="custom_discount_percentage" type="number" step="0.01" min="0.01" max="100" class="mt-1 block w-full" :value="old('custom_discount_percentage')" />
@@ -84,7 +87,7 @@
             </div>
         @endif
 
-        <div id="discount-reason-wrapper" class="hidden space-y-6">
+        <div id="discount-reason-wrapper" class="hidden space-y-6" x-show="registrationType === 'course'">
             <div>
                 <x-input-label for="discount_reason" :value="__('Reason for Discount')" />
                 <select id="discount_reason" name="discount_reason" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
@@ -104,16 +107,16 @@
         </div>
 
         <div id="fee-preview" class="bg-gray-50 border border-gray-200 rounded-md p-4 text-sm space-y-1">
-            <div class="flex justify-between"><span>{{ __('Package Fee') }}</span><span id="preview-package-fee">₦0.00</span></div>
-            <div class="flex justify-between"><span>{{ __('Discount') }}</span><span id="preview-discount">₦0.00</span></div>
-            <div class="flex justify-between font-semibold border-t border-gray-300 pt-1 mt-1"><span>{{ __('Final Course Fee') }}</span><span id="preview-final-fee">₦0.00</span></div>
+            <div class="flex justify-between" x-show="registrationType === 'course'"><span>{{ __('Package Fee') }}</span><span id="preview-package-fee">₦0.00</span></div>
+            <div class="flex justify-between" x-show="registrationType === 'course'"><span>{{ __('Discount') }}</span><span id="preview-discount">₦0.00</span></div>
+            <div class="flex justify-between font-semibold border-t border-gray-300 pt-1 mt-1" x-show="registrationType === 'course'"><span>{{ __('Final Course Fee') }}</span><span id="preview-final-fee">₦0.00</span></div>
             <div id="preview-offers-wrapper" class="hidden">
                 <div class="flex justify-between"><span>{{ __('Additional Offers') }}</span><span id="preview-offers-total">₦0.00</span></div>
                 <div class="flex justify-between font-semibold border-t border-gray-300 pt-1 mt-1"><span>{{ __('Total Package') }}</span><span id="preview-total-package">₦0.00</span></div>
             </div>
         </div>
 
-        <div id="simple-payment-fields">
+        <div id="simple-payment-fields" x-show="registrationType === 'course'">
             <div>
                 <x-input-label for="amount_paid" :value="__('Amount Paid Now')" />
                 <x-text-input id="amount_paid" name="amount_paid" type="number" step="0.01" min="0.01" class="mt-1 block w-full" :value="old('amount_paid')" />
@@ -140,7 +143,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                <tr>
+                                <tr x-show="registrationType === 'course'">
                                     <td class="px-2 py-1">{{ __('Training') }}</td>
                                     <td class="px-2 py-1" id="allocation-training-price">₦0.00</td>
                                     <td class="px-2 py-1">

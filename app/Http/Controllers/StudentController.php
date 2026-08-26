@@ -98,10 +98,10 @@ class StudentController extends Controller
 
         $student = Student::create($data);
         $discountPending = false;
+        $serviceIds = $request->validated('service_ids') ?? [];
 
         if ($request->validated('course_id')) {
             $course = Course::findOrFail($request->validated('course_id'));
-            $serviceIds = $request->validated('service_ids') ?? [];
             $hasOffers = ! empty($serviceIds);
 
             $enrollment = $enrollmentService->enroll($student, $course, $request->user(), $student->enrollment_date, [
@@ -136,6 +136,21 @@ class StudentController extends Controller
                     $student->enrollment_date,
                 );
             }
+        } elseif (! empty($serviceIds)) {
+            // A walk-in registration for catalog services only (a
+            // Learner's Permit, Driver's Licence Processing, a
+            // Certificate) - no course, so no enrollment to allocate a
+            // Training charge against.
+            $additionalOfferService->chargeAndAllocate(
+                $student,
+                null,
+                $serviceIds,
+                $request->validated('service_amounts') ?? [],
+                null,
+                $request->validated('payment_method'),
+                $request->user(),
+                $student->enrollment_date,
+            );
         }
 
         ActivityLog::record("Registered student {$student->name}");
