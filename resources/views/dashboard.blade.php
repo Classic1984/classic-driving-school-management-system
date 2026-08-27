@@ -243,76 +243,74 @@
 
             </div>
 
-            @if ($presentToday->isNotEmpty() || $absentToday->isNotEmpty())
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __("Today's Attendance") }}</h3>
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __("Today's Attendance") }}</h3>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="text-left rounded-lg p-5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition">
-                            <p class="text-xs uppercase tracking-wider text-emerald-700 font-semibold">🟢 {{ __('Present') }}</p>
-                            <p class="text-3xl font-bold text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
-                            <p class="text-xs text-emerald-600 mt-1">{{ __('Click to view names') }}</p>
-                        </button>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="text-left rounded-lg p-5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition">
+                        <p class="text-xs uppercase tracking-wider text-emerald-700 font-semibold">🟢 {{ __('Present') }}</p>
+                        <p class="text-3xl font-bold text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
+                        <p class="text-xs text-emerald-600 mt-1">{{ __('Click to view names') }}</p>
+                    </button>
 
-                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                            <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔴 {{ __('Absent') }}</p>
-                            <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentToday->count() }}</p>
-                            <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
-                        </button>
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
+                        <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔴 {{ __('Absent') }}</p>
+                        <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentToday->count() }}</p>
+                        <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                    </button>
+                </div>
+            </div>
+
+            <x-modal name="present-today-modal">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🟢 {{ __('Students Present Today') }}</h3>
+                    @if ($presentToday->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('No one has checked in yet today.') }}</p>
+                    @else
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($presentToday as $attendance)
+                                <div class="py-2.5 text-sm">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
+                                        <span class="text-xs text-gray-500 whitespace-nowrap">{{ __('Checked in') }}: {{ $attendance->created_at->format('g:i A') }}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        {{ $attendance->course->name }}
+                                        · {{ $attendance->type ? ucfirst($attendance->type) : '—' }} {{ __('Training') }}
+                                        · {{ __('Instructor') }}: {{ $attendance->instructor->name ?? '—' }}
+                                    </p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="mt-4 text-right">
+                        <x-secondary-button x-on:click="$dispatch('close-modal', 'present-today-modal')">{{ __('Close') }}</x-secondary-button>
                     </div>
                 </div>
+            </x-modal>
 
-                <x-modal name="present-today-modal">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">🟢 {{ __('Students Present Today') }}</h3>
-                        @if ($presentToday->isEmpty())
-                            <p class="text-sm text-gray-500">{{ __('No one has checked in yet today.') }}</p>
-                        @else
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($presentToday as $attendance)
-                                    <div class="py-2.5 text-sm">
-                                        <div class="flex items-center justify-between gap-4">
-                                            <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
-                                            <span class="text-xs text-gray-500 whitespace-nowrap">{{ __('Checked in') }}: {{ $attendance->created_at->format('g:i A') }}</span>
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-0.5">
-                                            {{ $attendance->course->name }}
-                                            · {{ $attendance->type ? ucfirst($attendance->type) : '—' }} {{ __('Training') }}
-                                            · {{ __('Instructor') }}: {{ $attendance->instructor->name ?? '—' }}
-                                        </p>
+            <x-modal name="absent-today-modal">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Students Absent Today') }}</h3>
+                    @if ($absentToday->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('Everyone expected today has checked in.') }}</p>
+                    @else
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($absentToday as $enrollment)
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <div>
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
                                     </div>
-                                @endforeach
-                            </div>
-                        @endif
-                        <div class="mt-4 text-right">
-                            <x-secondary-button x-on:click="$dispatch('close-modal', 'present-today-modal')">{{ __('Close') }}</x-secondary-button>
+                                </div>
+                            @endforeach
                         </div>
+                    @endif
+                    <div class="mt-4 text-right">
+                        <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-today-modal')">{{ __('Close') }}</x-secondary-button>
                     </div>
-                </x-modal>
-
-                <x-modal name="absent-today-modal">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Students Absent Today') }}</h3>
-                        @if ($absentToday->isEmpty())
-                            <p class="text-sm text-gray-500">{{ __('Everyone expected today has checked in.') }}</p>
-                        @else
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($absentToday as $enrollment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-                        <div class="mt-4 text-right">
-                            <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-today-modal')">{{ __('Close') }}</x-secondary-button>
-                        </div>
-                    </div>
-                </x-modal>
-            @endif
+                </div>
+            </x-modal>
 
             @if ($upcomingPayments->isNotEmpty() || $lockedEnrollments->isNotEmpty())
                 <div id="outstanding-payments" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
