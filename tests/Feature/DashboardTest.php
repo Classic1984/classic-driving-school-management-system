@@ -348,6 +348,22 @@ class DashboardTest extends TestCase
         $response->assertSee('Weekday Program');
     }
 
+    public function test_the_present_tile_still_shows_as_zero_when_nobody_has_checked_in_yet(): void
+    {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['schedule' => 'weekday']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Present', '0']);
+        $response->assertSee('No one has checked in yet today.');
+    }
+
     public function test_checking_in_moves_a_student_from_absent_to_present(): void
     {
         $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
@@ -373,6 +389,28 @@ class DashboardTest extends TestCase
         $response->assertSee('Practical Training');
         $response->assertSee('Instructor A');
         $response->assertSee('Checked in');
+    }
+
+    public function test_the_absent_tile_shows_zero_once_everyone_expected_has_checked_in(): void
+    {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['schedule' => 'weekday']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => today()->toDateString(),
+            'status' => 'present',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Absent', '0']);
+        $response->assertSee('Everyone expected today has checked in.');
     }
 
     public function test_the_absent_tile_ignores_students_whose_course_does_not_meet_today(): void
