@@ -34,7 +34,9 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
 use App\Http\Controllers\StudentRegistrationReportController;
 use App\Http\Controllers\StudentServiceController;
+use App\Http\Controllers\TheoryClassAttendanceController;
 use App\Http\Controllers\TheoryClassCancellationController;
+use App\Http\Controllers\TheoryClassController;
 use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
 use App\Http\Controllers\UserController;
@@ -77,6 +79,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
         Route::resource('vehicles', VehicleController::class)->except(['index', 'show', 'destroy']);
         Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
+        Route::patch('theory-classes/{theoryClass}', [TheoryClassController::class, 'update'])->name('theory-classes.update');
+        Route::post('theory-classes/{theoryClass}/attendances', [TheoryClassAttendanceController::class, 'store'])->name('theory-classes.attendances.store');
     });
 
     Route::middleware('admin')->group(function () {
@@ -157,6 +161,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);
     Route::resource('vehicles', VehicleController::class)->only(['index', 'show']);
     Route::resource('attendances', AttendanceController::class)->only(['index', 'show']);
+    Route::resource('theory-classes', TheoryClassController::class)->only(['index', 'show']);
     Route::get('training-progress', [TrainingProgressController::class, 'index'])->name('training-progress.index');
     Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');
     Route::get('training-report/export', [TrainingReportController::class, 'export'])->name('training-report.export');

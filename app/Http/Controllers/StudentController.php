@@ -176,8 +176,9 @@ class StudentController extends Controller
         $chargedServiceIds = $student->studentServices->pluck('service_id');
         $availableServices = Service::where('is_active', true)->whereNotIn('id', $chargedServiceIds)->orderBy('name')->get();
         $financialOverview = StudentChargeResolver::allCharges($student);
+        $theoryProgress = $student->theoryProgress();
 
-        return view('students.show', compact('student', 'instructors', 'vehicles', 'availableServices', 'financialOverview'));
+        return view('students.show', compact('student', 'instructors', 'vehicles', 'availableServices', 'financialOverview', 'theoryProgress'));
     }
 
     /**

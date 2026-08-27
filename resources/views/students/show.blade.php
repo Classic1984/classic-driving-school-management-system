@@ -335,6 +335,24 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Theory Progress') }}</h3>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-700">
+                                    <span>{{ __('Classes Attended') }}: {{ $theoryProgress['classes_attended'] }}/{{ $theoryProgress['classes_expected'] }}</span>
+                                    <span>{{ __('Attendance') }}: {{ $theoryProgress['attendance_percentage'] }}%</span>
+                                    <span>{{ __('Topics Completed') }}: {{ $theoryProgress['topics_completed'] }}</span>
+                                    <span>{{ __('Average Score') }}: {{ $theoryProgress['average_score'] ?? '—' }}</span>
+                                    <span>{{ __('Outstanding Topics') }}: {{ $theoryProgress['outstanding_topics']->count() }}</span>
+                                </div>
+                                @if ($theoryProgress['outstanding_topics']->isNotEmpty())
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        {{ $theoryProgress['outstanding_topics']->implode(', ') }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
                     </div>
 
                     <div x-show="tab === 'attendance'">

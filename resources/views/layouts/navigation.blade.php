@@ -47,6 +47,9 @@
         <x-responsive-nav-link :href="route('enrolled-trainees.index')" :active="request()->routeIs('enrolled-trainees.*') || request()->routeIs('attendances.*') || request()->routeIs('students.training-record')">
             {{ __('Student Login Training') }}
         </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('theory-classes.index')" :active="request()->routeIs('theory-classes.*')">
+            {{ __('Theory Classes') }}
+        </x-responsive-nav-link>
 
         @if (auth()->user()->isDirector())
             <p class="px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Admin') }}</p>

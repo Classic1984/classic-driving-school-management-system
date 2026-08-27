@@ -62,6 +62,37 @@ class TheoryClassReminderTest extends TestCase
         Http::assertNothingSent();
     }
 
+    public function test_it_creates_todays_theory_class_so_the_roster_exists_before_class_starts(): void
+    {
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        $this->assertDatabaseHas('theory_classes', ['class_date' => today()->toDateString()]);
+    }
+
+    public function test_it_does_not_create_a_theory_class_when_todays_class_is_cancelled(): void
+    {
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        TheoryClassCancellation::factory()->create([
+            'class_date' => today(),
+            'cancelled_by' => User::factory()->director()->create()->id,
+        ]);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        $this->assertDatabaseMissing('theory_classes', ['class_date' => today()->toDateString()]);
+    }
+
     public function test_a_cancellation_for_today_sends_a_cancellation_notice_instead_of_the_reminder(): void
     {
         Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
