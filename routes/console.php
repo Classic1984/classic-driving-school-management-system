@@ -26,3 +26,7 @@ Schedule::command('app:send-lead-follow-up-reminder')->dailyAt('10:00');
 // once they've gone 4+ days without a training login, and only once per
 // absence spell.
 Schedule::command('app:send-absence-check-in-reminder')->dailyAt('11:00');
+// Seals today's attendance roster once the school closes for the day
+// (posted hours: Mon-Sat 7am-6pm) - anyone expected today who never
+// checked in becomes a permanent "absent" record from this point on.
+Schedule::command('app:finalize-daily-attendance')->dailyAt('18:00');
