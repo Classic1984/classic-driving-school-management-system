@@ -24,6 +24,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
+use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicLeadController;
 use App\Http\Controllers\ReferralSourceReportController;
@@ -52,6 +53,11 @@ Route::get('/', function () {
 Route::post('/public/leads', [PublicLeadController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('public-leads.store');
+
+// Paystack calls this server-to-server when an online booking deposit
+// succeeds - no browser, no session, verified by HMAC signature instead.
+Route::post('/public/payments/paystack/webhook', [PaystackWebhookController::class, 'handle'])
+    ->name('public-payments.paystack-webhook');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

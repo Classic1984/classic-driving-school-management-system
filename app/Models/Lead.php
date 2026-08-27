@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\LeadFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lead extends Model
 {
@@ -65,5 +66,16 @@ class Lead extends Model
         return [
             'last_reminded_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Deposit payments received for this lead through the online booking
+     * flow. A lead created that way always has exactly one - this stays a
+     * hasMany, not a hasOne, so a future re-payment (e.g. after a failed
+     * charge was retried) never has to fight the schema.
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(LeadPayment::class);
     }
 }

@@ -22,8 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // The marketing site posts here cross-origin with no session, so it
         // can never carry a CSRF token - CORS + rate limiting guard it instead.
+        // The Paystack webhook is server-to-server (no browser, no session,
+        // no CSRF token possible either) - its HMAC signature is the guard.
         $middleware->validateCsrfTokens(except: [
             'public/leads',
+            'public/payments/paystack/webhook',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
