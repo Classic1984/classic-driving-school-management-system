@@ -497,11 +497,12 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         // The school is closed Sundays, so even an otherwise-expected
-        // weekday student doesn't make the widget appear at all.
-        $response->assertDontSee("Today's Attendance");
+        // weekday student isn't counted as absent - but the widget itself
+        // still shows, same as any other day.
+        $response->assertSeeInOrder(["Today's Attendance", 'Present', '0', 'Absent', '0']);
     }
 
-    public function test_dashboard_does_not_show_the_attendance_widget_when_theres_nothing_to_show(): void
+    public function test_dashboard_always_shows_the_attendance_widget_even_with_nothing_to_show(): void
     {
         $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
 
@@ -510,7 +511,10 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee("Today's Attendance");
+        // Staff shouldn't have to wonder whether the dashboard broke - the
+        // widget is always there, it just shows 0/0 when there's genuinely
+        // nothing to report.
+        $response->assertSeeInOrder(["Today's Attendance", 'Present', '0', 'Absent', '0']);
     }
 
     public function test_dashboard_shows_completed_training_status(): void
