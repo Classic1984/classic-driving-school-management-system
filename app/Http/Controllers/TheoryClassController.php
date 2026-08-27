@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\Instructor;
 use App\Models\TheoryClass;
+use App\Models\TheoryClassCancellation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -21,7 +22,33 @@ class TheoryClassController extends Controller
             ->orderByDesc('class_date')
             ->paginate(15);
 
-        return view('theory-classes.index', compact('theoryClasses'));
+        // The weekly reminder job normally creates today's class
+        // automatically at 8am - this only matters as a fallback for
+        // when that scheduled run doesn't happen, so staff aren't stuck
+        // waiting on it.
+        $todaysClassExists = TheoryClass::whereDate('class_date', today())->exists();
+        $todaysClassCancelled = TheoryClassCancellation::whereDate('class_date', today())->exists();
+
+        return view('theory-classes.index', compact('theoryClasses', 'todaysClassExists', 'todaysClassCancelled'));
+    }
+
+    /**
+     * Manual fallback for creating today's class roster, for when the
+     * scheduled app:send-theory-class-reminder run (which normally does
+     * this automatically at 8am) doesn't fire - the same failure mode
+     * the scheduler heartbeat on the Activity Log page exists to catch.
+     */
+    public function createToday(): RedirectResponse
+    {
+        if (TheoryClassCancellation::whereDate('class_date', today())->exists()) {
+            return Redirect::route('theory-classes.index')->with('status', 'theory-class-cancelled-today');
+        }
+
+        $theoryClass = TheoryClass::firstOrCreate(['class_date' => today()]);
+
+        ActivityLog::record("Manually created today's theory class ({$theoryClass->class_date->toFormattedDateString()})");
+
+        return Redirect::route('theory-classes.show', $theoryClass)->with('status', 'theory-class-created');
     }
 
     /**
