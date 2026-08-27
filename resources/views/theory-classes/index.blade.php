@@ -7,6 +7,24 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            @if (session('status') === 'theory-class-created')
+                <p class="mb-4 text-sm font-medium text-green-600">{{ __("Today's class was created.") }}</p>
+            @elseif (session('status') === 'theory-class-cancelled-today')
+                <p class="mb-4 text-sm font-medium text-amber-600">{{ __("Today's theory class is cancelled - see Theory Class Cancellations.") }}</p>
+            @endif
+
+            @if (auth()->user()->canManageCourses() && ! $todaysClassExists && ! $todaysClassCancelled)
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-center justify-between gap-4">
+                    <p class="text-sm text-amber-800">
+                        {{ __("Today's class hasn't been created yet - it's normally auto-created at 8am. If the reminder run was missed, create it here instead.") }}
+                    </p>
+                    <form method="post" action="{{ route('theory-classes.create-today') }}">
+                        @csrf
+                        <x-primary-button type="submit">{{ __("Create Today's Class") }}</x-primary-button>
+                    </form>
+                </div>
+            @endif
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <h3 class="text-lg font-semibold mb-4">{{ __('Class Roster History') }}</h3>
 

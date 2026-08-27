@@ -7,6 +7,7 @@ use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\TheoryClass;
 use App\Models\TheoryClassAttendance;
+use App\Models\TheoryClassCancellation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -141,6 +142,82 @@ class TheoryClassTest extends TestCase
         $this->assertSame(1, $theoryClass->presentCount());
         $this->assertSame(1, $theoryClass->absentCount());
         $this->assertSame(50, $theoryClass->attendancePercentage());
+    }
+
+    public function test_the_index_page_prompts_a_course_manager_to_create_todays_class_when_missing(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('theory-classes.index'));
+
+        $response->assertOk();
+        $response->assertSee("Create Today's Class");
+    }
+
+    public function test_the_index_page_does_not_prompt_when_todays_class_already_exists(): void
+    {
+        $user = User::factory()->create();
+        TheoryClass::factory()->create(['class_date' => today()]);
+
+        $response = $this->actingAs($user)->get(route('theory-classes.index'));
+
+        $response->assertOk();
+        $response->assertDontSee("Create Today's Class");
+    }
+
+    public function test_the_index_page_does_not_prompt_a_non_course_manager(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($user)->get(route('theory-classes.index'));
+
+        $response->assertOk();
+        $response->assertDontSee("Create Today's Class");
+    }
+
+    public function test_a_course_manager_can_manually_create_todays_class(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('theory-classes.create-today'));
+
+        $theoryClass = TheoryClass::whereDate('class_date', today())->firstOrFail();
+        $response->assertRedirect(route('theory-classes.show', $theoryClass));
+        $this->assertDatabaseHas('theory_classes', ['class_date' => today()->toDateString()]);
+    }
+
+    public function test_manually_creating_todays_class_twice_does_not_duplicate_it(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('theory-classes.create-today'));
+        $this->actingAs($user)->post(route('theory-classes.create-today'));
+
+        $this->assertDatabaseCount('theory_classes', 1);
+    }
+
+    public function test_a_non_course_manager_cannot_manually_create_todays_class(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($user)->post(route('theory-classes.create-today'));
+
+        $response->assertForbidden();
+        $this->assertDatabaseCount('theory_classes', 0);
+    }
+
+    public function test_manually_creating_todays_class_is_blocked_when_today_is_cancelled(): void
+    {
+        $user = User::factory()->create();
+        TheoryClassCancellation::factory()->create([
+            'class_date' => today(),
+            'cancelled_by' => User::factory()->create()->id,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('theory-classes.create-today'));
+
+        $response->assertRedirect(route('theory-classes.index'));
+        $this->assertDatabaseCount('theory_classes', 0);
     }
 
     public function test_student_theory_progress_summarizes_their_attendance_and_scores(): void

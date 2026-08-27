@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
         Route::resource('vehicles', VehicleController::class)->except(['index', 'show', 'destroy']);
         Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
+        Route::post('theory-classes/create-today', [TheoryClassController::class, 'createToday'])->name('theory-classes.create-today');
         Route::patch('theory-classes/{theoryClass}', [TheoryClassController::class, 'update'])->name('theory-classes.update');
         Route::post('theory-classes/{theoryClass}/attendances', [TheoryClassAttendanceController::class, 'store'])->name('theory-classes.attendances.store');
     });
