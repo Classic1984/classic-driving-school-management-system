@@ -630,28 +630,26 @@
                     <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __("Today's Attendance") }}</h3>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @if ($presentToday->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="text-left rounded-lg p-5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-emerald-700 font-semibold">🟢 {{ __('Present') }}</p>
-                                <p class="text-3xl font-bold text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
-                                <p class="text-xs text-emerald-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
-                        @endif
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="text-left rounded-lg p-5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition">
+                            <p class="text-xs uppercase tracking-wider text-emerald-700 font-semibold">🟢 {{ __('Present') }}</p>
+                            <p class="text-3xl font-bold text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
+                            <p class="text-xs text-emerald-600 mt-1">{{ __('Click to view names') }}</p>
+                        </button>
 
-                        @if ($absentToday->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔴 {{ __('Absent') }}</p>
-                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentToday->count() }}</p>
-                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
-                        @endif
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
+                            <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔴 {{ __('Absent') }}</p>
+                            <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentToday->count() }}</p>
+                            <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                        </button>
                     </div>
                 </div>
 
-                @if ($presentToday->isNotEmpty())
-                    <x-modal name="present-today-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🟢 {{ __('Students Present Today') }}</h3>
+                <x-modal name="present-today-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🟢 {{ __('Students Present Today') }}</h3>
+                        @if ($presentToday->isEmpty())
+                            <p class="text-sm text-gray-500">{{ __('No one has checked in yet today.') }}</p>
+                        @else
                             <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
                                 @foreach ($presentToday as $attendance)
                                     <div class="py-2.5 text-sm">
@@ -667,17 +665,19 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'present-today-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
+                        @endif
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'present-today-modal')">{{ __('Close') }}</x-secondary-button>
                         </div>
-                    </x-modal>
-                @endif
+                    </div>
+                </x-modal>
 
-                @if ($absentToday->isNotEmpty())
-                    <x-modal name="absent-today-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Students Absent Today') }}</h3>
+                <x-modal name="absent-today-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Students Absent Today') }}</h3>
+                        @if ($absentToday->isEmpty())
+                            <p class="text-sm text-gray-500">{{ __('Everyone expected today has checked in.') }}</p>
+                        @else
                             <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
                                 @foreach ($absentToday as $enrollment)
                                     <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
@@ -688,12 +688,12 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-today-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
+                        @endif
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-today-modal')">{{ __('Close') }}</x-secondary-button>
                         </div>
-                    </x-modal>
-                @endif
+                    </div>
+                </x-modal>
             @endif
 
         </div>
