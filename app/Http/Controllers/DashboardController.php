@@ -77,15 +77,15 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
-        // Who didn't come in for training today - staff mark this
-        // explicitly on the attendance log the same way they log a
-        // present session, just with status "absent" instead.
-        $absentStudents = Attendance::where('status', 'absent')
-            ->whereDate('date', today())
-            ->with(['student', 'course'])
-            ->get()
-            ->unique('student_id')
-            ->values();
+        // Every actively-enrolled student is expected the moment today's
+        // training day starts; checking in (a present/late training log)
+        // moves them into Present, and anyone left over is still Absent -
+        // live, all day - until app:finalize-daily-attendance seals the
+        // day's roster after closing. Courses only carry a coarse
+        // weekday/weekend schedule, not specific days: weekend-schedule
+        // courses meet Saturdays only, everything else meets Mon-Fri, and
+        // nobody is expected Sunday (the school is closed).
+        [$presentToday, $absentToday] = $this->todaysAttendanceRoster();
 
         $lockedEnrollments = Enrollment::where('status', 'locked')
             ->with(['student', 'course'])
@@ -251,7 +251,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'absentStudents', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'presentToday', 'absentToday', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**
@@ -284,5 +284,44 @@ class DashboardController extends Controller
             ->whereDate('date', '<=', $to->toDateString())
             ->distinct('student_id')
             ->count('student_id');
+    }
+
+    /**
+     * The live Present/Absent split for today's training day: everyone
+     * who's checked in so far (Present) versus every actively-enrolled
+     * student expected today who hasn't (Absent) - mirrors the rule
+     * app:finalize-daily-attendance uses to seal the day after closing.
+     *
+     * @return array{0: Collection, 1: Collection}
+     */
+    protected function todaysAttendanceRoster(): array
+    {
+        $today = now();
+
+        // The school is closed Sundays - nobody is expected, so nobody
+        // can be marked absent either.
+        if ($today->isSunday()) {
+            return [collect(), collect()];
+        }
+
+        $presentToday = Attendance::whereDate('date', today())
+            ->whereIn('status', ['present', 'late'])
+            ->with(['student', 'course', 'instructor'])
+            ->latest('created_at')
+            ->get();
+
+        $loggedStudentIds = Attendance::whereDate('date', today())->pluck('student_id');
+
+        $scheduleToday = $today->isSaturday() ? 'weekend' : 'weekday';
+
+        $absentToday = Enrollment::where('status', 'active')
+            ->whereNotIn('student_id', $loggedStudentIds)
+            ->whereHas('course', fn ($query) => $query->where('schedule', $scheduleToday))
+            ->with(['student', 'course'])
+            ->get()
+            ->unique('student_id')
+            ->values();
+
+        return [$presentToday, $absentToday];
     }
 }

@@ -15,6 +15,7 @@ use App\Models\StudentCorrectionRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class DashboardTest extends TestCase
@@ -330,83 +331,123 @@ class DashboardTest extends TestCase
         $response->assertSee('Active');
     }
 
-    public function test_dashboard_shows_students_absent_today_in_their_own_widget(): void
+    public function test_dashboard_shows_a_student_who_has_not_checked_in_today_as_absent(): void
     {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Ngozi Chukwu']);
-        $course = Course::factory()->create(['name' => 'Weekend Program']);
+        $course = Course::factory()->create(['name' => 'Weekday Program', 'schedule' => 'weekday']);
         $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create([
-            'student_id' => $student->id,
-            'course_id' => $course->id,
-            'date' => today()->toDateString(),
-            'status' => 'absent',
-        ]);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Absent Today');
         $response->assertSee('Click to view names');
         $response->assertSee('Ngozi Chukwu');
-        $response->assertSee('Weekend Program');
+        $response->assertSee('Weekday Program');
     }
 
-    public function test_an_absence_logged_before_today_does_not_count_toward_the_absent_today_tile(): void
+    public function test_checking_in_moves_a_student_from_absent_to_present(): void
     {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
         $user = User::factory()->create();
-        $student = Student::factory()->create();
-        $course = Course::factory()->create();
+        $instructor = Instructor::factory()->create(['name' => 'Instructor A']);
+        $student = Student::factory()->create(['name' => 'Ajayi Sulaiman']);
+        $course = Course::factory()->create(['name' => 'Weekday Program', 'schedule' => 'weekday']);
         $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
         Attendance::factory()->create([
             'student_id' => $student->id,
             'course_id' => $course->id,
-            'date' => now()->subDay()->toDateString(),
-            'status' => 'absent',
+            'instructor_id' => $instructor->id,
+            'date' => today()->toDateString(),
+            'status' => 'present',
+            'type' => 'practical',
         ]);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Absent Today');
+        $response->assertSee('Ajayi Sulaiman');
+        $response->assertSee('Practical Training');
+        $response->assertSee('Instructor A');
+        $response->assertSee('Checked in');
     }
 
-    public function test_the_absent_today_tile_shows_a_count_of_distinct_students(): void
+    public function test_the_absent_tile_ignores_students_whose_course_does_not_meet_today(): void
     {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
         $user = User::factory()->create();
-        $course = Course::factory()->create();
+
+        // Expected today, so the widget actually renders and this test
+        // can check who does and doesn't end up in its Absent count.
+        $weekdayStudent = Student::factory()->create(['name' => 'Weekday Student']);
+        $weekdayCourse = Course::factory()->create(['schedule' => 'weekday']);
+        $weekdayStudent->courses()->attach($weekdayCourse->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $weekendStudent = Student::factory()->create(['name' => 'Weekend Only Student']);
+        $weekendCourse = Course::factory()->create(['name' => 'Weekend Program', 'schedule' => 'weekend']);
+        $weekendStudent->courses()->attach($weekendCourse->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        // Monday isn't a weekend-schedule training day, so only the
+        // weekday student is expected, and only they show up as absent -
+        // the count of 1 (not 2) is what actually proves the exclusion,
+        // since the weekend student's name can still legitimately appear
+        // elsewhere on the dashboard (e.g. Student Training Progress).
+        $response->assertSeeInOrder(['Absent', '1', 'Weekday Student']);
+    }
+
+    public function test_the_absent_tile_shows_a_count_of_distinct_students(): void
+    {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['schedule' => 'weekday']);
 
         $first = Student::factory()->create();
         $first->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create(['student_id' => $first->id, 'course_id' => $course->id, 'date' => today(), 'status' => 'absent']);
 
         $second = Student::factory()->create();
         $second->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create(['student_id' => $second->id, 'course_id' => $course->id, 'date' => today(), 'status' => 'absent']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSeeInOrder(['Absent Today', '2']);
+        $response->assertSeeInOrder(['Absent', '2']);
     }
 
-    public function test_dashboard_does_not_show_the_absent_students_widget_when_nobody_is_absent_today(): void
+    public function test_nobody_is_expected_on_sunday(): void
     {
+        $this->travelTo(Carbon::parse('next Sunday')->setTime(10, 0));
+
         $user = User::factory()->create();
         $student = Student::factory()->create();
-        $course = Course::factory()->create();
+        $course = Course::factory()->create(['schedule' => 'weekday']);
         $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create([
-            'student_id' => $student->id,
-            'course_id' => $course->id,
-            'date' => now()->toDateString(),
-            'status' => 'present',
-        ]);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Absent Today');
+        // The school is closed Sundays, so even an otherwise-expected
+        // weekday student doesn't make the widget appear at all.
+        $response->assertDontSee("Today's Attendance");
+    }
+
+    public function test_dashboard_does_not_show_the_attendance_widget_when_theres_nothing_to_show(): void
+    {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee("Today's Attendance");
     }
 
     public function test_dashboard_shows_completed_training_status(): void
