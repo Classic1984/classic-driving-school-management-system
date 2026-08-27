@@ -77,15 +77,12 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
-        // A raw absence log grows forever and the same student can be
-        // marked absent more than once, so this is narrowed to the last 7
-        // days and collapsed to each student's single most recent absence
-        // in that window - a "who's absent right now" list, not a
-        // full history.
+        // Who didn't come in for training today - staff mark this
+        // explicitly on the attendance log the same way they log a
+        // present session, just with status "absent" instead.
         $absentStudents = Attendance::where('status', 'absent')
-            ->where('date', '>=', now()->subDays(7))
+            ->whereDate('date', today())
             ->with(['student', 'course'])
-            ->latest('date')
             ->get()
             ->unique('student_id')
             ->values();

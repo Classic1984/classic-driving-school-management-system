@@ -330,11 +330,33 @@ class DashboardTest extends TestCase
         $response->assertSee('Active');
     }
 
-    public function test_dashboard_shows_recently_absent_students_in_their_own_widget(): void
+    public function test_dashboard_shows_students_absent_today_in_their_own_widget(): void
     {
         $user = User::factory()->create();
         $student = Student::factory()->create(['name' => 'Ngozi Chukwu']);
         $course = Course::factory()->create(['name' => 'Weekend Program']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'date' => today()->toDateString(),
+            'status' => 'absent',
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Absent Today');
+        $response->assertSee('Click to view names');
+        $response->assertSee('Ngozi Chukwu');
+        $response->assertSee('Weekend Program');
+    }
+
+    public function test_an_absence_logged_before_today_does_not_count_toward_the_absent_today_tile(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
         $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
         Attendance::factory()->create([
             'student_id' => $student->id,
@@ -346,38 +368,29 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Recently Absent Students');
-        $response->assertSee('Click to view names');
-        $response->assertSee('Ngozi Chukwu');
-        $response->assertSee('Weekend Program');
+        $response->assertDontSee('Absent Today');
     }
 
-    public function test_the_absent_students_tile_shows_a_count_of_distinct_students(): void
+    public function test_the_absent_today_tile_shows_a_count_of_distinct_students(): void
     {
         $user = User::factory()->create();
         $course = Course::factory()->create();
-        $repeatOffender = Student::factory()->create();
-        $repeatOffender->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create(['student_id' => $repeatOffender->id, 'course_id' => $course->id, 'date' => now()->subDays(1), 'status' => 'absent']);
-        Attendance::factory()->create(['student_id' => $repeatOffender->id, 'course_id' => $course->id, 'date' => now()->subDays(3), 'status' => 'absent']);
 
-        $anotherStudent = Student::factory()->create();
-        $anotherStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create(['student_id' => $anotherStudent->id, 'course_id' => $course->id, 'date' => now()->subDays(2), 'status' => 'absent']);
+        $first = Student::factory()->create();
+        $first->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create(['student_id' => $first->id, 'course_id' => $course->id, 'date' => today(), 'status' => 'absent']);
 
-        // Outside the 7-day window - must not be counted.
-        $staleStudent = Student::factory()->create();
-        $staleStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
-        Attendance::factory()->create(['student_id' => $staleStudent->id, 'course_id' => $course->id, 'date' => now()->subDays(10), 'status' => 'absent']);
+        $second = Student::factory()->create();
+        $second->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create(['student_id' => $second->id, 'course_id' => $course->id, 'date' => today(), 'status' => 'absent']);
 
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        // 2 distinct recently-absent students (the repeat offender counted once).
-        $response->assertSeeInOrder(['Absent (Last 7 Days)', '2']);
+        $response->assertSeeInOrder(['Absent Today', '2']);
     }
 
-    public function test_dashboard_does_not_show_the_absent_students_widget_when_nobody_is_absent(): void
+    public function test_dashboard_does_not_show_the_absent_students_widget_when_nobody_is_absent_today(): void
     {
         $user = User::factory()->create();
         $student = Student::factory()->create();
@@ -393,7 +406,7 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Recently Absent Students');
+        $response->assertDontSee('Absent Today');
     }
 
     public function test_dashboard_shows_completed_training_status(): void
