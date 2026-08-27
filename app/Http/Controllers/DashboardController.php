@@ -99,6 +99,13 @@ class DashboardController extends Controller
             'year' => $this->distinctStudentsTrained(now()->startOfYear(), now()->endOfYear()),
         ];
 
+        $absenceStats = [
+            'today' => $this->distinctStudentsAbsent(today(), today()),
+            'week' => $this->distinctStudentsAbsent(now()->startOfWeek(), now()->endOfWeek()),
+            'month' => $this->distinctStudentsAbsent(now()->startOfMonth(), now()->endOfMonth()),
+            'year' => $this->distinctStudentsAbsent(now()->startOfYear(), now()->endOfYear()),
+        ];
+
         // Only services with a tracked turnaround (processing_days set)
         // produce a meaningful progress figure - see
         // StudentService::processingProgressPercent().
@@ -251,7 +258,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'presentToday', 'absentToday', 'trainingStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
     }
 
     /**
@@ -280,6 +287,21 @@ class DashboardController extends Controller
     protected function distinctStudentsTrained($from, $to): int
     {
         return Attendance::where('status', 'present')
+            ->whereDate('date', '>=', $from->toDateString())
+            ->whereDate('date', '<=', $to->toDateString())
+            ->distinct('student_id')
+            ->count('student_id');
+    }
+
+    /**
+     * Distinct students marked absent (by app:finalize-daily-attendance)
+     * within the given date range - the same shape as
+     * distinctStudentsTrained() above, just counting the other side of
+     * the daily roster.
+     */
+    protected function distinctStudentsAbsent($from, $to): int
+    {
+        return Attendance::where('status', 'absent')
             ->whereDate('date', '>=', $from->toDateString())
             ->whereDate('date', '<=', $to->toDateString())
             ->distinct('student_id')

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsenceReportController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ApprovalCentreController;
 use App\Http\Controllers\AttendanceController;
@@ -172,6 +173,9 @@ Route::middleware('auth')->group(function () {
     Route::get('training-report', [TrainingReportController::class, 'index'])->name('training-report.index');
     Route::get('training-report/export', [TrainingReportController::class, 'export'])->name('training-report.export');
     Route::get('training-report/export-pdf', [TrainingReportController::class, 'exportPdf'])->name('training-report.export-pdf');
+    Route::get('absence-report', [AbsenceReportController::class, 'index'])->name('absence-report.index');
+    Route::get('absence-report/export', [AbsenceReportController::class, 'export'])->name('absence-report.export');
+    Route::get('absence-report/export-pdf', [AbsenceReportController::class, 'exportPdf'])->name('absence-report.export-pdf');
     Route::get('student-registration-report', [StudentRegistrationReportController::class, 'index'])->name('student-registration-report.index');
     Route::get('student-registration-report/export', [StudentRegistrationReportController::class, 'export'])->name('student-registration-report.export');
     Route::get('student-registration-report/export-pdf', [StudentRegistrationReportController::class, 'exportPdf'])->name('student-registration-report.export-pdf');

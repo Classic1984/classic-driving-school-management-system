@@ -47,6 +47,31 @@ class DashboardTest extends TestCase
         $response->assertSee(route('training-report.index', ['period' => 'year']), false);
     }
 
+    public function test_dashboard_shows_absences_linking_to_the_absence_report(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create();
+
+        $absent1 = Student::factory()->create();
+        $absent2 = Student::factory()->create();
+        Attendance::factory()->create(['student_id' => $absent1->id, 'course_id' => $course->id, 'date' => now(), 'status' => 'absent']);
+        Attendance::factory()->create(['student_id' => $absent2->id, 'course_id' => $course->id, 'date' => now(), 'status' => 'absent']);
+        // Not counted: present status, and an absence outside today.
+        $present = Student::factory()->create();
+        Attendance::factory()->create(['student_id' => $present->id, 'course_id' => $course->id, 'date' => now(), 'status' => 'present']);
+        $old = Student::factory()->create();
+        Attendance::factory()->create(['student_id' => $old->id, 'course_id' => $course->id, 'date' => now()->subYear(), 'status' => 'absent']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Absences');
+        $response->assertSee(route('absence-report.index', ['period' => 'today']), false);
+        $response->assertSee(route('absence-report.index', ['period' => 'week']), false);
+        $response->assertSee(route('absence-report.index', ['period' => 'month']), false);
+        $response->assertSee(route('absence-report.index', ['period' => 'year']), false);
+    }
+
     public function test_dashboard_shows_live_counts_and_totals(): void
     {
         $user = User::factory()->create();

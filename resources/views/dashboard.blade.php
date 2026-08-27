@@ -214,6 +214,19 @@
 
                 </div>
 
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('Absences') }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
+
+                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                        <a href="{{ route('absence-report.index', ['period' => $period]) }}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg block">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __($periodLabel) }}</h4>
+                            <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($absenceStats[$period]) }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ __('students absent') }}</p>
+                        </a>
+                    @endforeach
+
+                </div>
+
                 @if ($paymentTotals)
                     <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('Total Payments') }}</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
