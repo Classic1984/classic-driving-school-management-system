@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\MessageLog;
 use App\Models\Student;
+use App\Models\TheoryClass;
 use App\Models\TheoryClassCancellation;
 use App\Services\TermiiSmsService;
 use App\Services\WhatsAppService;
@@ -46,6 +47,13 @@ class SendTheoryClassReminder extends Command
         }
 
         $cancellation = TheoryClassCancellation::whereDate('class_date', today())->first();
+
+        if ($cancellation === null) {
+            // Ensures today's roster exists by the time class starts, so an
+            // instructor can open it and start marking students present
+            // without first having to remember to create it.
+            TheoryClass::firstOrCreate(['class_date' => today()]);
+        }
 
         if ($cancellation !== null) {
             $message = 'Classic Driving School: Notice - today\'s theory class (Thursday) has been CANCELLED.'

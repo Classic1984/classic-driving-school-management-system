@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 
 class Student extends Model
 {
@@ -100,6 +101,14 @@ class Student extends Model
     }
 
     /**
+     * This student's attendance record for each theory class held.
+     */
+    public function theoryClassAttendances(): HasMany
+    {
+        return $this->hasMany(TheoryClassAttendance::class);
+    }
+
+    /**
      * The payment records for this student.
      */
     public function payments(): HasMany
@@ -148,5 +157,35 @@ class Student extends Model
         if ($newStatus !== $this->status) {
             $this->forceFill(['status' => $newStatus])->save();
         }
+    }
+
+    /**
+     * This student's theory-class history for their profile page: how many
+     * of the classes held since they enrolled they've attended, their
+     * average score, and which topics they've missed and still need to
+     * catch up on.
+     *
+     * @return array{classes_attended: int, classes_expected: int, attendance_percentage: int, topics_completed: int, average_score: ?int, outstanding_topics: Collection<int, string>}
+     */
+    public function theoryProgress(): array
+    {
+        $expectedClasses = TheoryClass::query()
+            ->when($this->enrollment_date, fn ($query) => $query->where('class_date', '>=', $this->enrollment_date))
+            ->where('class_date', '<=', today())
+            ->get();
+
+        $attendances = $this->theoryClassAttendances()->with('theoryClass')->get();
+        $attended = $attendances->whereIn('status', ['present', 'late']);
+        $missed = $attendances->where('status', 'absent');
+        $scores = $attended->pluck('score')->filter(fn (?int $score) => $score !== null);
+
+        return [
+            'classes_attended' => $attended->count(),
+            'classes_expected' => $expectedClasses->count(),
+            'attendance_percentage' => $expectedClasses->isEmpty() ? 0 : (int) round(($attended->count() / $expectedClasses->count()) * 100),
+            'topics_completed' => $attended->pluck('theoryClass.topic')->filter()->unique()->count(),
+            'average_score' => $scores->isEmpty() ? null : (int) round($scores->avg()),
+            'outstanding_topics' => $missed->pluck('theoryClass.topic')->filter()->unique()->values(),
+        ];
     }
 }

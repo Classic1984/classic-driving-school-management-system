@@ -18,6 +18,11 @@ Schedule::command('app:scheduler-heartbeat')->everyMinute();
 Schedule::command('app:refresh-enrollment-locks')->daily();
 Schedule::command('backup:database')->twiceDaily(2, 14);
 Schedule::command('app:send-theory-class-reminder')->weeklyOn(4, '08:00');
+// Seals today's theory class roster once class is well over (starts
+// 10am) - anyone expected who never checked in becomes a permanent
+// "absent" record from this point on, same pattern as the daily
+// practical-training finalize below.
+Schedule::command('app:finalize-theory-class-attendance')->weeklyOn(4, '14:00');
 Schedule::command('app:send-balance-reminder')->weeklyOn(1, '09:00');
 // Checked daily; SendLeadFollowUpReminder itself only texts a lead once at
 // least 4 days have passed since they were logged (or last reminded).
