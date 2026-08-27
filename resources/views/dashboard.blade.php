@@ -627,10 +627,10 @@
 
             @if ($absentStudents->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Recently Absent Students') }}</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Attendance') }}</h3>
 
                     <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                        <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🚫 {{ __('Absent (Last 7 Days)') }}</p>
+                        <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🚫 {{ __('Absent Today') }}</p>
                         <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentStudents->count() }}</p>
                         <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
                     </button>
@@ -638,7 +638,7 @@
 
                 <x-modal name="absent-students-modal">
                     <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">🚫 {{ __('Recently Absent Students') }}</h3>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🚫 {{ __('Absent Today') }}</h3>
                         <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
                             @foreach ($absentStudents as $attendance)
                                 <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
@@ -646,7 +646,6 @@
                                         <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
                                         <span class="text-gray-500"> — {{ $attendance->course->name }}</span>
                                     </div>
-                                    <span class="text-xs text-gray-500 whitespace-nowrap">{{ $attendance->date->format('M j, Y') }}</span>
                                 </div>
                             @endforeach
                         </div>
