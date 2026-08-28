@@ -9,6 +9,7 @@ use App\Models\TheoryClass;
 use App\Models\TheoryClassAttendance;
 use App\Models\TheoryClassCancellation;
 use App\Models\User;
+use App\Services\WebPushService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -119,6 +120,56 @@ class TheoryClassTest extends TestCase
             'topic' => 'Right of Way',
             'instructor_id' => $instructor->id,
             'notes' => 'Extra Q&A session.',
+        ]);
+    }
+
+    public function test_assigning_an_instructor_with_app_access_pushes_them(): void
+    {
+        $user = User::factory()->create();
+        $instructorUser = User::factory()->create(['role' => 'instructor']);
+        $instructor = Instructor::factory()->create();
+        $instructor->forceFill(['user_id' => $instructorUser->id])->save();
+        $theoryClass = TheoryClass::factory()->create(['instructor_id' => null, 'class_date' => now()->addDay()]);
+
+        $this->mock(WebPushService::class, function ($mock) use ($instructorUser) {
+            $mock->shouldReceive('sendToUser')
+                ->once()
+                ->withArgs(fn ($user, $title, $body, $url) => $user->is($instructorUser)
+                    && $title === 'Theory Class Assigned'
+                    && $url === route('instructor.dashboard'));
+        });
+
+        $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), ['instructor_id' => $instructor->id]);
+    }
+
+    public function test_assigning_an_instructor_without_app_access_does_not_push(): void
+    {
+        $user = User::factory()->create();
+        $instructor = Instructor::factory()->create();
+        $theoryClass = TheoryClass::factory()->create(['instructor_id' => null]);
+
+        $this->mock(WebPushService::class, function ($mock) {
+            $mock->shouldNotReceive('sendToUser');
+        });
+
+        $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), ['instructor_id' => $instructor->id]);
+    }
+
+    public function test_resaving_the_same_instructor_does_not_push_again(): void
+    {
+        $user = User::factory()->create();
+        $instructorUser = User::factory()->create(['role' => 'instructor']);
+        $instructor = Instructor::factory()->create();
+        $instructor->forceFill(['user_id' => $instructorUser->id])->save();
+        $theoryClass = TheoryClass::factory()->create(['instructor_id' => $instructor->id]);
+
+        $this->mock(WebPushService::class, function ($mock) {
+            $mock->shouldNotReceive('sendToUser');
+        });
+
+        $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'instructor_id' => $instructor->id,
+            'notes' => 'Just updating notes, same instructor.',
         ]);
     }
 

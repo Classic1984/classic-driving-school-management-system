@@ -6,6 +6,7 @@ use App\Notifications\EnrollmentLockedNotification;
 use App\Notifications\TrainingCompletedNotification;
 use App\Notifications\TrainingDaysRemainingNotification;
 use App\Services\TermiiSmsService;
+use App\Services\WebPushService;
 use App\Services\WhatsAppService;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
@@ -752,8 +753,35 @@ class Enrollment extends Pivot
                 'status' => $channel ? 'sent' : 'failed',
                 'message' => $message,
             ]);
+
+            $this->pushStudent($purpose, $message);
         } catch (\Throwable $e) {
             Log::error("Failed to text student #{$student->id} for enrollment #{$this->id} ({$purpose}): {$e->getMessage()}", ['exception' => $e]);
         }
+    }
+
+    /**
+     * Every event that texts a student (see textStudent() above) also
+     * pushes them the same message, if they've got the app installed and
+     * notifications enabled - a no-op otherwise (WebPushService itself
+     * checks app access and VAPID configuration). This is on top of, not
+     * instead of, the SMS/WhatsApp text - push is instant when it lands,
+     * but nothing here assumes it will.
+     */
+    protected function pushStudent(string $purpose, string $message): void
+    {
+        if (! $this->student->hasAppAccess()) {
+            return;
+        }
+
+        $title = match ($purpose) {
+            'certificate_ready' => 'Certificate Ready',
+            'training_completed' => 'Training Completed',
+            'training_days_remaining' => 'Training Update',
+            'programme_upgrade_window' => 'Programme Upgrade Available',
+            default => 'Classic Driving School',
+        };
+
+        app(WebPushService::class)->sendToUser($this->student->user, $title, $message, route('student.dashboard'));
     }
 }
