@@ -6,6 +6,7 @@ use App\Models\ActivityLog;
 use App\Models\Instructor;
 use App\Models\TheoryClass;
 use App\Models\TheoryClassCancellation;
+use App\Services\WebPushService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -100,10 +101,38 @@ class TheoryClassController extends Controller
             $data['materials_original_name'] = $file->getClientOriginalName();
         }
 
+        $previousInstructorId = $theoryClass->instructor_id;
+
         $theoryClass->update($data);
 
         ActivityLog::record("Updated theory class details for {$theoryClass->class_date->toFormattedDateString()}");
 
+        if ($theoryClass->instructor_id && $theoryClass->instructor_id !== $previousInstructorId) {
+            $this->notifyInstructorOfAssignment($theoryClass);
+        }
+
         return Redirect::route('theory-classes.show', $theoryClass)->with('status', 'theory-class-updated');
+    }
+
+    /**
+     * Push the newly-assigned instructor that they've got a theory class
+     * to teach, if they've got the app installed and notifications
+     * enabled - a no-op otherwise (WebPushService itself checks app
+     * access and VAPID configuration).
+     */
+    protected function notifyInstructorOfAssignment(TheoryClass $theoryClass): void
+    {
+        $instructor = $theoryClass->instructor ?? Instructor::find($theoryClass->instructor_id);
+
+        if (! $instructor?->hasAppAccess()) {
+            return;
+        }
+
+        app(WebPushService::class)->sendToUser(
+            $instructor->user,
+            'Theory Class Assigned',
+            "You've been assigned to teach the theory class on {$theoryClass->class_date->toFormattedDateString()}.",
+            route('instructor.dashboard')
+        );
     }
 }
