@@ -72,6 +72,12 @@ class StoreCertificateRequest extends FormRequest
 
             if ($enrollment->status !== 'completed') {
                 $validator->errors()->add('student_id', 'A certificate cannot be issued until this course is marked as completed for this student.');
+
+                return;
+            }
+
+            if (! $enrollment->hasPassedAssessment()) {
+                $validator->errors()->add('student_id', 'A certificate cannot be issued until this student has a passing final assessment on file.');
             }
         });
     }

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Assessment;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -109,7 +110,36 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertSame(100.0, $enrollment->fresh()->balance());
     }
 
-    public function test_marking_complete_manually_automatically_issues_a_certificate(): void
+    public function test_marking_complete_manually_issues_a_certificate_once_a_passing_assessment_is_on_file(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
+
+        $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete")->assertSessionHasNoErrors();
+
+        $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertMatchesRegularExpression('/^CDS-CERT-\d{4}-\d{5}$/', $certificate->certificate_number);
+    }
+
+    public function test_marking_complete_manually_does_not_issue_a_certificate_without_a_passing_assessment(): void
     {
         $user = User::factory()->create();
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
@@ -133,8 +163,9 @@ class EnrollmentCompletionTest extends TestCase
 
         $this->actingAs($user)->patch("/enrollments/{$enrollment->id}/complete")->assertSessionHasNoErrors();
 
-        $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
-        $this->assertMatchesRegularExpression('/^CDS-CERT-\d{4}-\d{5}$/', $certificate->certificate_number);
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertDatabaseCount('certificates', 0);
+        $this->assertSame('Completed', $enrollment->fresh()->statusLabel());
     }
 
     public function test_completed_enrollments_stay_completed_even_when_overdue_conditions_are_recomputed(): void
@@ -231,6 +262,7 @@ class EnrollmentCompletionTest extends TestCase
                 'duration' => 1,
             ]);
         }
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
 
         $enrollment->refreshStatus();
 
@@ -238,6 +270,35 @@ class EnrollmentCompletionTest extends TestCase
         $this->assertNull($enrollment->fresh()->locked_reason);
         $certificate = Certificate::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
         $this->assertMatchesRegularExpression('/^CDS-CERT-\d{4}-\d{5}$/', $certificate->certificate_number);
+    }
+
+    public function test_enrollment_auto_completes_without_a_certificate_when_no_assessment_is_on_file(): void
+    {
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $enrollment = $this->enroll($student, $course);
+        Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 100,
+            'status' => 'paid',
+        ]);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+
+        $enrollment->refreshStatus();
+
+        $this->assertSame('completed', $enrollment->fresh()->status);
+        $this->assertDatabaseCount('certificates', 0);
+        $this->assertSame('Completed', $enrollment->fresh()->statusLabel());
     }
 
     public function test_auto_completing_an_enrollment_twice_does_not_duplicate_the_certificate(): void
@@ -261,6 +322,7 @@ class EnrollmentCompletionTest extends TestCase
                 'duration' => 1,
             ]);
         }
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
 
         $enrollment->refreshStatus();
         $enrollment->fresh()->refreshStatus();
@@ -699,6 +761,7 @@ class EnrollmentCompletionTest extends TestCase
                 'duration' => 1,
             ]);
         }
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
         $enrollment->refreshStatus();
 
         $this->assertSame('Certified', $enrollment->fresh()->statusLabel());
