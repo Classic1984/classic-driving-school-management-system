@@ -513,27 +513,82 @@ class Enrollment extends Pivot
     }
 
     /**
-     * Mark this enrollment completed and issue the student's certificate
-     * for it, if one doesn't already exist. Used both when training
-     * auto-completes and when staff complete it manually.
+     * Mark this enrollment completed. Training days attended and balance
+     * cleared are no longer enough on their own to issue a certificate -
+     * see maybeIssueCertificate() - so this only advances the enrollment
+     * to "Completed" and lets the student know their final practical
+     * assessment is what's standing between them and their certificate.
+     * Used both when training auto-completes and when staff complete it
+     * manually.
      */
     public function markCompleted(): void
     {
         $this->forceFill(['status' => 'completed', 'locked_reason' => null])->save();
 
-        Certificate::firstOrCreate(
-            ['student_id' => $this->student_id, 'course_id' => $this->course_id],
-            ['issue_date' => now()->toDateString()]
-        );
-
         Notification::send(User::admins()->get(), new TrainingCompletedNotification($this));
         $this->textStudent(
             'training_completed',
-            "Classic Driving School: Congratulations! You have completed your training program in {$this->course->name}. Your certificate is ready for collection at the school office.",
+            "Classic Driving School: Congratulations! You have completed your training program in {$this->course->name}. Your certificate will be issued once your final practical assessment is confirmed.",
             ['1' => $this->course->name]
         );
 
         $this->student->refreshStatus();
+
+        // Covers the order-of-events where a passing assessment was
+        // already on file before the training-days/balance side of
+        // completion caught up to it.
+        $this->maybeIssueCertificate();
+    }
+
+    /**
+     * The current (most recently recorded) assessment for this
+     * enrollment, or null if none has been recorded yet.
+     */
+    public function assessment(): ?Assessment
+    {
+        return Assessment::where('student_id', $this->student_id)
+            ->where('course_id', $this->course_id)
+            ->first();
+    }
+
+    /**
+     * Whether this enrollment has a passing final assessment on file.
+     */
+    public function hasPassedAssessment(): bool
+    {
+        return $this->assessment()?->result === 'pass';
+    }
+
+    /**
+     * Issue this enrollment's certificate if - and only if - training is
+     * both fully completed (attendance + balance, see refreshStatus()/
+     * reconcile()) and a passing final assessment is on file. Either of
+     * those two things can happen first (a student might be assessed
+     * before their last training day, or the reverse), so this is called
+     * from both markCompleted() and wherever an assessment is recorded -
+     * it's a no-op once a certificate already exists.
+     */
+    public function maybeIssueCertificate(): void
+    {
+        if ($this->status !== 'completed' || ! $this->hasPassedAssessment() || $this->hasCertificate()) {
+            return;
+        }
+
+        $certificate = Certificate::firstOrCreate(
+            ['student_id' => $this->student_id, 'course_id' => $this->course_id],
+            ['issue_date' => now()->toDateString()]
+        );
+
+        if (! $certificate->wasRecentlyCreated) {
+            return;
+        }
+
+        ActivityLog::record("Issued certificate {$certificate->certificate_number} for {$this->student->name} ({$this->course->name})");
+        $this->textStudent(
+            'certificate_ready',
+            "Classic Driving School: Your certificate for {$this->course->name} is ready for collection at the school office.",
+            ['1' => $this->course->name]
+        );
     }
 
     /**

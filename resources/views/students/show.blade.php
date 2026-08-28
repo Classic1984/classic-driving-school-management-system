@@ -193,6 +193,8 @@
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Enrollment removed.') }}</p>
                             @elseif (session('status') === 'enrollment-upgraded')
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Programme upgraded successfully.') }}</p>
+                            @elseif (session('status') === 'assessment-saved')
+                                <p class="mb-2 text-sm font-medium text-green-600">{{ __('Assessment saved.') }}</p>
                             @endif
                             <x-input-error class="mb-2" :messages="$errors->get('enrollment')" />
 
@@ -330,6 +332,57 @@
                                                     @endif
                                                 </div>
                                             @endif
+
+                                            @php $assessment = $enrolledCourse->pivot->assessment(); @endphp
+                                            <div class="mt-3 pt-3 border-t border-gray-100" x-data="{ editingAssessment: {{ auth()->user()->canManageCourses() && ! $assessment ? 'true' : 'false' }} }">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">{{ __('Final Assessment') }}</span>
+                                                    @if (auth()->user()->canManageCourses())
+                                                        <button type="button" x-show="!editingAssessment" @click="editingAssessment = true" class="text-xs text-amber-600 hover:underline">{{ $assessment ? __('Edit') : __('Record') }}</button>
+                                                    @endif
+                                                </div>
+
+                                                <div x-show="!editingAssessment" class="mt-1">
+                                                    @if ($assessment)
+                                                        <div class="flex items-center gap-2 text-sm">
+                                                            <x-badge :color="$assessment->result === 'pass' ? 'green' : 'red'" class="capitalize">{{ $assessment->result }}</x-badge>
+                                                            @if ($assessment->score !== null)
+                                                                <span class="text-gray-600">{{ __('Score') }}: {{ $assessment->score }}</span>
+                                                            @endif
+                                                        </div>
+                                                        @if ($assessment->remarks)
+                                                            <p class="mt-1 text-xs text-gray-500">{{ $assessment->remarks }}</p>
+                                                        @endif
+                                                        <p class="mt-1 text-xs text-gray-400">
+                                                            {{ __('Assessed by') }} {{ $assessment->assessedBy?->name ?? '—' }} &middot; {{ $assessment->assessed_at->format('Y-m-d') }}
+                                                        </p>
+                                                    @else
+                                                        <p class="text-xs text-gray-500">{{ __('Not yet assessed.') }}</p>
+                                                    @endif
+                                                </div>
+
+                                                @if (auth()->user()->canManageCourses())
+                                                    <form x-show="editingAssessment" x-cloak method="post" action="{{ route('enrollments.assessment.store', $enrolledCourse->pivot->id) }}" class="mt-2 flex flex-wrap items-end gap-3">
+                                                        @csrf
+                                                        <div>
+                                                            <select name="result" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
+                                                                <option value="pass" @selected(($assessment->result ?? null) === 'pass')>{{ __('Pass') }}</option>
+                                                                <option value="fail" @selected(($assessment->result ?? null) === 'fail')>{{ __('Fail') }}</option>
+                                                            </select>
+                                                        </div>
+                                                        <div>
+                                                            <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" value="{{ $assessment->score ?? '' }}" class="w-20 rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
+                                                        </div>
+                                                        <div class="flex-1 min-w-[10rem]">
+                                                            <input type="text" name="remarks" placeholder="{{ __('Remarks') }}" value="{{ $assessment->remarks ?? '' }}" class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
+                                                        </div>
+                                                        <button type="submit" class="text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
+                                                        @if ($assessment)
+                                                            <button type="button" @click="editingAssessment = false" class="text-sm text-gray-500 hover:underline">{{ __('Cancel') }}</button>
+                                                        @endif
+                                                    </form>
+                                                @endif
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>

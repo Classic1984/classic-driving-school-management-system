@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Assessment;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
@@ -21,6 +22,7 @@ class CertificateTest extends TestCase
             'due_date' => now()->addDays($course->gracePeriodDays())->toDateString(),
             'status' => 'completed',
         ]);
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
     }
 
     public function test_guests_are_redirected_to_login_from_certificate_routes(): void

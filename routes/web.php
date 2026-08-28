@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsenceReportController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ApprovalCentreController;
+use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\BackupController;
@@ -89,6 +90,7 @@ Route::middleware('auth')->group(function () {
         Route::post('theory-classes/create-today', [TheoryClassController::class, 'createToday'])->name('theory-classes.create-today');
         Route::patch('theory-classes/{theoryClass}', [TheoryClassController::class, 'update'])->name('theory-classes.update');
         Route::post('theory-classes/{theoryClass}/attendances', [TheoryClassAttendanceController::class, 'store'])->name('theory-classes.attendances.store');
+        Route::post('enrollments/{enrollment}/assessment', [AssessmentController::class, 'store'])->name('enrollments.assessment.store');
     });
 
     Route::middleware('admin')->group(function () {

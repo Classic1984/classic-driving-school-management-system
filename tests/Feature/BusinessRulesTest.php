@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Assessment;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -346,6 +347,7 @@ class BusinessRulesTest extends TestCase
         $enrollment = $this->enroll($student, $course);
         $this->pay($student, $course, 100);
         $this->attend($student, $course, 5);
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
 
         // Auto-completion issues the first certificate...
         $enrollment->refreshStatus();

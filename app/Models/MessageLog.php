@@ -47,5 +47,6 @@ class MessageLog extends Model
         'absence_check_in' => 'Absence Check-In',
         'training_days_remaining' => 'Training Days Remaining',
         'training_completed' => 'Training Completed',
+        'certificate_ready' => 'Certificate Ready',
     ];
 }

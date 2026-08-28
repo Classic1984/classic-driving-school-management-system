@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Console\Commands\RecordSchedulerHeartbeat;
 use App\Models\ActivityLog;
+use App\Models\Assessment;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -133,6 +134,7 @@ class ActivityLogTest extends TestCase
             'due_date' => now()->addDays($course->gracePeriodDays()),
             'status' => 'completed',
         ]);
+        Assessment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass']);
 
         $this->actingAs($user)->post('/certificates', [
             'student_id' => $student->id,
