@@ -95,6 +95,24 @@ class WebPushService
         }
     }
 
+    /**
+     * Push every Director with app access - the audience for anything
+     * landing in the Approval Centre (discount requests, correction
+     * requests, assessment recommendations). One sendToUser() call per
+     * Director rather than one shared batch, so a bad subscription on one
+     * Director's account can't skip the notification for the others.
+     */
+    public function sendToDirectors(string $title, string $body, ?string $url = null): void
+    {
+        if (! $this->isConfigured()) {
+            return;
+        }
+
+        foreach (User::where('role', 'director')->get() as $director) {
+            $this->sendToUser($director, $title, $body, $url);
+        }
+    }
+
     protected function client(): WebPush
     {
         return $this->client ??= new WebPush([

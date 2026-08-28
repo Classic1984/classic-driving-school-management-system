@@ -128,6 +128,40 @@ class WebPushServiceTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function test_sending_to_directors_pushes_every_director_with_app_access(): void
+    {
+        $this->configureFakeVapidKeys();
+
+        $director1 = User::factory()->director()->create();
+        $director2 = User::factory()->director()->create();
+        $nonDirector = User::factory()->secretary()->create();
+        PushSubscription::factory()->create(['user_id' => $director1->id]);
+        PushSubscription::factory()->create(['user_id' => $director2->id]);
+        PushSubscription::factory()->create(['user_id' => $nonDirector->id]);
+
+        $client = \Mockery::mock(WebPush::class);
+        $client->shouldReceive('queueNotification')->twice();
+        $client->shouldReceive('flush')->twice()->andReturn((function () {
+            yield from [];
+        })());
+
+        (new WebPushService($client))->sendToDirectors('Title', 'Body', 'https://example.test');
+    }
+
+    public function test_sending_to_directors_does_nothing_when_not_configured(): void
+    {
+        config(['services.webpush.vapid_public_key' => null, 'services.webpush.vapid_private_key' => null]);
+
+        $director = User::factory()->director()->create();
+        PushSubscription::factory()->create(['user_id' => $director->id]);
+
+        $client = \Mockery::mock(WebPush::class);
+        $client->shouldNotReceive('queueNotification');
+        $client->shouldNotReceive('flush');
+
+        (new WebPushService($client))->sendToDirectors('Title', 'Body');
+    }
+
     public function test_a_non_expired_failure_does_not_delete_the_subscription(): void
     {
         $this->configureFakeVapidKeys();
