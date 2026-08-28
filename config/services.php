@@ -45,6 +45,16 @@ return [
         'sender_id' => env('TERMII_SENDER_ID', 'N-Alert'),
     ],
 
+    // Web Push (VAPID) keys, one keypair per deployment - generate with
+    // `php artisan webpush:vapid-keys`. Left blank, WebPushService quietly
+    // does nothing rather than erroring, the same way TermiiSmsService
+    // behaves with no API key configured.
+    'webpush' => [
+        'vapid_public_key' => env('VAPID_PUBLIC_KEY'),
+        'vapid_private_key' => env('VAPID_PRIVATE_KEY'),
+        'vapid_subject' => env('VAPID_SUBJECT', env('APP_URL', 'http://localhost')),
+    ],
+
     'twilio' => [
         'account_sid' => env('TWILIO_ACCOUNT_SID'),
         'auth_token' => env('TWILIO_AUTH_TOKEN'),
