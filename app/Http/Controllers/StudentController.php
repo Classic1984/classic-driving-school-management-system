@@ -27,7 +27,7 @@ class StudentController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Student::with('courses');
+        $query = Student::with(['courses', 'user']);
 
         if ($search = $request->query('search')) {
             $query->where(function ($inner) use ($search) {

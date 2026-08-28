@@ -139,4 +139,17 @@ class StudentAccessTest extends TestCase
         $response->assertOk();
         $response->assertSee('Pending first login');
     }
+
+    public function test_the_students_index_shows_the_app_access_status(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Grace Adeyemi']);
+        $this->actingAs($user)->post(route('students.access.store', $student));
+
+        $response = $this->actingAs($user)->get(route('students.index'));
+
+        $response->assertOk();
+        $response->assertSee('Grace Adeyemi');
+        $response->assertSee('Pending first login');
+    }
 }
