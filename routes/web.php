@@ -96,6 +96,7 @@ Route::middleware(['auth', 'not-instructor'])->group(function () {
         Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
         Route::post('instructors/{instructor}/access', [InstructorAccessController::class, 'store'])->name('instructors.access.store');
         Route::delete('instructors/{instructor}/access', [InstructorAccessController::class, 'destroy'])->name('instructors.access.destroy');
+        Route::post('instructors/{instructor}/access/resend', [InstructorAccessController::class, 'resend'])->name('instructors.access.resend');
         Route::resource('vehicles', VehicleController::class)->except(['index', 'show', 'destroy']);
         Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
         Route::post('theory-classes/create-today', [TheoryClassController::class, 'createToday'])->name('theory-classes.create-today');
