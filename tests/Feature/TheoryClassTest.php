@@ -10,6 +10,8 @@ use App\Models\TheoryClassAttendance;
 use App\Models\TheoryClassCancellation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class TheoryClassTest extends TestCase
@@ -118,6 +120,94 @@ class TheoryClassTest extends TestCase
             'instructor_id' => $instructor->id,
             'notes' => 'Extra Q&A session.',
         ]);
+    }
+
+    public function test_resaving_details_after_start_time_was_already_set_does_not_fail_validation(): void
+    {
+        $user = User::factory()->create();
+        // Mirrors how the database round-trips a TIME column - a fresh
+        // insert can come back with seconds even though only "H:i" was
+        // ever submitted, which is exactly what broke resubmitting the
+        // form unchanged.
+        $theoryClass = TheoryClass::factory()->create(['start_time' => '10:00:00']);
+
+        $response = $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'topic' => 'Right of Way',
+            'start_time' => $theoryClass->start_time,
+        ]);
+
+        $response->assertRedirect(route('theory-classes.show', $theoryClass));
+        $response->assertSessionDoesntHaveErrors('start_time');
+        $this->assertSame('10:00', $theoryClass->refresh()->start_time);
+    }
+
+    public function test_a_course_manager_can_upload_lecture_material(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $theoryClass = TheoryClass::factory()->create();
+        $file = UploadedFile::fake()->create('road-signs.pdf', 500, 'application/pdf');
+
+        $response = $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'materials' => $file,
+        ]);
+
+        $response->assertRedirect(route('theory-classes.show', $theoryClass));
+        $theoryClass->refresh();
+        $this->assertNotNull($theoryClass->materials_path);
+        $this->assertSame('road-signs.pdf', $theoryClass->materials_original_name);
+        Storage::disk('public')->assertExists($theoryClass->materials_path);
+    }
+
+    public function test_uploading_new_material_replaces_and_deletes_the_old_file(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $theoryClass = TheoryClass::factory()->create();
+
+        $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'materials' => UploadedFile::fake()->create('first.pdf', 100, 'application/pdf'),
+        ]);
+        $oldPath = $theoryClass->refresh()->materials_path;
+
+        $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'materials' => UploadedFile::fake()->create('second.pdf', 100, 'application/pdf'),
+        ]);
+        $theoryClass->refresh();
+
+        Storage::disk('public')->assertMissing($oldPath);
+        Storage::disk('public')->assertExists($theoryClass->materials_path);
+        $this->assertSame('second.pdf', $theoryClass->materials_original_name);
+    }
+
+    public function test_uploading_material_of_a_disallowed_type_is_rejected(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $theoryClass = TheoryClass::factory()->create();
+        $file = UploadedFile::fake()->create('lecture.exe', 100, 'application/octet-stream');
+
+        $response = $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'materials' => $file,
+        ]);
+
+        $response->assertSessionHasErrors('materials');
+        $this->assertNull($theoryClass->refresh()->materials_path);
+    }
+
+    public function test_the_roster_page_shows_a_download_link_when_material_is_uploaded(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $theoryClass = TheoryClass::factory()->create([
+            'materials_path' => 'theory-class-materials/example.pdf',
+            'materials_original_name' => 'Road Signs Slides.pdf',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('theory-classes.show', $theoryClass));
+
+        $response->assertOk();
+        $response->assertSee('Road Signs Slides.pdf');
     }
 
     public function test_attendance_percentage_and_counts_reflect_the_roster(): void

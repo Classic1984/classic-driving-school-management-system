@@ -9,6 +9,7 @@ use App\Models\TheoryClassCancellation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class TheoryClassController extends Controller
@@ -72,7 +73,11 @@ class TheoryClassController extends Controller
     }
 
     /**
-     * Update the class-level details (topic, instructor, notes).
+     * Update the class-level details (topic, instructor, notes), and
+     * optionally upload or replace the lecture material for this class -
+     * a phone's camera roll, "Files" app, or a document saved from
+     * WhatsApp/email all work here through the browser's own file picker,
+     * so there's nothing extra to install.
      */
     public function update(Request $request, TheoryClass $theoryClass): RedirectResponse
     {
@@ -81,7 +86,19 @@ class TheoryClassController extends Controller
             'instructor_id' => ['nullable', 'integer', 'exists:instructors,id'],
             'start_time' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string'],
+            'materials' => ['nullable', 'file', 'mimes:pdf,doc,docx,ppt,pptx,jpg,jpeg,png', 'max:20480'],
         ]);
+        unset($data['materials']);
+
+        if ($request->hasFile('materials')) {
+            if ($theoryClass->materials_path) {
+                Storage::disk('public')->delete($theoryClass->materials_path);
+            }
+
+            $file = $request->file('materials');
+            $data['materials_path'] = $file->store('theory-class-materials', 'public');
+            $data['materials_original_name'] = $file->getClientOriginalName();
+        }
 
         $theoryClass->update($data);
 
