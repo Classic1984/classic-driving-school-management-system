@@ -53,10 +53,20 @@ class Certificate extends Model
     }
 
     /**
+     * The public verification page for this certificate - what the QR
+     * code printed on it actually encodes. Scanning it looks the
+     * certificate up live against the database, rather than just
+     * redisplaying text that could be copied onto a forged certificate.
+     */
+    public function verificationUrl(): string
+    {
+        return route('certificates.verify', $this->certificate_number);
+    }
+
+    /**
      * A plain-text summary of this certificate's holder, program, and
-     * instructor - encoded directly into the certificate's QR code so it
-     * can be read by scanning it, without needing a lookup page or an
-     * internet connection.
+     * instructor - kept for the certificate's own printed detail, not the
+     * QR code (see verificationUrl() above).
      */
     public function qrCodeSummary(): string
     {

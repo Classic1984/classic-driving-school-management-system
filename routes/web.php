@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
+use App\Http\Controllers\CertificateVerificationController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscountRequestController;
@@ -49,6 +50,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Public certificate verification - what a certificate's QR code links to.
+// No auth: anyone with the certificate number (or the QR code) can confirm
+// it's genuine against the database, rather than just trusting printed text.
+Route::get('/verify/{certificateNumber}', [CertificateVerificationController::class, 'show'])
+    ->name('certificates.verify');
 
 // Public booking-inquiry capture for the marketing site
 // (classicdriving.com.ng) - no auth, cross-origin, rate-limited.
