@@ -17,6 +17,7 @@ use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\InstructorAccessController;
 use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\LeadController;
@@ -69,10 +70,10 @@ Route::post('/public/payments/paystack/webhook', [PaystackWebhookController::cla
     ->name('public-payments.paystack-webhook');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'not-instructor'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not-instructor'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -92,6 +93,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('course-manager')->group(function () {
         Route::resource('courses', CourseController::class)->except(['index', 'show', 'destroy']);
         Route::resource('instructors', InstructorController::class)->except(['index', 'show', 'destroy']);
+        Route::post('instructors/{instructor}/access', [InstructorAccessController::class, 'store'])->name('instructors.access.store');
+        Route::delete('instructors/{instructor}/access', [InstructorAccessController::class, 'destroy'])->name('instructors.access.destroy');
         Route::resource('vehicles', VehicleController::class)->except(['index', 'show', 'destroy']);
         Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
         Route::post('theory-classes/create-today', [TheoryClassController::class, 'createToday'])->name('theory-classes.create-today');
@@ -216,3 +219,4 @@ Route::middleware('auth')->group(function () {
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });
 require __DIR__.'/auth.php';
+require __DIR__.'/instructor-auth.php';

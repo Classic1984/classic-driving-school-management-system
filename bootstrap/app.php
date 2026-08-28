@@ -3,6 +3,8 @@
 use App\Http\Middleware\EnsureUserCanManageCourses;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsDirector;
+use App\Http\Middleware\EnsureUserIsInstructor;
+use App\Http\Middleware\EnsureUserIsNotInstructor;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
             'director' => EnsureUserIsDirector::class,
             'course-manager' => EnsureUserCanManageCourses::class,
+            'instructor' => EnsureUserIsInstructor::class,
+            'not-instructor' => EnsureUserIsNotInstructor::class,
         ]);
 
         // The marketing site posts here cross-origin with no session, so it

@@ -49,7 +49,39 @@
                             @endforelse
                         </dd>
                     </div>
+                    <div class="py-2 grid grid-cols-3 gap-4">
+                        <dt class="text-sm font-medium text-gray-500">{{ __('App Access') }}</dt>
+                        <dd class="text-sm text-gray-900 col-span-2">
+                            @if ($instructor->hasAppAccess())
+                                <x-badge :color="$instructor->user->pin_set_at ? 'green' : 'amber'">
+                                    {{ $instructor->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                </x-badge>
+                                @if (auth()->user()->canManageCourses())
+                                    <form method="post" action="{{ route('instructors.access.destroy', $instructor) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this instructor\'s app access? Their PIN will stop working immediately.') }}');">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Revoke Access') }}</button>
+                                    </form>
+                                @endif
+                            @else
+                                <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                @if (auth()->user()->canManageCourses())
+                                    <form method="post" action="{{ route('instructors.access.store', $instructor) }}" class="inline ms-2">
+                                        @csrf
+                                        <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Enable App Access') }}</button>
+                                    </form>
+                                @endif
+                            @endif
+                        </dd>
+                    </div>
                 </dl>
+
+                @if (session('status') === 'instructor-access-granted')
+                    <p class="text-sm font-medium text-green-600">{{ __('App access granted - the instructor has been texted a login link.') }}</p>
+                @elseif (session('status') === 'instructor-access-revoked')
+                    <p class="text-sm font-medium text-green-600">{{ __('App access revoked.') }}</p>
+                @endif
+                <x-input-error :messages="$errors->get('instructor')" />
 
                 <div class="flex items-center gap-4">
                     @if (auth()->user()->canManageCourses())

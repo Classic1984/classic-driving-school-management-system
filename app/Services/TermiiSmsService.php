@@ -45,9 +45,12 @@ class TermiiSmsService
 
     /**
      * Normalize a Nigerian phone number to Termii's expected international
-     * format (234XXXXXXXXXX, no leading "+" or "0").
+     * format (234XXXXXXXXXX, no leading "+" or "0"). Public so callers
+     * that need to match a user-entered number against a stored one
+     * (e.g. instructor phone+PIN login) can normalize both sides the
+     * same way, regardless of which format either was typed in.
      */
-    protected function normalize(?string $phone): ?string
+    public function normalize(?string $phone): ?string
     {
         $digits = preg_replace('/\D/', '', (string) $phone);
 

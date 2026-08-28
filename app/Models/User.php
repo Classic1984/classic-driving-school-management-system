@@ -6,6 +6,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -33,6 +34,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'pin',
         'remember_token',
         'two_factor_secret',
         'two_factor_recovery_codes',
@@ -48,10 +50,33 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'pin' => 'hashed',
+            'pin_set_at' => 'datetime',
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The instructor record this login belongs to, for an instructor-role
+     * account. Null for every other role.
+     */
+    public function instructor(): HasOne
+    {
+        return $this->hasOne(Instructor::class);
+    }
+
+    /**
+     * Instructor accounts authenticate with a phone number + PIN instead
+     * of the email/password form every other role uses (see
+     * InstructorAuthController) - their password column is set to an
+     * unusable random value specifically so the normal login form can
+     * never authenticate them.
+     */
+    public function isInstructor(): bool
+    {
+        return $this->role === 'instructor';
     }
 
     /**
