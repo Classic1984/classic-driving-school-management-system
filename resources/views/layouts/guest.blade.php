@@ -43,5 +43,7 @@
                 {{ $slot }}
             </div>
         </div>
+
+        @include('partials.push-notifications')
     </body>
 </html>

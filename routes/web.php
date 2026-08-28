@@ -32,6 +32,7 @@ use App\Http\Controllers\PaymentReversalController;
 use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicLeadController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReferralSourceReportController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ServiceCompletionReportController;
@@ -74,6 +75,16 @@ Route::post('/public/payments/paystack/webhook', [PaystackWebhookController::cla
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'not-instructor', 'not-student'])
     ->name('dashboard');
+
+// Push subscription management is deliberately open to every authenticated
+// role - staff, instructor, and student alike each have their own
+// dashboard and their own reason to want notifications - so this sits
+// outside the not-instructor/not-student staff-only group below.
+Route::middleware('auth')->group(function () {
+    Route::post('push-subscriptions', [PushSubscriptionController::class, 'store'])->name('push-subscriptions.store');
+    Route::delete('push-subscriptions', [PushSubscriptionController::class, 'destroy'])->name('push-subscriptions.destroy');
+    Route::post('push-subscriptions/test', [PushSubscriptionController::class, 'test'])->name('push-subscriptions.test');
+});
 
 Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
