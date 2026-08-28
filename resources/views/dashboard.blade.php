@@ -130,10 +130,17 @@
                     </a>
 
                     @php $state = $todaysOperations['approaching_completion'] > 0 ? 'warn' : 'ok'; @endphp
-                    <a href="{{ route('training-progress.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
-                    </a>
+                    @if ($approachingCompletionEnrollments->isNotEmpty())
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'approaching-completion-modal')" class="text-left rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
+                            <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
+                            <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
+                        </button>
+                    @else
+                        <div class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
+                            <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
+                            <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
+                        </div>
+                    @endif
 
                     @php $state = $todaysOperations['locked_students'] > 0 ? 'alert' : 'ok'; @endphp
                     <a href="#locked-students" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
@@ -383,6 +390,30 @@
                         </div>
                     </x-modal>
                 @endif
+            @endif
+
+            @if ($approachingCompletionEnrollments->isNotEmpty())
+                <x-modal name="approaching-completion-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">⏳ {{ __('Approaching Completion') }}</h3>
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($approachingCompletionEnrollments as $enrollment)
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <div>
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                    </div>
+                                    <div class="whitespace-nowrap text-gray-500">
+                                        {{ trans_choice('{1} :count training day remaining|[2,*] :count training days remaining', $enrollment->remainingTrainingDays(), ['count' => $enrollment->remainingTrainingDays()]) }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'approaching-completion-modal')">{{ __('Close') }}</x-secondary-button>
+                        </div>
+                    </div>
+                </x-modal>
             @endif
 
             @if ($atRiskEnrollments->isNotEmpty())
