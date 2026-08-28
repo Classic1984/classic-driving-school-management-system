@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\InstructorAuthController;
+use App\Http\Controllers\InstructorAttendanceController;
 use App\Http\Controllers\InstructorDashboardController;
+use App\Http\Controllers\InstructorTheoryAttendanceController;
 use Illuminate\Support\Facades\Route;
 
 // An instructor's own login flow: phone number -> OTP-verified PIN setup
@@ -19,4 +21,6 @@ Route::post('instructor/logout', [InstructorAuthController::class, 'destroy'])->
 
 Route::middleware(['auth', 'instructor'])->group(function () {
     Route::get('instructor/dashboard', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
+    Route::post('instructor/attendance', [InstructorAttendanceController::class, 'store'])->name('instructor.attendance.store');
+    Route::post('instructor/theory-classes/{theoryClass}/attendance', [InstructorTheoryAttendanceController::class, 'store'])->name('instructor.theory-attendance.store');
 });

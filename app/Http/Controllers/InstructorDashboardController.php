@@ -12,11 +12,11 @@ use Illuminate\View\View;
 class InstructorDashboardController extends Controller
 {
     /**
-     * An instructor's own read-only view of today's schedule: any theory
-     * class assigned to them today, plus who's present/absent among
-     * students enrolled in the courses they teach. Marking attendance or
-     * recording assessments is a separate, later phase - this is
-     * look-but-don't-touch.
+     * An instructor's own view of today's schedule: any theory class
+     * assigned to them today (with its roster, markable right here), plus
+     * who's present/absent among students enrolled in the practical
+     * courses they teach (absentees markable present/late/excused right
+     * here too). Recording assessments is a separate, later phase.
      */
     public function index(Request $request): View
     {
@@ -29,11 +29,27 @@ class InstructorDashboardController extends Controller
             ->where('instructor_id', $instructor->id)
             ->first();
 
+        $theoryRoster = collect();
+
+        if ($todaysTheoryClass) {
+            $todaysTheoryClass->load('attendances');
+            $attendanceByStudentId = $todaysTheoryClass->attendances->keyBy('student_id');
+
+            $theoryRoster = $todaysTheoryClass->expectedStudents()
+                ->map(fn ($student) => [
+                    'student' => $student,
+                    'attendance' => $attendanceByStudentId->get($student->id),
+                ])
+                ->sortBy('student.name')
+                ->values();
+        }
+
         return view('instructor.dashboard', [
             'instructor' => $instructor,
             'presentToday' => $presentToday,
             'absentToday' => $absentToday,
             'todaysTheoryClass' => $todaysTheoryClass,
+            'theoryRoster' => $theoryRoster,
         ]);
     }
 
