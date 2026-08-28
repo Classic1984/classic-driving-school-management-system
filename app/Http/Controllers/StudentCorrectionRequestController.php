@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\StudentCorrectionRequest;
 use App\Models\User;
 use App\Notifications\StudentCorrectionRequestedNotification;
+use App\Services\WebPushService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -50,6 +51,11 @@ class StudentCorrectionRequestController extends Controller
         ]);
 
         Notification::send(User::where('role', 'director')->get(), new StudentCorrectionRequestedNotification($correctionRequest));
+        app(WebPushService::class)->sendToDirectors(
+            'Correction Request',
+            "{$request->user()->name} requested a change to {$student->name}'s {$correctionRequest->fieldLabel()}.",
+            route('approvals.index')
+        );
 
         ActivityLog::record("Requested a correction to {$student->name}'s {$correctionRequest->fieldLabel()}");
 

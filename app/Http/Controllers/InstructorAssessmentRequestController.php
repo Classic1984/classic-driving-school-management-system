@@ -7,6 +7,7 @@ use App\Models\AssessmentRequest;
 use App\Models\Enrollment;
 use App\Models\User;
 use App\Notifications\AssessmentRequestedNotification;
+use App\Services\WebPushService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
@@ -48,6 +49,11 @@ class InstructorAssessmentRequestController extends Controller
         $assessmentRequest->load(['student', 'course', 'requestedBy']);
 
         Notification::send(User::where('role', 'director')->get(), new AssessmentRequestedNotification($assessmentRequest));
+        app(WebPushService::class)->sendToDirectors(
+            'Assessment Recommendation',
+            "{$assessmentRequest->requestedBy->name} recommended a {$data['result']} for {$assessmentRequest->student->name} ({$assessmentRequest->course->name}).",
+            route('approvals.index')
+        );
 
         ActivityLog::record("Submitted a {$data['result']} final assessment recommendation for {$assessmentRequest->student->name} ({$assessmentRequest->course->name}) via the instructor app");
 

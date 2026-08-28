@@ -110,6 +110,11 @@ class EnrollmentService
             ]);
 
             Notification::send(User::where('role', 'director')->get(), new DiscountRequestedNotification($discountRequest));
+            app(WebPushService::class)->sendToDirectors(
+                'Discount Request',
+                "{$actor->name} requested a discount for {$student->name}'s enrollment in {$course->name}.",
+                route('approvals.index')
+            );
         }
 
         if (! empty($data['amount_paid'])) {
