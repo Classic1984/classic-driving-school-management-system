@@ -49,5 +49,6 @@ class MessageLog extends Model
         'training_completed' => 'Training Completed',
         'certificate_ready' => 'Certificate Ready',
         'instructor_access_granted' => 'Instructor Access Granted',
+        'student_access_granted' => 'Student Access Granted',
     ];
 }

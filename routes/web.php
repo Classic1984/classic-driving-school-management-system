@@ -36,6 +36,7 @@ use App\Http\Controllers\ReferralSourceReportController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ServiceCompletionReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\StudentAccessController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCorrectionRequestController;
 use App\Http\Controllers\StudentRegistrationReportController;
@@ -71,10 +72,10 @@ Route::post('/public/payments/paystack/webhook', [PaystackWebhookController::cla
     ->name('public-payments.paystack-webhook');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'not-instructor'])
+    ->middleware(['auth', 'verified', 'not-instructor', 'not-student'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'not-instructor'])->group(function () {
+Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -97,6 +98,9 @@ Route::middleware(['auth', 'not-instructor'])->group(function () {
         Route::post('instructors/{instructor}/access', [InstructorAccessController::class, 'store'])->name('instructors.access.store');
         Route::delete('instructors/{instructor}/access', [InstructorAccessController::class, 'destroy'])->name('instructors.access.destroy');
         Route::post('instructors/{instructor}/access/resend', [InstructorAccessController::class, 'resend'])->name('instructors.access.resend');
+        Route::post('students/{student}/access', [StudentAccessController::class, 'store'])->name('students.access.store');
+        Route::delete('students/{student}/access', [StudentAccessController::class, 'destroy'])->name('students.access.destroy');
+        Route::post('students/{student}/access/resend', [StudentAccessController::class, 'resend'])->name('students.access.resend');
         Route::resource('vehicles', VehicleController::class)->except(['index', 'show', 'destroy']);
         Route::resource('attendances', AttendanceController::class)->except(['index', 'show', 'destroy']);
         Route::post('theory-classes/create-today', [TheoryClassController::class, 'createToday'])->name('theory-classes.create-today');
@@ -228,3 +232,4 @@ Route::middleware(['auth', 'not-instructor'])->group(function () {
 });
 require __DIR__.'/auth.php';
 require __DIR__.'/instructor-auth.php';
+require __DIR__.'/student-auth.php';
