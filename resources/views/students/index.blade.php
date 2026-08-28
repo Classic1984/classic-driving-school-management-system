@@ -94,6 +94,7 @@
                                 <th class="px-4 py-2">{{ __('Course') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
                                 <th class="px-4 py-2">{{ __('Payment') }}</th>
+                                <th class="px-4 py-2">{{ __('App Access') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                         </thead>
@@ -120,6 +121,15 @@
                                             <x-badge color="green">{{ __('Clear') }}</x-badge>
                                         @endif
                                     </td>
+                                    <td class="px-4 py-2">
+                                        @if ($student->hasAppAccess())
+                                            <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
+                                                {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                            </x-badge>
+                                        @else
+                                            <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('students.show', $student) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('students.edit', $student) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
@@ -134,7 +144,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No students registered yet.') }}
                                     </td>
                                 </tr>
