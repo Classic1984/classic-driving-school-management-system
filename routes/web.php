@@ -4,6 +4,7 @@ use App\Http\Controllers\AbsenceReportController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ApprovalCentreController;
 use App\Http\Controllers\AssessmentController;
+use App\Http\Controllers\AssessmentRequestController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\BackupController;
@@ -167,6 +168,12 @@ Route::middleware(['auth', 'not-instructor'])->group(function () {
         // authenticated role) rather than through a dedicated route.
         Route::patch('discount-requests/{discountRequest}/approve', [DiscountRequestController::class, 'approve'])->name('discount-requests.approve');
         Route::patch('discount-requests/{discountRequest}/reject', [DiscountRequestController::class, 'reject'])->name('discount-requests.reject');
+
+        // Confirming/rejecting an instructor's assessment recommendation is
+        // Director-only, same as the two request types above; submitting
+        // one is instructor-only and lives in routes/instructor-auth.php.
+        Route::patch('assessment-requests/{assessmentRequest}/approve', [AssessmentRequestController::class, 'approve'])->name('assessment-requests.approve');
+        Route::patch('assessment-requests/{assessmentRequest}/reject', [AssessmentRequestController::class, 'reject'])->name('assessment-requests.reject');
     });
 
     Route::resource('leads', LeadController::class)->except(['show']);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\InstructorAuthController;
+use App\Http\Controllers\InstructorAssessmentRequestController;
 use App\Http\Controllers\InstructorAttendanceController;
 use App\Http\Controllers\InstructorDashboardController;
 use App\Http\Controllers\InstructorTheoryAttendanceController;
@@ -23,4 +24,5 @@ Route::middleware(['auth', 'instructor'])->group(function () {
     Route::get('instructor/dashboard', [InstructorDashboardController::class, 'index'])->name('instructor.dashboard');
     Route::post('instructor/attendance', [InstructorAttendanceController::class, 'store'])->name('instructor.attendance.store');
     Route::post('instructor/theory-classes/{theoryClass}/attendance', [InstructorTheoryAttendanceController::class, 'store'])->name('instructor.theory-attendance.store');
+    Route::post('instructor/enrollments/{enrollment}/assessment-request', [InstructorAssessmentRequestController::class, 'store'])->name('instructor.assessment-request.store');
 });
