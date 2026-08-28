@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\StudentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -79,6 +80,26 @@ class Student extends Model
                 'student_id_number' => 'CDS-'.str_pad((string) $student->id, 5, '0', STR_PAD_LEFT),
             ])->save();
         });
+    }
+
+    /**
+     * The login account for this student's app access, if a Director or
+     * Secretary has granted it. user_id is deliberately not
+     * mass-assignable - only StudentAccessController sets it, never a
+     * submitted form field.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Whether this student has app access granted at all, regardless of
+     * whether they've completed their first-login PIN setup yet.
+     */
+    public function hasAppAccess(): bool
+    {
+        return $this->user_id !== null;
     }
 
     /**

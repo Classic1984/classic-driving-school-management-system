@@ -80,6 +80,27 @@ class User extends Authenticatable
     }
 
     /**
+     * The student record this login belongs to, for a student-role
+     * account. Null for every other role.
+     */
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    /**
+     * Student accounts authenticate with a phone number + PIN instead of
+     * the email/password form every other role uses (see
+     * StudentAuthController) - their password column is set to an
+     * unusable random value specifically so the normal login form can
+     * never authenticate them, same as an instructor account.
+     */
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
+    /**
      * Whether this user has finished setting up (confirmed) two-factor
      * authentication. Requires both a secret and a confirmation timestamp -
      * a confirmed_at with no secret would be a broken, unloginable state,

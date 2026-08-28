@@ -148,7 +148,47 @@
                                     <x-badge :color="$studentStatusColor" class="capitalize">{{ $student->status }}</x-badge>
                                 </dd>
                             </div>
+                            <div class="py-2 grid grid-cols-3 gap-4">
+                                <dt class="text-sm font-medium text-gray-500">{{ __('App Access') }}</dt>
+                                <dd class="text-sm text-gray-900 col-span-2">
+                                    @if ($student->hasAppAccess())
+                                        <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
+                                            {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                        </x-badge>
+                                        @if (auth()->user()->canManageCourses())
+                                            @if (! $student->user->pin_set_at)
+                                                <form method="post" action="{{ route('students.access.resend', $student) }}" class="inline ms-2">
+                                                    @csrf
+                                                    <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Resend Login SMS') }}</button>
+                                                </form>
+                                            @endif
+                                            <form method="post" action="{{ route('students.access.destroy', $student) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this student\'s app access? Their PIN will stop working immediately.') }}');">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Revoke Access') }}</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                        @if (auth()->user()->canManageCourses())
+                                            <form method="post" action="{{ route('students.access.store', $student) }}" class="inline ms-2">
+                                                @csrf
+                                                <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Enable App Access') }}</button>
+                                            </form>
+                                        @endif
+                                    @endif
+                                </dd>
+                            </div>
                         </dl>
+
+                        @if (session('status') === 'student-access-granted')
+                            <p class="text-sm font-medium text-green-600">{{ __('App access granted - the student has been texted a login link.') }}</p>
+                        @elseif (session('status') === 'student-access-revoked')
+                            <p class="text-sm font-medium text-green-600">{{ __('App access revoked.') }}</p>
+                        @elseif (session('status') === 'student-access-resent')
+                            <p class="text-sm font-medium text-green-600">{{ __('Login instructions re-sent.') }}</p>
+                        @endif
+                        <x-input-error :messages="$errors->get('student')" />
 
                         <div>
                             <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Next of Kin') }}</h3>
