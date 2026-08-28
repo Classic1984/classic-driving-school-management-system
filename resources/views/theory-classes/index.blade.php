@@ -50,7 +50,12 @@
                                             <x-badge color="amber" class="ms-1">{{ __('Today') }}</x-badge>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-2">{{ $theoryClass->topic ?: '—' }}</td>
+                                    <td class="px-4 py-2">
+                                        {{ $theoryClass->topic ?: '—' }}
+                                        @if ($theoryClass->materials_path)
+                                            <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" title="{{ __('Lecture material') }}" class="ms-1 text-gray-400 hover:text-amber-600">📎</a>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-2">{{ $theoryClass->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-2">{{ $theoryClass->presentCount() }}</td>
                                     <td class="px-4 py-2">{{ $theoryClass->absentCount() }}</td>

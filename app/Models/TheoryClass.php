@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class TheoryClass extends Model
 {
@@ -26,6 +27,8 @@ class TheoryClass extends Model
         'topic',
         'instructor_id',
         'notes',
+        'materials_path',
+        'materials_original_name',
         'created_by',
     ];
 
@@ -39,6 +42,19 @@ class TheoryClass extends Model
         return Attribute::make(
             get: fn (?string $value) => $value === null ? null : Carbon::parse($value),
             set: fn ($value) => Carbon::parse($value)->toDateString(),
+        );
+    }
+
+    /**
+     * Always read back as a plain "H:i" string, even though the database
+     * normalizes a TIME column to "H:i:s" - without this, redisplaying an
+     * already-saved value in the edit form's time input and resubmitting
+     * it unchanged fails that field's own "H:i" validation rule.
+     */
+    protected function startTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => $value === null ? null : substr($value, 0, 5),
         );
     }
 
@@ -96,5 +112,14 @@ class TheoryClass extends Model
         }
 
         return (int) round(($this->presentCount() / $expected) * 100);
+    }
+
+    /**
+     * Public URL for the uploaded lecture material, or null if none has
+     * been uploaded for this class.
+     */
+    public function materialsUrl(): ?string
+    {
+        return $this->materials_path ? Storage::disk('public')->url($this->materials_path) : null;
     }
 }

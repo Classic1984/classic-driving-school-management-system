@@ -6,7 +6,12 @@
 [phases.build]
 cmds = ["npm ci", "npm run build"]
 
-# Run pending migrations, then serve on the port Railway assigns via $PORT.
+# Run pending migrations, ensure the public/storage symlink exists (without
+# it, every uploaded file - expense receipts, student ID/license documents,
+# theory class materials - stores fine but 404s when linked to, since
+# Storage::disk('public')->url() points through that symlink; storage:link
+# is a no-op if it's already there, so this is safe on every restart), then
+# serve on the port Railway assigns via $PORT.
 #
 # The scheduler (daily/weekly reminders, the database backup) does NOT run
 # in this container. It previously tried to via a backgrounded
@@ -21,4 +26,4 @@ cmds = ["npm ci", "npm run build"]
 # Activity Log page's "Background Scheduler" status to confirm it's
 # actually running.
 [start]
-cmd = "php artisan migrate --force || exit 1; php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php artisan migrate --force || exit 1; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"

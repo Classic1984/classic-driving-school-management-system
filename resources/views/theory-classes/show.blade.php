@@ -36,7 +36,7 @@
                 <h3 class="text-lg font-semibold mb-4">{{ __('Class Details') }}</h3>
 
                 @if (auth()->user()->canManageCourses())
-                    <form method="post" action="{{ route('theory-classes.update', $theoryClass) }}" class="flex flex-wrap items-end gap-4">
+                    <form method="post" action="{{ route('theory-classes.update', $theoryClass) }}" enctype="multipart/form-data" class="flex flex-wrap items-end gap-4">
                         @csrf
                         @method('patch')
 
@@ -69,6 +69,19 @@
                             <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                         </div>
 
+                        <div class="w-full">
+                            <x-input-label for="materials" :value="__('Lecture Material (PDF, Word, PowerPoint, or image)')" />
+                            <input id="materials" name="materials" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/*" class="mt-1 block w-full text-sm text-gray-700 file:me-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-gray-100 file:text-sm file:font-medium hover:file:bg-gray-200">
+                            <x-input-error class="mt-2" :messages="$errors->get('materials')" />
+                            @if ($theoryClass->materials_path)
+                                <p class="mt-1 text-xs text-gray-500">
+                                    {{ __('Current file') }}:
+                                    <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" class="text-amber-600 hover:underline">{{ $theoryClass->materials_original_name ?: __('View') }}</a>
+                                    — {{ __('uploading a new file replaces it') }}
+                                </p>
+                            @endif
+                        </div>
+
                         <x-primary-button>{{ __('Save Details') }}</x-primary-button>
                     </form>
                 @else
@@ -84,6 +97,16 @@
                         <div class="col-span-2">
                             <dt class="text-gray-500">{{ __('Notes') }}</dt>
                             <dd class="font-medium">{{ $theoryClass->notes ?: '—' }}</dd>
+                        </div>
+                        <div class="col-span-2">
+                            <dt class="text-gray-500">{{ __('Lecture Material') }}</dt>
+                            <dd class="font-medium">
+                                @if ($theoryClass->materials_path)
+                                    <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" class="text-amber-600 hover:underline">{{ $theoryClass->materials_original_name ?: __('View') }}</a>
+                                @else
+                                    —
+                                @endif
+                            </dd>
                         </div>
                     </dl>
                 @endif
