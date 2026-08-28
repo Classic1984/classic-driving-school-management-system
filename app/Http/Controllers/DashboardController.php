@@ -92,6 +92,17 @@ class DashboardController extends Controller
             ->latest('updated_at')
             ->get();
 
+        // Same "N training day(s) remaining" threshold that triggers the
+        // automatic reminder text (see maybeNotifyDaysRemaining()) - this
+        // is the list behind that count, not just the number.
+        $approachingCompletionEnrollments = Enrollment::where('status', 'active')
+            ->with(['student', 'course'])
+            ->get()
+            ->filter(fn (Enrollment $enrollment) => $enrollment->remainingTrainingDays() > 0
+                && $enrollment->remainingTrainingDays() <= Enrollment::TRAINING_DAYS_REMAINING_THRESHOLD)
+            ->sortBy(fn (Enrollment $enrollment) => $enrollment->remainingTrainingDays())
+            ->values();
+
         $trainingStats = [
             'today' => $this->distinctStudentsTrained(today(), today()),
             'week' => $this->distinctStudentsTrained(now()->startOfWeek(), now()->endOfWeek()),
@@ -248,17 +259,13 @@ class DashboardController extends Controller
             'vehicles_in_use' => (clone $todaysAttendance)->whereNotNull('vehicle_id')->distinct('vehicle_id')->count('vehicle_id'),
             'payments_received_today' => $stats['payments'],
             'payments_pending_count' => $outstandingEnrollments->count(),
-            'approaching_completion' => Enrollment::where('status', 'active')
-                ->get()
-                ->filter(fn (Enrollment $enrollment) => $enrollment->remainingTrainingDays() > 0
-                    && $enrollment->remainingTrainingDays() <= Enrollment::TRAINING_DAYS_REMAINING_THRESHOLD)
-                ->count(),
+            'approaching_completion' => $approachingCompletionEnrollments->count(),
             'locked_students' => Enrollment::where('status', 'locked')->count(),
             'pending_approvals' => DiscountRequest::where('status', 'pending')->count()
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
     }
 
     /**

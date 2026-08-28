@@ -995,6 +995,12 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSeeInOrder(['1', 'Approaching Completion']);
         $response->assertSeeInOrder(['1', 'Student(s) Locked']);
+
+        // The "Approaching Completion" tile must open a modal listing the
+        // flagged student(s) by name, not link off to the full unfiltered
+        // Training Progress list.
+        $response->assertSee('approaching-completion-modal');
+        $response->assertSee($nearlyDone->name);
     }
 
     public function test_a_director_sees_the_pending_approvals_count_on_the_dashboard(): void
