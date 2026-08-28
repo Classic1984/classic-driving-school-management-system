@@ -14,6 +14,8 @@
         <p class="text-sm font-medium text-green-600 mb-4">{{ __('Attendance logged.') }}</p>
     @elseif (session('status') === 'theory-attendance-saved')
         <p class="text-sm font-medium text-green-600 mb-4">{{ __('Attendance saved.') }}</p>
+    @elseif (session('status') === 'assessment-request-submitted')
+        <p class="text-sm font-medium text-green-600 mb-4">{{ __('Assessment recommendation submitted for Director confirmation.') }}</p>
     @endif
 
     @if ($errors->any())
@@ -120,6 +122,39 @@
                         @endforeach
                     </div>
                 @endif
+            </div>
+        @endif
+
+        @if ($awaitingAssessment->isNotEmpty())
+            <div class="rounded-lg border border-gray-200 p-4">
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">📝 {{ __('Awaiting Final Assessment') }}</h3>
+                <p class="text-xs text-gray-500 mb-3">{{ __('Training is complete for these students. Your recommendation is confirmed by a Director before a certificate is issued.') }}</p>
+                <div class="divide-y divide-gray-100">
+                    @foreach ($awaitingAssessment as $row)
+                        <div class="py-3 text-sm">
+                            <div class="flex items-center justify-between gap-3">
+                                <span class="font-medium text-gray-800">{{ $row['enrollment']->student->name }}</span>
+                                <span class="text-xs text-gray-500">{{ $row['enrollment']->course->name }}</span>
+                            </div>
+
+                            @if ($row['pendingRequest'])
+                                <p class="mt-1 text-xs text-amber-600">
+                                    {{ __('Recommended :result — awaiting Director confirmation.', ['result' => ucfirst($row['pendingRequest']->result)]) }}
+                                </p>
+                            @else
+                                <form method="post" action="{{ route('instructor.assessment-request.store', $row['enrollment']) }}" class="mt-2 flex flex-wrap items-center gap-2">
+                                    @csrf
+                                    <select name="result" class="text-xs rounded-md border-gray-300 py-1">
+                                        <option value="pass">{{ __('Pass') }}</option>
+                                        <option value="fail">{{ __('Fail') }}</option>
+                                    </select>
+                                    <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" class="text-xs rounded-md border-gray-300 py-1 w-20">
+                                    <button type="submit" class="text-xs font-semibold text-amber-600 hover:underline">{{ __('Submit') }}</button>
+                                </form>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             </div>
         @endif
     </div>

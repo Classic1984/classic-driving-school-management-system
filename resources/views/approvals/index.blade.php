@@ -15,6 +15,10 @@
                 <p class="text-sm font-medium text-green-600">{{ __('Correction request marked resolved.') }}</p>
             @elseif (session('status') === 'correction-request-rejected')
                 <p class="text-sm font-medium text-green-600">{{ __('Correction request rejected.') }}</p>
+            @elseif (session('status') === 'assessment-request-approved')
+                <p class="text-sm font-medium text-green-600">{{ __('Assessment confirmed.') }}</p>
+            @elseif (session('status') === 'assessment-request-rejected')
+                <p class="text-sm font-medium text-green-600">{{ __('Assessment recommendation rejected.') }}</p>
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
@@ -30,13 +34,21 @@
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
-                                {{ $approval['type'] === 'discount' ? __('Discount Request') : __('Student Information Change') }}
+                                @if ($approval['type'] === 'discount')
+                                    {{ __('Discount Request') }}
+                                @elseif ($approval['type'] === 'assessment')
+                                    {{ __('Assessment Recommendation') }}
+                                @else
+                                    {{ __('Student Information Change') }}
+                                @endif
                             </span>
                             <p class="mt-2 text-sm font-semibold text-gray-800">
                                 {{ $index + 1 }}.
                                 <a href="{{ route('students.show', $item->student) }}" class="text-amber-600 hover:underline">{{ $item->student->name }}</a>
                                 @if ($approval['type'] === 'discount')
                                     — {{ __('Discount on :course', ['course' => $item->course->name]) }}
+                                @elseif ($approval['type'] === 'assessment')
+                                    — {{ __(':result on :course', ['result' => ucfirst($item->result), 'course' => $item->course->name]) }}
                                 @else
                                     — {{ __('Change :field', ['field' => $item->fieldLabel()]) }}
                                 @endif
@@ -54,6 +66,16 @@
                                 </p>
                                 @if ($item->reason)
                                     <p class="mt-1 text-sm text-gray-500">{{ __('Reason') }}: {{ config("discounts.reasons.{$item->reason}", $item->reason) }}</p>
+                                @endif
+                            @elseif ($approval['type'] === 'assessment')
+                                <p class="mt-1 text-sm text-gray-600">
+                                    {{ __('Course') }}: {{ $item->course->name }}
+                                    @if ($item->score !== null)
+                                        &middot; {{ __('Score') }}: {{ $item->score }}
+                                    @endif
+                                </p>
+                                @if ($item->remarks)
+                                    <p class="mt-1 text-sm text-gray-500">{{ __('Remarks') }}: {{ $item->remarks }}</p>
                                 @endif
                             @else
                                 <p class="mt-1 text-sm text-gray-600">
@@ -77,6 +99,17 @@
                                     <button type="submit" class="text-sm font-medium text-green-600 hover:underline">{{ __('Approve') }}</button>
                                 </form>
                                 <form method="post" action="{{ route('discount-requests.reject', $item) }}">
+                                    @csrf
+                                    @method('patch')
+                                    <button type="submit" class="text-sm font-medium text-red-600 hover:underline">{{ __('Reject') }}</button>
+                                </form>
+                            @elseif ($approval['type'] === 'assessment')
+                                <form method="post" action="{{ route('assessment-requests.approve', $item) }}">
+                                    @csrf
+                                    @method('patch')
+                                    <button type="submit" class="text-sm font-medium text-green-600 hover:underline">{{ __('Confirm') }}</button>
+                                </form>
+                                <form method="post" action="{{ route('assessment-requests.reject', $item) }}">
                                     @csrf
                                     @method('patch')
                                     <button type="submit" class="text-sm font-medium text-red-600 hover:underline">{{ __('Reject') }}</button>
