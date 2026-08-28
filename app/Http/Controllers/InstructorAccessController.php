@@ -44,6 +44,40 @@ class InstructorAccessController extends Controller
 
         $instructor->forceFill(['user_id' => $user->id])->save();
 
+        $this->sendLoginText($instructor);
+
+        ActivityLog::record("Granted app access to instructor {$instructor->name}");
+
+        return Redirect::back()->with('status', 'instructor-access-granted');
+    }
+
+    /**
+     * Re-send the login instructions to an instructor who already has app
+     * access but hasn't completed first-login PIN setup yet - covers a
+     * lost or expired text without the destructive revoke-then-re-grant
+     * dance, which would also blow away their eventual PIN for nothing.
+     * Once pin_set_at is set there's no "link" left to resend, since
+     * login is just phone + PIN from then on.
+     */
+    public function resend(Instructor $instructor): RedirectResponse
+    {
+        if (! $instructor->hasAppAccess()) {
+            return Redirect::back()->withErrors(['instructor' => 'This instructor does not have app access yet.']);
+        }
+
+        if ($instructor->user->pin_set_at !== null) {
+            return Redirect::back()->withErrors(['instructor' => 'This instructor has already completed their first login.']);
+        }
+
+        $this->sendLoginText($instructor);
+
+        ActivityLog::record("Re-sent app access login instructions to instructor {$instructor->name}");
+
+        return Redirect::back()->with('status', 'instructor-access-resent');
+    }
+
+    protected function sendLoginText(Instructor $instructor): void
+    {
         $message = 'Classic Driving School: App access has been enabled for your instructor account. Log in at '.url('/instructor/login').' with your phone number to set up your PIN.';
         $sent = $this->sms->send($instructor->phone, $message);
 
@@ -57,10 +91,6 @@ class InstructorAccessController extends Controller
             'status' => $sent ? 'sent' : 'failed',
             'message' => $message,
         ]);
-
-        ActivityLog::record("Granted app access to instructor {$instructor->name}");
-
-        return Redirect::back()->with('status', 'instructor-access-granted');
     }
 
     /**

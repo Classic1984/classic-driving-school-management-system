@@ -17,7 +17,7 @@ class InstructorController extends Controller
      */
     public function index(): View
     {
-        $instructors = Instructor::latest()->paginate(10);
+        $instructors = Instructor::with('user')->latest()->paginate(10);
 
         return view('instructors.index', compact('instructors'));
     }

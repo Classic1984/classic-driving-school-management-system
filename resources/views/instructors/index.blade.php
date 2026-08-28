@@ -42,6 +42,7 @@
                                 <th class="px-4 py-2">{{ __('Phone') }}</th>
                                 <th class="px-4 py-2">{{ __('Specialization') }}</th>
                                 <th class="px-4 py-2">{{ __('Status') }}</th>
+                                <th class="px-4 py-2">{{ __('App Access') }}</th>
                                 <th class="px-4 py-2"></th>
                             </tr>
                         </thead>
@@ -54,6 +55,15 @@
                                     <td class="px-4 py-2 capitalize">{{ $instructor->specialization }}</td>
                                     <td class="px-4 py-2">
                                         <x-badge :color="$instructor->status === 'active' ? 'green' : 'gray'" class="capitalize">{{ $instructor->status }}</x-badge>
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        @if ($instructor->hasAppAccess())
+                                            <x-badge :color="$instructor->user->pin_set_at ? 'green' : 'amber'">
+                                                {{ $instructor->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                            </x-badge>
+                                        @else
+                                            <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('instructors.show', $instructor) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
@@ -71,7 +81,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No instructors registered yet.') }}
                                     </td>
                                 </tr>

@@ -57,6 +57,12 @@
                                     {{ $instructor->user->pin_set_at ? __('Active') : __('Pending first login') }}
                                 </x-badge>
                                 @if (auth()->user()->canManageCourses())
+                                    @if (! $instructor->user->pin_set_at)
+                                        <form method="post" action="{{ route('instructors.access.resend', $instructor) }}" class="inline ms-2">
+                                            @csrf
+                                            <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Resend Login SMS') }}</button>
+                                        </form>
+                                    @endif
                                     <form method="post" action="{{ route('instructors.access.destroy', $instructor) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this instructor\'s app access? Their PIN will stop working immediately.') }}');">
                                         @csrf
                                         @method('delete')
@@ -80,6 +86,8 @@
                     <p class="text-sm font-medium text-green-600">{{ __('App access granted - the instructor has been texted a login link.') }}</p>
                 @elseif (session('status') === 'instructor-access-revoked')
                     <p class="text-sm font-medium text-green-600">{{ __('App access revoked.') }}</p>
+                @elseif (session('status') === 'instructor-access-resent')
+                    <p class="text-sm font-medium text-green-600">{{ __('Login instructions re-sent.') }}</p>
                 @endif
                 <x-input-error :messages="$errors->get('instructor')" />
 
