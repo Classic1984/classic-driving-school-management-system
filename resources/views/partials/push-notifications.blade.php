@@ -87,7 +87,7 @@
             }"
             x-show="supported"
             x-cloak
-            class="fixed bottom-6 left-6 z-50 print:hidden"
+            class="fixed top-6 right-6 z-50 print:hidden"
             style="display: none;"
         >
             <div class="rounded-lg bg-black px-4 py-3 text-white shadow-lg text-xs">
