@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Enrollment;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -29,6 +30,8 @@ class EnrolledTraineeController extends Controller
 
         $trainees = $query->latest('enrollment_date')->paginate(15)->appends($request->query());
 
-        return view('enrolled-trainees.index', compact('trainees'));
+        $trainingProgressStats = Enrollment::trainingProgressStats();
+
+        return view('enrolled-trainees.index', compact('trainees', 'trainingProgressStats'));
     }
 }
