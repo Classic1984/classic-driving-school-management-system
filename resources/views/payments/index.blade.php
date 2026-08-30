@@ -93,7 +93,9 @@
                                     <td class="px-4 py-2 text-right space-x-2 whitespace-nowrap">
                                         <a href="{{ route('payments.show', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('View') }}</a>
                                         <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
-                                        <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                        @if (auth()->user()->isDirector())
+                                            <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                        @endif
                                         @if (auth()->user()->isAdmin())
                                             @if ($payment->status === 'paid' && ! $payment->reversal)
                                                 <a href="{{ route('payments.reverse.create', $payment) }}" class="text-sm text-red-600 hover:underline">{{ __('Reverse') }}</a>
