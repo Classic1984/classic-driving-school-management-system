@@ -78,6 +78,18 @@ class DashboardController extends Controller
             ->take(8)
             ->get();
 
+        // Real aggregate counts across every enrollment, not just the
+        // handful of cards shown above - "in progress" and "not started"
+        // both read status=active, split by whether any training day has
+        // actually been logged yet (see Enrollment::statusLabel()).
+        $activeEnrollments = Enrollment::where('status', 'active')->get();
+        $trainingProgressStats = [
+            'total_students' => Enrollment::distinct('student_id')->count('student_id'),
+            'in_progress' => $activeEnrollments->filter(fn (Enrollment $enrollment) => $enrollment->attendedDays() > 0)->count(),
+            'completed' => Enrollment::where('status', 'completed')->count(),
+            'not_started' => $activeEnrollments->filter(fn (Enrollment $enrollment) => $enrollment->attendedDays() === 0)->count(),
+        ];
+
         // Every actively-enrolled student is expected the moment today's
         // training day starts; checking in (a present/late training log)
         // moves them into Present, and anyone left over is still Absent -
@@ -272,7 +284,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
     }
 
     /**
