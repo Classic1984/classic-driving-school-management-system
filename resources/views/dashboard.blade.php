@@ -690,20 +690,62 @@
 
             </div>
 
+            @php
+                $usersIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
+                $upArrowIconPath = 'M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18';
+                $minusCircleIconPath = 'M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
+            @endphp
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __("Today's Attendance") }}</h3>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                    <div class="flex items-center gap-4">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-white">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-gray-900">{{ __("Today's Attendance") }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('See how many students are present and absent today.') }}</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700">
+                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                        {{ now()->format('M j, Y') }}
+                    </span>
+                </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="text-left rounded-lg p-5 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition">
-                        <p class="text-xs uppercase tracking-wider text-emerald-700 font-semibold">🟢 {{ __('Present') }}</p>
-                        <p class="text-3xl font-bold text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
-                        <p class="text-xs text-emerald-600 mt-1">{{ __('Click to view names') }}</p>
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-emerald-50/60 ring-1 ring-emerald-100 border-l-4 border-emerald-500 p-6 transition hover:shadow-md">
+                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-emerald-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                            </span>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold uppercase tracking-wide text-emerald-700">{{ __('Present') }}</p>
+                                <p class="text-3xl font-extrabold break-words text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
+                                <p class="mt-1 text-sm text-emerald-600">{{ __('Click to view names') }}</p>
+                            </div>
+                        </div>
+                        <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-emerald-600 transition group-hover:translate-x-0.5">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                        </span>
                     </button>
 
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                        <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔴 {{ __('Absent') }}</p>
-                        <p class="text-3xl font-bold text-red-700 mt-1">{{ $absentToday->count() }}</p>
-                        <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-red-50/60 ring-1 ring-red-100 border-l-4 border-red-500 p-6 transition hover:shadow-md">
+                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-red-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                            </span>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold uppercase tracking-wide text-red-700">{{ __('Absent') }}</p>
+                                <p class="text-3xl font-extrabold break-words text-red-700 mt-1">{{ $absentToday->count() }}</p>
+                                <p class="mt-1 text-sm text-red-600">{{ __('Click to view names') }}</p>
+                            </div>
+                        </div>
+                        <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-red-600 transition group-hover:translate-x-0.5">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                        </span>
                     </button>
                 </div>
             </div>
@@ -932,22 +974,52 @@
 
             @if ($upgradeEligible->isNotEmpty() || $upgradeClosed->isNotEmpty())
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Programme Upgrade Window') }}</h3>
+                    <div class="flex items-center gap-4 mb-5">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Programme Upgrade Window') }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('Check eligible students for programme upgrades.') }}</p>
+                        </div>
+                    </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         @if ($upgradeEligible->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-eligible-modal')" class="text-left rounded-lg p-5 bg-green-50 border border-green-200 hover:bg-green-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-green-700 font-semibold">🎓 {{ __('Eligible for Upgrade') }}</p>
-                                <p class="text-3xl font-bold text-green-700 mt-1">{{ $upgradeEligible->count() }}</p>
-                                <p class="text-xs text-green-600 mt-1">{{ __('Click to view names') }}</p>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-eligible-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-green-50/60 ring-1 ring-green-100 border-l-4 border-green-500 p-6 transition hover:shadow-md">
+                                <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-green-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $upArrowIconPath }}" /></svg>
+                                <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $upArrowIconPath }}" /></svg>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold uppercase tracking-wide text-green-700">{{ __('Eligible for Upgrade') }}</p>
+                                        <p class="text-3xl font-extrabold break-words text-green-700 mt-1">{{ $upgradeEligible->count() }}</p>
+                                        <p class="mt-1 text-sm text-green-600">{{ __('Click to view names') }}</p>
+                                    </div>
+                                </div>
+                                <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-green-600 transition group-hover:translate-x-0.5">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                </span>
                             </button>
                         @endif
 
                         @if ($upgradeClosed->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-closed-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">⛔ {{ __('Upgrade Window Closed') }}</p>
-                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $upgradeClosed->count() }}</p>
-                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-closed-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-red-50/60 ring-1 ring-red-100 border-l-4 border-red-500 p-6 transition hover:shadow-md">
+                                <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-red-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $minusCircleIconPath }}" /></svg>
+                                <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $minusCircleIconPath }}" /></svg>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold uppercase tracking-wide text-red-700">{{ __('Upgrade Window Closed') }}</p>
+                                        <p class="text-3xl font-extrabold break-words text-red-700 mt-1">{{ $upgradeClosed->count() }}</p>
+                                        <p class="mt-1 text-sm text-red-600">{{ __('Click to view names') }}</p>
+                                    </div>
+                                </div>
+                                <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-red-600 transition group-hover:translate-x-0.5">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                </span>
                             </button>
                         @endif
                     </div>
