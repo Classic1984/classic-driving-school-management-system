@@ -48,6 +48,57 @@ class ExpenseTest extends TestCase
         $response->assertSee('Fuel');
     }
 
+    public function test_the_index_defaults_to_showing_expenses_from_every_period(): void
+    {
+        $director = User::factory()->director()->create();
+        Expense::factory()->create(['description' => 'Old one', 'expense_date' => now()->subYear()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/expenses');
+
+        $response->assertOk();
+        $response->assertSee('Old one');
+    }
+
+    public function test_the_index_can_be_filtered_to_this_month_only(): void
+    {
+        $director = User::factory()->director()->create();
+        Expense::factory()->create(['description' => 'This months expense', 'expense_date' => now()->toDateString()]);
+        Expense::factory()->create(['description' => 'Last months expense', 'expense_date' => now()->subMonthNoOverflow()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/expenses?period=this_month');
+
+        $response->assertOk();
+        $response->assertSee('This months expense');
+        $response->assertDontSee('Last months expense');
+    }
+
+    public function test_the_index_can_be_filtered_by_category(): void
+    {
+        $director = User::factory()->director()->create();
+        Expense::factory()->create(['category' => 'fuel', 'description' => 'Fuel purchase']);
+        Expense::factory()->create(['category' => 'gift', 'description' => 'Gift purchase']);
+
+        $response = $this->actingAs($director)->get('/expenses?category=fuel');
+
+        $response->assertOk();
+        $response->assertSee('Fuel purchase');
+        $response->assertDontSee('Gift purchase');
+    }
+
+    public function test_the_finance_summary_card_always_reflects_the_real_current_month_regardless_of_filters(): void
+    {
+        $director = User::factory()->director()->create();
+        Expense::factory()->create(['amount' => 20000, 'expense_date' => now()->toDateString()]);
+        Expense::factory()->create(['category' => 'gift', 'amount' => 999, 'expense_date' => now()->subMonthNoOverflow()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/expenses?category=gift');
+
+        $response->assertOk();
+        // The summary card shows the real this-month total (20,000), not the
+        // category-filtered total, even though the table below is filtered.
+        $response->assertSee('20,000.00');
+    }
+
     public function test_director_can_store_an_expense(): void
     {
         $director = User::factory()->director()->create();
