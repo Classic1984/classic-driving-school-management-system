@@ -694,6 +694,7 @@
             @if ($learnersPermitRequests->isNotEmpty())
                 @include('dashboard.partials.service-requests', [
                     'title' => "Learner's Permit Requests",
+                    'subtitle' => "Track and manage learner's permit applications",
                     'requests' => $learnersPermitRequests,
                     'actionLabel' => 'Mark Obtained',
                     'actionStatus' => 'completed',
@@ -703,6 +704,7 @@
             @if ($onlineCertificateRequests->isNotEmpty())
                 @include('dashboard.partials.service-requests', [
                     'title' => 'Online Certificate Requests',
+                    'subtitle' => 'Track and manage online certificate requests',
                     'requests' => $onlineCertificateRequests,
                     'actionLabel' => 'Mark Obtained',
                     'actionStatus' => 'completed',
@@ -712,6 +714,7 @@
             @if ($driversLicenseRequests->isNotEmpty())
                 @include('dashboard.partials.service-requests', [
                     'title' => "Driver's License Requests",
+                    'subtitle' => "Track and manage driver's license applications",
                     'requests' => $driversLicenseRequests,
                     'actionLabel' => 'Start Processing',
                     'actionStatus' => 'processing',
