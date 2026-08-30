@@ -544,17 +544,17 @@
                     </div>
 
                     <div class="mt-4 rounded-xl bg-gray-900 p-5">
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
-                            <div class="flex items-center gap-3 sm:pr-6">
+                        <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
+                            <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
                                 </span>
                                 <div>
                                     <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
-                                    <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦)') }}</p>
+                                    <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6">
+                            </a>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                                 </span>
@@ -562,9 +562,37 @@
                                     <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
                                     <p class="text-sm text-gray-400">{{ __('All transactions are secure and verified') }}</p>
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
+
+                    <x-modal name="payment-security-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">🛡️ {{ __('Secure & Verified') }}</h3>
+                            <p class="text-sm text-gray-600 mb-4">{{ __('What keeps every payment on this dashboard accurate and accountable:') }}</p>
+                            <ul class="space-y-3 text-sm text-gray-700">
+                                <li class="flex gap-2">
+                                    <span class="text-green-600">✓</span>
+                                    <span>{{ __('Every payment is stamped with the staff member who recorded it and a unique receipt number.') }}</span>
+                                </li>
+                                <li class="flex gap-2">
+                                    <span class="text-green-600">✓</span>
+                                    <span>{{ __('A payment can only be reversed by a director or admin, and requires a reason on record.') }}</span>
+                                </li>
+                                <li class="flex gap-2">
+                                    <span class="text-green-600">✓</span>
+                                    <span>{{ __('Any correction to how a payment is split across charges is logged in a permanent audit trail.') }}</span>
+                                </li>
+                                <li class="flex gap-2">
+                                    <span class="text-green-600">✓</span>
+                                    <span>{{ __('Every action - registrations, payments, discounts - is recorded in the system Activity Log.') }}</span>
+                                </li>
+                            </ul>
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'payment-security-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
                 @endif
 
             </div>
