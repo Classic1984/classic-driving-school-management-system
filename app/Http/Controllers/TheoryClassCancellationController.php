@@ -15,13 +15,15 @@ class TheoryClassCancellationController extends Controller
      * Display upcoming and past cancelled theory classes, plus the form
      * to cancel another one.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
+        $sort = $request->query('sort') === 'asc' ? 'asc' : 'desc';
+
         $cancellations = TheoryClassCancellation::with('cancelledBy')
-            ->orderByDesc('class_date')
+            ->orderBy('class_date', $sort)
             ->get();
 
-        return view('theory-class-cancellations.index', compact('cancellations'));
+        return view('theory-class-cancellations.index', compact('cancellations', 'sort'));
     }
 
     /**
