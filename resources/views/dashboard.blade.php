@@ -109,7 +109,7 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     @foreach ($kpiCards as $card)
                         @php $accent = $kpiColors[$card['color']]; @endphp
-                        <div class="bg-gray-900 rounded-lg p-4">
+                        <div class="bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
                             <div class="flex items-center gap-2.5">
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
