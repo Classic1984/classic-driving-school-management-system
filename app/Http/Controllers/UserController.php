@@ -22,11 +22,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::latest()->paginate(10);
+        $perPage = in_array($request->query('per_page'), ['10', '25', '50'], true) ? (int) $request->query('per_page') : 10;
 
-        return view('users.index', compact('users'));
+        $users = User::latest()->paginate($perPage)->withQueryString();
+
+        $totalStaff = User::count();
+        $instructorCount = User::where('role', 'instructor')->count();
+        $administratorCount = $totalStaff - $instructorCount;
+
+        return view('users.index', compact('users', 'perPage', 'totalStaff', 'instructorCount', 'administratorCount'));
     }
 
     /**
