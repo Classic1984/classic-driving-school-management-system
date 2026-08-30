@@ -148,6 +148,11 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
         Route::get('payments/{payment}/correct', [PaymentCorrectionController::class, 'edit'])->name('payments.correct.edit');
         Route::put('payments/{payment}/correct', [PaymentCorrectionController::class, 'update'])->name('payments.correct.update');
+        // Rewriting an existing payment's amount/status/student/course
+        // outright (as opposed to the audited Correct Allocation flow
+        // above) is Director-only - it has no audit trail of its own.
+        Route::get('payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
+        Route::put('payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
         Route::get('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'showReactivateForm'])->name('enrollments.reactivate.create');
         Route::post('enrollments/{enrollment}/reactivate', [EnrollmentController::class, 'reactivate'])->name('enrollments.reactivate');
         Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
@@ -236,7 +241,7 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
     Route::get('payments/record', [PaymentAllocationController::class, 'create'])->name('payments.record.create');
     Route::post('payments/record', [PaymentAllocationController::class, 'store'])->name('payments.record.store');
-    Route::resource('payments', PaymentController::class)->except(['destroy']);
+    Route::resource('payments', PaymentController::class)->except(['destroy', 'edit', 'update']);
     Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');

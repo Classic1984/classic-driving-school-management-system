@@ -136,10 +136,10 @@
                         <a href="{{ route('payments.correct.edit', $payment) }}">
                             <x-secondary-button type="button">{{ __('Correct Allocation') }}</x-secondary-button>
                         </a>
+                        <a href="{{ route('payments.edit', $payment) }}">
+                            <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
+                        </a>
                     @endif
-                    <a href="{{ route('payments.edit', $payment) }}">
-                        <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
-                    </a>
                     @if (auth()->user()->isAdmin() && $payment->status === 'paid' && ! $payment->reversal)
                         <a href="{{ route('payments.reverse.create', $payment) }}">
                             <x-secondary-button type="button" class="!text-red-700">{{ __('Reverse Payment') }}</x-secondary-button>

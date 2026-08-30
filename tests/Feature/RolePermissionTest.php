@@ -85,7 +85,7 @@ class RolePermissionTest extends TestCase
         $this->actingAs($admin)->get("/attendances/{$attendance->id}")->assertOk();
     }
 
-    public function test_admin_cannot_delete_payments_but_can_manage_them(): void
+    public function test_admin_can_record_payments_but_cannot_delete_or_edit_them(): void
     {
         $admin = User::factory()->admin()->create();
         $payment = Payment::factory()->create();
@@ -94,7 +94,10 @@ class RolePermissionTest extends TestCase
         $this->assertDatabaseHas('payments', ['id' => $payment->id]);
 
         $this->actingAs($admin)->get('/payments/create')->assertOk();
-        $this->actingAs($admin)->get("/payments/{$payment->id}/edit")->assertOk();
+        // Rewriting an existing payment's amount/status/student/course
+        // outright is Director-only - it has no audit trail of its own,
+        // unlike the Correct Allocation flow.
+        $this->actingAs($admin)->get("/payments/{$payment->id}/edit")->assertForbidden();
     }
 
     public function test_secretary_can_manage_courses_but_not_delete_them(): void
@@ -179,7 +182,7 @@ class RolePermissionTest extends TestCase
         $this->actingAs($secretary)->get("/attendances/{$attendance->id}/edit")->assertOk();
     }
 
-    public function test_secretary_cannot_delete_payments_but_can_manage_them(): void
+    public function test_secretary_can_record_payments_but_cannot_delete_or_edit_them(): void
     {
         $secretary = User::factory()->secretary()->create();
         $payment = Payment::factory()->create();
@@ -188,7 +191,10 @@ class RolePermissionTest extends TestCase
         $this->assertDatabaseHas('payments', ['id' => $payment->id]);
 
         $this->actingAs($secretary)->get('/payments/create')->assertOk();
-        $this->actingAs($secretary)->get("/payments/{$payment->id}/edit")->assertOk();
+        // Rewriting an existing payment's amount/status/student/course
+        // outright is Director-only - it has no audit trail of its own,
+        // unlike the Correct Allocation flow.
+        $this->actingAs($secretary)->get("/payments/{$payment->id}/edit")->assertForbidden();
     }
 
     public function test_director_can_manage_courses_instructors_and_delete_everything(): void
