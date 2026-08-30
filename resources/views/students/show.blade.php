@@ -418,7 +418,7 @@
                                                         </div>
                                                         <button type="submit" class="text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
                                                         @if ($assessment)
-                                                            <button type="button" @click="editingAssessment = false" class="text-sm text-gray-500 hover:underline">{{ __('Cancel') }}</button>
+                                                            <button type="button" @click="editingAssessment = false" class="text-sm text-amber-600 hover:underline">{{ __('Cancel') }}</button>
                                                         @endif
                                                     </form>
                                                 @endif

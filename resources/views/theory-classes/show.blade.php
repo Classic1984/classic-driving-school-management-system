@@ -176,7 +176,7 @@
                                                     <input type="text" name="remarks" placeholder="{{ __('Remarks') }}" value="{{ $entry['attendance']->remarks ?? '' }}" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
                                                 </div>
                                                 <button type="submit" class="text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
-                                                <button type="button" @click="editing = false" class="text-sm text-gray-500 hover:underline">{{ __('Cancel') }}</button>
+                                                <button type="button" @click="editing = false" class="text-sm text-amber-600 hover:underline">{{ __('Cancel') }}</button>
                                             </form>
                                         </td>
                                     @else
