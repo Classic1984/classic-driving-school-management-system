@@ -41,6 +41,31 @@ class UserManagementTest extends TestCase
         $this->actingAs($admin)->delete("/users/{$target->id}")->assertForbidden();
     }
 
+    public function test_the_summary_counts_split_instructors_from_administrators(): void
+    {
+        $director = User::factory()->director()->create();
+        User::factory()->admin()->create();
+        User::factory()->secretary()->create();
+        User::factory()->create(['role' => 'instructor']);
+
+        $response = $this->actingAs($director)->get('/users');
+
+        $response->assertOk();
+        // director + admin + secretary + instructor = 4 total, 1 instructor,
+        // 3 administrators (everyone else).
+        $response->assertSeeInOrder(['4', 'Total Staff']);
+        $response->assertSeeInOrder(['1', 'Instructors']);
+        $response->assertSeeInOrder(['3', 'Administrators']);
+    }
+
+    public function test_the_index_accepts_a_valid_per_page_and_ignores_an_invalid_one(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)->get('/users?per_page=25')->assertOk();
+        $this->actingAs($director)->get('/users?per_page=9999')->assertOk();
+    }
+
     public function test_a_director_can_create_a_staff_account(): void
     {
         $director = User::factory()->director()->create();
