@@ -164,6 +164,7 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::post('backups/send', [BackupController::class, 'send'])->name('backups.send');
         Route::get('message-log', [MessageLogController::class, 'index'])->name('message-log.index');
+        Route::get('message-log/export', [MessageLogController::class, 'export'])->name('message-log.export');
         Route::post('reminders/{type}/send', [ReminderController::class, 'send'])
             ->whereIn('type', ['balance_reminder', 'theory_class_reminder', 'lead_follow_up', 'absence_check_in'])
             ->name('reminders.send');
