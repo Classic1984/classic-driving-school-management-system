@@ -100,6 +100,32 @@ class StudentTest extends TestCase
         $response->assertRedirect(route('students.show', $student));
     }
 
+    public function test_a_search_with_digits_embedded_in_unrelated_text_does_not_falsely_match_by_phone(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create(['name' => 'Chinedu Okafor', 'phone' => '07032024999']);
+
+        $response = $this->actingAs($user)->get('/students?search='.urlencode('hello2024world'));
+
+        $response->assertOk();
+        $response->assertDontSee('Chinedu Okafor');
+    }
+
+    public function test_searching_a_student_id_number_does_not_collide_with_a_payments_receipt_number(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Doe']);
+        // In a fresh database this payment's auto-increment id - and so
+        // its receipt number's zero-padded suffix - lines up with the
+        // student's own id, to prove the receipt lookup can't hijack a
+        // plain student ID search just because the digits happen to match.
+        Payment::factory()->create();
+
+        $response = $this->actingAs($user)->get('/students?search='.$student->student_id_number);
+
+        $response->assertRedirect(route('students.show', $student));
+    }
+
     public function test_searching_a_receipt_number_goes_straight_to_that_receipt(): void
     {
         $user = User::factory()->create();

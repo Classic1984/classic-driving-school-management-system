@@ -15,6 +15,7 @@ use App\Models\Vehicle;
 use App\Services\AdditionalOfferService;
 use App\Services\EnrollmentService;
 use App\Services\StudentChargeResolver;
+use App\Services\TermiiSmsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -31,12 +32,17 @@ class StudentController extends Controller
         // A receipt number (e.g. "CDS-RC-2026-00038") identifies a payment,
         // not a student directly - take staff straight to that receipt
         // rather than running it through the student search below, where
-        // it would never match anything.
+        // it would never match anything. Gated on the search actually
+        // containing "RC" so it can't collide with a plain numeric
+        // student_id_number search (e.g. "00001") that shares the same
+        // zero-padded suffix as an unrelated payment's receipt number.
         if ($search = $request->query('search')) {
-            $matchingPayments = Payment::where('receipt_number', 'like', "%{$search}%")->get();
+            if (stripos($search, 'RC') !== false) {
+                $matchingPayments = Payment::where('receipt_number', 'like', "%{$search}%")->get();
 
-            if ($matchingPayments->count() === 1) {
-                return Redirect::route('payments.receipt', $matchingPayments->first());
+                if ($matchingPayments->count() === 1) {
+                    return Redirect::route('payments.receipt', $matchingPayments->first());
+                }
             }
         }
 
@@ -49,26 +55,34 @@ class StudentController extends Controller
                     ->orWhere('phone', 'like', "%{$search}%")
                     ->orWhere('student_id_number', 'like', "%{$search}%");
 
-                // A phone number typed with spaces, dashes, or a "+234"
-                // country code won't substring-match the digits-only value
-                // that was actually stored - compare stripped digits on
-                // both sides instead, in whichever of the two prefix forms
-                // (local "0..." vs international "234...") the search
-                // didn't already use.
-                $digits = preg_replace('/\D/', '', $search);
+                // Only treat the search as a phone number attempt if it's
+                // actually shaped like one (digits plus typical phone
+                // punctuation, nothing else) - otherwise an unrelated search
+                // string that merely happens to contain a run of digits
+                // (e.g. "hello2024world") could substring-match someone's
+                // phone number and wrongly redirect to a completely
+                // different student.
+                if (preg_match('/^[0-9+\-\s()]+$/', trim($search))) {
+                    // A phone number typed with spaces, dashes, or a "+234"
+                    // country code won't substring-match the digits-only
+                    // value that was actually stored - compare stripped
+                    // digits on both sides instead, in both the local
+                    // "0..." and international "234..." prefix forms,
+                    // reusing the same normalizer the SMS/OTP login flow
+                    // already relies on for this exact purpose.
+                    $digits = preg_replace('/\D/', '', $search);
+                    $normalized = app(TermiiSmsService::class)->normalize($search);
+                    $local = $normalized ? '0'.substr($normalized, 3) : null;
 
-                if ($digits !== '') {
                     $strippedPhone = "REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '')";
                     $inner->orWhereRaw("{$strippedPhone} LIKE ?", ["%{$digits}%"]);
 
-                    $altDigits = match (true) {
-                        str_starts_with($digits, '234') => '0'.substr($digits, 3),
-                        str_starts_with($digits, '0') => '234'.substr($digits, 1),
-                        default => null,
-                    };
+                    if ($normalized) {
+                        $inner->orWhereRaw("{$strippedPhone} LIKE ?", ["%{$normalized}%"]);
+                    }
 
-                    if ($altDigits) {
-                        $inner->orWhereRaw("{$strippedPhone} LIKE ?", ["%{$altDigits}%"]);
+                    if ($local) {
+                        $inner->orWhereRaw("{$strippedPhone} LIKE ?", ["%{$local}%"]);
                     }
                 }
             });
