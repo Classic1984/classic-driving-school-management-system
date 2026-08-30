@@ -354,11 +354,18 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
 
                 <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-50 via-amber-50 to-white p-8">
-                    <svg class="pointer-events-none absolute right-0 bottom-0 h-28 w-64 text-amber-300/70 sm:h-40 sm:w-96" viewBox="0 0 64 28">
-                        <path fill="currentColor" stroke="none" d="M2,18 C2,20 3,20.5 4,20 L8,20 A6,6 0 0 1 20,20 L44,20 A6,6 0 0 1 56,20 L60,20 C61,20 62,19.5 62,17 C62,14 60,10 55,9 L46,8 C40,8 34,4 26,4 C20,4 15,6 12,10 C10,12 6,14 2,18 Z" />
-                        <circle cx="14" cy="20" r="4" fill="white" fill-opacity="0.55" />
-                        <circle cx="50" cy="20" r="4" fill="white" fill-opacity="0.55" />
-                        <path stroke="white" stroke-opacity="0.6" stroke-width="0.75" stroke-linecap="round" d="M18,9.3 L44,8.6" />
+                    <svg class="pointer-events-none absolute right-0 bottom-0 h-28 w-64 sm:h-40 sm:w-96" viewBox="0 0 64 28">
+                        <g transform="translate(64,0) scale(-1,1)">
+                            <ellipse cx="14" cy="23.3" rx="7.5" ry="1.3" fill="#000000" fill-opacity="0.12" />
+                            <ellipse cx="50" cy="23.3" rx="7.5" ry="1.3" fill="#000000" fill-opacity="0.12" />
+                            <path fill="#111827" d="M2,18 C2,20 3,20.5 4,20 L8,20 A6,6 0 0 1 20,20 L44,20 A6,6 0 0 1 56,20 L60,20 C61,20 62,19.5 62,17 C62,14 60,10 55,9 L46,8 C40,8 34,4 26,4 C20,4 15,6 12,10 C10,12 6,14 2,18 Z" />
+                            <path fill="#4B5563" fill-opacity="0.85" d="M15.5,9.4 C18.5,6.2 22.2,4.7 26,4.7 C32.5,4.7 38.5,7.9 44.5,8.3 L43.6,9.6 L17.5,10 Z" />
+                            <ellipse cx="60.5" cy="15.3" rx="1.7" ry="1.1" fill="#FDE68A" />
+                            <circle cx="14" cy="20.2" r="4.3" fill="#0B0F17" />
+                            <circle cx="14" cy="20.2" r="2.1" fill="#F59E0B" />
+                            <circle cx="50" cy="20.2" r="4.3" fill="#0B0F17" />
+                            <circle cx="50" cy="20.2" r="2.1" fill="#F59E0B" />
+                        </g>
                     </svg>
 
                     <a href="{{ route('leads.index', ['status' => 'new']) }}" class="relative inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-amber-200 px-4 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition mb-4">
