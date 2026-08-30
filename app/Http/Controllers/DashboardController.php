@@ -13,6 +13,7 @@ use App\Models\Student;
 use App\Models\StudentCorrectionRequest;
 use App\Models\StudentService;
 use App\Models\Vehicle;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -138,8 +139,8 @@ class DashboardController extends Controller
         // own list of students still waiting, oldest charge first, so a
         // request that's lingered past the usual same-day turnaround
         // stands out.
-        $learnersPermitRequests = $this->pendingRequestsFor("Learner's Permit");
-        $onlineCertificateRequests = $this->pendingRequestsFor('Online Certificate');
+        $learnersPermitRequests = $this->pendingRequestsFor("Learner's Permit", 'permit_page');
+        $onlineCertificateRequests = $this->pendingRequestsFor('Online Certificate', 'certificate_page');
 
         // Driver's License Processing does have a tracked turnaround, so
         // once it's marked "processing" it already shows above with a
@@ -149,7 +150,8 @@ class DashboardController extends Controller
             ->where('processing_status', 'not_started')
             ->with(['student', 'service'])
             ->oldest('created_at')
-            ->get();
+            ->paginate(10, ['*'], 'license_page')
+            ->withQueryString();
 
         // Programme Upgrade Window: every active enrollment that actually has
         // a longer programme to upgrade into, split into the two states
@@ -278,17 +280,18 @@ class DashboardController extends Controller
      * oldest first - shared by the Learner's Permit and Online
      * Certificate widgets, which (unlike Driver's License Processing)
      * have no tracked turnaround and so never appear in the Service
-     * Processing widget in any state.
-     *
-     * @return Collection<int, StudentService>
+     * Processing widget in any state. Paginated under its own page-name
+     * query parameter so the two widgets (and the Driver's License
+     * Requests one) can each page independently on the same dashboard.
      */
-    protected function pendingRequestsFor(string $serviceName): Collection
+    protected function pendingRequestsFor(string $serviceName, string $pageName): LengthAwarePaginator
     {
         return StudentService::whereHas('service', fn ($query) => $query->where('name', $serviceName))
             ->where('processing_status', '!=', 'completed')
             ->with(['student', 'service'])
             ->oldest('created_at')
-            ->get();
+            ->paginate(10, ['*'], $pageName)
+            ->withQueryString();
     }
 
     /**
