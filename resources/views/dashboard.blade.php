@@ -300,7 +300,6 @@
 
             @php
                 $academicCapPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';
-                $exclamationTrianglePath = 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z';
 
                 $welcomeCards = [
                     [
@@ -338,26 +337,26 @@
                         'icon' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
                         'watermark' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
                     ],
+                ];
+
+                $statusCards = [
                     [
-                        'key' => 'trainings_today', 'title' => 'Trainings Today', 'subtitle' => 'Training sessions logged today', 'href' => route('training-report.index', ['period' => 'today']),
-                        'theme' => 'bg-white ring-1 ring-gray-200', 'iconWrap' => 'bg-gray-100 text-gray-800', 'iconRing' => 'ring-gray-200', 'divider' => 'bg-gray-200', 'chevronWrap' => 'bg-gray-100 text-gray-800',
-                        'titleClass' => 'text-gray-900', 'subtitleClass' => 'text-gray-500', 'value' => number_format($todaysOperations['training_sessions']),
+                        'title' => 'Trainings Today', 'subtitle' => 'Training sessions logged today', 'href' => route('training-report.index', ['period' => 'today']),
+                        'value' => number_format($todaysOperations['training_sessions']),
                         'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
-                        'watermark' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
+                        'border' => 'border-blue-500', 'iconWrap' => 'bg-blue-50 text-blue-600', 'accentText' => 'text-blue-600',
                     ],
                     [
-                        'key' => 'pending_payments', 'title' => 'Pending Payments', 'subtitle' => 'Total pending payments', 'href' => '#outstanding-payments',
-                        'theme' => 'bg-purple-50/60 ring-1 ring-purple-100', 'iconWrap' => 'bg-white text-purple-500', 'iconRing' => 'ring-purple-200', 'divider' => 'bg-purple-100', 'chevronWrap' => 'bg-white text-purple-500',
-                        'titleClass' => 'text-gray-900', 'subtitleClass' => 'text-gray-500', 'value' => '₦'.number_format($kpis['pending_payments'], 2),
+                        'title' => 'Pending Payments', 'subtitle' => 'Total pending payments', 'href' => '#outstanding-payments',
+                        'value' => '₦'.number_format($kpis['pending_payments'], 2),
                         'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
-                        'watermark' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
+                        'border' => 'border-purple-500', 'iconWrap' => 'bg-purple-50 text-purple-600', 'accentText' => 'text-purple-600',
                     ],
                     [
-                        'key' => 'at_risk', 'title' => 'At-Risk Students', 'subtitle' => 'Students needing attention', 'href' => '#at-risk-students',
-                        'theme' => 'bg-green-50/60 ring-1 ring-green-100', 'iconWrap' => 'bg-white text-green-500', 'iconRing' => 'ring-green-200', 'divider' => 'bg-green-100', 'chevronWrap' => 'bg-white text-green-500',
-                        'titleClass' => 'text-gray-900', 'subtitleClass' => 'text-gray-500', 'value' => number_format($kpis['at_risk_students']),
+                        'title' => 'At-Risk Students', 'subtitle' => 'Students needing attention', 'href' => '#at-risk-students',
+                        'value' => number_format($kpis['at_risk_students']),
                         'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
-                        'watermark' => $exclamationTrianglePath,
+                        'border' => 'border-green-500', 'iconWrap' => 'bg-green-50 text-green-600', 'accentText' => 'text-green-600',
                     ],
                 ];
             @endphp
@@ -404,6 +403,30 @@
                                 </div>
                             </div>
                             <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $card['chevronWrap'] }} transition group-hover:translate-x-0.5">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 mt-6">
+                    @foreach ($statusCards as $card)
+                        <a href="{{ $card['href'] }}" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200 border-l-4 {{ $card['border'] }} p-6 transition hover:shadow-md">
+                            <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 {{ $card['accentText'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+
+                            <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                                <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl {{ $card['iconWrap'] }}">
+                                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+                                </span>
+                                <span class="hidden sm:block h-12 w-px shrink-0 bg-gray-200"></span>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="text-lg font-bold text-gray-900">{{ __($card['title']) }}</h3>
+                                    <p class="text-3xl font-extrabold mt-1 break-words {{ $card['accentText'] }}">{{ $card['value'] }}</p>
+                                    <p class="mt-1 text-sm text-gray-500">{{ __($card['subtitle']) }}</p>
+                                </div>
+                            </div>
+
+                            <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full {{ $card['iconWrap'] }} transition group-hover:translate-x-0.5">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                             </span>
                         </a>
