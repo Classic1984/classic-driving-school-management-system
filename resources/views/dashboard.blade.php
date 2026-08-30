@@ -354,7 +354,12 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
 
                 <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-50 via-amber-50 to-white p-8">
-                    <svg class="pointer-events-none absolute right-0 bottom-0 h-40 w-40 text-amber-200/60 sm:h-56 sm:w-56" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12" /></svg>
+                    <svg class="pointer-events-none absolute right-0 bottom-0 h-28 w-64 text-amber-300/70 sm:h-40 sm:w-96" viewBox="0 0 64 28">
+                        <path fill="currentColor" stroke="none" d="M2,18 C2,20 3,20.5 4,20 L8,20 A6,6 0 0 1 20,20 L44,20 A6,6 0 0 1 56,20 L60,20 C61,20 62,19.5 62,17 C62,14 60,10 55,9 L46,8 C40,8 34,4 26,4 C20,4 15,6 12,10 C10,12 6,14 2,18 Z" />
+                        <circle cx="14" cy="20" r="4" fill="white" fill-opacity="0.55" />
+                        <circle cx="50" cy="20" r="4" fill="white" fill-opacity="0.55" />
+                        <path stroke="white" stroke-opacity="0.6" stroke-width="0.75" stroke-linecap="round" d="M18,9.3 L44,8.6" />
+                    </svg>
 
                     <a href="{{ route('leads.index', ['status' => 'new']) }}" class="relative inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-amber-200 px-4 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition mb-4">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
