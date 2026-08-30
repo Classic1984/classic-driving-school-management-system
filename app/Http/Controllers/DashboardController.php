@@ -79,16 +79,8 @@ class DashboardController extends Controller
             ->get();
 
         // Real aggregate counts across every enrollment, not just the
-        // handful of cards shown above - "in progress" and "not started"
-        // both read status=active, split by whether any training day has
-        // actually been logged yet (see Enrollment::statusLabel()).
-        $activeEnrollments = Enrollment::where('status', 'active')->get();
-        $trainingProgressStats = [
-            'total_students' => Enrollment::distinct('student_id')->count('student_id'),
-            'in_progress' => $activeEnrollments->filter(fn (Enrollment $enrollment) => $enrollment->attendedDays() > 0)->count(),
-            'completed' => Enrollment::where('status', 'completed')->count(),
-            'not_started' => $activeEnrollments->filter(fn (Enrollment $enrollment) => $enrollment->attendedDays() === 0)->count(),
-        ];
+        // handful of cards shown above.
+        $trainingProgressStats = Enrollment::trainingProgressStats();
 
         // Every actively-enrolled student is expected the moment today's
         // training day starts; checking in (a present/late training log)

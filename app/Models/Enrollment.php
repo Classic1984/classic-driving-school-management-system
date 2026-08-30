@@ -447,6 +447,28 @@ class Enrollment extends Pivot
     }
 
     /**
+     * Real aggregate counts across every enrollment, for the "Student
+     * Training Progress" widget's header stats - shared by the dashboard
+     * widget and the Enrolled Trainees page, both of which only display a
+     * handful of cards but need the true totals behind them. "In progress"
+     * and "not started" both read status=active, split by whether any
+     * training day has actually been logged yet (see statusLabel()).
+     *
+     * @return array{total_students: int, in_progress: int, completed: int, not_started: int}
+     */
+    public static function trainingProgressStats(): array
+    {
+        $activeEnrollments = static::where('status', 'active')->get();
+
+        return [
+            'total_students' => static::distinct('student_id')->count('student_id'),
+            'in_progress' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() > 0)->count(),
+            'completed' => static::where('status', 'completed')->count(),
+            'not_started' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() === 0)->count(),
+        ];
+    }
+
+    /**
      * The percentage of allocated training days the student has attended
      * so far, capped at 100.
      */
