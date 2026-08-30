@@ -502,16 +502,68 @@
                 </div>
 
                 @if ($paymentTotals)
-                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('Total Payments') }}</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                    @php
+                        $paymentPeriodAccent = [
+                            'week' => ['border' => 'border-amber-500', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-amber-600'],
+                            'month' => ['border' => 'border-green-500', 'icon' => 'bg-green-100 text-green-600', 'text' => 'text-green-600'],
+                            'all_time' => ['border' => 'border-violet-500', 'icon' => 'bg-violet-100 text-violet-600', 'text' => 'text-violet-600'],
+                        ];
+                        $paymentPeriodIcon = [
+                            'week' => $periodIllustration['month'],
+                            'month' => $periodIllustration['month'],
+                            'all_time' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+                        ];
+                    @endphp
 
+                    <div class="flex items-center gap-4 mt-8">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{{ __('Total Payments') }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('Overview of all payments received') }}</p>
+                            <span class="mt-1 block h-0.5 w-8 rounded-full bg-amber-400"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 mt-4">
                         @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
-                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg block">
-                                <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __($periodLabel) }}</h4>
-                                <p class="text-xl font-bold text-gray-800 mt-1">₦{{ number_format($paymentTotals[$period], 2) }}</p>
+                            @php $accent = $paymentPeriodAccent[$period]; @endphp
+                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="group relative flex items-center gap-4 overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-4 transition hover:shadow-md">
+                                <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full {{ $accent['icon'] }}">
+                                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-xs font-bold uppercase tracking-wide {{ $accent['text'] }}">{{ __($periodLabel) }}</p>
+                                    <p class="text-3xl font-extrabold text-gray-900 mt-1 whitespace-nowrap">₦{{ number_format($paymentTotals[$period], 2) }}</p>
+                                    <p class="text-sm text-gray-500 mt-1">{{ __('Total payments received') }}</p>
+                                </div>
+                                <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-20 w-20 {{ $accent['text'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
                             </a>
                         @endforeach
+                    </div>
 
+                    <div class="mt-4 rounded-xl bg-gray-900 p-5">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
+                            <div class="flex items-center gap-3 sm:pr-6">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+                                </span>
+                                <div>
+                                    <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
+                                    <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦)') }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                </span>
+                                <div>
+                                    <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
+                                    <p class="text-sm text-gray-400">{{ __('All transactions are secure and verified') }}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 @endif
 
