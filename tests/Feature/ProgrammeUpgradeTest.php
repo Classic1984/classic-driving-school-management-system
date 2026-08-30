@@ -180,6 +180,30 @@ class ProgrammeUpgradeTest extends TestCase
         $this->assertSame($twoWeek->id, $enrollment->fresh()->course_id);
     }
 
+    public function test_a_course_the_student_already_holds_a_separate_enrollment_in_is_not_an_eligible_upgrade_target(): void
+    {
+        // course_student has a unique (course_id, student_id) constraint -
+        // upgrading into a course the student is already separately
+        // enrolled in would violate it. This otherwise-valid same-type/
+        // same-schedule/longer-duration course must not appear as eligible.
+        $director = User::factory()->director()->create();
+        $twoWeek = Course::factory()->create(['duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        $fourWeek = Course::factory()->create(['duration_weeks' => 4, 'course_type' => 'manual', 'schedule' => 'weekday', 'status' => 'active']);
+        [$student, $enrollment] = $this->enrollStudent($twoWeek);
+        $student->courses()->attach($fourWeek->id, [
+            'enrolled_at' => now(), 'status' => 'active', 'fee' => $fourWeek->fee, 'original_fee' => $fourWeek->fee,
+        ]);
+
+        $this->assertFalse($enrollment->eligibleUpgradeCourses()->contains('id', $fourWeek->id));
+
+        $response = $this->actingAs($director)->post("/enrollments/{$enrollment->id}/upgrade", [
+            'course_id' => $fourWeek->id,
+        ]);
+
+        $response->assertSessionHasErrors('course_id');
+        $this->assertSame($twoWeek->id, $enrollment->fresh()->course_id);
+    }
+
     public function test_amount_paid_cannot_exceed_the_upgrade_balance(): void
     {
         $director = User::factory()->director()->create();

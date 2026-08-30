@@ -99,6 +99,30 @@ class PaymentReportTest extends TestCase
         $response->assertSee('6,000.00');
     }
 
+    public function test_a_reactivation_fee_is_reported_separately_from_training_revenue(): void
+    {
+        $director = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(), 'status' => 'locked', 'locked_reason' => 'training_period_expired', 'fee' => 50000,
+        ]);
+        $enrollment = $student->courses()->first()->pivot;
+
+        $this->actingAs($director)->post("/enrollments/{$enrollment->id}/reactivate", [
+            'additional_fee' => 15000,
+            'payment_method' => 'cash',
+        ])->assertSessionHasNoErrors();
+
+        $response = $this->actingAs($director)->get('/payment-reports');
+
+        $response->assertOk();
+        $response->assertSee('Reactivation Fee');
+        $response->assertSee('Training');
+        $response->assertSee('15,000.00');
+        $response->assertSee('50,000.00');
+    }
+
     public function test_a_reversed_payment_is_excluded_from_service_revenue(): void
     {
         $director = User::factory()->create();

@@ -148,6 +148,12 @@ class CourseController extends Controller
                 'due_date' => now()->addDays($course->gracePeriodDays())->toDateString(),
                 'status' => 'active',
                 'fee' => $course->fee,
+                'original_fee' => $course->fee,
+                // Certificate fees are part of the course outline, not an
+                // opt-in add-on - mirrors EnrollmentService::enroll(),
+                // which every other enrollment path goes through.
+                'online_certificate_fee' => $course->online_certificate_fee,
+                'student_certificate_fee' => $course->student_certificate_fee,
             ]);
 
             if ($student = Student::find($studentId)) {

@@ -55,15 +55,20 @@ class SendTheoryClassReminder extends Command
             TheoryClass::firstOrCreate(['class_date' => today()]);
         }
 
+        // Scheduled to run Thursdays, but ReminderController's "Send Now"
+        // button lets staff trigger this on any day - the message must
+        // name whatever day it's actually running on, not always Thursday.
+        $dayName = today()->format('l');
+
         if ($cancellation !== null) {
-            $message = 'Classic Driving School: Notice - today\'s theory class (Thursday) has been CANCELLED.'
+            $message = "Classic Driving School: Notice - today's theory class ({$dayName}) has been CANCELLED."
                 .($cancellation->reason ? " Reason: {$cancellation->reason}." : '')
                 .' We apologize for the inconvenience.';
             $label = 'cancellation notice';
             $templateKey = 'theory_class_cancellation';
             $variables = ['1' => $cancellation->reason ?: 'No reason given'];
         } else {
-            $message = 'Classic Driving School: Reminder - theory class holds today (Thursday) at 10am. Please be punctual.';
+            $message = "Classic Driving School: Reminder - theory class holds today ({$dayName}) at 10am. Please be punctual.";
             $label = 'reminder';
             $templateKey = 'theory_class_reminder';
             $variables = [];

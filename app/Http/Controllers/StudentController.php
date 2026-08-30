@@ -29,6 +29,13 @@ class StudentController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
+        // filled(), not a truthy check on the value itself - "0" is a
+        // legitimate (if unusual) search term but PHP treats the string
+        // "0" as falsy, which would otherwise silently skip every filter
+        // below and return the full unfiltered listing.
+        $search = $request->query('search');
+        $hasSearch = $request->filled('search');
+
         // A receipt number (e.g. "CDS-RC-2026-00038") identifies a payment,
         // not a student directly - take staff straight to that receipt
         // rather than running it through the student search below, where
@@ -36,19 +43,17 @@ class StudentController extends Controller
         // containing "RC" so it can't collide with a plain numeric
         // student_id_number search (e.g. "00001") that shares the same
         // zero-padded suffix as an unrelated payment's receipt number.
-        if ($search = $request->query('search')) {
-            if (stripos($search, 'RC') !== false) {
-                $matchingPayments = Payment::where('receipt_number', 'like', "%{$search}%")->get();
+        if ($hasSearch && stripos($search, 'RC') !== false) {
+            $matchingPayments = Payment::where('receipt_number', 'like', "%{$search}%")->get();
 
-                if ($matchingPayments->count() === 1) {
-                    return Redirect::route('payments.receipt', $matchingPayments->first());
-                }
+            if ($matchingPayments->count() === 1) {
+                return Redirect::route('payments.receipt', $matchingPayments->first());
             }
         }
 
         $query = Student::with(['courses', 'user']);
 
-        if ($search = $request->query('search')) {
+        if ($hasSearch) {
             $query->where(function ($inner) use ($search) {
                 $inner->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
@@ -109,7 +114,7 @@ class StudentController extends Controller
         // A search that narrows down to exactly one student means that's
         // who staff were actually looking for - take them straight to that
         // student's own profile instead of a one-row list.
-        if ($search && $students->total() === 1) {
+        if ($hasSearch && $students->total() === 1) {
             return Redirect::route('students.show', $students->first());
         }
 

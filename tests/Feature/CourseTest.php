@@ -212,6 +212,35 @@ class CourseTest extends TestCase
         $this->assertSame(now()->addDays(7)->toDateString(), $enrollment->due_date->toDateString());
     }
 
+    public function test_enrolling_a_student_from_the_course_roster_snapshots_the_courses_certificate_fees(): void
+    {
+        // Mirrors EnrollmentService::enroll() - a student added via this
+        // roster checklist must be charged for certificates the same way
+        // as one enrolled through the normal registration/enroll forms.
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['online_certificate_fee' => 5000, 'student_certificate_fee' => 3000]);
+
+        $response = $this->actingAs($user)->put("/courses/{$course->id}", [
+            'name' => $course->name,
+            'description' => $course->description,
+            'course_type' => $course->course_type,
+            'schedule' => $course->schedule,
+            'duration_hours' => $course->duration_hours,
+            'duration_weeks' => $course->duration_weeks,
+            'fee' => $course->fee,
+            'status' => $course->status,
+            'students' => [$student->id],
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        $this->assertSame(5000.0, (float) $enrollment->online_certificate_fee);
+        $this->assertSame(3000.0, (float) $enrollment->student_certificate_fee);
+        $this->assertSame((float) $course->fee, (float) $enrollment->original_fee);
+    }
+
     public function test_authenticated_user_can_update_a_course_and_its_students(): void
     {
         $user = User::factory()->create();

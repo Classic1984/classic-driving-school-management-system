@@ -10,6 +10,7 @@ use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\ReactivationAuditLog;
 use App\Models\Student;
 use App\Services\EnrollmentService;
@@ -149,9 +150,15 @@ class EnrollmentController extends Controller
         $totalAmount = $balanceCleared + $additionalFee;
 
         if ($totalAmount > 0) {
-            Payment::create([
+            // course_id is deliberately left null here, the same way the
+            // programme-upgrade flow does it (EnrollmentService::upgrade())
+            // - otherwise Payment::booted()'s save hook would allocate the
+            // entire bundled total (balance + reactivation fee) as
+            // "training" revenue. The two allocations below split it
+            // correctly instead.
+            $payment = Payment::create([
                 'student_id' => $enrollment->student_id,
-                'course_id' => $enrollment->course_id,
+                'course_id' => null,
                 'amount' => $totalAmount,
                 'payment_date' => now()->toDateString(),
                 'payment_method' => $request->validated('payment_method'),
@@ -164,6 +171,24 @@ class EnrollmentController extends Controller
                     $request->filled('notes') ? ' '.$request->validated('notes') : ''
                 )),
             ]);
+
+            if ($balanceCleared > 0) {
+                PaymentAllocation::create([
+                    'payment_id' => $payment->id,
+                    'allocation_type' => 'training',
+                    'enrollment_id' => $enrollment->id,
+                    'amount' => $balanceCleared,
+                ]);
+            }
+
+            if ($additionalFee > 0) {
+                PaymentAllocation::create([
+                    'payment_id' => $payment->id,
+                    'allocation_type' => 'reactivation_fee',
+                    'enrollment_id' => $enrollment->id,
+                    'amount' => $additionalFee,
+                ]);
+            }
         }
 
         ReactivationAuditLog::create([

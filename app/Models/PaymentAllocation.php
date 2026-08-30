@@ -22,7 +22,7 @@ class PaymentAllocation extends Model
     /**
      * The kinds of charge a payment allocation can apply to.
      */
-    public const TYPES = ['training', 'online_certificate', 'student_certificate', 'service'];
+    public const TYPES = ['training', 'online_certificate', 'student_certificate', 'service', 'reactivation_fee'];
 
     /**
      * The attributes that are mass assignable.
@@ -83,6 +83,7 @@ class PaymentAllocation extends Model
             'online_certificate' => "Online Certificate — {$this->enrollment->course->name}",
             'student_certificate' => "Student Certificate — {$this->enrollment->course->name}",
             'service' => $this->studentService->service->name,
+            'reactivation_fee' => "Reactivation Fee — {$this->enrollment->course->name}",
             default => ucfirst(str_replace('_', ' ', $this->allocation_type)),
         };
     }
