@@ -131,82 +131,169 @@
 
             @php
                 $operationTileClasses = fn (string $state) => match ($state) {
-                    'alert' => 'bg-red-50 border-red-200 hover:bg-red-100',
-                    'warn' => 'bg-amber-50 border-amber-200 hover:bg-amber-100',
-                    default => 'bg-gray-50 border-gray-200 hover:bg-gray-100',
+                    'alert' => 'rounded-xl ring-2 ring-red-300 bg-red-50 p-5 transition hover:shadow-md',
+                    'warn' => 'rounded-xl ring-2 ring-amber-300 bg-amber-50 p-5 transition hover:shadow-md',
+                    default => 'rounded-xl ring-1 ring-gray-200 bg-white p-5 transition hover:shadow-md',
                 };
                 $operationLabelClasses = fn (string $state) => match ($state) {
-                    'alert' => 'text-red-600',
-                    'warn' => 'text-amber-600',
-                    default => 'text-gray-500',
-                };
-                $operationNumberClasses = fn (string $state) => match ($state) {
                     'alert' => 'text-red-700',
                     'warn' => 'text-amber-700',
-                    default => 'text-gray-800',
+                    default => 'text-gray-700',
                 };
+                $operationIconAccent = [
+                    'pending_approvals' => 'bg-indigo-50 text-indigo-500',
+                    'students_trained' => 'bg-blue-50 text-blue-500',
+                    'training_sessions' => 'bg-green-50 text-green-500',
+                    'instructors_active' => 'bg-orange-50 text-orange-500',
+                    'vehicles_in_use' => 'bg-sky-50 text-sky-500',
+                    'payments_received_today' => 'bg-emerald-50 text-emerald-600',
+                    'payments_pending_count' => 'bg-red-50 text-red-500',
+                    'approaching_completion' => 'bg-amber-50 text-amber-500',
+                    'locked_students' => 'bg-purple-50 text-purple-500',
+                ];
+                $operationNumberAccent = [
+                    'pending_approvals' => 'text-indigo-600',
+                    'students_trained' => 'text-blue-600',
+                    'training_sessions' => 'text-green-600',
+                    'instructors_active' => 'text-orange-600',
+                    'vehicles_in_use' => 'text-sky-600',
+                    'payments_received_today' => 'text-emerald-700',
+                    'payments_pending_count' => 'text-red-600',
+                    'approaching_completion' => 'text-amber-600',
+                    'locked_students' => 'text-purple-600',
+                ];
+                $operationIcons = [
+                    'pending_approvals' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
+                    'students_trained' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
+                    'training_sessions' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
+                    'instructors_active' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
+                    'vehicles_in_use' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
+                    'payments_received_today' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
+                    'payments_pending_count' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
+                    'approaching_completion' => 'M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5',
+                    'locked_students' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
+                ];
             @endphp
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ __("Today's Operations") }}</h3>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+                    <div>
+                        <h3 class="text-2xl font-extrabold text-gray-900">{{ __("Today's Operations") }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('Real-time overview of key activities') }}</p>
+                    </div>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700">
+                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                        {{ now()->format('M j, Y') }}
+                    </span>
+                </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @if (auth()->user()->isDirector())
                         @php $state = $todaysOperations['pending_approvals'] > 0 ? 'alert' : 'ok'; @endphp
-                        <a href="{{ route('approvals.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
-                            <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['pending_approvals']) }}</p>
-                            <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approval(s) Pending') }}</p>
+                        <a href="{{ route('approvals.index') }}" class="{{ $operationTileClasses($state) }}">
+                            <div class="flex items-center gap-3">
+                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['pending_approvals'] }}">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['pending_approvals'] }}" /></svg>
+                                </span>
+                                <p class="text-3xl font-extrabold {{ $operationNumberAccent['pending_approvals'] }}">{{ number_format($todaysOperations['pending_approvals']) }}</p>
+                            </div>
+                            <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses($state) }}">{{ __('Approval(s) Pending') }}</p>
                         </a>
                     @endif
 
-                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['students_trained']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Student(s) Trained Today') }}</p>
+                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="{{ $operationTileClasses('ok') }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['students_trained'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['students_trained'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold {{ $operationNumberAccent['students_trained'] }}">{{ number_format($todaysOperations['students_trained']) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses('ok') }}">{{ __('Student(s) Trained Today') }}</p>
                     </a>
 
-                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['training_sessions']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Training Session(s) Logged') }}</p>
+                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="{{ $operationTileClasses('ok') }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['training_sessions'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['training_sessions'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold {{ $operationNumberAccent['training_sessions'] }}">{{ number_format($todaysOperations['training_sessions']) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses('ok') }}">{{ __('Training Session(s) Logged') }}</p>
                     </a>
 
-                    <a href="{{ route('instructor-activity-report.index', ['period' => 'today']) }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['instructors_active']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Instructor(s) Active Today') }}</p>
+                    <a href="{{ route('instructor-activity-report.index', ['period' => 'today']) }}" class="{{ $operationTileClasses('ok') }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['instructors_active'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['instructors_active'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold {{ $operationNumberAccent['instructors_active'] }}">{{ number_format($todaysOperations['instructors_active']) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses('ok') }}">{{ __('Instructor(s) Active Today') }}</p>
                     </a>
 
-                    <a href="{{ route('vehicles.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses('ok') }}">{{ number_format($todaysOperations['vehicles_in_use']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Vehicle(s) In Use Today') }}</p>
+                    <a href="{{ route('vehicles.index') }}" class="{{ $operationTileClasses('ok') }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['vehicles_in_use'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['vehicles_in_use'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold {{ $operationNumberAccent['vehicles_in_use'] }}">{{ number_format($todaysOperations['vehicles_in_use']) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses('ok') }}">{{ __('Vehicle(s) In Use Today') }}</p>
                     </a>
 
-                    <a href="{{ route('payments.index') }}" class="rounded-lg border p-4 transition {{ $operationTileClasses('ok') }}">
-                        <p class="text-2xl font-bold whitespace-nowrap {{ $operationNumberClasses('ok') }}">₦{{ number_format($todaysOperations['payments_received_today'], 2) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses('ok') }}">{{ __('Received Today') }}</p>
+                    <a href="{{ route('payments.index') }}" class="{{ $operationTileClasses('ok') }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['payments_received_today'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['payments_received_today'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold whitespace-nowrap {{ $operationNumberAccent['payments_received_today'] }}">₦{{ number_format($todaysOperations['payments_received_today'], 2) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses('ok') }}">{{ __('Received Today') }}</p>
                     </a>
 
                     @php $state = $todaysOperations['payments_pending_count'] > 0 ? 'alert' : 'ok'; @endphp
-                    <a href="#outstanding-payments" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['payments_pending_count']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Payment(s) Pending') }}</p>
+                    <a href="#outstanding-payments" class="{{ $operationTileClasses($state) }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['payments_pending_count'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['payments_pending_count'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold {{ $operationNumberAccent['payments_pending_count'] }}">{{ number_format($todaysOperations['payments_pending_count']) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses($state) }}">{{ __('Payment(s) Pending') }}</p>
                     </a>
 
                     @php $state = $todaysOperations['approaching_completion'] > 0 ? 'warn' : 'ok'; @endphp
                     @if ($approachingCompletionEnrollments->isNotEmpty())
-                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'approaching-completion-modal')" class="text-left rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
-                            <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
-                            <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'approaching-completion-modal')" class="text-left {{ $operationTileClasses($state) }}">
+                            <div class="flex items-center gap-3">
+                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['approaching_completion'] }}">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['approaching_completion'] }}" /></svg>
+                                </span>
+                                <p class="text-3xl font-extrabold {{ $operationNumberAccent['approaching_completion'] }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
+                            </div>
+                            <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
                         </button>
                     @else
-                        <div class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
-                            <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
-                            <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
+                        <div class="{{ $operationTileClasses($state) }}">
+                            <div class="flex items-center gap-3">
+                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['approaching_completion'] }}">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['approaching_completion'] }}" /></svg>
+                                </span>
+                                <p class="text-3xl font-extrabold {{ $operationNumberAccent['approaching_completion'] }}">{{ number_format($todaysOperations['approaching_completion']) }}</p>
+                            </div>
+                            <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses($state) }}">{{ __('Approaching Completion') }}</p>
                         </div>
                     @endif
 
                     @php $state = $todaysOperations['locked_students'] > 0 ? 'alert' : 'ok'; @endphp
-                    <a href="#locked-students" class="rounded-lg border p-4 transition {{ $operationTileClasses($state) }}">
-                        <p class="text-2xl font-bold {{ $operationNumberClasses($state) }}">{{ number_format($todaysOperations['locked_students']) }}</p>
-                        <p class="text-xs uppercase tracking-wide mt-1 {{ $operationLabelClasses($state) }}">{{ __('Student(s) Locked') }}</p>
+                    <a href="#locked-students" class="{{ $operationTileClasses($state) }}">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl {{ $operationIconAccent['locked_students'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons['locked_students'] }}" /></svg>
+                            </span>
+                            <p class="text-3xl font-extrabold {{ $operationNumberAccent['locked_students'] }}">{{ number_format($todaysOperations['locked_students']) }}</p>
+                        </div>
+                        <p class="mt-3 text-xs font-bold uppercase tracking-wide {{ $operationLabelClasses($state) }}">{{ __('Student(s) Locked') }}</p>
                     </a>
                 </div>
             </div>
