@@ -7,6 +7,11 @@
 
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+            <a href="{{ route('students.index') }}" class="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline mb-4">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+                {{ __('Students') }}
+            </a>
+
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl space-y-4">
                 @if (session('status') === 'student-created')
                     <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
@@ -35,17 +40,71 @@
                         'withdrawn' => 'red',
                         default => 'gray',
                     };
+                    $statusDotClasses = [
+                        'green' => 'bg-green-500',
+                        'blue' => 'bg-blue-500',
+                        'red' => 'bg-red-500',
+                        'gray' => 'bg-gray-400',
+                    ];
+                    $statusTextClasses = [
+                        'green' => 'text-green-700',
+                        'blue' => 'text-blue-700',
+                        'red' => 'text-red-700',
+                        'gray' => 'text-gray-700',
+                    ];
+
+                    $primaryEnrolledCourse = $student->courses->first(fn ($c) => $c->pivot->status !== 'completed') ?? $student->courses->last();
+                    $trainingPercent = $primaryEnrolledCourse?->pivot->trainingCompletionPercentage();
+                    $currentWeek = $primaryEnrolledCourse ? min($primaryEnrolledCourse->duration_weeks, (int) ceil($trainingPercent / 100 * $primaryEnrolledCourse->duration_weeks)) : null;
+
+                    $attendancePercent = $student->attendances->isNotEmpty()
+                        ? (int) round($student->attendances->whereIn('status', ['present', 'late'])->count() / $student->attendances->count() * 100)
+                        : null;
+
+                    $transmissionLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Auto & Manual'];
+                    $transmissionLabel = $transmissionLabels[$student->course_type] ?? null;
+                    $levelLabel = $primaryEnrolledCourse?->level ? ucfirst($primaryEnrolledCourse->level) : null;
+
+                    $totalCharges = $financialOverview->sum('price');
+                    $totalOverviewPaid = $financialOverview->sum('paid');
+                    $totalOutstanding = $financialOverview->sum('balance');
+                    $paymentStatusLabel = $financialOverview->isEmpty() ? '—' : ($totalOutstanding > 0 ? __('Due') : __('Paid'));
                 @endphp
 
-                <div class="flex items-center gap-4">
+                <div class="border border-gray-200 rounded-lg p-4 flex items-center gap-4">
                     @if ($student->photo_path)
-                        <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-md border border-gray-200">
+                        <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-md border border-gray-200 shrink-0">
+                    @else
+                        <div class="h-16 w-16 rounded-md border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-300 shrink-0">
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                        </div>
                     @endif
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900">{{ $student->name }}</h3>
+                    <div class="min-w-0">
+                        <h3 class="text-lg font-semibold text-gray-900 truncate">{{ $student->name }}</h3>
                         <p class="text-sm text-gray-500 font-mono">{{ $student->student_id_number }}</p>
+                        <div class="mt-1 flex items-center gap-1.5">
+                            <span class="h-2 w-2 rounded-full {{ $statusDotClasses[$studentStatusColor] }}"></span>
+                            <span class="text-sm font-medium capitalize {{ $statusTextClasses[$studentStatusColor] }}">{{ $student->status }}</span>
+                        </div>
+                        @if ($levelLabel || $transmissionLabel)
+                            <p class="mt-1 text-sm text-gray-600">{{ collect([$levelLabel, $transmissionLabel])->filter()->implode(' • ') }}</p>
+                        @endif
                     </div>
-                    <x-badge :color="$studentStatusColor" class="capitalize">{{ $student->status }}</x-badge>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="border border-gray-200 rounded-lg p-3 text-center">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">{{ __('Training') }}</p>
+                        <p class="mt-1 text-lg font-bold text-gray-900">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</p>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-3 text-center">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">{{ __('Attend.') }}</p>
+                        <p class="mt-1 text-lg font-bold text-gray-900">{{ $attendancePercent !== null ? "{$attendancePercent}%" : '—' }}</p>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg p-3 text-center">
+                        <p class="text-xs uppercase tracking-wide text-gray-500">{{ __('Payment') }}</p>
+                        <p class="mt-1 text-lg font-bold text-gray-900">{{ $paymentStatusLabel }}</p>
+                    </div>
                 </div>
 
                 <div x-data="{ tab: '{{ in_array(session('status'), ['training-logged', 'attendance-updated']) ? 'attendance' : 'overview' }}' }">
@@ -59,31 +118,58 @@
                     </nav>
 
                     <div x-show="tab === 'overview'" class="space-y-4">
+                        @if ($primaryEnrolledCourse)
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Training Progress') }}</h3>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-black h-2.5 rounded-full" style="width: {{ $trainingPercent }}%"></div>
+                                </div>
+                                <p class="mt-1 text-sm text-gray-600">{{ $trainingPercent }}% &middot; {{ __('Week :current of :total', ['current' => $currentWeek, 'total' => $primaryEnrolledCourse->duration_weeks]) }}</p>
+                            </div>
+                        @endif
+
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Personal Information') }}</h3>
+                            <div class="border border-gray-200 rounded-lg p-4 space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-500">{{ __('Date of Birth') }}</span>
+                                    <span class="text-gray-900">{{ $student->date_of_birth->format('j M Y') }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-500">{{ __('Gender') }}</span>
+                                    <span class="text-gray-900 capitalize">{{ $student->sex ?? '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-500">{{ __('State') }}</span>
+                                    <span class="text-gray-900">{{ $student->state_of_origin ?? '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-500">{{ __('LGA') }}</span>
+                                    <span class="text-gray-900">{{ $student->local_government_area ?? '—' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 mb-2">{{ __('Contact Information') }}</h3>
+                            <div class="border border-gray-200 rounded-lg p-4 space-y-2">
+                                <div class="flex items-center gap-2 text-sm">
+                                    <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
+                                    <span class="text-gray-900">{{ $student->phone }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm">
+                                    <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+                                    <span class="text-gray-900">{{ $student->email }}</span>
+                                </div>
+                                <div class="flex items-start gap-2 text-sm">
+                                    <svg class="h-4 w-4 text-gray-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
+                                    <span class="text-gray-900">{{ $student->address ?? '—' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-sm font-medium text-gray-500">{{ __('Additional Information') }}</h3>
                         <dl class="divide-y divide-gray-100">
-                            <div class="py-2 grid grid-cols-3 gap-4">
-                                <dt class="text-sm font-medium text-gray-500">{{ __('Student ID') }}</dt>
-                                <dd class="text-sm text-gray-900 col-span-2 font-mono">{{ $student->student_id_number }}</dd>
-                            </div>
-                            <div class="py-2 grid grid-cols-3 gap-4">
-                                <dt class="text-sm font-medium text-gray-500">{{ __('Name') }}</dt>
-                                <dd class="text-sm text-gray-900 col-span-2">{{ $student->name }}</dd>
-                            </div>
-                            <div class="py-2 grid grid-cols-3 gap-4">
-                                <dt class="text-sm font-medium text-gray-500">{{ __('Email') }}</dt>
-                                <dd class="text-sm text-gray-900 col-span-2">{{ $student->email }}</dd>
-                            </div>
-                            <div class="py-2 grid grid-cols-3 gap-4">
-                                <dt class="text-sm font-medium text-gray-500">{{ __('Phone') }}</dt>
-                                <dd class="text-sm text-gray-900 col-span-2">{{ $student->phone }}</dd>
-                            </div>
-                            <div class="py-2 grid grid-cols-3 gap-4">
-                                <dt class="text-sm font-medium text-gray-500">{{ __('Address') }}</dt>
-                                <dd class="text-sm text-gray-900 col-span-2">{{ $student->address ?? '—' }}</dd>
-                            </div>
-                            <div class="py-2 grid grid-cols-3 gap-4">
-                                <dt class="text-sm font-medium text-gray-500">{{ __('Date of Birth') }}</dt>
-                                <dd class="text-sm text-gray-900 col-span-2">{{ $student->date_of_birth->format('Y-m-d') }}</dd>
-                            </div>
                             <div class="py-2 grid grid-cols-3 gap-4">
                                 <dt class="text-sm font-medium text-gray-500">{{ __('Mother Maiden Name') }}</dt>
                                 <dd class="text-sm text-gray-900 col-span-2">{{ $student->mother_maiden_name ?? '—' }}</dd>
@@ -571,11 +657,6 @@
                     </div>
 
                     <div x-show="tab === 'payments'" class="space-y-4">
-                        @php
-                            $totalCharges = $financialOverview->sum('price');
-                            $totalOverviewPaid = $financialOverview->sum('paid');
-                            $totalOutstanding = $financialOverview->sum('balance');
-                        @endphp
                         <div>
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-medium text-gray-500">{{ __('Financial Overview') }}</h3>
@@ -887,11 +968,15 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <a href="{{ route('students.edit', $student) }}">
-                        <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
-                    </a>
-                    <a href="{{ route('students.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Back to list') }}</a>
+                <div class="flex justify-end relative" x-data="{ open: false }">
+                    <button type="button" @click="open = !open" class="inline-flex items-center gap-1 text-sm font-medium text-white bg-black hover:bg-gray-800 rounded-md px-4 py-2">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        {{ __('Actions') }}
+                    </button>
+                    <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
+                        <a href="{{ route('students.edit', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Edit Student') }}</a>
+                        <a href="{{ route('students.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Back to List') }}</a>
+                    </div>
                 </div>
             </div>
         </div>
