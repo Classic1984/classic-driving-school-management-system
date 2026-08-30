@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\DiscountRequest;
 use App\Models\Instructor;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
 use App\Models\Vehicle;
@@ -27,6 +28,18 @@ class StudentController extends Controller
      */
     public function index(Request $request): View|RedirectResponse
     {
+        // A receipt number (e.g. "CDS-RC-2026-00038") identifies a payment,
+        // not a student directly - take staff straight to that receipt
+        // rather than running it through the student search below, where
+        // it would never match anything.
+        if ($search = $request->query('search')) {
+            $matchingPayments = Payment::where('receipt_number', 'like', "%{$search}%")->get();
+
+            if ($matchingPayments->count() === 1) {
+                return Redirect::route('payments.receipt', $matchingPayments->first());
+            }
+        }
+
         $query = Student::with(['courses', 'user']);
 
         if ($search = $request->query('search')) {
