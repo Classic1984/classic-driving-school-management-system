@@ -58,13 +58,46 @@ class StudentTest extends TestCase
     {
         $user = User::factory()->create();
         Student::factory()->create(['name' => 'Jane Doe', 'email' => 'jane@example.com']);
+        Student::factory()->create(['name' => 'Jane Austen', 'email' => 'austen@example.com']);
         Student::factory()->create(['name' => 'John Smith', 'email' => 'john@example.com']);
 
         $response = $this->actingAs($user)->get('/students?search=Jane');
 
         $response->assertOk();
         $response->assertSee('Jane Doe');
+        $response->assertSee('Jane Austen');
         $response->assertDontSee('John Smith');
+    }
+
+    public function test_a_search_matching_exactly_one_student_goes_straight_to_their_profile(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Doe', 'email' => 'jane@example.com']);
+        Student::factory()->create(['name' => 'John Smith', 'email' => 'john@example.com']);
+
+        $response = $this->actingAs($user)->get('/students?search=Jane');
+
+        $response->assertRedirect(route('students.show', $student));
+    }
+
+    public function test_searching_by_student_id_number_goes_straight_to_their_profile(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Doe']);
+
+        $response = $this->actingAs($user)->get('/students?search='.$student->student_id_number);
+
+        $response->assertRedirect(route('students.show', $student));
+    }
+
+    public function test_searching_a_phone_number_typed_with_different_formatting_still_matches(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Doe', 'phone' => '08031234567']);
+
+        $response = $this->actingAs($user)->get('/students?search='.urlencode('+234 803 123 4567'));
+
+        $response->assertRedirect(route('students.show', $student));
     }
 
     public function test_student_index_can_be_filtered_by_status(): void

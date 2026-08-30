@@ -25,7 +25,7 @@ class StudentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $query = Student::with(['courses', 'user']);
 
@@ -33,7 +33,31 @@ class StudentController extends Controller
             $query->where(function ($inner) use ($search) {
                 $inner->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('student_id_number', 'like', "%{$search}%");
+
+                // A phone number typed with spaces, dashes, or a "+234"
+                // country code won't substring-match the digits-only value
+                // that was actually stored - compare stripped digits on
+                // both sides instead, in whichever of the two prefix forms
+                // (local "0..." vs international "234...") the search
+                // didn't already use.
+                $digits = preg_replace('/\D/', '', $search);
+
+                if ($digits !== '') {
+                    $strippedPhone = "REPLACE(REPLACE(REPLACE(phone, ' ', ''), '-', ''), '+', '')";
+                    $inner->orWhereRaw("{$strippedPhone} LIKE ?", ["%{$digits}%"]);
+
+                    $altDigits = match (true) {
+                        str_starts_with($digits, '234') => '0'.substr($digits, 3),
+                        str_starts_with($digits, '0') => '234'.substr($digits, 1),
+                        default => null,
+                    };
+
+                    if ($altDigits) {
+                        $inner->orWhereRaw("{$strippedPhone} LIKE ?", ["%{$altDigits}%"]);
+                    }
+                }
             });
         }
 
@@ -54,6 +78,14 @@ class StudentController extends Controller
         }
 
         $students = $query->latest()->paginate(10)->appends($request->query());
+
+        // A search that narrows down to exactly one student means that's
+        // who staff were actually looking for - take them straight to that
+        // student's own profile instead of a one-row list.
+        if ($search && $students->total() === 1) {
+            return Redirect::route('students.show', $students->first());
+        }
+
         $courses = Course::orderBy('name')->get();
 
         return view('students.index', compact('students', 'courses'));
