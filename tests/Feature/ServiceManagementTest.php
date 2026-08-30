@@ -44,6 +44,41 @@ class ServiceManagementTest extends TestCase
             ->assertSee("Driver's License Processing");
     }
 
+    public function test_the_index_defaults_to_alphabetical_order_and_can_be_reversed(): void
+    {
+        $director = User::factory()->director()->create();
+        Service::factory()->create(['name' => 'Zebra Service']);
+        Service::factory()->create(['name' => 'Alpha Service']);
+
+        $this->actingAs($director)
+            ->get('/services')
+            ->assertOk()
+            ->assertSeeInOrder(['Alpha Service', 'Zebra Service']);
+
+        $this->actingAs($director)
+            ->get('/services?sort=desc')
+            ->assertOk()
+            ->assertSeeInOrder(['Zebra Service', 'Alpha Service']);
+    }
+
+    public function test_the_summary_counts_reflect_active_and_inactive_services(): void
+    {
+        $director = User::factory()->director()->create();
+        Service::factory()->create(['name' => 'Active One', 'is_active' => true, 'processing_days' => 10]);
+        Service::factory()->create(['name' => 'Active Two', 'is_active' => true, 'processing_days' => 30]);
+        Service::factory()->create(['name' => 'Inactive One', 'is_active' => false, 'processing_days' => 5]);
+
+        $response = $this->actingAs($director)->get('/services');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['3', 'Total Services']);
+        $response->assertSeeInOrder(['2', 'Active Services']);
+        $response->assertSeeInOrder(['1', 'Inactive Service']);
+        // Average of only the two active services' processing days (10, 30),
+        // ignoring the inactive service's 5.
+        $response->assertSeeInOrder(['20', 'Avg. Processing Days']);
+    }
+
     public function test_a_director_can_add_a_new_service(): void
     {
         $director = User::factory()->director()->create();

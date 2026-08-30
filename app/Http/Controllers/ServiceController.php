@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\Service;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -16,11 +17,21 @@ class ServiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $services = Service::orderBy('name')->get();
+        $sort = $request->query('sort') === 'desc' ? 'desc' : 'asc';
 
-        return view('services.index', compact('services'));
+        $services = Service::orderBy('name', $sort)->get();
+
+        $totalServices = $services->count();
+        $activeServices = $services->where('is_active', true)->count();
+        $inactiveServices = $services->where('is_active', false)->count();
+        $activeProcessingDays = $services->where('is_active', true)->pluck('processing_days')->filter();
+        $averageProcessingDays = $activeProcessingDays->isNotEmpty() ? (int) round($activeProcessingDays->avg()) : null;
+
+        return view('services.index', compact(
+            'services', 'sort', 'totalServices', 'activeServices', 'inactiveServices', 'averageProcessingDays'
+        ));
     }
 
     /**
