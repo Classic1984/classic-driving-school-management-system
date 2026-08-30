@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\Expense;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -15,13 +16,41 @@ use Illuminate\View\View;
 class ExpenseController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource. Supports an optional period and
+     * category filter on top of the default unfiltered list; the "This
+     * Month" total and trend on the summary card are always computed
+     * against the real current month regardless of the filters applied
+     * to the table below.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $expenses = Expense::latest('expense_date')->paginate(10);
+        $period = $request->query('period', 'all_time');
+        $category = $request->query('category');
 
-        return view('expenses.index', compact('expenses'));
+        $query = Expense::query();
+
+        match ($period) {
+            'this_month' => $query->whereMonth('expense_date', now()->month)->whereYear('expense_date', now()->year),
+            'last_month' => $query->whereMonth('expense_date', now()->subMonthNoOverflow()->month)->whereYear('expense_date', now()->subMonthNoOverflow()->year),
+            'this_year' => $query->whereYear('expense_date', now()->year),
+            default => null,
+        };
+
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        $expenses = (clone $query)->latest('expense_date')->paginate(10)->withQueryString();
+        $totalExpenses = (clone $query)->sum('amount');
+        $totalTransactions = (clone $query)->count();
+
+        $totalThisMonth = Expense::whereMonth('expense_date', now()->month)->whereYear('expense_date', now()->year)->sum('amount');
+        $totalLastMonth = Expense::whereMonth('expense_date', now()->subMonthNoOverflow()->month)->whereYear('expense_date', now()->subMonthNoOverflow()->year)->sum('amount');
+        $percentChange = $totalLastMonth > 0 ? round((($totalThisMonth - $totalLastMonth) / $totalLastMonth) * 100) : null;
+
+        return view('expenses.index', compact(
+            'expenses', 'period', 'category', 'totalExpenses', 'totalTransactions', 'totalThisMonth', 'percentChange'
+        ));
     }
 
     /**
