@@ -404,7 +404,7 @@
                                         <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
                                     </div>
                                     <div class="whitespace-nowrap text-gray-500">
-                                        {{ trans_choice('{1} :count training day remaining|[2,*] :count training days remaining', $enrollment->remainingTrainingDays(), ['count' => $enrollment->remainingTrainingDays()]) }}
+                                        {{ trans_choice('{1} :count training day remaining|[2,*] :count training days remaining', $enrollment->remainingDays, ['count' => $enrollment->remainingDays]) }}
                                     </div>
                                 </div>
                             @endforeach

@@ -98,9 +98,14 @@ class DashboardController extends Controller
         $approachingCompletionEnrollments = Enrollment::where('status', 'active')
             ->with(['student', 'course'])
             ->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->remainingTrainingDays() > 0
-                && $enrollment->remainingTrainingDays() <= Enrollment::TRAINING_DAYS_REMAINING_THRESHOLD)
-            ->sortBy(fn (Enrollment $enrollment) => $enrollment->remainingTrainingDays())
+            // remainingTrainingDays() runs a fresh attendance query every
+            // call - compute it once per enrollment here (stashed as a
+            // plain runtime attribute the view can reuse) instead of
+            // calling it again for filtering, sorting, and display.
+            ->each(fn (Enrollment $enrollment) => $enrollment->remainingDays = $enrollment->remainingTrainingDays())
+            ->filter(fn (Enrollment $enrollment) => $enrollment->remainingDays > 0
+                && $enrollment->remainingDays <= Enrollment::TRAINING_DAYS_REMAINING_THRESHOLD)
+            ->sortBy('remainingDays')
             ->values();
 
         $trainingStats = [
