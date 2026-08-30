@@ -17,7 +17,7 @@
                         <a href="{{ route('payments.export', ['period' => $period]) }}">
                             <x-secondary-button type="button">{{ __('Export CSV') }}</x-secondary-button>
                         </a>
-                        <a href="{{ route('payments.create') }}" class="text-sm text-gray-500 hover:underline self-center">{{ __('Classic single-course form') }}</a>
+                        <a href="{{ route('payments.create') }}" class="text-sm text-amber-600 hover:underline self-center">{{ __('Classic single-course form') }}</a>
                         <a href="{{ route('payments.record.create') }}">
                             <x-primary-button type="button">{{ __('Record Payment') }}</x-primary-button>
                         </a>
