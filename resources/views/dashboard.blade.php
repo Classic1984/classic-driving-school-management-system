@@ -464,17 +464,41 @@
                     @endforeach
                 </div>
 
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('Absences') }}</p>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
+                @php
+                    $absenceIcon = [
+                        'today' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+                        'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
+                        'month' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
+                        'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
+                    ];
+                @endphp
 
+                <div class="flex items-center gap-4 mt-8">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm7-4h.008v.008H19V9.87Zm-1.5 1.5 3 3m0-3-3 3" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{{ __('Absences') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('Track student absences over time') }}</p>
+                        <span class="mt-1 block h-0.5 w-8 rounded-full bg-amber-400"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 mt-4">
                     @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
-                        <a href="{{ route('absence-report.index', ['period' => $period]) }}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg block">
-                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __($periodLabel) }}</h4>
-                            <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($absenceStats[$period]) }}</p>
-                            <p class="text-xs text-gray-500 mt-1">{{ __('students absent') }}</p>
+                        @php $accent = $periodAccent[$period]; @endphp
+                        <a href="{{ route('absence-report.index', ['period' => $period]) }}" class="group relative flex items-center gap-4 overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-4 transition hover:shadow-md">
+                            <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full {{ $accent['icon'] }}">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $absenceIcon[$period] }}" /></svg>
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold uppercase tracking-wide {{ $accent['text'] }}">{{ __($periodLabel) }}</p>
+                                <p class="text-3xl font-extrabold {{ $accent['text'] }} mt-1">{{ number_format($absenceStats[$period]) }}</p>
+                                <p class="text-sm text-gray-500 mt-1">{{ __('students absent') }}</p>
+                            </div>
+                            <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-20 w-20 {{ $accent['text'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $periodIllustration[$period] }}" /></svg>
                         </a>
                     @endforeach
-
                 </div>
 
                 @if ($paymentTotals)
