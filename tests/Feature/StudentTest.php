@@ -100,6 +100,16 @@ class StudentTest extends TestCase
         $response->assertRedirect(route('students.show', $student));
     }
 
+    public function test_searching_a_receipt_number_goes_straight_to_that_receipt(): void
+    {
+        $user = User::factory()->create();
+        $payment = Payment::factory()->create();
+
+        $response = $this->actingAs($user)->get('/students?search='.$payment->receipt_number);
+
+        $response->assertRedirect(route('payments.receipt', $payment));
+    }
+
     public function test_student_index_can_be_filtered_by_status(): void
     {
         $user = User::factory()->create();
