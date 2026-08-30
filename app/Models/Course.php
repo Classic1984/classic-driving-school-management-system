@@ -22,6 +22,7 @@ class Course extends Model
         'name',
         'description',
         'course_type',
+        'level',
         'schedule',
         'duration_hours',
         'duration_weeks',

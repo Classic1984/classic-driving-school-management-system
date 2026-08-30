@@ -77,6 +77,27 @@ class CourseTest extends TestCase
         $this->assertTrue($course->instructors->contains($instructor));
     }
 
+    public function test_a_courses_level_is_stored_and_shown_on_its_certificates(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/courses', [
+            'name' => 'Beginner Driving',
+            'description' => 'An introductory course.',
+            'course_type' => 'manual',
+            'level' => 'intermediate',
+            'schedule' => 'weekday',
+            'duration_hours' => 20,
+            'duration_weeks' => 4,
+            'fee' => 199.99,
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('courses', ['name' => 'Beginner Driving', 'level' => 'intermediate']);
+    }
+
     public function test_storing_a_course_requires_valid_data(): void
     {
         $user = User::factory()->create();
@@ -84,6 +105,7 @@ class CourseTest extends TestCase
         $response = $this->actingAs($user)->post('/courses', [
             'name' => '',
             'course_type' => 'invalid-type',
+            'level' => 'invalid-level',
             'schedule' => 'invalid-schedule',
             'duration_hours' => 0,
             'duration_weeks' => 0,
@@ -92,7 +114,7 @@ class CourseTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors([
-            'name', 'course_type', 'schedule', 'duration_hours', 'duration_weeks', 'fee', 'status',
+            'name', 'course_type', 'level', 'schedule', 'duration_hours', 'duration_weeks', 'fee', 'status',
         ]);
 
         $this->assertDatabaseCount('courses', 0);
