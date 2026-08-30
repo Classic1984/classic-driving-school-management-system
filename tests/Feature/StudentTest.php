@@ -69,6 +69,21 @@ class StudentTest extends TestCase
         $response->assertDontSee('John Smith');
     }
 
+    public function test_searching_the_literal_string_zero_is_still_treated_as_a_real_search(): void
+    {
+        // PHP treats the string "0" as falsy - a naive `if ($search)`
+        // check would silently skip search filtering (and the redirect
+        // below, since it's also gated on $search being truthy) entirely,
+        // even though every zero-padded student_id_number legitimately
+        // contains "0" and should filter/match on it like any other digit.
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Jane Doe']);
+
+        $response = $this->actingAs($user)->get('/students?search=0');
+
+        $response->assertRedirect(route('students.show', $student));
+    }
+
     public function test_a_search_matching_exactly_one_student_goes_straight_to_their_profile(): void
     {
         $user = User::factory()->create();

@@ -53,6 +53,25 @@ class TheoryClassReminderTest extends TestCase
         ]);
     }
 
+    public function test_the_reminder_names_the_actual_day_its_sent_on_not_always_thursday(): void
+    {
+        // ReminderController's "Send Now" button lets staff trigger this
+        // command on any day, not just its scheduled Thursday slot - the
+        // message must reflect whatever day it actually ran on.
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $this->artisan('app:send-theory-class-reminder')->assertExitCode(0);
+
+        $dayName = today()->format('l');
+
+        Http::assertSent(fn ($request) => $request['to'] === '2348031234567'
+            && str_contains($request['sms'], "({$dayName})"));
+    }
+
     public function test_it_does_nothing_when_there_are_no_actively_enrolled_students(): void
     {
         Http::fake();

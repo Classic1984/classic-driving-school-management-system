@@ -115,13 +115,33 @@ class EnrollmentReactivationTest extends TestCase
         $response->assertRedirect(route('students.show', $student));
 
         // Total collected: 30,000 outstanding balance + 25,000 agreed fee = 55,000.
+        // course_id is null - like the programme-upgrade flow, this avoids
+        // Payment::booted()'s save hook lumping the whole bundled total
+        // into a single "training" allocation (see the allocation-split
+        // assertions below instead).
         $this->assertDatabaseHas('payments', [
             'student_id' => $student->id,
-            'course_id' => $course->id,
+            'course_id' => null,
             'amount' => 55000,
             'payment_method' => 'cash',
             'status' => 'paid',
             'reference_number' => 'RA-001',
+        ]);
+
+        $payment = Payment::where('reference_number', 'RA-001')->firstOrFail();
+
+        $this->assertDatabaseHas('payment_allocations', [
+            'payment_id' => $payment->id,
+            'allocation_type' => 'training',
+            'enrollment_id' => $enrollment->id,
+            'amount' => 30000,
+        ]);
+
+        $this->assertDatabaseHas('payment_allocations', [
+            'payment_id' => $payment->id,
+            'allocation_type' => 'reactivation_fee',
+            'enrollment_id' => $enrollment->id,
+            'amount' => 25000,
         ]);
 
         $this->assertDatabaseHas('reactivation_audit_logs', [

@@ -386,10 +386,18 @@ class Enrollment extends Pivot
      */
     public function eligibleUpgradeCourses()
     {
+        // course_student has a unique (course_id, student_id) constraint -
+        // a course the student already holds any enrollment in (regardless
+        // of that enrollment's status) can't be upgraded into without
+        // violating it, so it's excluded here rather than surfacing as an
+        // uncaught duplicate-key error at save time.
+        $alreadyEnrolledCourseIds = $this->student->courses()->pluck('courses.id');
+
         return Course::where('status', 'active')
             ->where('course_type', $this->course->course_type)
             ->where('schedule', $this->course->schedule)
             ->where('duration_weeks', '>', $this->course->duration_weeks)
+            ->whereNotIn('id', $alreadyEnrolledCourseIds)
             ->orderBy('duration_weeks')
             ->get();
     }

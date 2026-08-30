@@ -120,6 +120,7 @@ class PaymentReportController extends Controller
                 'online_certificate' => 'Online Certificate',
                 'student_certificate' => 'Student Certificate',
                 'service' => $allocation->studentService->service->name,
+                'reactivation_fee' => 'Reactivation Fee',
                 default => 'Other',
             })
             ->map(fn (Collection $group) => (float) $group->sum('amount'))
