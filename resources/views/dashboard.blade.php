@@ -354,20 +354,6 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
 
                 <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-50 via-amber-50 to-white p-8">
-                    <svg class="pointer-events-none absolute right-0 bottom-0 h-28 w-64 sm:h-40 sm:w-96" viewBox="0 0 64 28">
-                        <g transform="translate(64,0) scale(-1,1)">
-                            <ellipse cx="14" cy="23.3" rx="7.5" ry="1.3" fill="#000000" fill-opacity="0.12" />
-                            <ellipse cx="50" cy="23.3" rx="7.5" ry="1.3" fill="#000000" fill-opacity="0.12" />
-                            <path fill="#111827" d="M2,18 C2,20 3,20.5 4,20 L8,20 A6,6 0 0 1 20,20 L44,20 A6,6 0 0 1 56,20 L60,20 C61,20 62,19.5 62,17 C62,14 60,10 55,9 L46,8 C40,8 34,4 26,4 C20,4 15,6 12,10 C10,12 6,14 2,18 Z" />
-                            <path fill="#4B5563" fill-opacity="0.85" d="M15.5,9.4 C18.5,6.2 22.2,4.7 26,4.7 C32.5,4.7 38.5,7.9 44.5,8.3 L43.6,9.6 L17.5,10 Z" />
-                            <ellipse cx="60.5" cy="15.3" rx="1.7" ry="1.1" fill="#FDE68A" />
-                            <circle cx="14" cy="20.2" r="4.3" fill="#0B0F17" />
-                            <circle cx="14" cy="20.2" r="2.1" fill="#F59E0B" />
-                            <circle cx="50" cy="20.2" r="4.3" fill="#0B0F17" />
-                            <circle cx="50" cy="20.2" r="2.1" fill="#F59E0B" />
-                        </g>
-                    </svg>
-
                     <a href="{{ route('leads.index', ['status' => 'new']) }}" class="relative inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-amber-200 px-4 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition mb-4">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
                         {{ __('New Leads') }}: {{ number_format($stats['new_leads']) }}
