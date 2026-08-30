@@ -396,29 +396,83 @@
                     @endforeach
                 </div>
 
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('New Students') }}</p>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
+                @php
+                    $periodAccent = [
+                        'today' => ['border' => 'border-violet-500', 'icon' => 'bg-violet-100 text-violet-600', 'text' => 'text-violet-600', 'ring' => 'text-violet-500'],
+                        'week' => ['border' => 'border-green-500', 'icon' => 'bg-green-100 text-green-600', 'text' => 'text-green-600', 'ring' => 'text-green-500'],
+                        'month' => ['border' => 'border-amber-500', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-amber-600', 'ring' => 'text-amber-500'],
+                        'year' => ['border' => 'border-blue-500', 'icon' => 'bg-blue-100 text-blue-600', 'text' => 'text-blue-600', 'ring' => 'text-blue-500'],
+                    ];
+                    $periodIllustration = [
+                        'today' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
+                        'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
+                        'month' => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z',
+                        'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
+                    ];
+                    $ringCircumference = 2 * M_PI * 15.5;
+                @endphp
 
-                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
-                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg block">
-                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __($periodLabel) }}</h4>
-                            <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($newStudentTotals[$period]) }}</p>
-                        </a>
-                    @endforeach
-
+                <div class="flex items-center gap-4 mt-8">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{{ __('New Students') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('Track new student registrations') }}</p>
+                    </div>
                 </div>
 
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('Training Statistics') }}</p>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
-
+                <div class="grid grid-cols-1 gap-4 mt-4">
                     @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
-                        <a href="{{ route('training-report.index', ['period' => $period]) }}" class="bg-gray-100 hover:bg-gray-200 p-4 rounded-lg block">
-                            <h4 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">{{ __($periodLabel) }}</h4>
-                            <p class="text-xl font-bold text-gray-800 mt-1">{{ number_format($trainingStats[$period]) }}</p>
-                            <p class="text-xs text-gray-500 mt-1">{{ __('students trained') }}</p>
+                        @php $accent = $periodAccent[$period]; @endphp
+                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="group relative flex items-center gap-4 overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-4 transition hover:shadow-md">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl {{ $accent['icon'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold uppercase tracking-wide {{ $accent['text'] }}">{{ __($periodLabel) }}</p>
+                                <p class="text-3xl font-extrabold {{ $accent['text'] }} mt-1">{{ number_format($newStudentTotals[$period]) }}</p>
+                            </div>
+                            <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-16 w-16 {{ $accent['text'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $periodIllustration[$period] }}" /></svg>
                         </a>
                     @endforeach
+                </div>
 
+                <div class="flex items-center gap-4 mt-8">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{{ __('Training Statistics') }}</h3>
+                        <p class="text-sm text-gray-500">{{ __('Overview of student training activities') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 mt-4">
+                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                        @php
+                            $accent = $periodAccent[$period];
+                            $percent = min(100, (int) round($trainingStats[$period] / max(1, $kpis['active_students']) * 100));
+                            $ringOffset = $ringCircumference * (1 - $percent / 100);
+                        @endphp
+                        <a href="{{ route('training-report.index', ['period' => $period]) }}" class="flex items-center gap-4 rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-4 transition hover:shadow-md">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl {{ $accent['icon'] }}">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg>
+                            </span>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-bold uppercase tracking-wide {{ $accent['text'] }}">{{ __($periodLabel) }}</p>
+                                <p class="text-3xl font-extrabold {{ $accent['text'] }} mt-1">{{ number_format($trainingStats[$period]) }}</p>
+                                <p class="text-sm text-gray-500 mt-1">{{ __('students trained') }}</p>
+                            </div>
+                            <div class="relative h-16 w-16 shrink-0">
+                                <svg class="h-16 w-16 -rotate-90" viewBox="0 0 36 36">
+                                    <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="4" class="text-gray-100" />
+                                    <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" class="{{ $accent['ring'] }}" stroke-dasharray="{{ $ringCircumference }}" stroke-dashoffset="{{ $ringOffset }}" />
+                                </svg>
+                                <span class="absolute inset-0 flex items-center justify-center text-sm font-bold {{ $accent['text'] }}">{{ $percent }}%</span>
+                            </div>
+                        </a>
+                    @endforeach
                 </div>
 
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mt-6">{{ __('Absences') }}</p>
