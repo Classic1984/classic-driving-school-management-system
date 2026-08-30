@@ -25,6 +25,17 @@
 </div>
 
 <div>
+    <x-input-label for="level" :value="__('Level')" />
+    <select id="level" name="level" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+        @foreach (['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'] as $value => $label)
+            <option value="{{ $value }}" @selected(old('level', $course?->level ?? 'beginner') === $value)>{{ __($label) }}</option>
+        @endforeach
+    </select>
+    <p class="mt-1 text-xs text-gray-500">{{ __('Shown on the certificate students earn for this course.') }}</p>
+    <x-input-error class="mt-2" :messages="$errors->get('level')" />
+</div>
+
+<div>
     <x-input-label for="schedule" :value="__('Schedule')" />
     <select id="schedule" name="schedule" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
         @foreach (['weekday' => 'Weekday', 'weekend' => 'Weekend'] as $value => $label)

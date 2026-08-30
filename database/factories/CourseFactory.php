@@ -21,6 +21,7 @@ class CourseFactory extends Factory
             'name' => fake()->randomElement(['Beginner Driving', 'Defensive Driving', 'Highway Driving', 'Refresher Course']),
             'description' => fake()->sentence(),
             'course_type' => fake()->randomElement(['manual', 'automatic', 'both']),
+            'level' => fake()->randomElement(['beginner', 'intermediate', 'advanced']),
             'schedule' => 'weekday',
             'duration_hours' => fake()->numberBetween(5, 40),
             'duration_weeks' => fake()->randomElement([1, 2, 3, 4]),
