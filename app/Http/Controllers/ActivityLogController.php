@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Console\Commands\RecordSchedulerHeartbeat;
 use App\Models\ActivityLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -20,15 +21,60 @@ class ActivityLogController extends Controller
     protected const STALE_AFTER_MINUTES = 20;
 
     /**
+     * Periods the log can be filtered by, applied to when the action was
+     * recorded. Defaults to all_time - an audit trail is more often
+     * reviewed for a specific past incident than "just today", so the
+     * unfiltered view stays the default even though this filter exists.
+     */
+    protected const PERIODS = ['today', 'week', 'month', 'year', 'all_time'];
+
+    protected const LABELS = [
+        'today' => 'Today',
+        'week' => 'This Week',
+        'month' => 'This Month',
+        'year' => 'This Year',
+        'all_time' => 'All Time',
+    ];
+
+    /**
      * Director-only "who did what and when" trail across the system's
      * everyday actions.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $activityLogs = ActivityLog::with('user')->latest()->paginate(20);
+        $period = $this->period($request);
+        $activityLogs = $this->query($period)->with('user')->latest()->paginate(20)->withQueryString();
+        $label = self::LABELS[$period];
         $schedulerStatus = $this->schedulerStatus();
 
-        return view('activity-logs.index', compact('activityLogs', 'schedulerStatus'));
+        return view('activity-logs.index', compact('activityLogs', 'schedulerStatus', 'period', 'label'));
+    }
+
+    protected function period(Request $request): string
+    {
+        $period = $request->query('period', 'all_time');
+
+        return in_array($period, self::PERIODS, true) ? $period : 'all_time';
+    }
+
+    protected function query(string $period)
+    {
+        $query = ActivityLog::query();
+
+        [$from, $to] = match ($period) {
+            'week' => [now()->startOfWeek(), now()->endOfWeek()],
+            'month' => [now()->startOfMonth(), now()->endOfMonth()],
+            'year' => [now()->startOfYear(), now()->endOfYear()],
+            'all_time' => [null, null],
+            default => [today(), today()],
+        };
+
+        if ($from !== null) {
+            $query->whereDate('created_at', '>=', $from->toDateString())
+                ->whereDate('created_at', '<=', $to->toDateString());
+        }
+
+        return $query;
     }
 
     /**
