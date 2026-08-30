@@ -52,7 +52,7 @@
                     {{ __('The bearer has demonstrated the knowledge, skills and discipline required to be a responsible and safe driver.') }}
                 </p>
 
-                <div class="mt-10 grid grid-cols-2 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-amber-500/50 text-left">
+                <div class="mt-10 grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-amber-500/50 text-left">
                     <div class="pb-4 sm:pb-0 sm:pr-4">
                         <p class="invisible pt-1 text-sm">&nbsp;</p>
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Date of Completion') }}</p>
@@ -62,11 +62,6 @@
                         <p class="invisible pt-1 text-sm">&nbsp;</p>
                         <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Duration') }}</p>
                         <p class="text-sm">{{ $certificate->course->duration_weeks }} {{ __('WEEKS') }} ({{ $certificate->course->totalTrainingDays() }} {{ __('HOURS') }})</p>
-                    </div>
-                    <div class="pb-4 sm:pb-0 sm:px-4">
-                        <p class="invisible pt-1 text-sm">&nbsp;</p>
-                        <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Program') }}</p>
-                        <p class="text-sm">{{ $certificate->course->name }}</p>
                     </div>
                     <div class="pt-4 sm:pt-0 sm:px-4">
                         <p class="border-t border-gray-400 pt-1 text-sm">&nbsp;</p>
