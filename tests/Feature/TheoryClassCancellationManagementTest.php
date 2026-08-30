@@ -42,6 +42,23 @@ class TheoryClassCancellationManagementTest extends TestCase
             ->assertSee('Public holiday');
     }
 
+    public function test_the_index_defaults_to_newest_first_and_can_be_reversed(): void
+    {
+        $director = User::factory()->director()->create();
+        TheoryClassCancellation::factory()->create(['class_date' => now()->addDay(), 'reason' => 'Sooner date']);
+        TheoryClassCancellation::factory()->create(['class_date' => now()->addWeek(), 'reason' => 'Later date']);
+
+        $this->actingAs($director)
+            ->get('/theory-class-cancellations')
+            ->assertOk()
+            ->assertSeeInOrder(['Later date', 'Sooner date']);
+
+        $this->actingAs($director)
+            ->get('/theory-class-cancellations?sort=asc')
+            ->assertOk()
+            ->assertSeeInOrder(['Sooner date', 'Later date']);
+    }
+
     public function test_a_director_can_cancel_a_theory_class(): void
     {
         $director = User::factory()->director()->create();
