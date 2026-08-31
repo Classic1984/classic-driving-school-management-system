@@ -74,7 +74,14 @@
     <div class="p-8 pt-4 space-y-4">
         @foreach ($requests as $studentService)
             @php
-                $status = $studentService->status();
+                // Computed once and reused below instead of calling status()
+                // (which itself calls amountPaid() and balance()) and then
+                // amountPaid() again separately - that would otherwise run
+                // the underlying payment-allocation sum query 2-3 times per
+                // row just to render one card.
+                $amountPaid = $studentService->amountPaid();
+                $balance = max(0, (float) $studentService->price - $amountPaid);
+                $status = $amountPaid <= 0 ? 'unpaid' : ($balance > 0 ? 'part_payment' : 'paid');
                 $statusMeta = match ($status) {
                     'paid' => ['color' => 'green', 'classes' => 'bg-green-100 text-green-600', 'icon' => 'M4.5 12.75l6 6 9-13.5'],
                     'part_payment' => ['color' => 'amber', 'classes' => 'bg-amber-100 text-amber-600', 'icon' => 'M12 6v6l4 2'],
@@ -112,7 +119,7 @@
                         <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
                         <div>
                             <p class="text-xs text-gray-500">{{ __('Amount Paid') }}</p>
-                            <p class="text-sm font-bold text-gray-900">₦{{ number_format($studentService->amountPaid(), 0) }}</p>
+                            <p class="text-sm font-bold text-gray-900">₦{{ number_format($amountPaid, 0) }}</p>
                         </div>
                     </div>
                     <div class="flex items-start gap-2 rounded-lg {{ $statusMeta['classes'] }} p-3">
