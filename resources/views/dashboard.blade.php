@@ -1226,14 +1226,14 @@
                         ['value' => $trainingProgressStats['manual_programs'], 'label' => 'Manual Programs', 'description' => 'Students in Manual', 'color' => 'pink', 'icon' => ['M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.991a6.932 6.932 0 0 1 0 .255c-.008.38.137.751.43.992l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.213-1.28Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z']],
                     ];
                     $trainingStatColors = [
-                        'rose' => ['bg' => 'bg-rose-50/60', 'icon' => 'bg-rose-100 text-rose-500', 'text' => 'text-rose-600'],
-                        'blue' => ['bg' => 'bg-blue-50/60', 'icon' => 'bg-blue-100 text-blue-500', 'text' => 'text-blue-600'],
-                        'green' => ['bg' => 'bg-green-50/60', 'icon' => 'bg-green-100 text-green-500', 'text' => 'text-green-600'],
-                        'purple' => ['bg' => 'bg-purple-50/60', 'icon' => 'bg-purple-600 text-white', 'text' => 'text-purple-600'],
-                        'amber' => ['bg' => 'bg-amber-50/60', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-amber-600'],
-                        'teal' => ['bg' => 'bg-teal-50/60', 'icon' => 'bg-teal-100 text-teal-600', 'text' => 'text-teal-600'],
-                        'orange' => ['bg' => 'bg-orange-50/60', 'icon' => 'bg-orange-100 text-orange-600', 'text' => 'text-orange-600'],
-                        'pink' => ['bg' => 'bg-pink-50/60', 'icon' => 'bg-pink-100 text-pink-600', 'text' => 'text-pink-600'],
+                        'rose' => ['icon' => 'bg-rose-500/10 text-rose-400', 'text' => 'text-rose-400'],
+                        'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'text' => 'text-blue-400'],
+                        'green' => ['icon' => 'bg-green-500/10 text-green-400', 'text' => 'text-green-400'],
+                        'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'text' => 'text-purple-400'],
+                        'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'text' => 'text-amber-400'],
+                        'teal' => ['icon' => 'bg-teal-500/10 text-teal-400', 'text' => 'text-teal-400'],
+                        'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'text' => 'text-orange-400'],
+                        'pink' => ['icon' => 'bg-pink-500/10 text-pink-400', 'text' => 'text-pink-400'],
                     ];
                     $avatarColors = ['bg-amber-100 text-amber-800', 'bg-blue-100 text-blue-800', 'bg-purple-100 text-purple-800', 'bg-green-100 text-green-800', 'bg-rose-100 text-rose-800'];
                     $statusAccents = [
@@ -1242,55 +1242,57 @@
                         'Expired' => ['bar' => 'bg-red-500', 'chip' => 'bg-red-50 text-red-700', 'dot' => 'bg-red-500'],
                     ];
                 @endphp
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
+                <div class="bg-amber-400 ring-2 ring-black/30 rounded-xl p-8 mt-6">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-                        <div class="flex items-center gap-4">
-                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+                        <div class="flex items-center gap-4 border-l-2 border-black/40 pl-4">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-black text-amber-400">
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
                             </span>
                             <div>
-                                <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Student Training Progress') }}</h3>
-                                <p class="text-sm text-gray-500">{{ __('Monitor and track student training in real-time') }}</p>
+                                <h3 class="text-2xl font-extrabold text-black">{{ __('Student Training Progress') }}</h3>
+                                <p class="text-sm text-black/70">{{ __('Monitor and track student training in real-time') }}</p>
                             </div>
                         </div>
-                        <span class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700">
-                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                        <span class="inline-flex items-center gap-2 rounded-lg ring-1 ring-black/30 bg-black/10 px-4 py-2 text-sm font-semibold text-black">
+                            <svg class="h-4 w-4 text-black/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             {{ __('This Month') }}
-                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                            <svg class="h-4 w-4 text-black/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                         </span>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
                         @foreach ($trainingStatCards as $card)
                             @php $accent = $trainingStatColors[$card['color']]; @endphp
-                            <div class="flex items-start gap-3 rounded-xl {{ $accent['bg'] }} ring-1 ring-gray-100 p-4">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full {{ $accent['icon'] }}">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                        @foreach ($card['icon'] as $d)
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $d }}" />
-                                        @endforeach
-                                    </svg>
-                                </span>
-                                <div class="min-w-0">
-                                    <p class="text-2xl font-extrabold {{ $accent['text'] }} leading-none">{{ $card['value'] }}</p>
-                                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ __($card['label']) }}</p>
-                                    <p class="text-xs text-gray-400">{{ __($card['description']) }}</p>
+                            <div class="flex flex-col bg-gray-900 rounded-lg p-4 ring-1 ring-black/40">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            @foreach ($card['icon'] as $d)
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $d }}" />
+                                            @endforeach
+                                        </svg>
+                                    </span>
+                                    <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($card['label']) }}</p>
                                 </div>
+
+                                <p class="text-2xl font-bold mt-3 {{ $accent['text'] }}">{{ $card['value'] }}</p>
+
+                                <p class="mt-1 text-xs text-gray-500">{{ __($card['description']) }}</p>
                             </div>
                         @endforeach
                     </div>
 
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-black text-amber-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
                             </span>
                             <div>
-                                <h4 class="text-lg font-bold text-gray-900">{{ __('Training Overview') }}</h4>
-                                <p class="text-xs text-gray-500">{{ __('Detailed progress of all students') }}</p>
+                                <h4 class="text-lg font-bold text-black">{{ __('Training Overview') }}</h4>
+                                <p class="text-xs text-black/70">{{ __('Detailed progress of all students') }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('training-progress.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition">
+                        <a href="{{ route('training-progress.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-black/40 bg-black/5 px-4 py-2 text-sm font-semibold text-black hover:bg-black/10 transition">
                             {{ __('View All Students') }}
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                         </a>
@@ -1298,7 +1300,7 @@
 
                     <div class="overflow-x-auto">
                         <div class="w-full min-w-[880px]">
-                            <div class="grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 rounded-t-xl bg-amber-50/60 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-500" role="row">
+                            <div class="grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 rounded-t-xl bg-black/10 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-black/60" role="row">
                                 <span class="[grid-area:1/1]">{{ __('Student') }}</span>
                                 <span class="[grid-area:1/2]">{{ __('Program') }}</span>
                                 <span class="[grid-area:1/3]">{{ __('Duration') }}</span>
@@ -1306,7 +1308,7 @@
                                 <span class="[grid-area:1/5]">{{ __('Status') }}</span>
                                 <span class="[grid-area:1/6]"></span>
                             </div>
-                            <div class="divide-y divide-gray-100 ring-1 ring-t-0 ring-gray-100 rounded-b-xl overflow-hidden">
+                            <div class="divide-y divide-black/10 ring-1 ring-t-0 ring-black/10 rounded-b-xl overflow-hidden">
                                 @foreach ($trainingProgress as $enrollment)
                                     @php
                                         $label = $enrollment->trainingStatusLabel();
@@ -1320,7 +1322,7 @@
                                     @endphp
                                     <a
                                         href="{{ route('students.show', $enrollment->student_id) }}"
-                                        class="group grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 items-center px-4 py-4 bg-white hover:bg-amber-50/40 transition"
+                                        class="group grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 items-center px-4 py-4 bg-white hover:bg-amber-50 transition"
                                         role="row"
                                     >
                                         <div class="[grid-area:1/1] flex items-center gap-3 min-w-0">
@@ -1360,41 +1362,41 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-xl bg-amber-50/60 ring-1 ring-gray-100 px-6 py-5">
+                    <div class="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-xl bg-gray-900 ring-1 ring-black/40 px-6 py-5">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
                             </span>
                             <div>
-                                <h4 class="text-base font-bold text-gray-900">{{ __('Progress Summary') }}</h4>
-                                <p class="text-xs text-gray-500">{{ __('Real-time overview of student training') }}</p>
+                                <h4 class="text-base font-bold text-white">{{ __('Progress Summary') }}</h4>
+                                <p class="text-xs text-gray-400">{{ __('Real-time overview of student training') }}</p>
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-8">
                             <div class="flex items-center gap-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-500/10 text-green-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-lg font-extrabold text-green-600 leading-none">{{ $trainingProgressStats['highest_progress'] }}%</p>
+                                    <p class="text-lg font-extrabold text-green-400 leading-none">{{ $trainingProgressStats['highest_progress'] }}%</p>
                                     <p class="text-xs text-gray-500 whitespace-nowrap">{{ __('Highest Progress') }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-lg font-extrabold text-amber-600 leading-none">{{ $trainingProgressStats['average_progress'] }}%</p>
+                                    <p class="text-lg font-extrabold text-amber-400 leading-none">{{ $trainingProgressStats['average_progress'] }}%</p>
                                     <p class="text-xs text-gray-500 whitespace-nowrap">{{ __('Average Progress') }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.306-4.306a11.95 11.95 0 0 1 5.814 5.518l2.74 1.22m0 0v-5.94m0 5.94h-5.94" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-lg font-extrabold text-rose-600 leading-none">{{ $trainingProgressStats['lowest_progress'] }}%</p>
+                                    <p class="text-lg font-extrabold text-rose-400 leading-none">{{ $trainingProgressStats['lowest_progress'] }}%</p>
                                     <p class="text-xs text-gray-500 whitespace-nowrap">{{ __('Lowest Progress') }}</p>
                                 </div>
                             </div>
