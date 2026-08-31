@@ -311,18 +311,32 @@ class DashboardController extends Controller
      * distinct students have ever been charged for it, how many charges
      * that is in total, how many are fully paid, and how many have reached
      * "completed" (i.e. obtained/delivered) - across every charge for the
-     * service, not just the still-pending ones the widget lists below.
+     * service, not just the still-pending ones the widget lists below (the
+     * widget itself, stats included, only renders while at least one charge
+     * is still pending - see the isNotEmpty() check around each @include in
+     * dashboard.blade.php).
+     *
+     * The "paid" amount is summed in a single query (via withSum) rather
+     * than calling StudentService::status() per row, which would otherwise
+     * re-query payment allocations once or twice for every historical
+     * charge the service has ever had.
      *
      * @return array{total_students: int, charged: int, paid: int, completed: int}
      */
     protected function serviceRequestStats(string $serviceName): array
     {
-        $charges = StudentService::whereHas('service', fn ($query) => $query->where('name', $serviceName))->get();
+        $charges = StudentService::whereHas('service', fn ($query) => $query->where('name', $serviceName))
+            ->withSum(['allocations as amount_paid' => fn ($query) => $query->whereHas('payment', fn ($paymentQuery) => $paymentQuery->where('status', 'paid'))], 'amount')
+            ->get();
 
         return [
             'total_students' => $charges->pluck('student_id')->unique()->count(),
             'charged' => $charges->count(),
-            'paid' => $charges->filter(fn (StudentService $charge) => $charge->status() === 'paid')->count(),
+            'paid' => $charges->filter(function (StudentService $charge) {
+                $amountPaid = (float) $charge->amount_paid;
+
+                return $amountPaid > 0 && $amountPaid >= (float) $charge->price;
+            })->count(),
             'completed' => $charges->where('processing_status', 'completed')->count(),
         ];
     }

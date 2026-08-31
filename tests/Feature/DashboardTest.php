@@ -9,6 +9,7 @@ use App\Models\DiscountRequest;
 use App\Models\Instructor;
 use App\Models\Lead;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\Service;
 use App\Models\Student;
 use App\Models\StudentCorrectionRequest;
@@ -1112,6 +1113,38 @@ class DashboardTest extends TestCase
         $response->assertSee("Driver's License Requests");
         $response->assertSee('Not Started Yet');
         $response->assertSee('Start Processing');
+    }
+
+    public function test_learners_permit_widget_stats_cover_every_charge_not_just_pending_ones(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+
+        // Fully paid, still pending (not_started) - counts as "Paid".
+        $fullyPaid = Student::factory()->create()->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+        $payment = Payment::factory()->create(['status' => 'paid']);
+        PaymentAllocation::factory()->create(['payment_id' => $payment->id, 'allocation_type' => 'service', 'student_service_id' => $fullyPaid->id, 'amount' => 6000]);
+
+        // Part paid, still pending - does not count as "Paid".
+        $partPaid = Student::factory()->create()->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+        $partPayment = Payment::factory()->create(['status' => 'paid']);
+        PaymentAllocation::factory()->create(['payment_id' => $partPayment->id, 'allocation_type' => 'service', 'student_service_id' => $partPaid->id, 'amount' => 3000]);
+
+        // Unpaid, still pending.
+        Student::factory()->create()->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+
+        // Already obtained - not part of the pending list below, but still
+        // counted in the lifetime "Charged"/"Total Students"/"Permit
+        // Obtained" tiles above it.
+        Student::factory()->create()->studentServices()->create(['service_id' => $service->id, 'price' => 6000, 'processing_status' => 'completed']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['4', 'Total Students']);
+        $response->assertSeeInOrder(['4', 'Charged']);
+        $response->assertSeeInOrder(['1', 'Paid']);
+        $response->assertSeeInOrder(['1', 'Permit Obtained']);
     }
 
     public function test_dashboard_does_not_duplicate_a_driving_license_already_shown_in_service_processing(): void
