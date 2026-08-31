@@ -259,6 +259,40 @@ class PaymentCorrectionTest extends TestCase
         ]);
     }
 
+    public function test_a_correction_reopens_a_completed_enrollment_if_the_balance_no_longer_covers_it(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        // Zero training-day requirement so the enrollment completes the
+        // moment its training allocation covers the fee in full.
+        $course = Course::factory()->create(['duration_hours' => 0, 'duration_weeks' => 0]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 30000]);
+        $enrollment = $student->courses()->first()->pivot;
+        $service = Service::factory()->create(['price' => 50000]);
+        $studentService = $student->studentServices()->create(['service_id' => $service->id, 'price' => 50000]);
+
+        // Training allocation (30000) fully covers the 30000 fee, so this
+        // payment completes the enrollment immediately.
+        $payment = $this->createSplitPayment($user, $student, $enrollment->id, $studentService->id);
+        $this->assertSame('completed', $enrollment->fresh()->status);
+
+        $trainingAllocation = $payment->allocations()->where('allocation_type', 'training')->firstOrFail();
+        $serviceAllocation = $payment->allocations()->where('allocation_type', 'service')->firstOrFail();
+
+        // Correct the split so only 10000 of the same payment is actually
+        // training money - the enrollment's fee is no longer fully paid.
+        $this->actingAs($user)->put("/payments/{$payment->id}/correct", [
+            'reason' => 'Training allocation was overstated at entry.',
+            'allocations' => [
+                ['id' => $trainingAllocation->id, 'amount' => 10000],
+                ['id' => $serviceAllocation->id, 'amount' => 40000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame(20000.0, $enrollment->fresh()->balance());
+        $this->assertNotSame('completed', $enrollment->fresh()->status);
+    }
+
     public function test_the_payment_page_shows_correction_history(): void
     {
         $user = User::factory()->create();

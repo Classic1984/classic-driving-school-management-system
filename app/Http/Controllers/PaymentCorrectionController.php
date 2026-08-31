@@ -54,8 +54,15 @@ class PaymentCorrectionController extends Controller
             'new_allocations' => $newAllocations,
         ]);
 
+        // reconcile() rather than refreshStatus() - a correction can move
+        // money off an enrollment's training allocation (e.g. into a
+        // service/certificate allocation on the same payment) and drop its
+        // balance() back above zero, which must be able to revert an
+        // already-"completed" enrollment. refreshStatus() deliberately
+        // never un-completes an enrollment, so it would leave a completed
+        // enrollment silently under-paid.
         $payment->allocations->pluck('enrollment_id')->filter()->unique()
-            ->each(fn (int $enrollmentId) => Enrollment::find($enrollmentId)?->refreshStatus());
+            ->each(fn (int $enrollmentId) => Enrollment::find($enrollmentId)?->reconcile());
 
         $changes = $this->describeChanges($originalAllocations, $newAllocations);
         ActivityLog::record("Corrected the allocation for payment {$payment->receipt_number}: {$changes}");
