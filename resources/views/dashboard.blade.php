@@ -268,8 +268,8 @@
                     'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400', 'ring' => 'ring-orange-400/60'],
                     'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400', 'ring' => 'ring-sky-400/60'],
                     'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400', 'ring' => 'ring-purple-400/60'],
-                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60'],
-                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400', 'ring' => 'ring-amber-400/60'],
+                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60', 'dot' => 'bg-red-400'],
+                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400', 'ring' => 'ring-amber-400/60', 'dot' => 'bg-amber-400'],
                     'emerald' => ['icon' => 'bg-emerald-500/10 text-emerald-400', 'value' => 'text-emerald-400', 'ring' => 'ring-emerald-400/70'],
                 ];
 
@@ -339,10 +339,22 @@
                     ],
                 ])->filter(fn (array $row) => $row['show'])->values();
 
+                // The bento layout below gives Revenue Today a large hero cell,
+                // puts the two attention-needing metrics in medium cards, and
+                // keeps the rest as a quiet supporting strip.
+                $heroRow = $operationRows->firstWhere('key', 'payments_received_today');
+                $midKeys = ['payments_pending_count', 'approaching_completion'];
+                $midRows = $operationRows->whereIn('key', $midKeys)->values();
+                $smallRows = $operationRows->reject(
+                    fn (array $row) => $row['key'] === 'payments_received_today' || in_array($row['key'], $midKeys, true)
+                )->values();
+
+                $operationAccent = fn (array $row) => $operationColors[$row['state'] === 'alert' ? 'red' : ($row['state'] === 'warn' ? 'amber' : $row['color'])];
+                $operationTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (array_key_exists('modal', $row) ? 'div' : 'a');
             @endphp
 
             <div class="bg-black text-white rounded-xl p-8 mb-6">
-                <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
                     <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
@@ -352,7 +364,7 @@
                             <p class="text-sm font-medium text-gray-200">{{ __('Real-time overview of key activities') }}</p>
                         </div>
                     </div>
-                    <span
+                    <div
                         x-data="{
                             now: new Date(),
                             months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -368,46 +380,71 @@
                             },
                         }"
                         x-init="setInterval(() => now = new Date(), 1000)"
-                        class="inline-flex items-center gap-3 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white"
+                        class="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-wider text-gray-300"
                     >
-                        <span class="inline-flex items-center gap-1.5">
-                            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                            <span x-text="dateLabel">{{ now()->format('M j, Y') }}</span>
-                        </span>
-                        <span class="h-4 w-px bg-gray-700"></span>
-                        <span class="inline-flex items-center gap-1.5">
-                            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                            <span x-text="timeLabel">{{ now()->format('h:i A') }}</span>
-                        </span>
-                    </span>
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span x-text="dateLabel">{{ now()->format('M j, Y') }}</span>
+                        <span class="text-gray-600">&middot;</span>
+                        <span x-text="timeLabel">{{ now()->format('h:i A') }}</span>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    @foreach ($operationRows as $row)
-                        @php
-                            $accent = $operationColors[$row['state'] === 'alert' ? 'red' : ($row['state'] === 'warn' ? 'amber' : $row['color'])];
-                            $ring = !empty($row['highlight']) ? $operationColors['emerald']['ring'] : 'ring-amber-400/40';
-                            $tileClass = 'flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 '.$ring;
-                            $tag = ! empty($row['modal']) ? 'button' : (array_key_exists('modal', $row) ? 'div' : 'a');
-                        @endphp
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2 gap-3 mt-6">
+                    @php $heroAccent = $operationColors['emerald']; $heroTag = $operationTag($heroRow); @endphp
+                    <{{ $heroTag }}
+                        @if ($heroTag === 'a') href="{{ $heroRow['href'] }}" @endif
+                        @if ($heroTag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $heroRow['modal'] }}')" @endif
+                        class="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/15 via-gray-900 to-gray-900 p-5 text-left ring-1 ring-emerald-400/40 transition hover:ring-emerald-400/70 sm:col-span-2 lg:row-span-2"
+                    >
+                        {{-- Emitted before the label row so the amount precedes the label in the
+                             page source (screen readers / text search read amount-then-label),
+                             then repositioned visually above/below via flex `order`. --}}
+                        <p class="order-2 mt-3 text-3xl font-extrabold whitespace-nowrap {{ $heroAccent['value'] }}">{{ $heroRow['value'] }}</p>
+
+                        <div class="order-1 flex items-center gap-2.5">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $heroAccent['icon'] }}">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$heroRow['key']] }}" /></svg>
+                            </span>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($heroRow['label']) }}</p>
+                        </div>
+
+                        <p class="order-3 mt-2 text-xs font-medium text-gray-300">{{ __($heroRow['description']) }}</p>
+                    </{{ $heroTag }}>
+
+                    @foreach ($midRows as $row)
+                        @php $accent = $operationAccent($row); $tag = $operationTag($row); @endphp
                         <{{ $tag }}
                             @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                             @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                            @if ($tag !== 'div') class="{{ $tileClass }} transition hover:ring-amber-400/70" @else class="{{ $tileClass }}" @endif
+                            class="flex items-center gap-3 rounded-xl bg-gray-900 p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:ring-2 sm:col-span-2"
                         >
-                            {{-- Emitted before the label row so the count precedes the label in the
-                                 page source (screen readers / text search read count-then-label),
-                                 then repositioned visually above/below via flex `order`. --}}
-                            <p class="order-2 text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $row['value'] }}</p>
-
-                            <div class="order-1 flex items-center gap-2.5">
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
-                                </span>
-                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($row['label']) }}</p>
+                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
+                                @if ($row['state'] !== 'ok')
+                                    <span class="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full {{ $accent['dot'] }} ring-2 ring-gray-900 animate-pulse"></span>
+                                @endif
+                            </span>
+                            <div class="flex min-w-0 flex-col">
+                                <p class="order-2 text-xl font-bold whitespace-nowrap {{ $accent['value'] }}">{{ $row['value'] }}</p>
+                                <p class="order-1 truncate text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($row['label']) }}</p>
                             </div>
+                        </{{ $tag }}>
+                    @endforeach
+                </div>
 
-                            <p class="order-3 mt-1 text-xs font-medium text-gray-300">{{ __($row['description']) }}</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-3">
+                    @foreach ($smallRows as $row)
+                        @php $accent = $operationAccent($row); $tag = $operationTag($row); @endphp
+                        <{{ $tag }}
+                            @if ($tag === 'a') href="{{ $row['href'] }}" @endif
+                            @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
+                            class="flex flex-col text-left rounded-lg bg-white/5 p-3 ring-1 ring-white/10 transition hover:bg-white/10"
+                        >
+                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md {{ $accent['icon'] }}">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
+                            </span>
+                            <p class="mt-2 text-lg font-bold whitespace-nowrap {{ $accent['value'] }}">{{ $row['value'] }}</p>
+                            <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide leading-tight text-gray-300">{{ __($row['label']) }}</p>
                         </{{ $tag }}>
                     @endforeach
                 </div>
