@@ -116,7 +116,5 @@
                 </div>
             </div>
         @endif
-
-        @include('partials.push-notifications')
     </body>
 </html>

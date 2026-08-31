@@ -1,3 +1,9 @@
+@php
+    // This is included via @include (not <x-partial />), so defaults are
+    // set the plain-variable way rather than with @props.
+    $sidebar ??= false;
+@endphp
+
 @auth
     @if (config('services.webpush.vapid_public_key'))
         <div
@@ -87,25 +93,57 @@
             }"
             x-show="supported"
             x-cloak
-            class="fixed top-6 right-6 z-50 print:hidden"
-            style="display: none;"
+            @if ($sidebar)
+                class="print:hidden"
+            @else
+                class="fixed top-6 right-6 z-50 print:hidden"
+                style="display: none;"
+            @endif
         >
-            <div class="rounded-lg bg-black px-4 py-3 text-white shadow-lg text-xs">
-                <template x-if="!subscribed">
-                    <button type="button" @click="subscribe()" :disabled="busy" class="font-medium text-amber-400 hover:text-amber-300 disabled:opacity-50">
-                        <span x-show="!busy">🔔 Enable Notifications</span>
-                        <span x-show="busy" x-cloak>Enabling…</span>
-                    </button>
-                </template>
-                <template x-if="subscribed">
-                    <div class="flex items-center gap-3">
-                        <span class="text-gray-300">🔔 Notifications on</span>
-                        <button type="button" @click="sendTest()" :disabled="busy" class="text-amber-400 hover:text-amber-300 font-medium disabled:opacity-50">{{ __('Test') }}</button>
-                        <button type="button" @click="unsubscribe()" :disabled="busy" class="text-gray-400 hover:text-white disabled:opacity-50">{{ __('Turn off') }}</button>
-                    </div>
-                </template>
-                <p x-show="message" x-text="message" x-cloak class="mt-1 text-gray-400"></p>
-            </div>
+            @if ($sidebar)
+                {{-- Embedded in the sidebar footer, above the account block -
+                     no fixed positioning here, so it can never float over
+                     page content the way the guest-layout version does. --}}
+                <div class="rounded-lg bg-gray-900 ring-1 ring-gray-800 px-3 py-2.5 text-xs">
+                    <template x-if="!subscribed">
+                        <button type="button" @click="subscribe()" :disabled="busy" class="flex w-full items-center gap-2 font-medium text-amber-400 hover:text-amber-300 disabled:opacity-50">
+                            <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                            <span x-show="!busy">{{ __('Enable Notifications') }}</span>
+                            <span x-show="busy" x-cloak>{{ __('Enabling…') }}</span>
+                        </button>
+                    </template>
+                    <template x-if="subscribed">
+                        <div>
+                            <span class="flex items-center gap-2 text-gray-300">
+                                <svg class="h-4 w-4 shrink-0 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                                {{ __('Notifications on') }}
+                            </span>
+                            <div class="mt-1.5 flex items-center gap-3 ps-6">
+                                <button type="button" @click="sendTest()" :disabled="busy" class="text-amber-400 hover:text-amber-300 font-medium disabled:opacity-50">{{ __('Test') }}</button>
+                                <button type="button" @click="unsubscribe()" :disabled="busy" class="text-gray-400 hover:text-white disabled:opacity-50">{{ __('Turn off') }}</button>
+                            </div>
+                        </div>
+                    </template>
+                    <p x-show="message" x-text="message" x-cloak class="mt-1 text-gray-400"></p>
+                </div>
+            @else
+                <div class="rounded-lg bg-black px-4 py-3 text-white shadow-lg text-xs">
+                    <template x-if="!subscribed">
+                        <button type="button" @click="subscribe()" :disabled="busy" class="font-medium text-amber-400 hover:text-amber-300 disabled:opacity-50">
+                            <span x-show="!busy">🔔 {{ __('Enable Notifications') }}</span>
+                            <span x-show="busy" x-cloak>{{ __('Enabling…') }}</span>
+                        </button>
+                    </template>
+                    <template x-if="subscribed">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-300">🔔 {{ __('Notifications on') }}</span>
+                            <button type="button" @click="sendTest()" :disabled="busy" class="text-amber-400 hover:text-amber-300 font-medium disabled:opacity-50">{{ __('Test') }}</button>
+                            <button type="button" @click="unsubscribe()" :disabled="busy" class="text-gray-400 hover:text-white disabled:opacity-50">{{ __('Turn off') }}</button>
+                        </div>
+                    </template>
+                    <p x-show="message" x-text="message" x-cloak class="mt-1 text-gray-400"></p>
+                </div>
+            @endif
         </div>
     @endif
 @endauth
