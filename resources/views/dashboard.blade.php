@@ -1203,13 +1203,23 @@
                 </div>
             @endif
 
+            @php
+                $idCardIconPath = 'M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0';
+                $vehicleIconPath = 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12';
+                $certificateIconPath = 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5';
+            @endphp
+
             @if ($learnersPermitRequests->isNotEmpty())
                 @include('dashboard.partials.service-requests', [
                     'title' => "Learner's Permit Requests",
                     'subtitle' => "Track and manage learner's permit applications",
                     'requests' => $learnersPermitRequests,
+                    'stats' => $learnersPermitStats,
+                    'completedLabel' => 'Permit Obtained',
                     'actionLabel' => 'Mark Obtained',
                     'actionStatus' => 'completed',
+                    'pageName' => 'permit_page',
+                    'iconPaths' => [$idCardIconPath, $vehicleIconPath],
                 ])
             @endif
 
@@ -1218,8 +1228,12 @@
                     'title' => 'Online Certificate Requests',
                     'subtitle' => 'Track and manage online certificate requests',
                     'requests' => $onlineCertificateRequests,
+                    'stats' => $onlineCertificateStats,
+                    'completedLabel' => 'Certificate Obtained',
                     'actionLabel' => 'Mark Obtained',
                     'actionStatus' => 'completed',
+                    'pageName' => 'certificate_page',
+                    'iconPaths' => [$certificateIconPath],
                 ])
             @endif
 
@@ -1228,8 +1242,12 @@
                     'title' => "Driver's License Requests",
                     'subtitle' => "Track and manage driver's license applications",
                     'requests' => $driversLicenseRequests,
+                    'stats' => $driversLicenseStats,
+                    'completedLabel' => 'Licenses Obtained',
                     'actionLabel' => 'Start Processing',
                     'actionStatus' => 'processing',
+                    'pageName' => 'license_page',
+                    'iconPaths' => [$idCardIconPath],
                 ])
             @endif
 

@@ -143,8 +143,8 @@ class DashboardController extends Controller
         // own list of students still waiting, oldest charge first, so a
         // request that's lingered past the usual same-day turnaround
         // stands out.
-        $learnersPermitRequests = $this->pendingRequestsFor("Learner's Permit", 'permit_page');
-        $onlineCertificateRequests = $this->pendingRequestsFor('Online Certificate', 'certificate_page');
+        $learnersPermitRequests = $this->pendingRequestsFor("Learner's Permit", 'permit_page', $request);
+        $onlineCertificateRequests = $this->pendingRequestsFor('Online Certificate', 'certificate_page', $request);
 
         // Driver's License Processing does have a tracked turnaround, so
         // once it's marked "processing" it already shows above with a
@@ -153,9 +153,16 @@ class DashboardController extends Controller
         $driversLicenseRequests = StudentService::whereHas('service', fn ($query) => $query->where('name', "Driver's License Processing"))
             ->where('processing_status', 'not_started')
             ->with(['student', 'service'])
-            ->oldest('created_at')
+            ->orderBy('created_at', $request->query('license_page_sort') === 'latest' ? 'desc' : 'asc')
             ->paginate(10, ['*'], 'license_page')
             ->withQueryString();
+
+        // Widget-level summary tiles (Total Students / Charged / Paid /
+        // Obtained) cover every charge ever made for the service, not just
+        // the still-pending ones listed below them.
+        $learnersPermitStats = $this->serviceRequestStats("Learner's Permit");
+        $onlineCertificateStats = $this->serviceRequestStats('Online Certificate');
+        $driversLicenseStats = $this->serviceRequestStats("Driver's License Processing");
 
         // Programme Upgrade Window: every active enrollment that actually has
         // a longer programme to upgrade into, split into the two states
@@ -276,26 +283,48 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
     }
 
     /**
-     * Every not-yet-completed charge for the named catalog service,
-     * oldest first - shared by the Learner's Permit and Online
-     * Certificate widgets, which (unlike Driver's License Processing)
+     * Every not-yet-completed charge for the named catalog service, oldest
+     * first by default (or newest first when the widget's own "{page}_sort"
+     * query parameter is "latest") - shared by the Learner's Permit and
+     * Online Certificate widgets, which (unlike Driver's License Processing)
      * have no tracked turnaround and so never appear in the Service
      * Processing widget in any state. Paginated under its own page-name
      * query parameter so the two widgets (and the Driver's License
      * Requests one) can each page independently on the same dashboard.
      */
-    protected function pendingRequestsFor(string $serviceName, string $pageName): LengthAwarePaginator
+    protected function pendingRequestsFor(string $serviceName, string $pageName, Request $request): LengthAwarePaginator
     {
         return StudentService::whereHas('service', fn ($query) => $query->where('name', $serviceName))
             ->where('processing_status', '!=', 'completed')
             ->with(['student', 'service'])
-            ->oldest('created_at')
+            ->orderBy('created_at', $request->query("{$pageName}_sort") === 'latest' ? 'desc' : 'asc')
             ->paginate(10, ['*'], $pageName)
             ->withQueryString();
+    }
+
+    /**
+     * Widget-level summary for a catalog service's requests: how many
+     * distinct students have ever been charged for it, how many charges
+     * that is in total, how many are fully paid, and how many have reached
+     * "completed" (i.e. obtained/delivered) - across every charge for the
+     * service, not just the still-pending ones the widget lists below.
+     *
+     * @return array{total_students: int, charged: int, paid: int, completed: int}
+     */
+    protected function serviceRequestStats(string $serviceName): array
+    {
+        $charges = StudentService::whereHas('service', fn ($query) => $query->where('name', $serviceName))->get();
+
+        return [
+            'total_students' => $charges->pluck('student_id')->unique()->count(),
+            'charged' => $charges->count(),
+            'paid' => $charges->filter(fn (StudentService $charge) => $charge->status() === 'paid')->count(),
+            'completed' => $charges->where('processing_status', 'completed')->count(),
+        ];
     }
 
     /**
