@@ -130,6 +130,125 @@
             </div>
 
             @php
+                $academicCapPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';
+
+                $quickStatsAccent = [
+                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400'],
+                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
+                    'teal' => ['icon' => 'bg-teal-500/10 text-teal-400', 'value' => 'text-teal-400'],
+                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
+                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400'],
+                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
+                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
+                ];
+
+                $quickStats = [
+                    [
+                        'title' => 'Students', 'subtitle' => 'Total registered students', 'href' => route('students.index'),
+                        'value' => number_format($stats['students']), 'color' => 'purple',
+                        'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
+                    ],
+                    [
+                        'title' => 'Instructors', 'subtitle' => 'Total active instructors', 'href' => route('instructors.index'),
+                        'value' => number_format($stats['instructors']), 'color' => 'blue',
+                        'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
+                    ],
+                    [
+                        'title' => 'Vehicles', 'subtitle' => 'Total active vehicles', 'href' => route('vehicles.index'),
+                        'value' => number_format($kpis['active_vehicles']), 'color' => 'teal',
+                        'icon' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
+                    ],
+                    [
+                        'title' => 'Certificates', 'subtitle' => 'Total certificates issued', 'href' => route('certificates.index'),
+                        'value' => number_format($stats['certificates']), 'color' => 'indigo',
+                        'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
+                    ],
+                    [
+                        'title' => 'Paid Today', 'subtitle' => 'Total amount received today', 'href' => route('payments.index'),
+                        'value' => '₦'.number_format($stats['payments'], 2), 'color' => 'amber',
+                        'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
+                    ],
+                    [
+                        'title' => 'Trainings Today', 'subtitle' => 'Training sessions logged today', 'href' => route('training-report.index', ['period' => 'today']),
+                        'value' => number_format($todaysOperations['training_sessions']), 'color' => 'sky',
+                        'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
+                    ],
+                    [
+                        'title' => 'Pending Payments', 'subtitle' => 'Total pending payments', 'href' => '#outstanding-payments',
+                        'value' => '₦'.number_format($kpis['pending_payments'], 2), 'color' => 'orange',
+                        'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
+                    ],
+                    [
+                        'title' => 'At-Risk Students', 'subtitle' => 'Students needing attention', 'href' => '#at-risk-students',
+                        'value' => number_format($kpis['at_risk_students']), 'color' => 'red',
+                        'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z',
+                    ],
+                ];
+            @endphp
+
+            <div class="bg-black text-white rounded-xl p-8 mt-6">
+                <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-2xl font-bold">{{ __('Quick Stats') }}</h3>
+                        <p class="text-sm font-medium text-gray-200">{{ __('Key numbers at a glance') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    @foreach ($quickStats as $card)
+                        @php $accent = $quickStatsAccent[$card['color']]; @endphp
+                        <a href="{{ $card['href'] }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                            <div class="flex items-center gap-2.5">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+                                </span>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['title']) }}</p>
+                            </div>
+
+                            <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
+
+                            <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['subtitle']) }}</p>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
+
+                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-50 via-amber-50 to-white p-8">
+                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="relative inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-amber-200 px-4 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition mb-4">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+                        {{ __('New Leads') }}: {{ number_format($stats['new_leads']) }}
+                    </a>
+
+                    <h1 class="relative text-3xl font-bold text-gray-800">
+                        {{ __('Welcome to') }} <span class="text-amber-500">CDSMS</span>
+                    </h1>
+
+                    <p class="relative mt-3 text-gray-600">
+                        {{ __('Classic Driving School Management System') }}
+                    </p>
+
+                    <form method="get" action="{{ route('students.index') }}" class="relative mt-6 flex gap-2 max-w-xl">
+                        <div class="relative flex-1">
+                            <svg class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
+                            <input type="text" name="search" placeholder="{{ __('Search students by name, email, or phone') }}" class="w-full rounded-full border-gray-300 pl-11 focus:border-amber-500 focus:ring-amber-500 shadow-sm">
+                        </div>
+                        <button type="submit" class="rounded-full bg-black px-6 py-2 text-sm font-bold text-amber-400 hover:bg-gray-800 transition">{{ __('Search') }}</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4 mt-8 mb-2">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Needs Attention Today') }}</h2>
+            </div>
+
+            @php
                 $operationIcons = [
                     'pending_approvals' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
                     'students_trained' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
@@ -295,119 +414,383 @@
             </div>
 
             @php
-                $academicCapPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';
-
-                $quickStatsAccent = [
-                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400'],
-                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
-                    'teal' => ['icon' => 'bg-teal-500/10 text-teal-400', 'value' => 'text-teal-400'],
-                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
-                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
-                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400'],
-                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
-                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
-                ];
-
-                $quickStats = [
-                    [
-                        'title' => 'Students', 'subtitle' => 'Total registered students', 'href' => route('students.index'),
-                        'value' => number_format($stats['students']), 'color' => 'purple',
-                        'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
-                    ],
-                    [
-                        'title' => 'Instructors', 'subtitle' => 'Total active instructors', 'href' => route('instructors.index'),
-                        'value' => number_format($stats['instructors']), 'color' => 'blue',
-                        'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
-                    ],
-                    [
-                        'title' => 'Vehicles', 'subtitle' => 'Total active vehicles', 'href' => route('vehicles.index'),
-                        'value' => number_format($kpis['active_vehicles']), 'color' => 'teal',
-                        'icon' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
-                    ],
-                    [
-                        'title' => 'Certificates', 'subtitle' => 'Total certificates issued', 'href' => route('certificates.index'),
-                        'value' => number_format($stats['certificates']), 'color' => 'indigo',
-                        'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
-                    ],
-                    [
-                        'title' => 'Paid Today', 'subtitle' => 'Total amount received today', 'href' => route('payments.index'),
-                        'value' => '₦'.number_format($stats['payments'], 2), 'color' => 'amber',
-                        'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
-                    ],
-                    [
-                        'title' => 'Trainings Today', 'subtitle' => 'Training sessions logged today', 'href' => route('training-report.index', ['period' => 'today']),
-                        'value' => number_format($todaysOperations['training_sessions']), 'color' => 'sky',
-                        'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
-                    ],
-                    [
-                        'title' => 'Pending Payments', 'subtitle' => 'Total pending payments', 'href' => '#outstanding-payments',
-                        'value' => '₦'.number_format($kpis['pending_payments'], 2), 'color' => 'orange',
-                        'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
-                    ],
-                    [
-                        'title' => 'At-Risk Students', 'subtitle' => 'Students needing attention', 'href' => '#at-risk-students',
-                        'value' => number_format($kpis['at_risk_students']), 'color' => 'red',
-                        'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z',
-                    ],
-                ];
+                $usersIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
+                $upArrowIconPath = 'M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18';
+                $minusCircleIconPath = 'M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
             @endphp
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
-
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-50 via-amber-50 to-white p-8">
-                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="relative inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-amber-200 px-4 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition mb-4">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
-                        {{ __('New Leads') }}: {{ number_format($stats['new_leads']) }}
-                    </a>
-
-                    <h1 class="relative text-3xl font-bold text-gray-800">
-                        {{ __('Welcome to') }} <span class="text-amber-500">CDSMS</span>
-                    </h1>
-
-                    <p class="relative mt-3 text-gray-600">
-                        {{ __('Classic Driving School Management System') }}
-                    </p>
-
-                    <form method="get" action="{{ route('students.index') }}" class="relative mt-6 flex gap-2 max-w-xl">
-                        <div class="relative flex-1">
-                            <svg class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                            <input type="text" name="search" placeholder="{{ __('Search students by name, email, or phone') }}" class="w-full rounded-full border-gray-300 pl-11 focus:border-amber-500 focus:ring-amber-500 shadow-sm">
+            <div class="bg-black text-white rounded-xl p-8 mt-6">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-bold">{{ __("Today's Attendance") }}</h3>
+                            <p class="text-sm font-medium text-gray-200">{{ __('See how many students are present and absent today.') }}</p>
                         </div>
-                        <button type="submit" class="rounded-full bg-black px-6 py-2 text-sm font-bold text-amber-400 hover:bg-gray-800 transition">{{ __('Search') }}</button>
-                    </form>
+                    </div>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white">
+                        <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                        {{ now()->format('M j, Y') }}
+                    </span>
                 </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-emerald-400/50 transition hover:ring-emerald-400/80">
+                        <div class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                            </span>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Present') }}</p>
+                        </div>
+
+                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-emerald-400">{{ $presentToday->count() }}</p>
+
+                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
+                    </button>
+
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
+                        <div class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                            </span>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Absent') }}</p>
+                        </div>
+
+                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-red-400">{{ $absentToday->count() }}</p>
+
+                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
+                    </button>
+                </div>
             </div>
 
-            <div class="bg-black text-white rounded-xl p-8 mt-6">
-                <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
-                    </span>
-                    <div>
-                        <h3 class="text-2xl font-bold">{{ __('Quick Stats') }}</h3>
-                        <p class="text-sm font-medium text-gray-200">{{ __('Key numbers at a glance') }}</p>
+            <x-modal name="present-today-modal">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🟢 {{ __('Students Present Today') }}</h3>
+                    @if ($presentToday->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('No one has checked in yet today.') }}</p>
+                    @else
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($presentToday as $attendance)
+                                <div class="py-2.5 text-sm">
+                                    <div class="flex items-center justify-between gap-4">
+                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
+                                        <span class="text-xs text-gray-500 whitespace-nowrap">{{ __('Checked in') }}: {{ $attendance->created_at->format('g:i A') }}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        {{ $attendance->course->name }}
+                                        · {{ $attendance->type ? ucfirst($attendance->type) : '—' }} {{ __('Training') }}
+                                        · {{ __('Instructor') }}: {{ $attendance->instructor->name ?? '—' }}
+                                    </p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="mt-4 text-right">
+                        <x-secondary-button x-on:click="$dispatch('close-modal', 'present-today-modal')">{{ __('Close') }}</x-secondary-button>
+                    </div>
+                </div>
+            </x-modal>
+
+            <x-modal name="absent-today-modal">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Students Absent Today') }}</h3>
+                    @if ($absentToday->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('Everyone expected today has checked in.') }}</p>
+                    @else
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($absentToday as $enrollment)
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <div>
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="mt-4 text-right">
+                        <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-today-modal')">{{ __('Close') }}</x-secondary-button>
+                    </div>
+                </div>
+            </x-modal>
+
+            @if ($upcomingPayments->isNotEmpty() || $lockedEnrollments->isNotEmpty())
+                <div id="outstanding-payments" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Outstanding Payments') }}</h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        @if ($upcomingPayments->isNotEmpty())
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="text-left rounded-lg p-5 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition">
+                                <p class="text-xs uppercase tracking-wider text-amber-700 font-semibold">🟠 {{ __('Upcoming') }}</p>
+                                <p class="text-3xl font-bold text-amber-700 mt-1">{{ $upcomingPayments->count() }}</p>
+                                <p class="text-xs text-amber-600 mt-1">{{ __('Click to view names') }}</p>
+                            </button>
+                        @endif
+
+                        @if ($lockedEnrollments->isNotEmpty())
+                            <button type="button" id="locked-students" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
+                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔒 {{ __('Locked') }}</p>
+                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $lockedEnrollments->count() }}</p>
+                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
+                            </button>
+                        @endif
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    @foreach ($quickStats as $card)
-                        @php $accent = $quickStatsAccent[$card['color']]; @endphp
-                        <a href="{{ $card['href'] }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
-                            <div class="flex items-center gap-2.5">
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
-                                </span>
-                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['title']) }}</p>
+                @if ($upcomingPayments->isNotEmpty())
+                    <x-modal name="upcoming-payments-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">🟠 {{ __('Upcoming Payments') }}</h3>
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($upcomingPayments as $enrollment)
+                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                        <div>
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                        </div>
+                                        <span class="text-xs text-gray-500 whitespace-nowrap">₦{{ number_format($enrollment->balance(), 2) }} · {{ optional($enrollment->due_date)->format('Y-m-d') ?? '—' }}</span>
+                                    </div>
+                                @endforeach
                             </div>
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'upcoming-payments-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endif
 
-                            <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
+                @if ($lockedEnrollments->isNotEmpty())
+                    <x-modal name="locked-students-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Students') }}</h3>
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($lockedEnrollments as $enrollment)
+                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                        <div>
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <span class="text-gray-500"> — {{ $enrollment->course->name }} · ₦{{ number_format($enrollment->balance(), 2) }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 whitespace-nowrap">
+                                            <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
+                                            @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-students-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endif
+            @endif
 
-                            <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['subtitle']) }}</p>
-                        </a>
-                    @endforeach
+            @if ($approachingCompletionEnrollments->isNotEmpty())
+                <x-modal name="approaching-completion-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">⏳ {{ __('Approaching Completion') }}</h3>
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($approachingCompletionEnrollments as $enrollment)
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <div>
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                    </div>
+                                    <div class="whitespace-nowrap text-gray-500">
+                                        {{ trans_choice('{1} :count training day remaining|[2,*] :count training days remaining', $enrollment->remainingDays, ['count' => $enrollment->remainingDays]) }}
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'approaching-completion-modal')">{{ __('Close') }}</x-secondary-button>
+                        </div>
+                    </div>
+                </x-modal>
+            @endif
+
+            @if ($atRiskEnrollments->isNotEmpty())
+                <div id="at-risk-students" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">{{ __('At-Risk Students') }}</h3>
+                        <x-badge color="red">{{ $atRiskEnrollments->count() }} {{ __('Flagged') }}</x-badge>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">{{ __('Active students who still owe money and are also showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Course') }}</th>
+                                    <th class="pb-2 pr-4">{{ __('Risk') }}</th>
+                                    <th class="pb-2">{{ __('Reason(s)') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($atRiskEnrollments as $enrollment)
+                                    <tr>
+                                        <td class="py-2 pr-4">
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
+                                                {{ $enrollment->student->name }}
+                                            </a>
+                                        </td>
+                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
+                                        <td class="py-2 pr-4">
+                                            <x-badge :color="$enrollment->riskLevel() === 'high' ? 'red' : 'amber'">{{ __(ucfirst($enrollment->riskLevel())) }}</x-badge>
+                                        </td>
+                                        <td class="py-2">{{ implode(' · ', $enrollment->riskReasons()) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            @endif
+
+            @if ($revenueLeakage->isNotEmpty())
+                <div id="revenue-leakage" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">{{ __('Revenue Leakage') }}</h3>
+                        <x-badge color="red">₦{{ number_format($revenueLeakage->sum('balance'), 2) }} {{ __('Uncollected') }}</x-badge>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">{{ __('Certificate fees on completed enrollments, and services already delivered, that are still unpaid — the work is done, so nothing will prompt collection unless staff act on it.') }}</p>
+
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="pb-2">{{ __('Student') }}</th>
+                                <th class="pb-2">{{ __('Item') }}</th>
+                                <th class="pb-2">{{ __('Balance') }}</th>
+                                <th class="pb-2">{{ __('Delivered') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @foreach ($revenueLeakage as $leak)
+                                <tr>
+                                    <td class="py-2">
+                                        <a href="{{ route('students.show', $leak['student']->id) }}" class="text-amber-600 hover:underline">
+                                            {{ $leak['student']->name }}
+                                        </a>
+                                    </td>
+                                    <td class="py-2">{{ $leak['label'] }}</td>
+                                    <td class="py-2">₦{{ number_format($leak['balance'], 2) }}</td>
+                                    <td class="py-2">{{ $leak['since']->diffForHumans() }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
+            @if ($upgradeEligible->isNotEmpty() || $upgradeClosed->isNotEmpty())
+                <div class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
+                    <div class="flex items-center gap-4 mb-5">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Programme Upgrade Window') }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('Check eligible students for programme upgrades.') }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        @if ($upgradeEligible->isNotEmpty())
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-eligible-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-green-50/60 ring-1 ring-green-100 border-l-4 border-green-500 p-6 transition hover:shadow-md">
+                                <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-green-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $upArrowIconPath }}" /></svg>
+                                <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $upArrowIconPath }}" /></svg>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold uppercase tracking-wide text-green-700">{{ __('Eligible for Upgrade') }}</p>
+                                        <p class="text-3xl font-extrabold break-words text-green-700 mt-1">{{ $upgradeEligible->count() }}</p>
+                                        <p class="mt-1 text-sm text-green-600">{{ __('Click to view names') }}</p>
+                                    </div>
+                                </div>
+                                <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-green-600 transition group-hover:translate-x-0.5">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                </span>
+                            </button>
+                        @endif
+
+                        @if ($upgradeClosed->isNotEmpty())
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-closed-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-red-50/60 ring-1 ring-red-100 border-l-4 border-red-500 p-6 transition hover:shadow-md">
+                                <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-red-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $minusCircleIconPath }}" /></svg>
+                                <div class="relative flex flex-1 items-center gap-4 min-w-0">
+                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $minusCircleIconPath }}" /></svg>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-bold uppercase tracking-wide text-red-700">{{ __('Upgrade Window Closed') }}</p>
+                                        <p class="text-3xl font-extrabold break-words text-red-700 mt-1">{{ $upgradeClosed->count() }}</p>
+                                        <p class="mt-1 text-sm text-red-600">{{ __('Click to view names') }}</p>
+                                    </div>
+                                </div>
+                                <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-red-600 transition group-hover:translate-x-0.5">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                </span>
+                            </button>
+                        @endif
+                    </div>
+                </div>
+
+                @if ($upgradeEligible->isNotEmpty())
+                    <x-modal name="upgrade-eligible-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">🎓 {{ __('Eligible for Upgrade') }}</h3>
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($upgradeEligible as $enrollment)
+                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                        <div>
+                                            @if ($enrollment->canUpgrade() && auth()->user()->isDirector())
+                                                <a href="{{ route('enrollments.upgrade.create', $enrollment->id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            @else
+                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            @endif
+                                            <span class="text-gray-500"> — {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}</span>
+                                        </div>
+                                        <span class="text-xs whitespace-nowrap {{ $enrollment->upgradeDaysRemaining() > 0 ? 'text-amber-600' : 'text-red-600 font-semibold' }}">
+                                            @if ($enrollment->upgradeDaysRemaining() > 0)
+                                                {{ $enrollment->upgradeDaysRemaining() }} {{ __('day(s) left') }}
+                                            @else
+                                                ⚠️ {{ __('Closes today') }}
+                                            @endif
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'upgrade-eligible-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endif
+
+                @if ($upgradeClosed->isNotEmpty())
+                    <x-modal name="upgrade-closed-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">⛔ {{ __('Upgrade Window Closed') }}</h3>
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($upgradeClosed as $enrollment)
+                                    <div class="py-2.5 text-sm">
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <span class="text-gray-500"> — {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'upgrade-closed-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endif
+            @endif
 
             @php
                 $periodIllustration = [
@@ -616,385 +999,6 @@
                         </div>
                     </div>
                 </x-modal>
-            @endif
-
-            @php
-                $usersIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
-                $upArrowIconPath = 'M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18';
-                $minusCircleIconPath = 'M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
-            @endphp
-
-            <div class="bg-black text-white rounded-xl p-8 mt-6">
-                <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                        </span>
-                        <div>
-                            <h3 class="text-2xl font-bold">{{ __("Today's Attendance") }}</h3>
-                            <p class="text-sm font-medium text-gray-200">{{ __('See how many students are present and absent today.') }}</p>
-                        </div>
-                    </div>
-                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white">
-                        <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                        {{ now()->format('M j, Y') }}
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-emerald-400/50 transition hover:ring-emerald-400/80">
-                        <div class="flex items-center gap-2.5">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                            </span>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Present') }}</p>
-                        </div>
-
-                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-emerald-400">{{ $presentToday->count() }}</p>
-
-                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
-                    </button>
-
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
-                        <div class="flex items-center gap-2.5">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                            </span>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Absent') }}</p>
-                        </div>
-
-                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-red-400">{{ $absentToday->count() }}</p>
-
-                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
-                    </button>
-                </div>
-            </div>
-
-            <x-modal name="present-today-modal">
-                <div class="p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">🟢 {{ __('Students Present Today') }}</h3>
-                    @if ($presentToday->isEmpty())
-                        <p class="text-sm text-gray-500">{{ __('No one has checked in yet today.') }}</p>
-                    @else
-                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                            @foreach ($presentToday as $attendance)
-                                <div class="py-2.5 text-sm">
-                                    <div class="flex items-center justify-between gap-4">
-                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
-                                        <span class="text-xs text-gray-500 whitespace-nowrap">{{ __('Checked in') }}: {{ $attendance->created_at->format('g:i A') }}</span>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-0.5">
-                                        {{ $attendance->course->name }}
-                                        · {{ $attendance->type ? ucfirst($attendance->type) : '—' }} {{ __('Training') }}
-                                        · {{ __('Instructor') }}: {{ $attendance->instructor->name ?? '—' }}
-                                    </p>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                    <div class="mt-4 text-right">
-                        <x-secondary-button x-on:click="$dispatch('close-modal', 'present-today-modal')">{{ __('Close') }}</x-secondary-button>
-                    </div>
-                </div>
-            </x-modal>
-
-            <x-modal name="absent-today-modal">
-                <div class="p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">🔴 {{ __('Students Absent Today') }}</h3>
-                    @if ($absentToday->isEmpty())
-                        <p class="text-sm text-gray-500">{{ __('Everyone expected today has checked in.') }}</p>
-                    @else
-                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                            @foreach ($absentToday as $enrollment)
-                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                    <div>
-                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                    <div class="mt-4 text-right">
-                        <x-secondary-button x-on:click="$dispatch('close-modal', 'absent-today-modal')">{{ __('Close') }}</x-secondary-button>
-                    </div>
-                </div>
-            </x-modal>
-
-            @if ($upcomingPayments->isNotEmpty() || $lockedEnrollments->isNotEmpty())
-                <div id="outstanding-payments" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Outstanding Payments') }}</h3>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @if ($upcomingPayments->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="text-left rounded-lg p-5 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-amber-700 font-semibold">🟠 {{ __('Upcoming') }}</p>
-                                <p class="text-3xl font-bold text-amber-700 mt-1">{{ $upcomingPayments->count() }}</p>
-                                <p class="text-xs text-amber-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
-                        @endif
-
-                        @if ($lockedEnrollments->isNotEmpty())
-                            <button type="button" id="locked-students" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔒 {{ __('Locked') }}</p>
-                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $lockedEnrollments->count() }}</p>
-                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
-                        @endif
-                    </div>
-                </div>
-
-                @if ($upcomingPayments->isNotEmpty())
-                    <x-modal name="upcoming-payments-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🟠 {{ __('Upcoming Payments') }}</h3>
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($upcomingPayments as $enrollment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
-                                        </div>
-                                        <span class="text-xs text-gray-500 whitespace-nowrap">₦{{ number_format($enrollment->balance(), 2) }} · {{ optional($enrollment->due_date)->format('Y-m-d') ?? '—' }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'upcoming-payments-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
-                        </div>
-                    </x-modal>
-                @endif
-
-                @if ($lockedEnrollments->isNotEmpty())
-                    <x-modal name="locked-students-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Students') }}</h3>
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($lockedEnrollments as $enrollment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }} · ₦{{ number_format($enrollment->balance(), 2) }}</span>
-                                        </div>
-                                        <div class="flex items-center gap-2 whitespace-nowrap">
-                                            <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
-                                            @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
-                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-students-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
-                        </div>
-                    </x-modal>
-                @endif
-            @endif
-
-            @if ($approachingCompletionEnrollments->isNotEmpty())
-                <x-modal name="approaching-completion-modal">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">⏳ {{ __('Approaching Completion') }}</h3>
-                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                            @foreach ($approachingCompletionEnrollments as $enrollment)
-                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                    <div>
-                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                        <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
-                                    </div>
-                                    <div class="whitespace-nowrap text-gray-500">
-                                        {{ trans_choice('{1} :count training day remaining|[2,*] :count training days remaining', $enrollment->remainingDays, ['count' => $enrollment->remainingDays]) }}
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                        <div class="mt-4 text-right">
-                            <x-secondary-button x-on:click="$dispatch('close-modal', 'approaching-completion-modal')">{{ __('Close') }}</x-secondary-button>
-                        </div>
-                    </div>
-                </x-modal>
-            @endif
-
-            @if ($atRiskEnrollments->isNotEmpty())
-                <div id="at-risk-students" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">{{ __('At-Risk Students') }}</h3>
-                        <x-badge color="red">{{ $atRiskEnrollments->count() }} {{ __('Flagged') }}</x-badge>
-                    </div>
-                    <p class="text-sm text-gray-500 mb-4">{{ __('Active students who still owe money and are also showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
-
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Course') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Risk') }}</th>
-                                    <th class="pb-2">{{ __('Reason(s)') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($atRiskEnrollments as $enrollment)
-                                    <tr>
-                                        <td class="py-2 pr-4">
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
-                                                {{ $enrollment->student->name }}
-                                            </a>
-                                        </td>
-                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
-                                        <td class="py-2 pr-4">
-                                            <x-badge :color="$enrollment->riskLevel() === 'high' ? 'red' : 'amber'">{{ __(ucfirst($enrollment->riskLevel())) }}</x-badge>
-                                        </td>
-                                        <td class="py-2">{{ implode(' · ', $enrollment->riskReasons()) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @endif
-
-            @if ($revenueLeakage->isNotEmpty())
-                <div id="revenue-leakage" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">{{ __('Revenue Leakage') }}</h3>
-                        <x-badge color="red">₦{{ number_format($revenueLeakage->sum('balance'), 2) }} {{ __('Uncollected') }}</x-badge>
-                    </div>
-                    <p class="text-sm text-gray-500 mb-4">{{ __('Certificate fees on completed enrollments, and services already delivered, that are still unpaid — the work is done, so nothing will prompt collection unless staff act on it.') }}</p>
-
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <th class="pb-2">{{ __('Student') }}</th>
-                                <th class="pb-2">{{ __('Item') }}</th>
-                                <th class="pb-2">{{ __('Balance') }}</th>
-                                <th class="pb-2">{{ __('Delivered') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @foreach ($revenueLeakage as $leak)
-                                <tr>
-                                    <td class="py-2">
-                                        <a href="{{ route('students.show', $leak['student']->id) }}" class="text-amber-600 hover:underline">
-                                            {{ $leak['student']->name }}
-                                        </a>
-                                    </td>
-                                    <td class="py-2">{{ $leak['label'] }}</td>
-                                    <td class="py-2">₦{{ number_format($leak['balance'], 2) }}</td>
-                                    <td class="py-2">{{ $leak['since']->diffForHumans() }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-
-            @if ($upgradeEligible->isNotEmpty() || $upgradeClosed->isNotEmpty())
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <div class="flex items-center gap-4 mb-5">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white">
-                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" /></svg>
-                        </span>
-                        <div>
-                            <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Programme Upgrade Window') }}</h3>
-                            <p class="text-sm text-gray-500">{{ __('Check eligible students for programme upgrades.') }}</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @if ($upgradeEligible->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-eligible-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-green-50/60 ring-1 ring-green-100 border-l-4 border-green-500 p-6 transition hover:shadow-md">
-                                <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-green-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $upArrowIconPath }}" /></svg>
-                                <div class="relative flex flex-1 items-center gap-4 min-w-0">
-                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $upArrowIconPath }}" /></svg>
-                                    </span>
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-bold uppercase tracking-wide text-green-700">{{ __('Eligible for Upgrade') }}</p>
-                                        <p class="text-3xl font-extrabold break-words text-green-700 mt-1">{{ $upgradeEligible->count() }}</p>
-                                        <p class="mt-1 text-sm text-green-600">{{ __('Click to view names') }}</p>
-                                    </div>
-                                </div>
-                                <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-green-600 transition group-hover:translate-x-0.5">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                                </span>
-                            </button>
-                        @endif
-
-                        @if ($upgradeClosed->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upgrade-closed-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-red-50/60 ring-1 ring-red-100 border-l-4 border-red-500 p-6 transition hover:shadow-md">
-                                <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-red-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $minusCircleIconPath }}" /></svg>
-                                <div class="relative flex flex-1 items-center gap-4 min-w-0">
-                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $minusCircleIconPath }}" /></svg>
-                                    </span>
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-bold uppercase tracking-wide text-red-700">{{ __('Upgrade Window Closed') }}</p>
-                                        <p class="text-3xl font-extrabold break-words text-red-700 mt-1">{{ $upgradeClosed->count() }}</p>
-                                        <p class="mt-1 text-sm text-red-600">{{ __('Click to view names') }}</p>
-                                    </div>
-                                </div>
-                                <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-red-600 transition group-hover:translate-x-0.5">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                                </span>
-                            </button>
-                        @endif
-                    </div>
-                </div>
-
-                @if ($upgradeEligible->isNotEmpty())
-                    <x-modal name="upgrade-eligible-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🎓 {{ __('Eligible for Upgrade') }}</h3>
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($upgradeEligible as $enrollment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div>
-                                            @if ($enrollment->canUpgrade() && auth()->user()->isDirector())
-                                                <a href="{{ route('enrollments.upgrade.create', $enrollment->id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            @else
-                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            @endif
-                                            <span class="text-gray-500"> — {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}</span>
-                                        </div>
-                                        <span class="text-xs whitespace-nowrap {{ $enrollment->upgradeDaysRemaining() > 0 ? 'text-amber-600' : 'text-red-600 font-semibold' }}">
-                                            @if ($enrollment->upgradeDaysRemaining() > 0)
-                                                {{ $enrollment->upgradeDaysRemaining() }} {{ __('day(s) left') }}
-                                            @else
-                                                ⚠️ {{ __('Closes today') }}
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'upgrade-eligible-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
-                        </div>
-                    </x-modal>
-                @endif
-
-                @if ($upgradeClosed->isNotEmpty())
-                    <x-modal name="upgrade-closed-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">⛔ {{ __('Upgrade Window Closed') }}</h3>
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($upgradeClosed as $enrollment)
-                                    <div class="py-2.5 text-sm">
-                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                        <span class="text-gray-500"> — {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'upgrade-closed-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
-                        </div>
-                    </x-modal>
-                @endif
             @endif
 
             @if ($serviceProcessing->isNotEmpty())
