@@ -1035,20 +1035,66 @@
             @if ($serviceProcessing->isNotEmpty())
                 @php
                     $serviceProcessingNames = $serviceProcessing->pluck('service.name')->unique()->values();
+
+                    $pendingPaymentCount = $serviceProcessing->filter(fn (\App\Models\StudentService $studentService) => $studentService->balance() > 0)->count();
+                    $overdueCount = $serviceProcessing->filter(fn (\App\Models\StudentService $studentService) => $studentService->isOverdueProcessing())->count();
+                    // Not yet overdue, but due within the next 3 days - a
+                    // heads-up before a service tips over into Overdue.
+                    $needsAttentionCount = $serviceProcessing->filter(function (\App\Models\StudentService $studentService) {
+                        $expectedReadyAt = $studentService->expectedReadyAt();
+
+                        return $expectedReadyAt !== null && ! $studentService->isOverdueProcessing() && now()->diffInDays($expectedReadyAt, false) <= 3;
+                    })->count();
+
+                    $serviceStatCards = [
+                        ['label' => 'Total Services', 'value' => $serviceProcessing->count(), 'description' => 'All services in progress', 'color' => 'amber', 'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5'],
+                        ['label' => 'In Progress', 'value' => $serviceProcessing->count(), 'description' => 'Currently being processed', 'color' => 'green', 'icon' => 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                        ['label' => 'Pending Payment', 'value' => $pendingPaymentCount, 'description' => 'Awaiting payments', 'color' => 'indigo', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z'],
+                        ['label' => 'Overdue', 'value' => $overdueCount, 'description' => 'Overdue services', 'color' => 'orange', 'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                        ['label' => 'Needs Attention', 'value' => $needsAttentionCount, 'description' => 'Due within 3 days', 'color' => 'red', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'],
+                    ];
+                    $serviceStatColors = [
+                        'amber' => ['bg' => 'bg-amber-50/60', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-gray-900', 'line' => 'text-amber-400'],
+                        'green' => ['bg' => 'bg-green-50/60', 'icon' => 'bg-green-500 text-white', 'text' => 'text-green-600', 'line' => 'text-green-400'],
+                        'indigo' => ['bg' => 'bg-indigo-50/60', 'icon' => 'bg-indigo-100 text-indigo-600', 'text' => 'text-indigo-600', 'line' => 'text-indigo-400'],
+                        'orange' => ['bg' => 'bg-orange-50/60', 'icon' => 'bg-orange-100 text-orange-600', 'text' => 'text-orange-600', 'line' => 'text-orange-400'],
+                        'red' => ['bg' => 'bg-red-50/60', 'icon' => 'bg-red-100 text-red-600', 'text' => 'text-red-600', 'line' => 'text-red-400'],
+                    ];
                 @endphp
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6" x-data="{ activeFilter: 'all', overdueOnly: false }">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
-                        <div>
-                            <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Service Processing') }}</h3>
-                            <p class="text-sm text-gray-500">{{ __('Track and manage all ongoing services') }}</p>
-                        </div>
-                        <div class="flex items-center gap-3 rounded-xl bg-gray-50 ring-1 ring-gray-200 px-4 py-2 shrink-0">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+                        <div class="flex items-center gap-4">
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5" /></svg>
+                            </span>
                             <div>
-                                <p class="text-xl font-extrabold text-gray-900 leading-none">{{ $serviceProcessing->count() }}</p>
-                                <p class="mt-0.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wide whitespace-nowrap">{{ __('In Progress') }}</p>
+                                <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Service Processing') }}</h3>
+                                <p class="text-sm text-gray-500">{{ __('Track and manage all ongoing services') }}</p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                        @foreach ($serviceStatCards as $card)
+                            @php $accent = $serviceStatColors[$card['color']]; @endphp
+                            <div class="relative overflow-hidden rounded-xl {{ $accent['bg'] }} ring-1 ring-gray-100 p-4">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $accent['icon'] }}">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+                                </span>
+                                <p class="mt-3 text-[11px] font-bold uppercase tracking-wide text-gray-500">{{ __($card['label']) }}</p>
+                                <p class="mt-1 text-3xl font-extrabold {{ $accent['text'] }}">{{ $card['value'] }}</p>
+                                <p class="mt-1 text-xs text-gray-500">{{ __($card['description']) }}</p>
+                                <svg class="pointer-events-none absolute -bottom-1 left-0 h-8 w-full {{ $accent['line'] }} opacity-70" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none"><path d="M0 32 Q30 34 50 26 T100 22 T150 10 T200 4" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+                        </span>
+                        <h4 class="text-lg font-bold text-gray-900">{{ __('Service List') }}</h4>
+                        <span class="text-sm text-gray-500">{{ trans_choice('{1} :count service in progress|[2,*] :count services in progress', $serviceProcessing->count(), ['count' => $serviceProcessing->count()]) }}</span>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2 mb-5">
@@ -1083,33 +1129,27 @@
                         </button>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-4">
+                    <div class="space-y-3">
                         @foreach ($serviceProcessing as $studentService)
                             @php
                                 $percent = $studentService->processingProgressPercent() ?? 0;
                                 $overdue = $studentService->isOverdueProcessing();
-                                $accent = match (true) {
-                                    $overdue => ['ring' => 'ring-red-200', 'bar' => 'from-red-500 to-red-600', 'edge' => 'bg-red-500'],
-                                    $percent >= 80 => ['ring' => 'ring-emerald-200', 'bar' => 'from-emerald-400 to-emerald-500', 'edge' => 'bg-emerald-500'],
-                                    $percent >= 40 => ['ring' => 'ring-amber-200', 'bar' => 'from-amber-400 to-amber-500', 'edge' => 'bg-amber-500'],
-                                    default => ['ring' => 'ring-gray-200', 'bar' => 'from-gray-400 to-gray-500', 'edge' => 'bg-gray-400'],
-                                };
+                                $edge = $overdue ? 'border-red-500' : 'border-amber-400';
+                                $bar = $overdue ? 'from-red-500 to-red-600' : 'from-amber-400 to-amber-500';
                                 $initials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                             @endphp
                             <a
                                 href="{{ route('students.show', $studentService->student_id) }}"
                                 x-show="(activeFilter === 'all' || activeFilter === @js($studentService->service->name)) && (!overdueOnly || {{ $overdue ? 'true' : 'false' }})"
-                                class="group relative flex flex-col overflow-hidden rounded-xl bg-white p-5 ring-1 {{ $accent['ring'] }} shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                                class="group flex flex-wrap items-center gap-4 rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $edge }} p-4 transition hover:shadow-md"
                             >
-                                <span class="absolute inset-y-0 left-0 w-1 {{ $accent['edge'] }}"></span>
-
-                                <div class="flex items-start gap-3">
-                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-sm font-bold text-amber-400">
+                                <div class="flex items-center gap-3 min-w-[14rem] flex-1">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-800">
                                         {{ $initials }}
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <p class="truncate font-semibold text-gray-800 group-hover:text-amber-600">{{ $studentService->student->name }}</p>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <p class="truncate font-bold text-gray-900 group-hover:text-amber-600">{{ $studentService->student->name }}</p>
                                             @if ($overdue)
                                                 <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
                                                     <svg class="h-2.5 w-2.5 fill-current" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
@@ -1117,41 +1157,39 @@
                                                 </span>
                                             @endif
                                         </div>
-                                        <span class="inline-block mt-0.5 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 truncate max-w-full">
-                                            {{ $studentService->service->name }}
-                                        </span>
+                                        <p class="text-sm text-gray-500 truncate">{{ $studentService->service->name }}</p>
                                     </div>
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                                    </span>
                                 </div>
 
-                                <div class="mt-4">
+                                <div class="flex items-start gap-1.5 text-xs">
+                                    <svg class="h-4 w-4 text-gray-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                                    <div>
+                                        <p class="text-gray-400">{{ __('Started') }}</p>
+                                        <p class="font-semibold text-gray-700">{{ $studentService->processing_started_at?->format('M j, Y') ?? '—' }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-1.5 text-xs">
+                                    <svg class="h-4 w-4 text-gray-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                                    <div>
+                                        <p class="text-gray-400">{{ __('Expected Ready') }}</p>
+                                        <p class="font-semibold text-gray-700">{{ $studentService->expectedReadyAt()?->format('M j, Y') ?? '—' }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="w-full sm:w-40 shrink-0">
                                     <div class="flex items-baseline justify-between">
                                         <span class="text-xs font-medium text-gray-500">{{ __('Progress') }}</span>
                                         <span class="text-sm font-bold text-gray-800">{{ $percent }}%</span>
                                     </div>
                                     <div class="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                                        <div class="h-full rounded-full bg-gradient-to-r {{ $accent['bar'] }} transition-all" style="width: {{ $percent }}%"></div>
+                                        <div class="h-full rounded-full bg-gradient-to-r {{ $bar }} transition-all" style="width: {{ $percent }}%"></div>
                                     </div>
                                 </div>
 
-                                <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 text-xs">
-                                    <div class="flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                                        <div>
-                                            <p class="text-gray-400">{{ __('Started') }}</p>
-                                            <p class="font-medium text-gray-700">{{ $studentService->processing_started_at?->format('M j, Y') ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-1.5 text-right">
-                                        <svg class="h-4 w-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                                        <div>
-                                            <p class="text-gray-400">{{ __('Expected Ready') }}</p>
-                                            <p class="font-medium text-gray-700">{{ $studentService->expectedReadyAt()?->format('M j, Y') ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <span class="hidden sm:flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                </span>
                             </a>
                         @endforeach
                     </div>
