@@ -347,9 +347,8 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Student Training Progress');
-        // Lean, operational stats on each card: Required, Completed, Remaining.
-        $response->assertSee('Required');
-        $response->assertSee('Remaining');
+        $response->assertSee('Training Overview');
+        $response->assertSee('Overall Progress');
         $response->assertSee('Tobi Fashola');
         $response->assertSee('Two Week Program');
         // 2-week program = 10 required days, 3 completed, 7 remaining, 30%.
