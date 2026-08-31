@@ -42,7 +42,7 @@
                     <span class="text-[9px] font-bold leading-tight tracking-wide">{{ __('ARRIVE SAFE') }}</span>
                 </div>
 
-                <div class="text-right sm:absolute sm:top-6 sm:right-6 mb-6 sm:mb-0">
+                <div class="text-right sm:absolute sm:top-10 sm:right-10 mb-6 sm:mb-0">
                     <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Certificate No.') }}</p>
                     <p class="text-sm font-mono text-amber-300">{{ $certificate->certificate_number }}</p>
                 </div>
