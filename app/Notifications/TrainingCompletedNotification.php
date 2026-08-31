@@ -8,10 +8,13 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Sent the moment an enrollment completes. Certificate issuance happens in
- * the very same step as completion (Enrollment::markCompleted()), so there
- * is no separate "certificate ready" moment to notify about later - this
- * single message covers both.
+ * Sent the moment an enrollment completes. Enrollment::markCompleted() calls
+ * maybeIssueCertificate() before sending this, so hasCertificate() below
+ * reflects the real outcome of that same call - but a certificate is only
+ * actually issued at this point if a passing final assessment was already
+ * on file (see maybeIssueCertificate()'s docblock); the common case is that
+ * it isn't yet, and the certificate follows once the assessment is
+ * recorded.
  */
 class TrainingCompletedNotification extends Notification
 {
@@ -31,11 +34,15 @@ class TrainingCompletedNotification extends Notification
     {
         $enrollment = $this->enrollment;
 
-        return (new MailMessage)
+        $message = (new MailMessage)
             ->subject("Training completed: {$enrollment->student->name}")
             ->greeting('Training Completed')
-            ->line("{$enrollment->student->name} has completed the required {$enrollment->course->totalTrainingDays()} training day(s) for {$enrollment->course->name}.")
-            ->line('A certificate has been issued and is ready for collection at the school office.')
-            ->action('View Student', route('students.show', $enrollment->student_id));
+            ->line("{$enrollment->student->name} has completed the required {$enrollment->course->totalTrainingDays()} training day(s) for {$enrollment->course->name}.");
+
+        $message = $enrollment->hasCertificate()
+            ? $message->line('A certificate has been issued and is ready for collection at the school office.')
+            : $message->line('Their certificate will be issued once their final practical assessment is confirmed.');
+
+        return $message->action('View Student', route('students.show', $enrollment->student_id));
     }
 }

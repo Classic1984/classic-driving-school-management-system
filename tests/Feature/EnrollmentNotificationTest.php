@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Assessment;
 use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
@@ -448,6 +449,71 @@ class EnrollmentNotificationTest extends TestCase
         $enrollment->fresh()->refreshStatus();
 
         Notification::assertSentToTimes($admin, TrainingCompletedNotification::class, 1);
+    }
+
+    public function test_the_training_completed_email_says_the_certificate_is_pending_with_no_assessment_on_file(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, ['enrolled_at' => now()->toDateString(), 'status' => 'active']);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 100, 'status' => 'paid']);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+
+        // No passing assessment on file, so maybeIssueCertificate() inside
+        // markCompleted() will not have issued one yet - the email must not
+        // claim otherwise.
+        Notification::assertSentTo($admin, TrainingCompletedNotification::class, function (TrainingCompletedNotification $notification) use ($admin) {
+            $mail = $notification->toMail($admin);
+
+            return in_array('Their certificate will be issued once their final practical assessment is confirmed.', $mail->introLines, true)
+                && ! in_array('A certificate has been issued and is ready for collection at the school office.', $mail->introLines, true);
+        });
+    }
+
+    public function test_the_training_completed_email_says_the_certificate_is_ready_with_a_passing_assessment_already_on_file(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['role' => 'admin']);
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 1]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, ['enrolled_at' => now()->toDateString(), 'status' => 'active']);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 100, 'status' => 'paid']);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+        Assessment::create(['student_id' => $student->id, 'course_id' => $course->id, 'result' => 'pass', 'assessed_at' => now()]);
+
+        for ($day = 1; $day <= 5; $day++) {
+            Attendance::factory()->create([
+                'student_id' => $student->id,
+                'course_id' => $course->id,
+                'date' => now()->addDays($day)->toDateString(),
+                'status' => 'present',
+                'duration' => 1,
+            ]);
+        }
+        $enrollment->refreshStatus();
+
+        $this->assertTrue($enrollment->fresh()->hasCertificate());
+
+        Notification::assertSentTo($admin, TrainingCompletedNotification::class, function (TrainingCompletedNotification $notification) use ($admin) {
+            $mail = $notification->toMail($admin);
+
+            return in_array('A certificate has been issued and is ready for collection at the school office.', $mail->introLines, true);
+        });
     }
 
     public function test_one_enrollments_reminder_failing_does_not_stop_other_enrollments_from_being_refreshed(): void
