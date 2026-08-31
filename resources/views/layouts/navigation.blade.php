@@ -77,7 +77,9 @@
         @endif
     </nav>
 
-    <div class="shrink-0 border-t border-gray-800 p-4">
+    <div class="shrink-0 border-t border-gray-800 p-4 space-y-3">
+        @include('partials.push-notifications', ['sidebar' => true])
+
         <div class="font-medium text-sm text-white truncate">{{ Auth::user()->name }}</div>
         <div class="font-medium text-xs text-gray-400 truncate">{{ Auth::user()->email }}</div>
 
