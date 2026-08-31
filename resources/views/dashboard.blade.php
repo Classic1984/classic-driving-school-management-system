@@ -646,56 +646,48 @@
                 $minusCircleIconPath = 'M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
             @endphp
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
-                    <div class="flex items-center gap-4">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-white">
-                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+            <div class="bg-black text-white rounded-xl p-8 mt-6">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-extrabold text-gray-900">{{ __("Today's Attendance") }}</h3>
-                            <p class="text-sm text-gray-500">{{ __('See how many students are present and absent today.') }}</p>
+                            <h3 class="text-2xl font-bold">{{ __("Today's Attendance") }}</h3>
+                            <p class="text-sm text-gray-300">{{ __('See how many students are present and absent today.') }}</p>
                         </div>
                     </div>
-                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white">
+                        <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                         {{ now()->format('M j, Y') }}
                     </span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-emerald-50/60 ring-1 ring-emerald-100 border-l-4 border-emerald-500 p-6 transition hover:shadow-md">
-                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-emerald-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                        <div class="relative flex flex-1 items-center gap-4 min-w-0">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-emerald-400/50 transition hover:ring-emerald-400/80">
+                        <div class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
-                            <div class="min-w-0">
-                                <p class="text-xs font-bold uppercase tracking-wide text-emerald-700">{{ __('Present') }}</p>
-                                <p class="text-3xl font-extrabold break-words text-emerald-700 mt-1">{{ $presentToday->count() }}</p>
-                                <p class="mt-1 text-sm text-emerald-600">{{ __('Click to view names') }}</p>
-                            </div>
+                            <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Present') }}</p>
                         </div>
-                        <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-emerald-600 transition group-hover:translate-x-0.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                        </span>
+
+                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-emerald-400">{{ $presentToday->count() }}</p>
+
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Click to view names') }}</p>
                     </button>
 
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl text-left bg-red-50/60 ring-1 ring-red-100 border-l-4 border-red-500 p-6 transition hover:shadow-md">
-                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-red-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                        <div class="relative flex flex-1 items-center gap-4 min-w-0">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
+                        <div class="flex items-center gap-2.5">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
-                            <div class="min-w-0">
-                                <p class="text-xs font-bold uppercase tracking-wide text-red-700">{{ __('Absent') }}</p>
-                                <p class="text-3xl font-extrabold break-words text-red-700 mt-1">{{ $absentToday->count() }}</p>
-                                <p class="mt-1 text-sm text-red-600">{{ __('Click to view names') }}</p>
-                            </div>
+                            <p class="text-xs uppercase tracking-wider text-gray-400">{{ __('Absent') }}</p>
                         </div>
-                        <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/70 text-red-600 transition group-hover:translate-x-0.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                        </span>
+
+                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-red-400">{{ $absentToday->count() }}</p>
+
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Click to view names') }}</p>
                     </button>
                 </div>
             </div>
