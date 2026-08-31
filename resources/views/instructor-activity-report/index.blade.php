@@ -8,6 +8,11 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+                <button type="button" onclick="history.back()" class="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-600 hover:underline print:hidden">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+                    {{ __('Go Back') }}
+                </button>
+
                 <div class="flex items-center justify-between mb-4 print:hidden">
                     <div class="flex items-center gap-2">
                         @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $tabLabel)
