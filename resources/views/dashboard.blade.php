@@ -430,12 +430,6 @@
                 </div>
 
                 @php
-                    $periodAccent = [
-                        'today' => ['border' => 'border-violet-500', 'icon' => 'bg-violet-100 text-violet-600', 'text' => 'text-violet-600'],
-                        'week' => ['border' => 'border-green-500', 'icon' => 'bg-green-100 text-green-600', 'text' => 'text-green-600'],
-                        'month' => ['border' => 'border-amber-500', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-amber-600'],
-                        'year' => ['border' => 'border-blue-500', 'icon' => 'bg-blue-100 text-blue-600', 'text' => 'text-blue-600'],
-                    ];
                     $periodIllustration = [
                         'today' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
                         'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
@@ -444,30 +438,44 @@
                     ];
                 @endphp
 
-                <div class="flex items-center gap-4 mt-8">
-                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
-                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
-                    </span>
-                    <div>
-                        <h3 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{{ __('New Students') }}</h3>
-                        <p class="text-sm text-gray-500">{{ __('Track new student registrations') }}</p>
-                    </div>
-                </div>
+                @php
+                    $newStudentsDarkAccent = [
+                        'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
+                        'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
+                        'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                        'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
+                    ];
+                    $newStudentIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
+                @endphp
 
-                <div class="grid grid-cols-1 gap-4 mt-4">
-                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
-                        @php $accent = $periodAccent[$period]; @endphp
-                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="group relative flex items-center gap-4 overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-4 transition hover:shadow-md">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl {{ $accent['icon'] }}">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                            </span>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-xs font-bold uppercase tracking-wide {{ $accent['text'] }}">{{ __($periodLabel) }}</p>
-                                <p class="text-3xl font-extrabold {{ $accent['text'] }} mt-1">{{ number_format($newStudentTotals[$period]) }}</p>
-                            </div>
-                            <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-16 w-16 {{ $accent['text'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $periodIllustration[$period] }}" /></svg>
-                        </a>
-                    @endforeach
+                <div class="bg-black text-white rounded-xl p-8 mt-8">
+                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-bold">{{ __('New Students') }}</h3>
+                            <p class="text-sm text-gray-300">{{ __('Track new student registrations') }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                        @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                            @php $accent = $newStudentsDarkAccent[$period]; @endphp
+                            <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $newStudentIconPath }}" /></svg>
+                                    </span>
+                                    <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
+                                </div>
+
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($newStudentTotals[$period]) }}</p>
+
+                                <p class="mt-1 text-xs text-gray-500">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
 
                 @php
@@ -536,10 +544,10 @@
 
                 @if ($paymentTotals)
                     @php
-                        $paymentPeriodAccent = [
-                            'week' => ['border' => 'border-amber-500', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-amber-600'],
-                            'month' => ['border' => 'border-green-500', 'icon' => 'bg-green-100 text-green-600', 'text' => 'text-green-600'],
-                            'all_time' => ['border' => 'border-violet-500', 'icon' => 'bg-violet-100 text-violet-600', 'text' => 'text-violet-600'],
+                        $paymentDarkAccent = [
+                            'week' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                            'month' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
+                            'all_time' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
                         ];
                         $paymentPeriodIcon = [
                             'week' => $periodIllustration['month'],
@@ -548,54 +556,56 @@
                         ];
                     @endphp
 
-                    <div class="flex items-center gap-4 mt-8">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
-                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
-                        </span>
-                        <div>
-                            <h3 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{{ __('Total Payments') }}</h3>
-                            <p class="text-sm text-gray-500">{{ __('Overview of all payments received') }}</p>
-                            <span class="mt-1 block h-0.5 w-8 rounded-full bg-amber-400"></span>
+                    <div class="bg-black text-white rounded-xl p-8 mt-8">
+                        <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                            </span>
+                            <div>
+                                <h3 class="text-2xl font-bold">{{ __('Total Payments') }}</h3>
+                                <p class="text-sm text-gray-300">{{ __('Overview of all payments received') }}</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 gap-4 mt-4">
-                        @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
-                            @php $accent = $paymentPeriodAccent[$period]; @endphp
-                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="group relative flex items-center gap-4 overflow-hidden rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-4 transition hover:shadow-md">
-                                <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full {{ $accent['icon'] }}">
-                                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
-                                </span>
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-xs font-bold uppercase tracking-wide {{ $accent['text'] }}">{{ __($periodLabel) }}</p>
-                                    <p class="text-3xl font-extrabold text-gray-900 mt-1 whitespace-nowrap">₦{{ number_format($paymentTotals[$period], 2) }}</p>
-                                    <p class="text-sm text-gray-500 mt-1">{{ __('Total payments received') }}</p>
-                                </div>
-                                <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-20 w-20 {{ $accent['text'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-                            </a>
-                        @endforeach
-                    </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                            @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
+                                @php $accent = $paymentDarkAccent[$period]; @endphp
+                                <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
+                                        </span>
+                                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
+                                    </div>
 
-                    <div class="mt-4 rounded-xl bg-gray-900 p-5">
-                        <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
-                            <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-                                </span>
-                                <div>
-                                    <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
-                                    <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
-                                </div>
-                            </a>
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
-                                </span>
-                                <div>
-                                    <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
-                                    <p class="text-sm text-gray-400">{{ __('All transactions are secure and verified') }}</p>
-                                </div>
-                            </button>
+                                    <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
+
+                                    <p class="mt-1 text-xs text-gray-500">{{ __('Total payments received') }}</p>
+                                </a>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-6 rounded-xl bg-gray-900 ring-1 ring-gray-800 p-5">
+                            <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
+                                <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
+                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+                                    </span>
+                                    <div>
+                                        <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
+                                        <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
+                                    </div>
+                                </a>
+                                <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
+                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                    </span>
+                                    <div>
+                                        <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
+                                        <p class="text-sm text-gray-400">{{ __('All transactions are secure and verified') }}</p>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
