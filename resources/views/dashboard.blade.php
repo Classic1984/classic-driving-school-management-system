@@ -1019,41 +1019,45 @@
                         ['label' => 'Needs Attention', 'value' => $needsAttentionCount, 'description' => 'Due within 3 days', 'color' => 'red', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'],
                     ];
                     $serviceStatColors = [
-                        'amber' => ['bg' => 'bg-amber-50/60', 'icon' => 'bg-amber-100 text-amber-600', 'text' => 'text-gray-900', 'line' => 'text-amber-400'],
-                        'green' => ['bg' => 'bg-green-50/60', 'icon' => 'bg-green-500 text-white', 'text' => 'text-green-600', 'line' => 'text-green-400'],
-                        'indigo' => ['bg' => 'bg-indigo-50/60', 'icon' => 'bg-indigo-100 text-indigo-600', 'text' => 'text-indigo-600', 'line' => 'text-indigo-400'],
-                        'orange' => ['bg' => 'bg-orange-50/60', 'icon' => 'bg-orange-100 text-orange-600', 'text' => 'text-orange-600', 'line' => 'text-orange-400'],
-                        'red' => ['bg' => 'bg-red-50/60', 'icon' => 'bg-red-100 text-red-600', 'text' => 'text-red-600', 'line' => 'text-red-400'],
+                        'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                        'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
+                        'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
+                        'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
+                        'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
                     ];
                 @endphp
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6" x-data="{ activeFilter: 'all', overdueOnly: false }">
-                    <div class="flex flex-wrap items-start justify-between gap-4 mb-5">
-                        <div class="flex items-center gap-4">
-                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5" /></svg>
-                            </span>
-                            <div>
-                                <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Service Processing') }}</h3>
-                                <p class="text-sm text-gray-500">{{ __('Track and manage all ongoing services') }}</p>
-                            </div>
+
+                <div class="bg-black text-white rounded-xl p-8 mt-6">
+                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-bold">{{ __('Service Processing') }}</h3>
+                            <p class="text-sm text-gray-300">{{ __('Track and manage all ongoing services') }}</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
                         @foreach ($serviceStatCards as $card)
                             @php $accent = $serviceStatColors[$card['color']]; @endphp
-                            <div class="relative overflow-hidden rounded-xl {{ $accent['bg'] }} ring-1 ring-gray-100 p-4">
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $accent['icon'] }}">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
-                                </span>
-                                <p class="mt-3 text-[11px] font-bold uppercase tracking-wide text-gray-500">{{ __($card['label']) }}</p>
-                                <p class="mt-1 text-3xl font-extrabold {{ $accent['text'] }}">{{ $card['value'] }}</p>
+                            <div class="flex flex-col bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+                                    </span>
+                                    <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($card['label']) }}</p>
+                                </div>
+
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
+
                                 <p class="mt-1 text-xs text-gray-500">{{ __($card['description']) }}</p>
-                                <svg class="pointer-events-none absolute -bottom-1 left-0 h-8 w-full {{ $accent['line'] }} opacity-70" viewBox="0 0 200 40" fill="none" preserveAspectRatio="none"><path d="M0 32 Q30 34 50 26 T100 22 T150 10 T200 4" stroke="currentColor" stroke-width="3" stroke-linecap="round" /></svg>
                             </div>
                         @endforeach
                     </div>
+                </div>
 
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6" x-data="{ activeFilter: 'all', overdueOnly: false }">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
