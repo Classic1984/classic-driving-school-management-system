@@ -143,15 +143,15 @@
                 ];
 
                 $operationColors = [
-                    'indigo' => ['icon' => 'bg-indigo-50 text-indigo-500', 'border' => 'border-indigo-400', 'text' => 'text-indigo-600', 'btn' => 'ring-1 ring-indigo-200 text-indigo-600 hover:bg-indigo-50'],
-                    'blue' => ['icon' => 'bg-blue-50 text-blue-500', 'border' => 'border-blue-400', 'text' => 'text-blue-600', 'btn' => 'ring-1 ring-blue-200 text-blue-600 hover:bg-blue-50'],
-                    'green' => ['icon' => 'bg-green-50 text-green-500', 'border' => 'border-green-400', 'text' => 'text-green-600', 'btn' => 'ring-1 ring-green-200 text-green-600 hover:bg-green-50'],
-                    'orange' => ['icon' => 'bg-orange-50 text-orange-500', 'border' => 'border-orange-400', 'text' => 'text-orange-600', 'btn' => 'ring-1 ring-orange-200 text-orange-600 hover:bg-orange-50'],
-                    'sky' => ['icon' => 'bg-sky-50 text-sky-500', 'border' => 'border-sky-400', 'text' => 'text-sky-600', 'btn' => 'ring-1 ring-sky-200 text-sky-600 hover:bg-sky-50'],
-                    'purple' => ['icon' => 'bg-purple-50 text-purple-500', 'border' => 'border-purple-400', 'text' => 'text-purple-600', 'btn' => 'ring-1 ring-purple-200 text-purple-600 hover:bg-purple-50'],
-                    'red' => ['icon' => 'bg-red-50 text-red-500', 'border' => 'border-red-500', 'text' => 'text-red-600', 'btn' => 'ring-1 ring-red-200 text-red-600 hover:bg-red-50'],
-                    'amber' => ['icon' => 'bg-amber-50 text-amber-500', 'border' => 'border-amber-500', 'text' => 'text-amber-600', 'btn' => 'ring-1 ring-amber-200 text-amber-600 hover:bg-amber-50'],
-                    'emerald' => ['icon' => 'bg-emerald-100 text-emerald-600', 'border' => 'border-emerald-400', 'text' => 'text-emerald-700', 'btn' => 'ring-1 ring-emerald-300 text-emerald-700 hover:bg-emerald-100'],
+                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400', 'ring' => 'ring-indigo-400/60'],
+                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400', 'ring' => 'ring-blue-400/60'],
+                    'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400', 'ring' => 'ring-green-400/60'],
+                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400', 'ring' => 'ring-orange-400/60'],
+                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400', 'ring' => 'ring-sky-400/60'],
+                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400', 'ring' => 'ring-purple-400/60'],
+                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60'],
+                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400', 'ring' => 'ring-amber-400/60'],
+                    'emerald' => ['icon' => 'bg-emerald-500/10 text-emerald-400', 'value' => 'text-emerald-400', 'ring' => 'ring-emerald-400/70'],
                 ];
 
                 $operationRows = collect([
@@ -222,11 +222,16 @@
 
             @endphp
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
-                    <div>
-                        <h3 class="text-2xl font-extrabold text-gray-900">{{ __("Today's Operations") }}</h3>
-                        <p class="text-sm text-gray-500">{{ __('Real-time overview of key activities') }}</p>
+            <div class="bg-black text-white rounded-xl p-8 mb-6">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-bold">{{ __("Today's Operations") }}</h3>
+                            <p class="text-sm text-gray-300">{{ __('Real-time overview of key activities') }}</p>
+                        </div>
                     </div>
                     <span
                         x-data="{
@@ -244,73 +249,48 @@
                             },
                         }"
                         x-init="setInterval(() => now = new Date(), 1000)"
-                        class="inline-flex items-center gap-3 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700"
+                        class="inline-flex items-center gap-3 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white"
                     >
                         <span class="inline-flex items-center gap-1.5">
-                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                             <span x-text="dateLabel">{{ now()->format('M j, Y') }}</span>
                         </span>
-                        <span class="h-4 w-px bg-gray-300"></span>
+                        <span class="h-4 w-px bg-gray-700"></span>
                         <span class="inline-flex items-center gap-1.5">
-                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                             <span x-text="timeLabel">{{ now()->format('h:i A') }}</span>
                         </span>
                     </span>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <div class="w-full min-w-[880px]" role="table" aria-label="{{ __("Today's Operations") }}">
-                        <div class="grid grid-cols-[52px_2.1fr_1.6fr_120px_150px] gap-3 rounded-t-xl bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500" role="row">
-                            <span class="[grid-area:1/1]" role="columnheader">#</span>
-                            <span class="[grid-area:1/2]" role="columnheader">{{ __('Metric') }}</span>
-                            <span class="[grid-area:1/3]" role="columnheader">{{ __('Description') }}</span>
-                            <span class="[grid-area:1/4] text-center" role="columnheader">{{ __("Today's Count") }}</span>
-                            <span class="[grid-area:1/5] text-right" role="columnheader">{{ __('Action') }}</span>
-                        </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    @foreach ($operationRows as $row)
+                        @php
+                            $accent = $operationColors[$row['state'] === 'alert' ? 'red' : ($row['state'] === 'warn' ? 'amber' : $row['color'])];
+                            $ring = !empty($row['highlight']) ? $operationColors['emerald']['ring'] : 'ring-amber-400/40';
+                            $tileClass = 'flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 '.$ring;
+                            $tag = ! empty($row['modal']) ? 'button' : (array_key_exists('modal', $row) ? 'div' : 'a');
+                        @endphp
+                        <{{ $tag }}
+                            @if ($tag === 'a') href="{{ $row['href'] }}" @endif
+                            @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
+                            @if ($tag !== 'div') class="{{ $tileClass }} transition hover:ring-amber-400/70" @else class="{{ $tileClass }}" @endif
+                        >
+                            {{-- Emitted before the label row so the count precedes the label in the
+                                 page source (screen readers / text search read count-then-label),
+                                 then repositioned visually above/below via flex `order`. --}}
+                            <p class="order-2 text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $row['value'] }}</p>
 
-                        <div class="divide-y divide-gray-100 border-x border-b border-gray-100 rounded-b-xl overflow-hidden">
-                            @foreach ($operationRows as $row)
-                                @php
-                                    $accent = $operationColors[$row['state'] === 'alert' ? 'red' : ($row['state'] === 'warn' ? 'amber' : $row['color'])];
-                                @endphp
-                                <div class="grid grid-cols-[52px_2.1fr_1.6fr_120px_150px] gap-3 items-center border-l-4 {{ $accent['border'] }} px-4 py-4 {{ !empty($row['highlight']) ? 'bg-emerald-50/50' : '' }}" role="row">
-                                    <span class="[grid-area:1/1] font-mono text-sm font-bold {{ $accent['text'] }}">
-                                        {{ !empty($row['highlight']) ? '—' : str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
-                                    </span>
+                            <div class="order-1 flex items-center gap-2.5">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
+                                </span>
+                                <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($row['label']) }}</p>
+                            </div>
 
-                                    {{-- Emitted before the label cell so its text precedes the label in the
-                                         page source (screen readers / text search read count-then-label),
-                                         then repositioned into column 4 visually via grid-area. --}}
-                                    <span class="[grid-area:1/4] text-center text-lg font-extrabold {{ $accent['text'] }}">{{ $row['value'] }}</span>
-
-                                    <div class="[grid-area:1/2] flex items-center gap-3 min-w-0">
-                                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $accent['icon'] }}">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
-                                        </span>
-                                        <span class="font-bold text-gray-900">{{ __($row['label']) }}</span>
-                                    </div>
-
-                                    <p class="[grid-area:1/3] text-sm text-gray-500">{{ __($row['description']) }}</p>
-
-                                    <div class="[grid-area:1/5] text-right">
-                                        @if (! empty($row['modal']))
-                                            <button type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" class="inline-flex items-center gap-1 rounded-lg {{ $accent['btn'] }} px-3 py-1.5 text-xs font-semibold transition">
-                                                {{ __('View Details') }}
-                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                                            </button>
-                                        @elseif (array_key_exists('modal', $row))
-                                            <span class="text-xs text-gray-400">{{ __('—') }}</span>
-                                        @else
-                                            <a href="{{ $row['href'] }}" class="inline-flex items-center gap-1 rounded-lg {{ $accent['btn'] }} px-3 py-1.5 text-xs font-semibold transition">
-                                                {{ __('View Details') }}
-                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                                            </a>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                            <p class="order-3 mt-1 text-xs text-gray-500">{{ __($row['description']) }}</p>
+                        </{{ $tag }}>
+                    @endforeach
                 </div>
             </div>
 
