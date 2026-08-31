@@ -297,62 +297,57 @@
             @php
                 $academicCapPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';
 
-                $welcomeCards = [
-                    [
-                        'key' => 'students', 'title' => 'Students', 'subtitle' => 'Total registered students', 'href' => route('students.index'),
-                        'theme' => 'bg-black text-amber-400 ring-1 ring-amber-400/60', 'iconWrap' => 'bg-white/10 text-amber-400', 'iconRing' => 'ring-amber-400/50', 'divider' => 'bg-white/10', 'chevronWrap' => 'bg-white/10 text-amber-400',
-                        'titleClass' => 'text-white', 'subtitleClass' => 'text-gray-400', 'value' => number_format($stats['students']),
-                        'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
-                        'watermark' => $academicCapPath,
-                    ],
-                    [
-                        'key' => 'payments', 'title' => 'Paid Today', 'subtitle' => 'Total amount received today', 'href' => route('payments.index'),
-                        'theme' => 'bg-amber-500 ring-1 ring-black/70', 'iconWrap' => 'bg-black/10 text-black', 'iconRing' => 'ring-black/20', 'divider' => 'bg-black/10', 'chevronWrap' => 'bg-black/10 text-black',
-                        'titleClass' => 'text-black', 'subtitleClass' => 'text-black/70', 'value' => '₦'.number_format($stats['payments'], 2),
-                        'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
-                        'watermark' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
-                    ],
-                    [
-                        'key' => 'instructors', 'title' => 'Instructors', 'subtitle' => 'Total active instructors', 'href' => route('instructors.index'),
-                        'theme' => 'bg-white ring-1 ring-gray-200', 'iconWrap' => 'bg-gray-100 text-gray-800', 'iconRing' => 'ring-gray-200', 'divider' => 'bg-gray-200', 'chevronWrap' => 'bg-gray-100 text-gray-800',
-                        'titleClass' => 'text-gray-900', 'subtitleClass' => 'text-gray-500', 'value' => number_format($stats['instructors']),
-                        'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
-                        'watermark' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
-                    ],
-                    [
-                        'key' => 'certificates', 'title' => 'Certificates', 'subtitle' => 'Total certificates issued', 'href' => route('certificates.index'),
-                        'theme' => 'bg-black text-amber-400 ring-1 ring-amber-400/60', 'iconWrap' => 'bg-white/10 text-amber-400', 'iconRing' => 'ring-amber-400/50', 'divider' => 'bg-white/10', 'chevronWrap' => 'bg-white/10 text-amber-400',
-                        'titleClass' => 'text-white', 'subtitleClass' => 'text-gray-400', 'value' => number_format($stats['certificates']),
-                        'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
-                        'watermark' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
-                    ],
-                    [
-                        'key' => 'vehicles', 'title' => 'Vehicles', 'subtitle' => 'Total active vehicles', 'href' => route('vehicles.index'),
-                        'theme' => 'bg-amber-50 ring-1 ring-amber-100', 'iconWrap' => 'bg-white text-amber-500', 'iconRing' => 'ring-amber-200', 'divider' => 'bg-amber-200', 'chevronWrap' => 'bg-white text-amber-500',
-                        'titleClass' => 'text-gray-900', 'subtitleClass' => 'text-gray-600', 'value' => number_format($kpis['active_vehicles']),
-                        'icon' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
-                        'watermark' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
-                    ],
+                $quickStatsAccent = [
+                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400'],
+                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
+                    'teal' => ['icon' => 'bg-teal-500/10 text-teal-400', 'value' => 'text-teal-400'],
+                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
+                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400'],
+                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
+                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
                 ];
 
-                $statusCards = [
+                $quickStats = [
+                    [
+                        'title' => 'Students', 'subtitle' => 'Total registered students', 'href' => route('students.index'),
+                        'value' => number_format($stats['students']), 'color' => 'purple',
+                        'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
+                    ],
+                    [
+                        'title' => 'Instructors', 'subtitle' => 'Total active instructors', 'href' => route('instructors.index'),
+                        'value' => number_format($stats['instructors']), 'color' => 'blue',
+                        'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
+                    ],
+                    [
+                        'title' => 'Vehicles', 'subtitle' => 'Total active vehicles', 'href' => route('vehicles.index'),
+                        'value' => number_format($kpis['active_vehicles']), 'color' => 'teal',
+                        'icon' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
+                    ],
+                    [
+                        'title' => 'Certificates', 'subtitle' => 'Total certificates issued', 'href' => route('certificates.index'),
+                        'value' => number_format($stats['certificates']), 'color' => 'indigo',
+                        'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
+                    ],
+                    [
+                        'title' => 'Paid Today', 'subtitle' => 'Total amount received today', 'href' => route('payments.index'),
+                        'value' => '₦'.number_format($stats['payments'], 2), 'color' => 'amber',
+                        'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
+                    ],
                     [
                         'title' => 'Trainings Today', 'subtitle' => 'Training sessions logged today', 'href' => route('training-report.index', ['period' => 'today']),
-                        'value' => number_format($todaysOperations['training_sessions']),
+                        'value' => number_format($todaysOperations['training_sessions']), 'color' => 'sky',
                         'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
-                        'border' => 'border-blue-500', 'iconWrap' => 'bg-blue-50 text-blue-600', 'accentText' => 'text-blue-600',
                     ],
                     [
                         'title' => 'Pending Payments', 'subtitle' => 'Total pending payments', 'href' => '#outstanding-payments',
-                        'value' => '₦'.number_format($kpis['pending_payments'], 2),
+                        'value' => '₦'.number_format($kpis['pending_payments'], 2), 'color' => 'orange',
                         'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
-                        'border' => 'border-purple-500', 'iconWrap' => 'bg-purple-50 text-purple-600', 'accentText' => 'text-purple-600',
                     ],
                     [
                         'title' => 'At-Risk Students', 'subtitle' => 'Students needing attention', 'href' => '#at-risk-students',
-                        'value' => number_format($kpis['at_risk_students']),
-                        'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
-                        'border' => 'border-green-500', 'iconWrap' => 'bg-green-50 text-green-600', 'accentText' => 'text-green-600',
+                        'value' => number_format($kpis['at_risk_students']), 'color' => 'red',
+                        'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z',
                     ],
                 ];
             @endphp
@@ -382,263 +377,246 @@
                     </form>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-                    @foreach ($welcomeCards as $card)
-                        <a href="{{ $card['href'] }}" class="group relative flex items-start justify-between overflow-hidden rounded-xl {{ $card['theme'] }} p-6 transition hover:shadow-md">
-                            <svg class="pointer-events-none absolute -right-2 -bottom-2 h-24 w-24 {{ $card['titleClass'] }} opacity-[0.07]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['watermark'] }}" /></svg>
+            </div>
 
-                            <div class="relative flex items-start gap-4">
-                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full ring-2 {{ $card['iconWrap'] }} {{ $card['iconRing'] }}">
-                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+            <div class="bg-black text-white rounded-xl p-8 mt-6">
+                <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-2xl font-bold">{{ __('Quick Stats') }}</h3>
+                        <p class="text-sm text-gray-300">{{ __('Key numbers at a glance') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    @foreach ($quickStats as $card)
+                        @php $accent = $quickStatsAccent[$card['color']]; @endphp
+                        <a href="{{ $card['href'] }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                            <div class="flex items-center gap-2.5">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                                 </span>
-                                <span class="mt-1 h-10 w-px shrink-0 {{ $card['divider'] }}"></span>
-                                <div>
-                                    <h3 class="text-lg font-bold {{ $card['titleClass'] }}">{{ __($card['title']) }}</h3>
-                                    <p class="text-3xl font-extrabold mt-2 {{ $card['titleClass'] }}">{{ $card['value'] }}</p>
-                                    <p class="mt-1 text-sm {{ $card['subtitleClass'] }}">{{ __($card['subtitle']) }}</p>
-                                </div>
+                                <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($card['title']) }}</p>
                             </div>
-                            <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $card['chevronWrap'] }} transition group-hover:translate-x-0.5">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                            </span>
+
+                            <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
+
+                            <p class="mt-1 text-xs text-gray-500">{{ __($card['subtitle']) }}</p>
                         </a>
                     @endforeach
                 </div>
+            </div>
 
-                <div class="grid grid-cols-1 gap-4 mt-6">
-                    @foreach ($statusCards as $card)
-                        <a href="{{ $card['href'] }}" class="group relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl bg-white ring-1 ring-gray-200 border-l-4 {{ $card['border'] }} p-6 transition hover:shadow-md">
-                            <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 {{ $card['accentText'] }} opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+            @php
+                $periodIllustration = [
+                    'today' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
+                    'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
+                    'month' => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z',
+                    'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
+                ];
+            @endphp
 
-                            <div class="relative flex flex-1 items-center gap-4 min-w-0">
-                                <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl {{ $card['iconWrap'] }}">
-                                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
+            @php
+                $newStudentsDarkAccent = [
+                    'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
+                    'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
+                    'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
+                ];
+                $newStudentIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
+            @endphp
+
+            <div class="bg-black text-white rounded-xl p-8 mt-8">
+                <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+                    </span>
+                    <div>
+                        <h3 class="text-2xl font-bold">{{ __('New Students') }}</h3>
+                        <p class="text-sm text-gray-300">{{ __('Track new student registrations') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                        @php $accent = $newStudentsDarkAccent[$period]; @endphp
+                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                            <div class="flex items-center gap-2.5">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $newStudentIconPath }}" /></svg>
                                 </span>
-                                <span class="hidden sm:block h-12 w-px shrink-0 bg-gray-200"></span>
-                                <div class="min-w-0 flex-1">
-                                    <h3 class="text-lg font-bold text-gray-900">{{ __($card['title']) }}</h3>
-                                    <p class="text-3xl font-extrabold mt-1 break-words {{ $card['accentText'] }}">{{ $card['value'] }}</p>
-                                    <p class="mt-1 text-sm text-gray-500">{{ __($card['subtitle']) }}</p>
-                                </div>
+                                <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
                             </div>
 
-                            <span class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full {{ $card['iconWrap'] }} transition group-hover:translate-x-0.5">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-                            </span>
+                            <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($newStudentTotals[$period]) }}</p>
+
+                            <p class="mt-1 text-xs text-gray-500">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
                         </a>
                     @endforeach
                 </div>
+            </div>
 
-                @php
-                    $periodIllustration = [
-                        'today' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
-                        'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
-                        'month' => 'M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z',
-                        'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
-                    ];
-                @endphp
+            @php
+                $absenceIcon = [
+                    'today' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+                    'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
+                    'month' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
+                    'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
+                ];
+                $calendarIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
 
-                @php
-                    $newStudentsDarkAccent = [
-                        'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
-                        'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                        'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
-                        'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
-                    ];
-                    $newStudentIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
-                @endphp
+                $periodDarkAccent = [
+                    'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
+                    'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
+                    'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
+                ];
 
-                <div class="bg-black text-white rounded-xl p-8 mt-8">
+                $periodTables = [
+                    [
+                        'title' => 'Training Statistics', 'subtitle' => 'Overview of student training performance',
+                        'headerIcon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
+                        'countLabel' => 'Students Trained', 'route' => 'training-report.index', 'rowIcon' => $calendarIconPath, 'stats' => $trainingStats,
+                        'describe' => fn (string $periodLabel) => __('Total students trained :period', ['period' => strtolower($periodLabel)]),
+                    ],
+                    [
+                        'title' => 'Absences', 'subtitle' => 'Track student absences over time',
+                        'headerIcon' => 'M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm7-4h.008v.008H19V9.87Zm-1.5 1.5 3 3m0-3-3 3',
+                        'countLabel' => 'Students Absent', 'route' => 'absence-report.index', 'rowIcon' => null, 'stats' => $absenceStats,
+                        'describe' => fn (string $periodLabel) => __('Total students absent :period', ['period' => strtolower($periodLabel)]),
+                    ],
+                ];
+            @endphp
+
+            @foreach ($periodTables as $table)
+                <div class="bg-black text-white rounded-xl p-8 mt-6">
                     <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['headerIcon'] }}" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-bold">{{ __('New Students') }}</h3>
-                            <p class="text-sm text-gray-300">{{ __('Track new student registrations') }}</p>
+                            <h3 class="text-2xl font-bold">{{ __($table['title']) }}</h3>
+                            <p class="text-sm text-gray-300">{{ __($table['subtitle']) }}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                         @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
-                            @php $accent = $newStudentsDarkAccent[$period]; @endphp
-                            <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                            @php $accent = $periodDarkAccent[$period]; @endphp
+                            <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $newStudentIconPath }}" /></svg>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] ?? $absenceIcon[$period] }}" /></svg>
                                     </span>
                                     <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
                                 </div>
 
-                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($newStudentTotals[$period]) }}</p>
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($table['stats'][$period]) }}</p>
 
-                                <p class="mt-1 text-xs text-gray-500">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
+                                <p class="mt-1 text-xs text-gray-500">{{ $table['describe']($periodLabel) }}</p>
                             </a>
                         @endforeach
                     </div>
                 </div>
+            @endforeach
 
+            @if ($paymentTotals)
                 @php
-                    $absenceIcon = [
-                        'today' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
-                        'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
-                        'month' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
-                        'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
+                    $paymentDarkAccent = [
+                        'week' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                        'month' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
+                        'all_time' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
                     ];
-                    $calendarIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
-
-                    $periodDarkAccent = [
-                        'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
-                        'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                        'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
-                        'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
-                    ];
-
-                    $periodTables = [
-                        [
-                            'title' => 'Training Statistics', 'subtitle' => 'Overview of student training performance',
-                            'headerIcon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
-                            'countLabel' => 'Students Trained', 'route' => 'training-report.index', 'rowIcon' => $calendarIconPath, 'stats' => $trainingStats,
-                            'describe' => fn (string $periodLabel) => __('Total students trained :period', ['period' => strtolower($periodLabel)]),
-                        ],
-                        [
-                            'title' => 'Absences', 'subtitle' => 'Track student absences over time',
-                            'headerIcon' => 'M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm7-4h.008v.008H19V9.87Zm-1.5 1.5 3 3m0-3-3 3',
-                            'countLabel' => 'Students Absent', 'route' => 'absence-report.index', 'rowIcon' => null, 'stats' => $absenceStats,
-                            'describe' => fn (string $periodLabel) => __('Total students absent :period', ['period' => strtolower($periodLabel)]),
-                        ],
+                    $paymentPeriodIcon = [
+                        'week' => $periodIllustration['month'],
+                        'month' => $periodIllustration['month'],
+                        'all_time' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
                     ];
                 @endphp
 
-                @foreach ($periodTables as $table)
-                    <div class="bg-black text-white rounded-xl p-8 mt-6">
-                        <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['headerIcon'] }}" /></svg>
-                            </span>
-                            <div>
-                                <h3 class="text-2xl font-bold">{{ __($table['title']) }}</h3>
-                                <p class="text-sm text-gray-300">{{ __($table['subtitle']) }}</p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                            @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
-                                @php $accent = $periodDarkAccent[$period]; @endphp
-                                <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
-                                    <div class="flex items-center gap-2.5">
-                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] ?? $absenceIcon[$period] }}" /></svg>
-                                        </span>
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
-                                    </div>
-
-                                    <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($table['stats'][$period]) }}</p>
-
-                                    <p class="mt-1 text-xs text-gray-500">{{ $table['describe']($periodLabel) }}</p>
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-
-                @if ($paymentTotals)
-                    @php
-                        $paymentDarkAccent = [
-                            'week' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
-                            'month' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                            'all_time' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
-                        ];
-                        $paymentPeriodIcon = [
-                            'week' => $periodIllustration['month'],
-                            'month' => $periodIllustration['month'],
-                            'all_time' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
-                        ];
-                    @endphp
-
-                    <div class="bg-black text-white rounded-xl p-8 mt-8">
-                        <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
-                            </span>
-                            <div>
-                                <h3 class="text-2xl font-bold">{{ __('Total Payments') }}</h3>
-                                <p class="text-sm text-gray-300">{{ __('Overview of all payments received') }}</p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                            @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
-                                @php $accent = $paymentDarkAccent[$period]; @endphp
-                                <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
-                                    <div class="flex items-center gap-2.5">
-                                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
-                                        </span>
-                                        <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
-                                    </div>
-
-                                    <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
-
-                                    <p class="mt-1 text-xs text-gray-500">{{ __('Total payments received') }}</p>
-                                </a>
-                            @endforeach
-                        </div>
-
-                        <div class="mt-6 rounded-xl bg-gray-900 ring-1 ring-gray-800 p-5">
-                            <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
-                                <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
-                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-                                    </span>
-                                    <div>
-                                        <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
-                                        <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
-                                    </div>
-                                </a>
-                                <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
-                                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
-                                    </span>
-                                    <div>
-                                        <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
-                                        <p class="text-sm text-gray-400">{{ __('All transactions are secure and verified') }}</p>
-                                    </div>
-                                </button>
-                            </div>
+                <div class="bg-black text-white rounded-xl p-8 mt-8">
+                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-2xl font-bold">{{ __('Total Payments') }}</h3>
+                            <p class="text-sm text-gray-300">{{ __('Overview of all payments received') }}</p>
                         </div>
                     </div>
 
-                    <x-modal name="payment-security-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🛡️ {{ __('Secure & Verified') }}</h3>
-                            <p class="text-sm text-gray-600 mb-4">{{ __('What keeps every payment on this dashboard accurate and accountable:') }}</p>
-                            <ul class="space-y-3 text-sm text-gray-700">
-                                <li class="flex gap-2">
-                                    <span class="text-green-600">✓</span>
-                                    <span>{{ __('Every payment is stamped with the staff member who recorded it and a unique receipt number.') }}</span>
-                                </li>
-                                <li class="flex gap-2">
-                                    <span class="text-green-600">✓</span>
-                                    <span>{{ __('A payment can only be reversed by a director or admin, and requires a reason on record.') }}</span>
-                                </li>
-                                <li class="flex gap-2">
-                                    <span class="text-green-600">✓</span>
-                                    <span>{{ __('Any correction to how a payment is split across charges is logged in a permanent audit trail.') }}</span>
-                                </li>
-                                <li class="flex gap-2">
-                                    <span class="text-green-600">✓</span>
-                                    <span>{{ __('Every action - registrations, payments, discounts - is recorded in the system Activity Log.') }}</span>
-                                </li>
-                            </ul>
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'payment-security-modal')">{{ __('Close') }}</x-secondary-button>
-                            </div>
-                        </div>
-                    </x-modal>
-                @endif
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                        @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
+                            @php $accent = $paymentDarkAccent[$period]; @endphp
+                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
+                                    </span>
+                                    <p class="text-xs uppercase tracking-wider text-gray-400">{{ __($periodLabel) }}</p>
+                                </div>
 
-            </div>
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
+
+                                <p class="mt-1 text-xs text-gray-500">{{ __('Total payments received') }}</p>
+                            </a>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-6 rounded-xl bg-gray-900 ring-1 ring-gray-800 p-5">
+                        <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
+                            <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
+                                </span>
+                                <div>
+                                    <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
+                                    <p class="text-sm text-gray-400">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
+                                </div>
+                            </a>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                </span>
+                                <div>
+                                    <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
+                                    <p class="text-sm text-gray-400">{{ __('All transactions are secure and verified') }}</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <x-modal name="payment-security-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🛡️ {{ __('Secure & Verified') }}</h3>
+                        <p class="text-sm text-gray-600 mb-4">{{ __('What keeps every payment on this dashboard accurate and accountable:') }}</p>
+                        <ul class="space-y-3 text-sm text-gray-700">
+                            <li class="flex gap-2">
+                                <span class="text-green-600">✓</span>
+                                <span>{{ __('Every payment is stamped with the staff member who recorded it and a unique receipt number.') }}</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-green-600">✓</span>
+                                <span>{{ __('A payment can only be reversed by a director or admin, and requires a reason on record.') }}</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-green-600">✓</span>
+                                <span>{{ __('Any correction to how a payment is split across charges is logged in a permanent audit trail.') }}</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-green-600">✓</span>
+                                <span>{{ __('Every action - registrations, payments, discounts - is recorded in the system Activity Log.') }}</span>
+                            </li>
+                        </ul>
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'payment-security-modal')">{{ __('Close') }}</x-secondary-button>
+                        </div>
+                    </div>
+                </x-modal>
+            @endif
 
             @php
                 $usersIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
