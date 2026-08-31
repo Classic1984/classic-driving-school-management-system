@@ -454,17 +454,25 @@ class Enrollment extends Pivot
      * and "not started" both read status=active, split by whether any
      * training day has actually been logged yet (see statusLabel()).
      *
-     * @return array{total_students: int, in_progress: int, completed: int, not_started: int}
+     * @return array{total_students: int, in_progress: int, completed: int, not_started: int, overall_progress: int, non_experience: int, auto_programs: int, manual_programs: int, highest_progress: int, average_progress: int, lowest_progress: int}
      */
     public static function trainingProgressStats(): array
     {
-        $activeEnrollments = static::where('status', 'active')->get();
+        $activeEnrollments = static::where('status', 'active')->with(['course', 'student'])->get();
+        $percentages = $activeEnrollments->map(fn (self $enrollment) => $enrollment->trainingCompletionPercentage());
 
         return [
             'total_students' => static::distinct('student_id')->count('student_id'),
             'in_progress' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() > 0)->count(),
             'completed' => static::where('status', 'completed')->count(),
             'not_started' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() === 0)->count(),
+            'overall_progress' => $percentages->isEmpty() ? 0 : (int) round($percentages->avg()),
+            'non_experience' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->student->has_driving_experience === false)->count(),
+            'auto_programs' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'automatic')->count(),
+            'manual_programs' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'manual')->count(),
+            'highest_progress' => $percentages->isEmpty() ? 0 : (int) $percentages->max(),
+            'average_progress' => $percentages->isEmpty() ? 0 : (int) round($percentages->avg()),
+            'lowest_progress' => $percentages->isEmpty() ? 0 : (int) $percentages->min(),
         ];
     }
 
