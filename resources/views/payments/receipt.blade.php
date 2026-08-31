@@ -112,12 +112,22 @@
                         </table>
                     </div>
 
-                    <div class="flex items-end justify-between border-t border-gray-200 pt-6">
-                        <div>
-                            <p class="text-sm text-gray-500">{{ __('Recorded By') }}: <span class="text-gray-900">{{ $payment->recordedBy?->name ?? __('—') }}</span></p>
-                            <p class="text-xs text-gray-400 mt-1">{{ __('Printed on :date', ['date' => now()->format('j F, Y g:i A')]) }}</p>
+                    <div class="border-t border-gray-200 pt-6">
+                        <div class="grid grid-cols-2 gap-8">
+                            <div>
+                                <p class="border-t border-gray-400 pt-1 text-sm text-gray-900">{{ $payment->recordedBy?->name }}&nbsp;</p>
+                                <p class="text-xs uppercase tracking-wide text-gray-500 mt-1">{{ __('Secretary Signature') }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="border-t border-gray-400 pt-1 text-sm text-gray-900">&nbsp;</p>
+                                <p class="text-xs uppercase tracking-wide text-gray-500 mt-1">{{ __("Student's Signature") }}</p>
+                            </div>
                         </div>
-                        <p class="text-xs italic text-gray-400 text-right">{{ __('"When you say Classic, you say it all."') }}</p>
+
+                        <div class="flex items-end justify-between mt-6">
+                            <p class="text-xs text-gray-400">{{ __('Printed on :date', ['date' => now()->format('j F, Y g:i A')]) }}</p>
+                            <p class="text-xs italic text-gray-400 text-right">{{ __('"When you say Classic, you say it all."') }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
