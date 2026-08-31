@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\StudentController;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -994,6 +995,24 @@ class StudentTest extends TestCase
         $response->assertSee('3 / 10');
         $response->assertSee('7');
         $response->assertSee('30%');
+    }
+
+    public function test_the_show_page_eager_loads_each_attendances_course(): void
+    {
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Attendance::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'status' => 'present']);
+
+        // Calls the real controller action directly (not a re-declared
+        // eager-load closure) and inspects the view data without rendering
+        // Blade, so this stays tied to StudentController::show() itself.
+        // The training-login table reads $attendance->course for every row
+        // (resources/views/students/show.blade.php) - if that relation
+        // isn't eager-loaded, each row triggers its own query.
+        $view = app(StudentController::class)->show($student->fresh());
+
+        $this->assertTrue($view->getData()['student']->attendances->first()->relationLoaded('course'));
     }
 
     public function test_a_director_can_edit_or_delete_a_training_login_from_the_students_page(): void
