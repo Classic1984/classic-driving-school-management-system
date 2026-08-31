@@ -50,5 +50,6 @@ class MessageLog extends Model
         'certificate_ready' => 'Certificate Ready',
         'instructor_access_granted' => 'Instructor Access Granted',
         'student_access_granted' => 'Student Access Granted',
+        'programme_upgrade_window' => 'Programme Upgrade Window',
     ];
 }

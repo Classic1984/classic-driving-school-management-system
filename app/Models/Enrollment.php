@@ -556,6 +556,13 @@ class Enrollment extends Pivot
     {
         $this->forceFill(['status' => 'completed', 'locked_reason' => null])->save();
 
+        // Runs before the admin notification below (not after) so that
+        // TrainingCompletedNotification's hasCertificate() check reflects
+        // the real outcome of this same call - covers the order-of-events
+        // where a passing assessment was already on file before the
+        // training-days/balance side of completion caught up to it.
+        $this->maybeIssueCertificate();
+
         Notification::send(User::admins()->get(), new TrainingCompletedNotification($this));
         $this->textStudent(
             'training_completed',
@@ -564,11 +571,6 @@ class Enrollment extends Pivot
         );
 
         $this->student->refreshStatus();
-
-        // Covers the order-of-events where a passing assessment was
-        // already on file before the training-days/balance side of
-        // completion caught up to it.
-        $this->maybeIssueCertificate();
     }
 
     /**
