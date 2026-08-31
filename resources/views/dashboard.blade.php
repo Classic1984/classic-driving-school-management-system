@@ -114,7 +114,7 @@
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                                 </span>
-                                <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
                             </div>
                             <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">
                                 @if ($card['currency'])
@@ -123,7 +123,7 @@
                                     {{ number_format($kpis[$card['key']]) }}
                                 @endif
                             </p>
-                            <p class="mt-1 text-xs text-gray-300">{{ $card['subtext'] }}</p>
+                            <p class="mt-1 text-xs font-medium text-gray-300">{{ $card['subtext'] }}</p>
                         </div>
                     @endforeach
                 </div>
@@ -230,7 +230,7 @@
                         </span>
                         <div>
                             <h3 class="text-2xl font-bold">{{ __("Today's Operations") }}</h3>
-                            <p class="text-sm text-gray-200">{{ __('Real-time overview of key activities') }}</p>
+                            <p class="text-sm font-medium text-gray-200">{{ __('Real-time overview of key activities') }}</p>
                         </div>
                     </div>
                     <span
@@ -285,10 +285,10 @@
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
                                 </span>
-                                <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($row['label']) }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($row['label']) }}</p>
                             </div>
 
-                            <p class="order-3 mt-1 text-xs text-gray-300">{{ __($row['description']) }}</p>
+                            <p class="order-3 mt-1 text-xs font-medium text-gray-300">{{ __($row['description']) }}</p>
                         </{{ $tag }}>
                     @endforeach
                 </div>
@@ -386,7 +386,7 @@
                     </span>
                     <div>
                         <h3 class="text-2xl font-bold">{{ __('Quick Stats') }}</h3>
-                        <p class="text-sm text-gray-200">{{ __('Key numbers at a glance') }}</p>
+                        <p class="text-sm font-medium text-gray-200">{{ __('Key numbers at a glance') }}</p>
                     </div>
                 </div>
 
@@ -398,12 +398,12 @@
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                                 </span>
-                                <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($card['title']) }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['title']) }}</p>
                             </div>
 
                             <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
 
-                            <p class="mt-1 text-xs text-gray-300">{{ __($card['subtitle']) }}</p>
+                            <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['subtitle']) }}</p>
                         </a>
                     @endforeach
                 </div>
@@ -435,7 +435,7 @@
                     </span>
                     <div>
                         <h3 class="text-2xl font-bold">{{ __('New Students') }}</h3>
-                        <p class="text-sm text-gray-200">{{ __('Track new student registrations') }}</p>
+                        <p class="text-sm font-medium text-gray-200">{{ __('Track new student registrations') }}</p>
                     </div>
                 </div>
 
@@ -447,12 +447,12 @@
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $newStudentIconPath }}" /></svg>
                                 </span>
-                                <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
                             </div>
 
                             <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($newStudentTotals[$period]) }}</p>
 
-                            <p class="mt-1 text-xs text-gray-300">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
+                            <p class="mt-1 text-xs font-medium text-gray-300">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
                         </a>
                     @endforeach
                 </div>
@@ -498,7 +498,7 @@
                         </span>
                         <div>
                             <h3 class="text-2xl font-bold">{{ __($table['title']) }}</h3>
-                            <p class="text-sm text-gray-200">{{ __($table['subtitle']) }}</p>
+                            <p class="text-sm font-medium text-gray-200">{{ __($table['subtitle']) }}</p>
                         </div>
                     </div>
 
@@ -510,12 +510,12 @@
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] ?? $absenceIcon[$period] }}" /></svg>
                                     </span>
-                                    <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
                                 </div>
 
                                 <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($table['stats'][$period]) }}</p>
 
-                                <p class="mt-1 text-xs text-gray-300">{{ $table['describe']($periodLabel) }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-300">{{ $table['describe']($periodLabel) }}</p>
                             </a>
                         @endforeach
                     </div>
@@ -543,7 +543,7 @@
                         </span>
                         <div>
                             <h3 class="text-2xl font-bold">{{ __('Total Payments') }}</h3>
-                            <p class="text-sm text-gray-200">{{ __('Overview of all payments received') }}</p>
+                            <p class="text-sm font-medium text-gray-200">{{ __('Overview of all payments received') }}</p>
                         </div>
                     </div>
 
@@ -555,12 +555,12 @@
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
                                     </span>
-                                    <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
                                 </div>
 
                                 <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
 
-                                <p class="mt-1 text-xs text-gray-300">{{ __('Total payments received') }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Total payments received') }}</p>
                             </a>
                         @endforeach
                     </div>
@@ -573,7 +573,7 @@
                                 </span>
                                 <div>
                                     <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
-                                    <p class="text-sm text-gray-200">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
+                                    <p class="text-sm font-medium text-gray-200">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
                                 </div>
                             </a>
                             <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
@@ -582,7 +582,7 @@
                                 </span>
                                 <div>
                                     <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
-                                    <p class="text-sm text-gray-200">{{ __('All transactions are secure and verified') }}</p>
+                                    <p class="text-sm font-medium text-gray-200">{{ __('All transactions are secure and verified') }}</p>
                                 </div>
                             </button>
                         </div>
@@ -632,7 +632,7 @@
                         </span>
                         <div>
                             <h3 class="text-2xl font-bold">{{ __("Today's Attendance") }}</h3>
-                            <p class="text-sm text-gray-200">{{ __('See how many students are present and absent today.') }}</p>
+                            <p class="text-sm font-medium text-gray-200">{{ __('See how many students are present and absent today.') }}</p>
                         </div>
                     </div>
                     <span class="inline-flex items-center gap-2 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white">
@@ -647,12 +647,12 @@
                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
-                            <p class="text-xs uppercase tracking-wider text-gray-200">{{ __('Present') }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Present') }}</p>
                         </div>
 
                         <p class="text-2xl font-bold mt-3 whitespace-nowrap text-emerald-400">{{ $presentToday->count() }}</p>
 
-                        <p class="mt-1 text-xs text-gray-300">{{ __('Click to view names') }}</p>
+                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
                     </button>
 
                     <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
@@ -660,12 +660,12 @@
                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
-                            <p class="text-xs uppercase tracking-wider text-gray-200">{{ __('Absent') }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Absent') }}</p>
                         </div>
 
                         <p class="text-2xl font-bold mt-3 whitespace-nowrap text-red-400">{{ $absentToday->count() }}</p>
 
-                        <p class="mt-1 text-xs text-gray-300">{{ __('Click to view names') }}</p>
+                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
                     </button>
                 </div>
             </div>
@@ -1034,7 +1034,7 @@
                         </span>
                         <div>
                             <h3 class="text-2xl font-bold">{{ __('Service Processing') }}</h3>
-                            <p class="text-sm text-gray-200">{{ __('Track and manage all ongoing services') }}</p>
+                            <p class="text-sm font-medium text-gray-200">{{ __('Track and manage all ongoing services') }}</p>
                         </div>
                     </div>
 
@@ -1046,12 +1046,12 @@
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                                     </span>
-                                    <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
                                 </div>
 
                                 <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
 
-                                <p class="mt-1 text-xs text-gray-300">{{ __($card['description']) }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['description']) }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -1272,12 +1272,12 @@
                                             @endforeach
                                         </svg>
                                     </span>
-                                    <p class="text-xs uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
                                 </div>
 
                                 <p class="text-2xl font-bold mt-3 {{ $accent['text'] }}">{{ $card['value'] }}</p>
 
-                                <p class="mt-1 text-xs text-gray-300">{{ __($card['description']) }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['description']) }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -1369,7 +1369,7 @@
                             </span>
                             <div>
                                 <h4 class="text-base font-bold text-white">{{ __('Progress Summary') }}</h4>
-                                <p class="text-xs text-gray-200">{{ __('Real-time overview of student training') }}</p>
+                                <p class="text-xs font-medium text-gray-200">{{ __('Real-time overview of student training') }}</p>
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-8">
@@ -1379,7 +1379,7 @@
                                 </span>
                                 <div>
                                     <p class="text-lg font-extrabold text-green-400 leading-none">{{ $trainingProgressStats['highest_progress'] }}%</p>
-                                    <p class="text-xs text-gray-300 whitespace-nowrap">{{ __('Highest Progress') }}</p>
+                                    <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Highest Progress') }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -1388,7 +1388,7 @@
                                 </span>
                                 <div>
                                     <p class="text-lg font-extrabold text-amber-400 leading-none">{{ $trainingProgressStats['average_progress'] }}%</p>
-                                    <p class="text-xs text-gray-300 whitespace-nowrap">{{ __('Average Progress') }}</p>
+                                    <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Average Progress') }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -1397,7 +1397,7 @@
                                 </span>
                                 <div>
                                     <p class="text-lg font-extrabold text-rose-400 leading-none">{{ $trainingProgressStats['lowest_progress'] }}%</p>
-                                    <p class="text-xs text-gray-300 whitespace-nowrap">{{ __('Lowest Progress') }}</p>
+                                    <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Lowest Progress') }}</p>
                                 </div>
                             </div>
                         </div>
