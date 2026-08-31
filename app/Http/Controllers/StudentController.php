@@ -232,7 +232,7 @@ class StudentController extends Controller
             'courses',
             'payments' => fn ($query) => $query->with(['recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])->latest('payment_date'),
             'certificates' => fn ($query) => $query->with('course')->latest('issue_date'),
-            'attendances' => fn ($query) => $query->with(['instructor', 'vehicle'])->latest('date'),
+            'attendances' => fn ($query) => $query->with(['course', 'instructor', 'vehicle'])->latest('date'),
             'studentServices' => fn ($query) => $query->with('service'),
         ]);
         $instructors = Instructor::orderBy('name')->get();
