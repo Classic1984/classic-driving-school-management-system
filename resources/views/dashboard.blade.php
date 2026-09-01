@@ -252,23 +252,46 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
+            <div class="relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
+                <!-- Decorative diagonal panel -->
+                <div class="hidden lg:block absolute inset-y-0 right-0 w-[42%]" style="clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%)">
+                    <div class="relative h-full w-full bg-gradient-to-br from-amber-400 via-amber-600 to-gray-900 overflow-hidden">
+                        <svg class="absolute -right-8 top-1/2 -translate-y-1/2 h-72 w-72 text-black/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+                            <circle cx="12" cy="12" r="9" />
+                            <circle cx="12" cy="12" r="2.5" />
+                            <path stroke-linecap="round" d="M12 3v6.5M12 14.5V21M4.2 8l5.3 3M14.5 13l5.3 3M19.8 8l-5.3 3M9.5 13l-5.3 3" />
+                        </svg>
+                        <svg class="absolute right-8 top-8 h-20 w-20 text-black/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
+                    </div>
+                </div>
 
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-50 via-amber-50 to-white p-8">
-                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="relative inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-amber-200 px-4 py-1.5 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition mb-4">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
-                        {{ __('New Leads') }}: {{ number_format($stats['new_leads']) }}
+                <div class="relative p-8 lg:pr-[40%]">
+                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="inline-flex items-center gap-3 rounded-xl bg-white ring-1 ring-amber-200 px-4 py-2.5 shadow-sm hover:bg-amber-50 transition mb-6">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
+                        </span>
+                        <span class="text-sm font-semibold text-gray-700">{{ __('New Leads') }}</span>
+                        <span class="h-6 w-px bg-amber-200"></span>
+                        <span class="text-2xl font-black text-amber-500 leading-none">{{ number_format($stats['new_leads']) }}</span>
                     </a>
 
-                    <h1 class="relative text-3xl font-bold text-gray-800">
+                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-gray-900">
                         {{ __('Welcome to') }} <span class="text-amber-500">CDSMS</span>
                     </h1>
 
-                    <p class="relative mt-3 text-gray-600">
+                    <p class="mt-3 text-gray-600">
                         {{ __('Classic Driving School Management System') }}
                     </p>
 
-                    <form method="get" action="{{ route('students.index') }}" class="relative mt-6 flex gap-2 max-w-xl">
+                    <div class="mt-8 flex items-center gap-3 max-w-md">
+                        <span class="flex-1 border-t-2 border-dotted border-amber-300"></span>
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-amber-200 shadow-sm">
+                            <svg class="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
+                        </span>
+                        <span class="flex-1 border-t-2 border-dotted border-amber-300"></span>
+                    </div>
+
+                    <form method="get" action="{{ route('students.index') }}" class="mt-6 flex gap-2 max-w-xl">
                         <div class="relative flex-1">
                             <svg class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
                             <input type="text" name="search" placeholder="{{ __('Search students by name, email, or phone') }}" class="w-full rounded-full border-gray-300 pl-11 focus:border-amber-500 focus:ring-amber-500 shadow-sm">
@@ -276,7 +299,6 @@
                         <button type="submit" class="rounded-full bg-black px-6 py-2 text-sm font-bold text-amber-400 hover:bg-gray-800 transition">{{ __('Search') }}</button>
                     </form>
                 </div>
-
             </div>
 
             <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4 mt-8 mb-2">
