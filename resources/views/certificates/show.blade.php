@@ -47,6 +47,14 @@
                     <p class="text-sm font-mono text-amber-300">{{ $certificate->certificate_number }}</p>
                 </div>
 
+                <div class="flex items-center justify-center gap-2 mb-6 sm:mb-0 sm:absolute sm:bottom-10 sm:left-10 sm:justify-start">
+                    <img src="{{ asset('images/frsc-logo.jpg') }}" alt="{{ __('FRSC') }}" class="h-10 w-10 rounded-md bg-white p-0.5 object-contain shrink-0">
+                    <div class="text-left">
+                        <p class="text-[9px] uppercase tracking-widest text-amber-400">{{ __('FRSC Approved No.') }}</p>
+                        <p class="text-xs font-mono text-amber-300">FRSC/008679/RV/0042</p>
+                    </div>
+                </div>
+
                 <x-application-logo class="h-20 w-20 mx-auto" />
                 <p class="mt-1 text-xs uppercase tracking-widest text-amber-400">{{ __('& Son Nigeria Limited') }}</p>
 
@@ -117,7 +125,7 @@
 
                 <p class="mt-8 italic text-amber-400">{{ __('"When you say Classic, you say it all."') }}</p>
 
-                <div class="mt-6 pt-4 border-t border-amber-500/40 sm:pr-24 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] text-gray-300">
+                <div class="mt-6 pt-4 border-t border-amber-500/40 sm:pl-24 sm:pr-24 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] text-gray-300">
                     <span class="inline-flex items-center gap-1">
                         <svg class="h-3.5 w-3.5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" /></svg>
                         {{ __('2 Trans Woji Elelenwo Road, YKC Junction, Woji, Port Harcourt') }}
