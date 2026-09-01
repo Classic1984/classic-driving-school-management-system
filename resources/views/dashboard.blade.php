@@ -1081,22 +1081,26 @@
                 @php
                     $serviceProcessingNames = $serviceProcessing->pluck('service.name')->unique()->values();
 
-                    $pendingPaymentCount = $serviceProcessing->filter(fn (\App\Models\StudentService $studentService) => $studentService->balance() > 0)->count();
-                    $overdueCount = $serviceProcessing->filter(fn (\App\Models\StudentService $studentService) => $studentService->isOverdueProcessing())->count();
+                    $pendingPaymentServices = $serviceProcessing->filter(fn (\App\Models\StudentService $studentService) => $studentService->balance() > 0)->values();
+                    $overdueServices = $serviceProcessing->filter(fn (\App\Models\StudentService $studentService) => $studentService->isOverdueProcessing())->values();
                     // Not yet overdue, but due within the next 3 days - a
                     // heads-up before a service tips over into Overdue.
-                    $needsAttentionCount = $serviceProcessing->filter(function (\App\Models\StudentService $studentService) {
+                    $needsAttentionServices = $serviceProcessing->filter(function (\App\Models\StudentService $studentService) {
                         $expectedReadyAt = $studentService->expectedReadyAt();
 
                         return $expectedReadyAt !== null && ! $studentService->isOverdueProcessing() && now()->diffInDays($expectedReadyAt, false) <= 3;
-                    })->count();
+                    })->values();
+
+                    $pendingPaymentCount = $pendingPaymentServices->count();
+                    $overdueCount = $overdueServices->count();
+                    $needsAttentionCount = $needsAttentionServices->count();
 
                     $serviceStatCards = [
-                        ['label' => 'Total Services', 'value' => $serviceProcessing->count(), 'description' => 'All services in progress', 'color' => 'amber', 'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5'],
-                        ['label' => 'In Progress', 'value' => $serviceProcessing->count(), 'description' => 'Currently being processed', 'color' => 'green', 'icon' => 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
-                        ['label' => 'Pending Payment', 'value' => $pendingPaymentCount, 'description' => 'Awaiting payments', 'color' => 'indigo', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z'],
-                        ['label' => 'Overdue', 'value' => $overdueCount, 'description' => 'Overdue services', 'color' => 'orange', 'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
-                        ['label' => 'Needs Attention', 'value' => $needsAttentionCount, 'description' => 'Due within 3 days', 'color' => 'red', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'],
+                        ['key' => 'total-services', 'label' => 'Total Services', 'value' => $serviceProcessing->count(), 'description' => 'All services in progress', 'color' => 'amber', 'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5'],
+                        ['key' => 'in-progress', 'label' => 'In Progress', 'value' => $serviceProcessing->count(), 'description' => 'Currently being processed', 'color' => 'green', 'icon' => 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                        ['key' => 'pending-payment', 'label' => 'Pending Payment', 'value' => $pendingPaymentCount, 'description' => 'Awaiting payments', 'color' => 'indigo', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z'],
+                        ['key' => 'overdue', 'label' => 'Overdue', 'value' => $overdueCount, 'description' => 'Overdue services', 'color' => 'orange', 'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                        ['key' => 'needs-attention', 'label' => 'Needs Attention', 'value' => $needsAttentionCount, 'description' => 'Due within 3 days', 'color' => 'red', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'],
                     ];
                     $serviceStatColors = [
                         'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
@@ -1104,6 +1108,14 @@
                         'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
                         'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
                         'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
+                    ];
+
+                    $serviceModalGroups = [
+                        'total-services' => ['title' => 'Total Services', 'items' => $serviceProcessing],
+                        'in-progress' => ['title' => 'In Progress', 'items' => $serviceProcessing],
+                        'pending-payment' => ['title' => 'Pending Payment', 'items' => $pendingPaymentServices],
+                        'overdue' => ['title' => 'Overdue Services', 'items' => $overdueServices],
+                        'needs-attention' => ['title' => 'Needs Attention', 'items' => $needsAttentionServices],
                     ];
                 @endphp
 
@@ -1121,7 +1133,12 @@
                     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
                         @foreach ($serviceStatCards as $card)
                             @php $accent = $serviceStatColors[$card['color']]; @endphp
-                            <div class="flex flex-col bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
+                            <button
+                                type="button"
+                                x-data
+                                x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
+                                class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                            >
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
@@ -1132,10 +1149,46 @@
                                 <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
 
                                 <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['description']) }}</p>
-                            </div>
+                            </button>
                         @endforeach
                     </div>
                 </div>
+
+                @foreach ($serviceModalGroups as $modalKey => $group)
+                    <x-modal name="{{ $modalKey }}-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">{{ __($group['title']) }}</h3>
+                            @if ($group['items']->isEmpty())
+                                <p class="text-sm text-gray-500">{{ __('No services in this group right now.') }}</p>
+                            @else
+                                <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                    @foreach ($group['items'] as $studentService)
+                                        <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                            <div class="min-w-0">
+                                                <a href="{{ route('students.show', $studentService->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $studentService->student->name }}</a>
+                                                <span class="text-gray-500"> — {{ $studentService->service->name }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                                @if ($studentService->balance() > 0)
+                                                    <span class="text-xs font-semibold text-gray-700">₦{{ number_format($studentService->balance(), 2) }}</span>
+                                                @endif
+                                                @if ($studentService->isOverdueProcessing())
+                                                    <span class="inline-flex items-center gap-1.5 rounded-full bg-red-100 text-red-700 px-2.5 py-1 text-xs font-semibold">
+                                                        <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                                                        {{ __('Overdue') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', '{{ $modalKey }}-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endforeach
 
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6" x-data="{ activeFilter: 'all', overdueOnly: false }">
                     <div class="flex items-center gap-3 mb-4">
