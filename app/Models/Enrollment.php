@@ -458,21 +458,69 @@ class Enrollment extends Pivot
      */
     public static function trainingProgressStats(): array
     {
+        return static::trainingProgressBreakdown()['stats'];
+    }
+
+    /**
+     * The same aggregate counts as trainingProgressStats(), plus the actual
+     * records behind each count under 'groups' (keyed identically to
+     * 'stats'), so a UI can let someone click a count and see exactly the
+     * records it was computed from - never an approximation built by
+     * re-filtering a different, unrelated list.
+     *
+     * @return array{stats: array<string, int>, groups: array<string, \Illuminate\Support\Collection>}
+     */
+    public static function trainingProgressBreakdown(): array
+    {
         $activeEnrollments = static::where('status', 'active')->with(['course', 'student'])->get();
+        $completedEnrollments = static::where('status', 'completed')->with(['course', 'student'])->latest('enrolled_at')->get();
+        $expiredEnrollments = static::where('status', 'locked')->with(['course', 'student'])->latest('enrolled_at')->get();
+
+        $allStudents = static::with(['student', 'course'])->latest('enrolled_at')->get()->unique('student_id')->values();
+
+        $inProgress = $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() > 0)->values();
+        $notStarted = $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() === 0)->values();
+        $nonExperience = $activeEnrollments->filter(fn (self $enrollment) => $enrollment->student->has_driving_experience === false)->values();
+        $autoPrograms = $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'automatic')->values();
+        $manualPrograms = $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'manual')->values();
+        $bothPrograms = $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'both')->values();
+
+        $activeByProgress = $activeEnrollments->sortByDesc(fn (self $enrollment) => $enrollment->trainingCompletionPercentage())->values();
         $percentages = $activeEnrollments->map(fn (self $enrollment) => $enrollment->trainingCompletionPercentage());
+        $highestValue = $percentages->isEmpty() ? 0 : $percentages->max();
+        $lowestValue = $percentages->isEmpty() ? 0 : $percentages->min();
 
         return [
-            'total_students' => static::distinct('student_id')->count('student_id'),
-            'in_progress' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() > 0)->count(),
-            'completed' => static::where('status', 'completed')->count(),
-            'not_started' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->attendedDays() === 0)->count(),
-            'overall_progress' => $percentages->isEmpty() ? 0 : (int) round($percentages->avg()),
-            'non_experience' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->student->has_driving_experience === false)->count(),
-            'auto_programs' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'automatic')->count(),
-            'manual_programs' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->course->course_type === 'manual')->count(),
-            'highest_progress' => $percentages->isEmpty() ? 0 : (int) $percentages->max(),
-            'average_progress' => $percentages->isEmpty() ? 0 : (int) round($percentages->avg()),
-            'lowest_progress' => $percentages->isEmpty() ? 0 : (int) $percentages->min(),
+            'stats' => [
+                'total_students' => $allStudents->count(),
+                'in_progress' => $inProgress->count(),
+                'completed' => $completedEnrollments->count(),
+                'not_started' => $notStarted->count(),
+                'expired' => $expiredEnrollments->count(),
+                'overall_progress' => $percentages->isEmpty() ? 0 : (int) round($percentages->avg()),
+                'non_experience' => $nonExperience->count(),
+                'auto_programs' => $autoPrograms->count(),
+                'manual_programs' => $manualPrograms->count(),
+                'both_programs' => $bothPrograms->count(),
+                'highest_progress' => $highestValue,
+                'average_progress' => $percentages->isEmpty() ? 0 : (int) round($percentages->avg()),
+                'lowest_progress' => $lowestValue,
+            ],
+            'groups' => [
+                'total_students' => $allStudents,
+                'in_progress' => $inProgress,
+                'completed' => $completedEnrollments,
+                'not_started' => $notStarted,
+                'expired' => $expiredEnrollments,
+                'overall_progress' => $activeByProgress,
+                'non_experience' => $nonExperience,
+                'auto_programs' => $autoPrograms,
+                'manual_programs' => $manualPrograms,
+                'both_programs' => $bothPrograms,
+                'highest_progress' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->trainingCompletionPercentage() === $highestValue)->values(),
+                'average_progress' => $activeByProgress,
+                'lowest_progress' => $activeEnrollments->filter(fn (self $enrollment) => $enrollment->trainingCompletionPercentage() === $lowestValue)->values(),
+            ],
         ];
     }
 
