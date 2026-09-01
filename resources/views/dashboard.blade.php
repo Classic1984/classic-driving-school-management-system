@@ -1261,30 +1261,54 @@
             @if ($trainingProgress->isNotEmpty())
                 @php
                     $trainingStatusCards = [
-                        ['value' => $trainingProgressStats['total_students'], 'label' => 'Total Students', 'description' => 'All enrolled students', 'color' => 'rose', 'icon' => ['M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z']],
-                        ['value' => $trainingProgressStats['in_progress'], 'label' => 'In Progress', 'description' => 'Currently training', 'color' => 'blue', 'icon' => ['M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z']],
-                        ['value' => $trainingProgressStats['completed'], 'label' => 'Completed', 'description' => 'Training completed', 'color' => 'green', 'icon' => ['M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z']],
-                        ['value' => $trainingProgressStats['not_started'], 'label' => 'Not Started', 'description' => 'Yet to begin training', 'color' => 'purple', 'icon' => ['M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z', 'M9.75 9v6M14.25 9v6']],
+                        ['key' => 'total-students', 'value' => $trainingProgressStats['total_students'], 'label' => 'Total Students', 'description' => 'All enrolled students', 'color' => 'rose', 'icon' => ['M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z']],
+                        ['key' => 'in-progress', 'value' => $trainingProgressStats['in_progress'], 'label' => 'In Progress', 'description' => 'Currently training', 'color' => 'blue', 'icon' => ['M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z']],
+                        ['key' => 'completed', 'value' => $trainingProgressStats['completed'], 'label' => 'Completed', 'description' => 'Training completed', 'color' => 'green', 'icon' => ['M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z']],
+                        ['key' => 'not-started', 'value' => $trainingProgressStats['not_started'], 'label' => 'Not Started', 'description' => 'Yet to begin training', 'color' => 'purple', 'icon' => ['M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z', 'M9.75 9v6M14.25 9v6']],
+                        ['key' => 'expired', 'value' => $trainingProgressStats['expired'], 'label' => 'Expired', 'description' => 'Enrollment locked or expired', 'color' => 'red', 'icon' => ['M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z']],
                     ];
                     $trainingMixCards = [
-                        ['value' => $trainingProgressStats['non_experience'], 'label' => 'Non-Experience', 'description' => '(Auto & Manual)', 'color' => 'teal', 'icon' => ['M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0']],
-                        ['value' => $trainingProgressStats['auto_programs'], 'label' => 'Auto Programs', 'description' => 'Students in Auto', 'color' => 'orange', 'icon' => [$vehicleIconPath]],
-                        ['value' => $trainingProgressStats['manual_programs'], 'label' => 'Manual Programs', 'description' => 'Students in Manual', 'color' => 'pink', 'icon' => ['M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.991a6.932 6.932 0 0 1 0 .255c-.008.38.137.751.43.992l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.213-1.28Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z']],
+                        ['key' => 'non-experience', 'value' => $trainingProgressStats['non_experience'], 'label' => 'Non-Experience', 'description' => '(Auto & Manual)', 'color' => 'teal', 'icon' => ['M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0']],
+                        ['key' => 'auto-programs', 'value' => $trainingProgressStats['auto_programs'], 'label' => 'Auto Programs', 'description' => 'Students in Auto', 'color' => 'orange', 'icon' => [$vehicleIconPath]],
+                        ['key' => 'manual-programs', 'value' => $trainingProgressStats['manual_programs'], 'label' => 'Manual Programs', 'description' => 'Students in Manual', 'color' => 'pink', 'icon' => ['M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.991a6.932 6.932 0 0 1 0 .255c-.008.38.137.751.43.992l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.213-1.28Z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z']],
+                        ['key' => 'both-programs', 'value' => $trainingProgressStats['both_programs'], 'label' => 'Both Programs', 'description' => 'Students in Auto & Manual', 'color' => 'indigo', 'icon' => ['M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z']],
                     ];
                     $trainingStatColors = [
                         'rose' => ['icon' => 'bg-rose-500/10 text-rose-400', 'text' => 'text-rose-400'],
                         'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'text' => 'text-blue-400'],
                         'green' => ['icon' => 'bg-green-500/10 text-green-400', 'text' => 'text-green-400'],
                         'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'text' => 'text-purple-400'],
+                        'red' => ['icon' => 'bg-red-500/10 text-red-400', 'text' => 'text-red-400'],
                         'teal' => ['icon' => 'bg-teal-500/10 text-teal-400', 'text' => 'text-teal-400'],
                         'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'text' => 'text-orange-400'],
                         'pink' => ['icon' => 'bg-pink-500/10 text-pink-400', 'text' => 'text-pink-400'],
+                        'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'text' => 'text-indigo-400'],
                     ];
                     $avatarColors = ['bg-amber-100 text-amber-800', 'bg-blue-100 text-blue-800', 'bg-purple-100 text-purple-800', 'bg-green-100 text-green-800', 'bg-rose-100 text-rose-800'];
                     $statusAccents = [
                         'Active' => ['bar' => 'bg-amber-500', 'chip' => 'bg-amber-50 text-amber-700', 'dot' => 'bg-amber-500'],
                         'Completed' => ['bar' => 'bg-green-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
                         'Expired' => ['bar' => 'bg-red-500', 'chip' => 'bg-red-50 text-red-700', 'dot' => 'bg-red-500'],
+                    ];
+
+                    // Every tile above dispatches an open-modal event named
+                    // after its key; this map supplies each modal's title and
+                    // the exact records the tile's count was computed from -
+                    // never a re-filtered approximation of a different list.
+                    $trainingModalGroups = [
+                        'total-students' => ['title' => 'All Enrolled Students', 'items' => $trainingProgressGroups['total_students']],
+                        'in-progress' => ['title' => 'Students In Progress', 'items' => $trainingProgressGroups['in_progress']],
+                        'completed' => ['title' => 'Completed Training', 'items' => $trainingProgressGroups['completed']],
+                        'not-started' => ['title' => 'Not Started Training', 'items' => $trainingProgressGroups['not_started']],
+                        'expired' => ['title' => 'Expired / Locked Enrollments', 'items' => $trainingProgressGroups['expired']],
+                        'overall-progress' => ['title' => 'Overall Progress Breakdown', 'items' => $trainingProgressGroups['overall_progress']],
+                        'non-experience' => ['title' => 'Non-Experience Students', 'items' => $trainingProgressGroups['non_experience']],
+                        'auto-programs' => ['title' => 'Auto Program Students', 'items' => $trainingProgressGroups['auto_programs']],
+                        'manual-programs' => ['title' => 'Manual Program Students', 'items' => $trainingProgressGroups['manual_programs']],
+                        'both-programs' => ['title' => 'Auto & Manual Program Students', 'items' => $trainingProgressGroups['both_programs']],
+                        'highest-progress' => ['title' => 'Highest Progress', 'items' => $trainingProgressGroups['highest_progress']],
+                        'average-progress' => ['title' => 'Average Progress Breakdown', 'items' => $trainingProgressGroups['average_progress']],
+                        'lowest-progress' => ['title' => 'Lowest Progress', 'items' => $trainingProgressGroups['lowest_progress']],
                     ];
 
                     // Overall Progress is a ratio against a limit (0-100%), so it
@@ -1313,10 +1337,15 @@
                     </div>
 
                     <p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Training Status') }}</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-5">
                         @foreach ($trainingStatusCards as $card)
                             @php $accent = $trainingStatColors[$card['color']]; @endphp
-                            <div class="flex flex-col bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
+                            <button
+                                type="button"
+                                x-data
+                                x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
+                                class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                            >
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -1331,13 +1360,18 @@
                                 <p class="text-2xl font-bold mt-3 {{ $accent['text'] }}">{{ $card['value'] }}</p>
 
                                 <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['description']) }}</p>
-                            </div>
+                            </button>
                         @endforeach
                     </div>
 
                     <p class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Program Mix') }}</p>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <div class="flex items-center gap-3 bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <button
+                            type="button"
+                            x-data
+                            x-on:click="$dispatch('open-modal', 'overall-progress-modal')"
+                            class="flex items-center gap-3 text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                        >
                             <svg class="h-14 w-14 shrink-0" viewBox="0 0 56 56">
                                 <circle cx="28" cy="28" r="{{ $meterRadius }}" fill="none" stroke="rgba(251,191,36,0.15)" stroke-width="6" />
                                 <circle cx="28" cy="28" r="{{ $meterRadius }}" fill="none" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" stroke-dasharray="{{ round($meterCircumference, 2) }}" stroke-dashoffset="{{ round($meterOffset, 2) }}" transform="rotate(-90 28 28)" />
@@ -1347,10 +1381,15 @@
                                 <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Overall Progress') }}</p>
                                 <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Avg. active progress') }}</p>
                             </div>
-                        </div>
+                        </button>
                         @foreach ($trainingMixCards as $card)
                             @php $accent = $trainingStatColors[$card['color']]; @endphp
-                            <div class="flex flex-col bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
+                            <button
+                                type="button"
+                                x-data
+                                x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
+                                class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                            >
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -1365,7 +1404,7 @@
                                 <p class="text-2xl font-bold mt-3 {{ $accent['text'] }}">{{ $card['value'] }}</p>
 
                                 <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['description']) }}</p>
-                            </div>
+                            </button>
                         @endforeach
                     </div>
 
@@ -1380,7 +1419,7 @@
                             </div>
                         </div>
                         <div class="flex flex-wrap items-center gap-8">
-                            <div class="flex items-center gap-2">
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'highest-progress-modal')" class="flex items-center gap-2 text-left transition hover:opacity-80">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-500/10 text-green-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
                                 </span>
@@ -1388,8 +1427,8 @@
                                     <p class="text-lg font-extrabold text-green-400 leading-none">{{ $trainingProgressStats['highest_progress'] }}%</p>
                                     <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Highest Progress') }}</p>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-2">
+                            </button>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'average-progress-modal')" class="flex items-center gap-2 text-left transition hover:opacity-80">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
                                 </span>
@@ -1397,8 +1436,8 @@
                                     <p class="text-lg font-extrabold text-amber-400 leading-none">{{ $trainingProgressStats['average_progress'] }}%</p>
                                     <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Average Progress') }}</p>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-2">
+                            </button>
+                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'lowest-progress-modal')" class="flex items-center gap-2 text-left transition hover:opacity-80">
                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500/10 text-rose-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.306-4.306a11.95 11.95 0 0 1 5.814 5.518l2.74 1.22m0 0v-5.94m0 5.94h-5.94" /></svg>
                                 </span>
@@ -1406,10 +1445,47 @@
                                     <p class="text-lg font-extrabold text-rose-400 leading-none">{{ $trainingProgressStats['lowest_progress'] }}%</p>
                                     <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Lowest Progress') }}</p>
                                 </div>
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                @foreach ($trainingModalGroups as $modalKey => $group)
+                    <x-modal name="{{ $modalKey }}-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">{{ __($group['title']) }}</h3>
+                            @if ($group['items']->isEmpty())
+                                <p class="text-sm text-gray-500">{{ __('No students in this group right now.') }}</p>
+                            @else
+                                <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                    @foreach ($group['items'] as $enrollment)
+                                        @php
+                                            $modalRowLabel = $enrollment->trainingStatusLabel();
+                                            $modalRowPercent = $enrollment->trainingCompletionPercentage();
+                                            $modalRowAccent = $statusAccents[$modalRowLabel] ?? $statusAccents['Active'];
+                                        @endphp
+                                        <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                            <div class="min-w-0">
+                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                                <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                                <span class="text-xs font-semibold text-gray-700">{{ $modalRowPercent }}%</span>
+                                                <span class="inline-flex items-center gap-1.5 rounded-full {{ $modalRowAccent['chip'] }} px-2.5 py-1 text-xs font-semibold">
+                                                    <span class="h-1.5 w-1.5 rounded-full {{ $modalRowAccent['dot'] }}"></span>
+                                                    {{ __($modalRowLabel) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', '{{ $modalKey }}-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endforeach
 
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
