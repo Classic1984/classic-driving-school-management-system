@@ -109,7 +109,12 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     @foreach ($kpiCards as $card)
                         @php $accent = $kpiColors[$card['color']]; @endphp
-                        <div class="bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40">
+                        <button
+                            type="button"
+                            x-data
+                            x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
+                            class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                        >
                             <div class="flex items-center gap-2.5">
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
@@ -124,10 +129,40 @@
                                 @endif
                             </p>
                             <p class="mt-1 text-xs font-medium text-gray-300">{{ $card['subtext'] }}</p>
-                        </div>
+                        </button>
                     @endforeach
                 </div>
             </div>
+
+            @foreach ($kpiCards as $card)
+                <x-modal name="{{ $card['key'] }}-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">{{ __($card['label']) }}</h3>
+                        @if ($kpiGroups[$card['key']]->isEmpty())
+                            <p class="text-sm text-gray-500">{{ __('Nothing here right now.') }}</p>
+                        @else
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($kpiGroups[$card['key']] as $row)
+                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                        <div class="min-w-0">
+                                            <a href="{{ $row['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $row['name'] }}</a>
+                                            @if ($row['meta'])
+                                                <span class="text-gray-500"> — {{ $row['meta'] }}</span>
+                                            @endif
+                                        </div>
+                                        @if ($row['detail'])
+                                            <span class="text-xs text-gray-500 whitespace-nowrap">{{ $row['detail'] }}</span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', '{{ $card['key'] }}-modal')">{{ __('Close') }}</x-secondary-button>
+                        </div>
+                    </div>
+                </x-modal>
+            @endforeach
 
             @php
                 $academicCapPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';

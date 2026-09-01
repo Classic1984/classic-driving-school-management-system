@@ -188,7 +188,7 @@ class DashboardController extends Controller
             ->sortByDesc(fn (Enrollment $enrollment) => $enrollment->attendedDays())
             ->values();
 
-        $completedEnrollments = Enrollment::where('status', 'completed')->get();
+        $completedEnrollments = Enrollment::where('status', 'completed')->with(['student', 'course'])->get();
 
         // At-Risk Students: active enrollments that still owe money and are
         // also showing early signs of dropping out (no training login well
@@ -269,6 +269,78 @@ class DashboardController extends Controller
             'at_risk_students' => $atRiskEnrollments->count(),
         ];
 
+        // The exact records behind each KPI card above, normalized to one
+        // row shape (name/href/meta/detail) so a click can show precisely
+        // what that number was computed from - never an approximation.
+        $studentsTrainedTodayAttendances = Attendance::where('status', 'present')
+            ->whereDate('date', today())
+            ->with(['student', 'course'])
+            ->latest('created_at')
+            ->get()
+            ->unique('student_id')
+            ->values();
+
+        $kpiGroups = [
+            'active_students' => Student::where('status', 'active')->latest('created_at')->get()
+                ->map(fn (Student $student) => [
+                    'name' => $student->name,
+                    'href' => route('students.show', $student->id),
+                    'meta' => null,
+                    'detail' => null,
+                ]),
+            'training_today' => $studentsTrainedTodayAttendances
+                ->map(fn (Attendance $attendance) => [
+                    'name' => $attendance->student->name,
+                    'href' => route('students.show', $attendance->student_id),
+                    'meta' => $attendance->course->name,
+                    'detail' => $attendance->created_at->format('g:i A'),
+                ]),
+            'pending_payments' => $outstandingEnrollments
+                ->map(fn (Enrollment $enrollment) => [
+                    'name' => $enrollment->student->name,
+                    'href' => route('students.show', $enrollment->student_id),
+                    'meta' => $enrollment->course->name,
+                    'detail' => '₦'.number_format($enrollment->balance(), 2),
+                ])->values(),
+            'completed_training' => $completedEnrollments
+                ->map(fn (Enrollment $enrollment) => [
+                    'name' => $enrollment->student->name,
+                    'href' => route('students.show', $enrollment->student_id),
+                    'meta' => $enrollment->course->name,
+                    'detail' => null,
+                ]),
+            'active_vehicles' => Vehicle::where('status', 'active')->latest('created_at')->get()
+                ->map(fn (Vehicle $vehicle) => [
+                    'name' => $vehicle->name,
+                    'href' => route('vehicles.show', $vehicle->id),
+                    'meta' => $vehicle->plate_number,
+                    'detail' => null,
+                ]),
+            'certificates_due' => $completedEnrollments
+                ->filter(fn (Enrollment $enrollment) => ! $enrollment->hasCertificate())
+                ->values()
+                ->map(fn (Enrollment $enrollment) => [
+                    'name' => $enrollment->student->name,
+                    'href' => route('students.show', $enrollment->student_id),
+                    'meta' => $enrollment->course->name,
+                    'detail' => null,
+                ]),
+            'revenue_leakage' => $revenueLeakage
+                ->map(fn (array $leak) => [
+                    'name' => $leak['student']->name,
+                    'href' => route('students.show', $leak['student']->id),
+                    'meta' => $leak['label'],
+                    'detail' => '₦'.number_format($leak['balance'], 2),
+                ]),
+            'at_risk_students' => $atRiskEnrollments
+                ->map(fn (Enrollment $enrollment) => [
+                    'name' => $enrollment->student->name,
+                    'href' => route('students.show', $enrollment->student_id),
+                    'meta' => $enrollment->course->name,
+                    'detail' => __(ucfirst($enrollment->riskLevel())).' '.__('risk'),
+                ]),
+        ];
+
         $todaysAttendance = Attendance::where('status', 'present')->whereDate('date', today());
 
         // Today's Operations: a same-day snapshot, distinct from the KPI
@@ -287,7 +359,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
     }
 
     /**

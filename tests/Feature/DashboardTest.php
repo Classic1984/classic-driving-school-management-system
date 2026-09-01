@@ -1052,8 +1052,13 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
+        // The whole partial - heading and every row in it, including this
+        // student - lives behind this one isNotEmpty() guard, so asserting
+        // the heading is absent already proves the student isn't listed.
+        // (A bare name-absence check would be a false failure now that the
+        // dashboard's "Active Students" KPI tile opens a modal listing
+        // every active student by name, this one included.)
         $response->assertDontSee("Learner's Permit Requests");
-        $response->assertDontSee('Already Obtained');
     }
 
     public function test_dashboard_does_not_list_a_pending_service_that_is_not_a_learners_permit(): void
@@ -1095,8 +1100,13 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
+        // The whole partial - heading and every row in it, including this
+        // student - lives behind this one isNotEmpty() guard, so asserting
+        // the heading is absent already proves the student isn't listed.
+        // (A bare name-absence check would be a false failure now that the
+        // dashboard's "Active Students" KPI tile opens a modal listing
+        // every active student by name, this one included.)
         $response->assertDontSee('Online Certificate Requests');
-        $response->assertDontSee('Already Certified');
     }
 
     public function test_dashboard_lists_a_driving_license_charge_that_has_not_started_processing(): void
