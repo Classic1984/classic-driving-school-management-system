@@ -848,37 +848,91 @@
             @endif
 
             @if ($revenueLeakage->isNotEmpty())
+                @php
+                    $leakageIconPath = 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941';
+                @endphp
                 <div id="revenue-leakage" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">{{ __('Revenue Leakage') }}</h3>
-                        <x-badge color="red">₦{{ number_format($revenueLeakage->sum('balance'), 2) }} {{ __('Uncollected') }}</x-badge>
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $leakageIconPath }}" /></svg>
+                            </span>
+                            <h3 class="text-xl font-bold text-gray-900">{{ __('Revenue Leakage') }}</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-2 rounded-full bg-red-50 ring-1 ring-red-200 px-4 py-2 text-sm font-semibold text-red-700">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $leakageIconPath }}" /></svg>
+                            ₦{{ number_format($revenueLeakage->sum('balance'), 2) }} {{ __('Uncollected') }}
+                        </span>
                     </div>
-                    <p class="text-sm text-gray-500 mb-4">{{ __('Certificate fees on completed enrollments, and services already delivered, that are still unpaid — the work is done, so nothing will prompt collection unless staff act on it.') }}</p>
+                    <p class="text-sm text-gray-500 mb-6 max-w-3xl">{{ __('Certificate fees on completed enrollments, and services already delivered, that are still unpaid — the work is done, so nothing will prompt collection unless staff act on it.') }}</p>
 
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <th class="pb-2">{{ __('Student') }}</th>
-                                <th class="pb-2">{{ __('Item') }}</th>
-                                <th class="pb-2">{{ __('Balance') }}</th>
-                                <th class="pb-2">{{ __('Delivered') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @foreach ($revenueLeakage as $leak)
-                                <tr>
-                                    <td class="py-2">
-                                        <a href="{{ route('students.show', $leak['student']->id) }}" class="text-amber-600 hover:underline">
-                                            {{ $leak['student']->name }}
-                                        </a>
-                                    </td>
-                                    <td class="py-2">{{ $leak['label'] }}</td>
-                                    <td class="py-2">₦{{ number_format($leak['balance'], 2) }}</td>
-                                    <td class="py-2">{{ $leak['since']->diffForHumans() }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-black">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                        <th class="py-3 pl-4 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                                {{ __('Student') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0" /></svg>
+                                                {{ __('Item') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                                                {{ __('Balance') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                                {{ __('Delivered') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white">
+                                    @foreach ($revenueLeakage as $leak)
+                                        @php $leakInitials = collect(explode(' ', $leak['student']->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
+                                        <tr>
+                                            <td class="py-3 pl-4 pr-4">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $leakInitials }}</span>
+                                                    <a href="{{ route('students.show', $leak['student']->id) }}" class="font-semibold text-gray-900 hover:text-amber-600">{{ $leak['student']->name }}</a>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 pr-4 text-gray-600">{{ $leak['label'] }}</td>
+                                            <td class="py-3 pr-4 font-semibold text-gray-900">₦{{ number_format($leak['balance'], 2) }}</td>
+                                            <td class="py-3 pr-4 text-gray-600">{{ $leak['since']->diffForHumans() }}</td>
+                                            <td class="py-3 pr-4 text-right">
+                                                <a href="{{ route('students.show', $leak['student']->id) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                                    {{ __('View Student') }}
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap items-center gap-4 rounded-xl bg-red-50 ring-1 ring-red-200 p-4">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" /></svg>
+                        </span>
+                        <div class="min-w-[16rem] flex-1">
+                            <p class="text-sm font-bold text-red-700">{{ __('Needs collection') }}</p>
+                            <p class="text-xs text-red-600">{{ __('The work is already delivered — follow up with these students so the revenue isn\'t forgotten.') }}</p>
+                        </div>
+                    </div>
                 </div>
             @endif
 
