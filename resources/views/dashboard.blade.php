@@ -611,24 +611,72 @@
             </x-modal>
 
             @if ($upcomingPayments->isNotEmpty() || $lockedEnrollments->isNotEmpty())
+                @php
+                    $walletIconPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z';
+                    $arrowRightIconPath = 'M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3';
+                @endphp
                 <div id="outstanding-payments" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">{{ __('Outstanding Payments') }}</h3>
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                        <div class="flex items-center gap-4">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
+                            </span>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">{{ __('Outstanding Payments') }}</h3>
+                                <p class="text-sm text-gray-500">{{ __('Students with upcoming payments due.') }}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            @if ($upcomingPayments->isNotEmpty())
+                                <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 ring-1 ring-amber-200 px-4 py-2 text-sm font-semibold text-amber-700">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                                    {{ $upcomingPayments->count() }} {{ __('Upcoming') }}
+                                </span>
+                            @endif
+                            @if ($lockedEnrollments->isNotEmpty())
+                                <span class="inline-flex items-center gap-2 rounded-full bg-red-50 ring-1 ring-red-200 px-4 py-2 text-sm font-semibold text-red-700">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                    {{ $lockedEnrollments->count() }} {{ __('Locked') }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 {{ $upcomingPayments->isNotEmpty() && $lockedEnrollments->isNotEmpty() ? 'sm:grid-cols-2' : '' }} gap-4">
                         @if ($upcomingPayments->isNotEmpty())
-                            <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="text-left rounded-lg p-5 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-amber-700 font-semibold">🟠 {{ __('Upcoming') }}</p>
-                                <p class="text-3xl font-bold text-amber-700 mt-1">{{ $upcomingPayments->count() }}</p>
-                                <p class="text-xs text-amber-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
+                            <div class="relative overflow-hidden rounded-xl border border-amber-200 bg-amber-50/60 p-6">
+                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
+                                <div class="relative flex items-stretch gap-4">
+                                    <span class="w-1 shrink-0 rounded-full bg-amber-400"></span>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-bold uppercase tracking-widest text-amber-700">{{ __('Upcoming') }}</p>
+                                        <p class="mt-2 text-4xl font-black text-amber-700">{{ $upcomingPayments->count() }}</p>
+                                        <p class="mt-1 text-sm text-amber-700/80">{{ trans_choice('{1} student with payment due soon|[2,*] :count students with payment due soon', $upcomingPayments->count(), ['count' => $upcomingPayments->count()]) }}</p>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white ring-1 ring-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100 transition">
+                                            {{ __('Click to view names') }}
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowRightIconPath }}" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
 
                         @if ($lockedEnrollments->isNotEmpty())
-                            <button type="button" id="locked-students" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="text-left rounded-lg p-5 bg-red-50 border border-red-200 hover:bg-red-100 transition">
-                                <p class="text-xs uppercase tracking-wider text-red-700 font-semibold">🔒 {{ __('Locked') }}</p>
-                                <p class="text-3xl font-bold text-red-700 mt-1">{{ $lockedEnrollments->count() }}</p>
-                                <p class="text-xs text-red-600 mt-1">{{ __('Click to view names') }}</p>
-                            </button>
+                            <div id="locked-students" class="relative overflow-hidden rounded-xl border border-red-200 bg-red-50/60 p-6">
+                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-red-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                <div class="relative flex items-stretch gap-4">
+                                    <span class="w-1 shrink-0 rounded-full bg-red-400"></span>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-bold uppercase tracking-widest text-red-700">{{ __('Locked') }}</p>
+                                        <p class="mt-2 text-4xl font-black text-red-700">{{ $lockedEnrollments->count() }}</p>
+                                        <p class="mt-1 text-sm text-red-700/80">{{ trans_choice('{1} student currently locked out|[2,*] :count students currently locked out', $lockedEnrollments->count(), ['count' => $lockedEnrollments->count()]) }}</p>
+                                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white ring-1 ring-red-300 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 transition">
+                                            {{ __('Click to view names') }}
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowRightIconPath }}" /></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -708,40 +756,93 @@
             @endif
 
             @if ($atRiskEnrollments->isNotEmpty())
+                @php
+                    $warningTriangleIconPath = 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z';
+                    $bellIconPath = 'M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0';
+                @endphp
                 <div id="at-risk-students" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-800">{{ __('At-Risk Students') }}</h3>
-                        <x-badge color="red">{{ $atRiskEnrollments->count() }} {{ __('Flagged') }}</x-badge>
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $warningTriangleIconPath }}" /></svg>
+                            </span>
+                            <h3 class="text-xl font-bold text-gray-900">{{ __('At-Risk Students') }}</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-2 rounded-full bg-red-50 ring-1 ring-red-200 px-4 py-2 text-sm font-semibold text-red-700">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5" /></svg>
+                            {{ $atRiskEnrollments->count() }} {{ __('Flagged') }}
+                        </span>
                     </div>
-                    <p class="text-sm text-gray-500 mb-4">{{ __('Active students who still owe money and are also showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
+                    <p class="text-sm text-gray-500 mb-6 max-w-3xl">{{ __('Active students who still owe money and are also showing early signs of dropping out (no training in a while) or defaulting (balance due soon) — a proactive watchlist for follow-up before it locks the enrollment on its own.') }}</p>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead>
-                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <th class="pb-2 pr-4">{{ __('Student') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Course') }}</th>
-                                    <th class="pb-2 pr-4">{{ __('Risk') }}</th>
-                                    <th class="pb-2">{{ __('Reason(s)') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-100">
-                                @foreach ($atRiskEnrollments as $enrollment)
-                                    <tr>
-                                        <td class="py-2 pr-4">
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline">
-                                                {{ $enrollment->student->name }}
-                                            </a>
-                                        </td>
-                                        <td class="py-2 pr-4">{{ $enrollment->course->name }}</td>
-                                        <td class="py-2 pr-4">
-                                            <x-badge :color="$enrollment->riskLevel() === 'high' ? 'red' : 'amber'">{{ __(ucfirst($enrollment->riskLevel())) }}</x-badge>
-                                        </td>
-                                        <td class="py-2">{{ implode(' · ', $enrollment->riskReasons()) }}</td>
+                    <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-black">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                        <th class="py-3 pl-4 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                                {{ __('Student') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.25c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
+                                                {{ __('Course') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                                {{ __('Risk') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                                {{ __('Reason(s)') }}
+                                            </span>
+                                        </th>
+                                        <th class="py-3 pr-4"></th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 bg-white">
+                                    @foreach ($atRiskEnrollments as $enrollment)
+                                        @php $riskInitials = collect(explode(' ', $enrollment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
+                                        <tr>
+                                            <td class="py-3 pl-4 pr-4">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $riskInitials }}</span>
+                                                    <a href="{{ route('students.show', $enrollment->student_id) }}" class="font-semibold text-gray-900 hover:text-amber-600">{{ $enrollment->student->name }}</a>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 pr-4 text-gray-600">{{ $enrollment->course->name }}</td>
+                                            <td class="py-3 pr-4">
+                                                <x-badge :color="$enrollment->riskLevel() === 'high' ? 'red' : 'amber'">{{ __(ucfirst($enrollment->riskLevel())) }}</x-badge>
+                                            </td>
+                                            <td class="py-3 pr-4 text-gray-600">{{ implode(' · ', $enrollment->riskReasons()) }}</td>
+                                            <td class="py-3 pr-4 text-right">
+                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                                    {{ __('View Student') }}
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap items-center gap-4 rounded-xl bg-red-50 ring-1 ring-red-200 p-4">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bellIconPath }}" /></svg>
+                        </span>
+                        <div class="min-w-[16rem] flex-1">
+                            <p class="text-sm font-bold text-red-700">{{ __('Needs attention') }}</p>
+                            <p class="text-xs text-red-600">{{ trans_choice('{1} Follow up with this student to prevent dropout and ensure timely payment.|[2,*] Follow up with these students to prevent dropout and ensure timely payment.', $atRiskEnrollments->count()) }}</p>
+                        </div>
                     </div>
                 </div>
             @endif
