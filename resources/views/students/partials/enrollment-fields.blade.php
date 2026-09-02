@@ -1,7 +1,7 @@
 @php($legend = $legend ?? __('Course Enrollment & Initial Payment'))
 
-<fieldset class="border border-gray-200 rounded-md p-4">
-    <legend class="text-sm font-medium text-gray-700 px-1">
+<fieldset class="rounded-xl ring-1 ring-gray-200 p-4">
+    <legend class="text-sm font-bold uppercase tracking-wider text-gray-500 px-1">
         <span x-show="registrationType === 'course'">{{ $legend }}</span>
         <span x-show="registrationType === 'service'">{{ __('Services & Initial Payment') }}</span>
     </legend>
