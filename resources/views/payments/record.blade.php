@@ -5,8 +5,22 @@
         </h2>
     </x-slot>
 
+    @php
+        $banknotesIconPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z';
+    @endphp
+
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="flex items-center gap-4 px-4 sm:px-0">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                </span>
+                <div>
+                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Record Payment') }}</h3>
+                    <p class="text-sm text-gray-500">{{ __('Pick a student, then tick off the charges being paid') }}</p>
+                </div>
+            </div>
+
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                 <form method="get" action="{{ route('payments.record.create') }}" class="flex items-end gap-4">
                     <div class="flex-1">
@@ -61,34 +75,35 @@
 
                             <x-input-error class="mb-2" :messages="$errors->get('allocations')" />
 
-                            <div class="overflow-x-auto">
+                            <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                                <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead>
-                                        <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                            <th class="px-2 py-1"></th>
-                                            <th class="px-2 py-1">{{ __('Charge') }}</th>
-                                            <th class="px-2 py-1">{{ __('Full Price') }}</th>
-                                            <th class="px-2 py-1">{{ __('Paid') }}</th>
-                                            <th class="px-2 py-1">{{ __('Balance') }}</th>
-                                            <th class="px-2 py-1">{{ __('Amount to Pay') }}</th>
+                                        <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                            <th class="px-3 py-3"></th>
+                                            <th class="px-3 py-3">{{ __('Charge') }}</th>
+                                            <th class="px-3 py-3">{{ __('Full Price') }}</th>
+                                            <th class="px-3 py-3">{{ __('Paid') }}</th>
+                                            <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                            <th class="px-3 py-3">{{ __('Amount to Pay') }}</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-100">
+                                    <tbody class="divide-y divide-gray-100 bg-white">
                                         @foreach ($charges as $index => $charge)
                                             <tr>
-                                                <td class="px-2 py-1 text-sm">
+                                                <td class="px-3 py-3 text-sm">
                                                     <input type="checkbox" :checked="Number(rows[{{ $index }}].amount) > 0" @change="toggle({{ $index }}, $event.target.checked)" class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500" aria-label="{{ __('Pay :charge in full', ['charge' => $charge['label']]) }}">
                                                 </td>
-                                                <td class="px-2 py-1 text-sm">
+                                                <td class="px-3 py-3 text-sm">
                                                     {{ $charge['label'] }}
                                                     @if ($charge['type'] === 'new_service')
                                                         <x-badge color="gray" class="ms-1">{{ __('Not Yet Billed') }}</x-badge>
                                                     @endif
                                                 </td>
-                                                <td class="px-2 py-1 text-sm">{{ number_format($charge['price'], 2) }}</td>
-                                                <td class="px-2 py-1 text-sm">{{ number_format($charge['paid'], 2) }}</td>
-                                                <td class="px-2 py-1 text-sm">{{ number_format($charge['balance'], 2) }}</td>
-                                                <td class="px-2 py-1 text-sm">
+                                                <td class="px-3 py-3 text-sm">{{ number_format($charge['price'], 2) }}</td>
+                                                <td class="px-3 py-3 text-sm">{{ number_format($charge['paid'], 2) }}</td>
+                                                <td class="px-3 py-3 text-sm">{{ number_format($charge['balance'], 2) }}</td>
+                                                <td class="px-3 py-3 text-sm">
                                                     <input type="hidden" name="allocations[{{ $index }}][type]" value="{{ $charge['type'] }}">
                                                     <input type="hidden" name="allocations[{{ $index }}][id]" value="{{ $charge['id'] }}">
                                                     <input
@@ -108,6 +123,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
