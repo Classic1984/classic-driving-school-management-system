@@ -1,32 +1,60 @@
 @php($student = $student ?? null)
 @php($fieldsLocked = $student && ! auth()->user()->isDirector())
 
+@if ($fieldsLocked)
+    @php($sexLabels = ['male' => 'Male', 'female' => 'Female'])
+    @php($occupationLabels = ['student' => 'Student', 'business' => 'Business', 'other' => 'Others'])
+    @php($courseTypeLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'])
+    @php($vehicleClassLabels = ['light' => 'Light', 'heavy' => 'Heavy'])
+    @php($referralSourceLabels = ['flyer' => 'Flyer', 'referral' => 'Referral', 'facebook' => 'Facebook', 'other' => 'Others'])
+    @php($statusLabels = ['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'])
+    @php($yesNo = fn ($value) => $value === null ? '—' : ($value ? __('Yes') : __('No')))
+
+    <div class="rounded-xl bg-amber-50 ring-1 ring-amber-200 p-4 flex flex-wrap items-center justify-between gap-4">
+        <div>
+            <p class="text-sm font-semibold text-amber-800">{{ __('🔒 Director-controlled information') }}</p>
+            <p class="text-sm text-amber-700 mt-0.5">{{ __('Only a Director can edit an already registered student. Submit a request below and a Director will review it.') }}</p>
+        </div>
+        <a href="{{ route('student-correction-requests.create', $student) }}" class="shrink-0 inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-bold text-black transition">{{ __('Request a Correction') }}</a>
+    </div>
+
+    {{-- These fields are all required by the validator, so a hidden input
+    carries the unchanged value forward - the server strips it from the
+    update regardless, but omitting it here would fail validation before
+    the request even reaches that check. --}}
+    <input type="hidden" name="name" value="{{ $student->name }}">
+    <input type="hidden" name="phone" value="{{ $student->phone }}">
+    <input type="hidden" name="date_of_birth" value="{{ optional($student->date_of_birth)->format('Y-m-d') }}">
+    <input type="hidden" name="email" value="{{ $student->email }}">
+    <input type="hidden" name="enrollment_date" value="{{ optional($student->enrollment_date)->format('Y-m-d') }}">
+    <input type="hidden" name="status" value="{{ $student->status }}">
+@endif
+
 <div>
     <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Personal Information') }}</h3>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         @if ($fieldsLocked)
-            <div class="rounded-xl bg-amber-50 ring-1 ring-amber-200 p-4 space-y-3 sm:col-span-2">
-                <p class="text-xs font-medium text-amber-700">{{ __('🔒 Director-controlled information') }}</p>
-
-                <div>
-                    <x-input-label :value="__('Name')" />
-                    <p class="mt-1 text-sm text-gray-900">{{ $student->name }}</p>
-                </div>
-                <div>
-                    <x-input-label :value="__('Phone')" />
-                    <p class="mt-1 text-sm text-gray-900">{{ $student->phone }}</p>
-                </div>
-                <div>
-                    <x-input-label :value="__('Date of Birth')" />
-                    <p class="mt-1 text-sm text-gray-900">{{ optional($student->date_of_birth)->format('Y-m-d') ?? '—' }}</p>
-                </div>
-
-                <a href="{{ route('student-correction-requests.create', $student) }}" class="text-sm text-amber-600 hover:underline">{{ __('Request a Correction') }}</a>
+            <div>
+                <x-input-label :value="__('Name')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->name }}</p>
             </div>
-            <input type="hidden" name="name" value="{{ $student->name }}">
-            <input type="hidden" name="phone" value="{{ $student->phone }}">
-            <input type="hidden" name="date_of_birth" value="{{ optional($student->date_of_birth)->format('Y-m-d') }}">
+            <div>
+                <x-input-label :value="__('Phone')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->phone }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Date of Birth')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ optional($student->date_of_birth)->format('Y-m-d') ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Sex')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $sexLabels[$student->sex] ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Mother Maiden Name')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->mother_maiden_name ?? '—' }}</p>
+            </div>
         @else
             <div>
                 <x-input-label for="name" :value="__('Name')" />
@@ -45,24 +73,24 @@
                 <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="mt-1 block w-full" :value="old('date_of_birth', optional($student?->date_of_birth)->format('Y-m-d'))" required />
                 <x-input-error class="mt-2" :messages="$errors->get('date_of_birth')" />
             </div>
+
+            <div>
+                <x-input-label for="sex" :value="__('Sex')" />
+                <select id="sex" name="sex" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (['male' => 'Male', 'female' => 'Female'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('sex', $student?->sex) === $value)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('sex')" />
+            </div>
+
+            <div>
+                <x-input-label for="mother_maiden_name" :value="__('Mother Maiden Name')" />
+                <x-text-input id="mother_maiden_name" name="mother_maiden_name" type="text" class="mt-1 block w-full" :value="old('mother_maiden_name', $student?->mother_maiden_name)" />
+                <x-input-error class="mt-2" :messages="$errors->get('mother_maiden_name')" />
+            </div>
         @endif
-
-        <div>
-            <x-input-label for="sex" :value="__('Sex')" />
-            <select id="sex" name="sex" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                @foreach (['male' => 'Male', 'female' => 'Female'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('sex', $student?->sex) === $value)>{{ __($label) }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('sex')" />
-        </div>
-
-        <div>
-            <x-input-label for="mother_maiden_name" :value="__('Mother Maiden Name')" />
-            <x-text-input id="mother_maiden_name" name="mother_maiden_name" type="text" class="mt-1 block w-full" :value="old('mother_maiden_name', $student?->mother_maiden_name)" />
-            <x-input-error class="mt-2" :messages="$errors->get('mother_maiden_name')" />
-        </div>
     </div>
 </div>
 
@@ -70,17 +98,28 @@
     <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Contact Information') }}</h3>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $student?->email)" required />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-        </div>
+        @if ($fieldsLocked)
+            <div>
+                <x-input-label :value="__('Email')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->email }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Address')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->address ?? '—' }}</p>
+            </div>
+        @else
+            <div>
+                <x-input-label for="email" :value="__('Email')" />
+                <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $student?->email)" required />
+                <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            </div>
 
-        <div>
-            <x-input-label for="address" :value="__('Address')" />
-            <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $student?->address)" />
-            <x-input-error class="mt-2" :messages="$errors->get('address')" />
-        </div>
+            <div>
+                <x-input-label for="address" :value="__('Address')" />
+                <x-text-input id="address" name="address" type="text" class="mt-1 block w-full" :value="old('address', $student?->address)" />
+                <x-input-error class="mt-2" :messages="$errors->get('address')" />
+            </div>
+        @endif
     </div>
 </div>
 
@@ -88,140 +127,183 @@
     <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Additional Information') }}</h3>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        @php($statesAndLgas = config('nigeria.states'))
-        <div>
-            <x-input-label for="state_of_origin" :value="__('State of Origin')" />
-            <select id="state_of_origin" name="state_of_origin" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                @foreach (array_keys($statesAndLgas) as $state)
-                    <option value="{{ $state }}" @selected(old('state_of_origin', $student?->state_of_origin) === $state)>{{ $state }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('state_of_origin')" />
-        </div>
+        @if ($fieldsLocked)
+            <div>
+                <x-input-label :value="__('State of Origin')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Local Govt. Area')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Occupation')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $occupationLabels[$student->occupation] ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Course Type')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $courseTypeLabels[$student->course_type] ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Class of Vehicle You Wish to Operate After Training')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $vehicleClassLabels[$student->vehicle_class] ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('License Number')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Do You Have Any Previous Knowledge of Driving?')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $yesNo($student->has_driving_experience) }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Do You Wear Glasses to Drive?')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $yesNo($student->wears_glasses) }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('How Did You Know About Us?')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $referralSourceLabels[$student->referral_source] ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('If Others, Please Specify')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->referral_source_other ?? '—' }}</p>
+            </div>
+        @else
+            @php($statesAndLgas = config('nigeria.states'))
+            <div>
+                <x-input-label for="state_of_origin" :value="__('State of Origin')" />
+                <select id="state_of_origin" name="state_of_origin" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (array_keys($statesAndLgas) as $state)
+                        <option value="{{ $state }}" @selected(old('state_of_origin', $student?->state_of_origin) === $state)>{{ $state }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('state_of_origin')" />
+            </div>
 
-        <div>
-            <x-input-label for="local_government_area" :value="__('Local Govt. Area')" />
-            <select id="local_government_area" name="local_government_area" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select a state first') }}</option>
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('local_government_area')" />
-        </div>
+            <div>
+                <x-input-label for="local_government_area" :value="__('Local Govt. Area')" />
+                <select id="local_government_area" name="local_government_area" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select a state first') }}</option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('local_government_area')" />
+            </div>
 
-        <script>
-            (function () {
-                var statesAndLgas = @json($statesAndLgas);
-                var selectedLga = @json(old('local_government_area', $student?->local_government_area));
-                var stateSelect = document.getElementById('state_of_origin');
-                var lgaSelect = document.getElementById('local_government_area');
+            <script>
+                (function () {
+                    var statesAndLgas = @json($statesAndLgas);
+                    var selectedLga = @json(old('local_government_area', $student?->local_government_area));
+                    var stateSelect = document.getElementById('state_of_origin');
+                    var lgaSelect = document.getElementById('local_government_area');
 
-                function populateLgas(stateName, preselect) {
-                    var lgas = statesAndLgas[stateName] || [];
-                    lgaSelect.innerHTML = '';
+                    function populateLgas(stateName, preselect) {
+                        var lgas = statesAndLgas[stateName] || [];
+                        lgaSelect.innerHTML = '';
 
-                    var placeholder = document.createElement('option');
-                    placeholder.value = '';
-                    placeholder.textContent = lgas.length ? 'Select' : 'Select a state first';
-                    lgaSelect.appendChild(placeholder);
+                        var placeholder = document.createElement('option');
+                        placeholder.value = '';
+                        placeholder.textContent = lgas.length ? 'Select' : 'Select a state first';
+                        lgaSelect.appendChild(placeholder);
 
-                    lgas.forEach(function (lga) {
-                        var option = document.createElement('option');
-                        option.value = lga;
-                        option.textContent = lga;
-                        if (lga === preselect) {
-                            option.selected = true;
-                        }
-                        lgaSelect.appendChild(option);
+                        lgas.forEach(function (lga) {
+                            var option = document.createElement('option');
+                            option.value = lga;
+                            option.textContent = lga;
+                            if (lga === preselect) {
+                                option.selected = true;
+                            }
+                            lgaSelect.appendChild(option);
+                        });
+                    }
+
+                    if (stateSelect.value) {
+                        populateLgas(stateSelect.value, selectedLga);
+                    }
+
+                    stateSelect.addEventListener('change', function () {
+                        populateLgas(stateSelect.value, null);
                     });
-                }
+                })();
+            </script>
 
-                if (stateSelect.value) {
-                    populateLgas(stateSelect.value, selectedLga);
-                }
+            <div>
+                <x-input-label for="occupation" :value="__('Occupation')" />
+                <select id="occupation" name="occupation" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (['student' => 'Student', 'business' => 'Business', 'other' => 'Others'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('occupation', $student?->occupation) === $value)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('occupation')" />
+            </div>
 
-                stateSelect.addEventListener('change', function () {
-                    populateLgas(stateSelect.value, null);
-                });
-            })();
-        </script>
+            <div @if (! $student) x-show="registrationType === 'course'" @endif>
+                <x-input-label for="course_type" :value="__('Course Type')" />
+                <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('course_type', $student?->course_type) === $value)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('course_type')" />
+            </div>
 
-        <div>
-            <x-input-label for="occupation" :value="__('Occupation')" />
-            <select id="occupation" name="occupation" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                @foreach (['student' => 'Student', 'business' => 'Business', 'other' => 'Others'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('occupation', $student?->occupation) === $value)>{{ __($label) }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('occupation')" />
-        </div>
+            <div @if (! $student) x-show="registrationType === 'course'" @endif>
+                <x-input-label for="vehicle_class" :value="__('Class of Vehicle You Wish to Operate After Training')" />
+                <select id="vehicle_class" name="vehicle_class" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (['light' => 'Light', 'heavy' => 'Heavy'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('vehicle_class', $student?->vehicle_class) === $value)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('vehicle_class')" />
+            </div>
 
-        <div @if (! $student) x-show="registrationType === 'course'" @endif>
-            <x-input-label for="course_type" :value="__('Course Type')" />
-            <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('course_type', $student?->course_type) === $value)>{{ __($label) }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('course_type')" />
-        </div>
+            <div>
+                <x-input-label for="license_number" :value="__('License Number')" />
+                <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number)" />
+                <x-input-error class="mt-2" :messages="$errors->get('license_number')" />
+            </div>
 
-        <div @if (! $student) x-show="registrationType === 'course'" @endif>
-            <x-input-label for="vehicle_class" :value="__('Class of Vehicle You Wish to Operate After Training')" />
-            <select id="vehicle_class" name="vehicle_class" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                @foreach (['light' => 'Light', 'heavy' => 'Heavy'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('vehicle_class', $student?->vehicle_class) === $value)>{{ __($label) }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('vehicle_class')" />
-        </div>
+            @php($hasDrivingExperience = old('has_driving_experience', $student?->has_driving_experience))
+            <div>
+                <x-input-label for="has_driving_experience" :value="__('Do You Have Any Previous Knowledge of Driving?')" />
+                <select id="has_driving_experience" name="has_driving_experience" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    <option value="1" @selected($hasDrivingExperience !== null && $hasDrivingExperience !== '' && filter_var($hasDrivingExperience, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
+                    <option value="0" @selected($hasDrivingExperience !== null && $hasDrivingExperience !== '' && ! filter_var($hasDrivingExperience, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('has_driving_experience')" />
+            </div>
 
-        <div>
-            <x-input-label for="license_number" :value="__('License Number')" />
-            <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number)" />
-            <x-input-error class="mt-2" :messages="$errors->get('license_number')" />
-        </div>
+            @php($wearsGlasses = old('wears_glasses', $student?->wears_glasses))
+            <div>
+                <x-input-label for="wears_glasses" :value="__('Do You Wear Glasses to Drive?')" />
+                <select id="wears_glasses" name="wears_glasses" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    <option value="1" @selected($wearsGlasses !== null && $wearsGlasses !== '' && filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
+                    <option value="0" @selected($wearsGlasses !== null && $wearsGlasses !== '' && ! filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('wears_glasses')" />
+            </div>
 
-        @php($hasDrivingExperience = old('has_driving_experience', $student?->has_driving_experience))
-        <div>
-            <x-input-label for="has_driving_experience" :value="__('Do You Have Any Previous Knowledge of Driving?')" />
-            <select id="has_driving_experience" name="has_driving_experience" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                <option value="1" @selected($hasDrivingExperience !== null && $hasDrivingExperience !== '' && filter_var($hasDrivingExperience, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
-                <option value="0" @selected($hasDrivingExperience !== null && $hasDrivingExperience !== '' && ! filter_var($hasDrivingExperience, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('has_driving_experience')" />
-        </div>
+            <div>
+                <x-input-label for="referral_source" :value="__('How Did You Know About Us?')" />
+                <select id="referral_source" name="referral_source" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                    <option value="">{{ __('Select') }}</option>
+                    @foreach (['flyer' => 'Flyer', 'referral' => 'Referral', 'facebook' => 'Facebook', 'other' => 'Others'] as $value => $label)
+                        <option value="{{ $value }}" @selected(old('referral_source', $student?->referral_source) === $value)>{{ __($label) }}</option>
+                    @endforeach
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('referral_source')" />
+            </div>
 
-        @php($wearsGlasses = old('wears_glasses', $student?->wears_glasses))
-        <div>
-            <x-input-label for="wears_glasses" :value="__('Do You Wear Glasses to Drive?')" />
-            <select id="wears_glasses" name="wears_glasses" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                <option value="1" @selected($wearsGlasses !== null && $wearsGlasses !== '' && filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
-                <option value="0" @selected($wearsGlasses !== null && $wearsGlasses !== '' && ! filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('wears_glasses')" />
-        </div>
-
-        <div>
-            <x-input-label for="referral_source" :value="__('How Did You Know About Us?')" />
-            <select id="referral_source" name="referral_source" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
-                <option value="">{{ __('Select') }}</option>
-                @foreach (['flyer' => 'Flyer', 'referral' => 'Referral', 'facebook' => 'Facebook', 'other' => 'Others'] as $value => $label)
-                    <option value="{{ $value }}" @selected(old('referral_source', $student?->referral_source) === $value)>{{ __($label) }}</option>
-                @endforeach
-            </select>
-            <x-input-error class="mt-2" :messages="$errors->get('referral_source')" />
-        </div>
-
-        <div>
-            <x-input-label for="referral_source_other" :value="__('If Others, Please Specify')" />
-            <x-text-input id="referral_source_other" name="referral_source_other" type="text" class="mt-1 block w-full" :value="old('referral_source_other', $student?->referral_source_other)" />
-            <x-input-error class="mt-2" :messages="$errors->get('referral_source_other')" />
-        </div>
+            <div>
+                <x-input-label for="referral_source_other" :value="__('If Others, Please Specify')" />
+                <x-text-input id="referral_source_other" name="referral_source_other" type="text" class="mt-1 block w-full" :value="old('referral_source_other', $student?->referral_source_other)" />
+                <x-input-error class="mt-2" :messages="$errors->get('referral_source_other')" />
+            </div>
+        @endif
     </div>
 </div>
 
@@ -246,29 +328,48 @@
     <legend class="text-sm font-bold uppercase tracking-wider text-gray-500 px-1">{{ __('Next of Kin') }}</legend>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <x-input-label for="next_of_kin_name" :value="__('Name')" />
-            <x-text-input id="next_of_kin_name" name="next_of_kin_name" type="text" class="mt-1 block w-full" :value="old('next_of_kin_name', $student?->next_of_kin_name)" />
-            <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_name')" />
-        </div>
+        @if ($fieldsLocked)
+            <div>
+                <x-input-label :value="__('Name')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->next_of_kin_name ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Address')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->next_of_kin_address ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Phone No.')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->next_of_kin_phone ?? '—' }}</p>
+            </div>
+            <div>
+                <x-input-label :value="__('Email')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $student->next_of_kin_email ?? '—' }}</p>
+            </div>
+        @else
+            <div>
+                <x-input-label for="next_of_kin_name" :value="__('Name')" />
+                <x-text-input id="next_of_kin_name" name="next_of_kin_name" type="text" class="mt-1 block w-full" :value="old('next_of_kin_name', $student?->next_of_kin_name)" />
+                <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_name')" />
+            </div>
 
-        <div>
-            <x-input-label for="next_of_kin_address" :value="__('Address')" />
-            <x-text-input id="next_of_kin_address" name="next_of_kin_address" type="text" class="mt-1 block w-full" :value="old('next_of_kin_address', $student?->next_of_kin_address)" />
-            <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_address')" />
-        </div>
+            <div>
+                <x-input-label for="next_of_kin_address" :value="__('Address')" />
+                <x-text-input id="next_of_kin_address" name="next_of_kin_address" type="text" class="mt-1 block w-full" :value="old('next_of_kin_address', $student?->next_of_kin_address)" />
+                <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_address')" />
+            </div>
 
-        <div>
-            <x-input-label for="next_of_kin_phone" :value="__('Phone No.')" />
-            <x-text-input id="next_of_kin_phone" name="next_of_kin_phone" type="text" class="mt-1 block w-full" :value="old('next_of_kin_phone', $student?->next_of_kin_phone)" />
-            <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_phone')" />
-        </div>
+            <div>
+                <x-input-label for="next_of_kin_phone" :value="__('Phone No.')" />
+                <x-text-input id="next_of_kin_phone" name="next_of_kin_phone" type="text" class="mt-1 block w-full" :value="old('next_of_kin_phone', $student?->next_of_kin_phone)" />
+                <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_phone')" />
+            </div>
 
-        <div>
-            <x-input-label for="next_of_kin_email" :value="__('Email')" />
-            <x-text-input id="next_of_kin_email" name="next_of_kin_email" type="email" class="mt-1 block w-full" :value="old('next_of_kin_email', $student?->next_of_kin_email)" />
-            <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_email')" />
-        </div>
+            <div>
+                <x-input-label for="next_of_kin_email" :value="__('Email')" />
+                <x-text-input id="next_of_kin_email" name="next_of_kin_email" type="email" class="mt-1 block w-full" :value="old('next_of_kin_email', $student?->next_of_kin_email)" />
+                <x-input-error class="mt-2" :messages="$errors->get('next_of_kin_email')" />
+            </div>
+        @endif
     </div>
 </fieldset>
 
@@ -384,29 +485,40 @@
     <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Enrollment') }}</h3>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <x-input-label for="enrollment_date" :value="__('Enrollment Date')" />
-            @if ($student)
-                <x-text-input id="enrollment_date" name="enrollment_date" type="date" class="mt-1 block w-full" :value="old('enrollment_date', optional($student->enrollment_date)->format('Y-m-d'))" :max="now()->format('Y-m-d')" required />
-            @else
-                <x-text-input id="enrollment_date" type="text" class="mt-1 block w-full bg-gray-100" :value="now()->format('Y-m-d')" disabled />
-                <input type="hidden" name="enrollment_date" value="{{ now()->toDateString() }}">
-                <p class="mt-1 text-xs text-gray-500">{{ __('Registration always enrolls as of today.') }}</p>
-            @endif
-            <x-input-error class="mt-2" :messages="$errors->get('enrollment_date')" />
-        </div>
-
-        @if ($student)
+        @if ($fieldsLocked)
             <div>
-                <x-input-label for="status" :value="__('Status')" />
-                <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
-                    @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
-                        <option value="{{ $value }}" @selected(old('status', $student->status) === $value)>{{ __($label) }}</option>
-                    @endforeach
-                </select>
-                <p class="mt-1 text-xs text-gray-500">{{ __('Active/Completed are normally set automatically as training progresses. Use Withdrawn to record that a student has left the program.') }}</p>
-                <x-input-error class="mt-2" :messages="$errors->get('status')" />
+                <x-input-label :value="__('Enrollment Date')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ optional($student->enrollment_date)->format('Y-m-d') ?? '—' }}</p>
             </div>
+            <div>
+                <x-input-label :value="__('Status')" />
+                <p class="mt-1 text-sm font-bold text-gray-900">{{ $statusLabels[$student->status] ?? $student->status }}</p>
+            </div>
+        @else
+            <div>
+                <x-input-label for="enrollment_date" :value="__('Enrollment Date')" />
+                @if ($student)
+                    <x-text-input id="enrollment_date" name="enrollment_date" type="date" class="mt-1 block w-full" :value="old('enrollment_date', optional($student->enrollment_date)->format('Y-m-d'))" :max="now()->format('Y-m-d')" required />
+                @else
+                    <x-text-input id="enrollment_date" type="text" class="mt-1 block w-full bg-gray-100" :value="now()->format('Y-m-d')" disabled />
+                    <input type="hidden" name="enrollment_date" value="{{ now()->toDateString() }}">
+                    <p class="mt-1 text-xs text-gray-500">{{ __('Registration always enrolls as of today.') }}</p>
+                @endif
+                <x-input-error class="mt-2" :messages="$errors->get('enrollment_date')" />
+            </div>
+
+            @if ($student)
+                <div>
+                    <x-input-label for="status" :value="__('Status')" />
+                    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                        @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
+                            <option value="{{ $value }}" @selected(old('status', $student->status) === $value)>{{ __($label) }}</option>
+                        @endforeach
+                    </select>
+                    <p class="mt-1 text-xs text-gray-500">{{ __('Active/Completed are normally set automatically as training progresses. Use Withdrawn to record that a student has left the program.') }}</p>
+                    <x-input-error class="mt-2" :messages="$errors->get('status')" />
+                </div>
+            @endif
         @endif
     </div>
 </div>
