@@ -62,8 +62,8 @@
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Receipt Photo') }}</p>
                                 @if ($expense->receipt_photo_path)
-                                    <a href="{{ Storage::url($expense->receipt_photo_path) }}" target="_blank" rel="noopener">
-                                        <img src="{{ Storage::url($expense->receipt_photo_path) }}" alt="{{ __('Receipt') }}" class="mt-1 h-24 w-24 object-cover rounded-md border border-gray-200 hover:opacity-80">
+                                    <a href="{{ Storage::disk('public')->url($expense->receipt_photo_path) }}" target="_blank" rel="noopener">
+                                        <img src="{{ Storage::disk('public')->url($expense->receipt_photo_path) }}" alt="{{ __('Receipt') }}" class="mt-1 h-24 w-24 object-cover rounded-md border border-gray-200 hover:opacity-80">
                                     </a>
                                 @else
                                     <p class="text-sm font-bold text-gray-900">—</p>

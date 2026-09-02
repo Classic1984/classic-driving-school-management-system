@@ -430,7 +430,7 @@
         >
             <x-input-label for="photo" :value="__('3 Colour Passport Size Photograph')" />
             @if ($student?->photo_path)
-                <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Current photo') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-gray-200">
+                <img src="{{ Storage::disk('public')->url($student->photo_path) }}" alt="{{ __('Current photo') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-gray-200">
             @endif
             <template x-if="previewUrl">
                 <img :src="previewUrl" alt="{{ __('Captured photo preview') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-amber-400">
@@ -459,7 +459,7 @@
             <div>
                 <x-input-label for="id_document" :value="__('Identification Document')" />
                 @if ($student?->id_document_path)
-                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
+                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::disk('public')->url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
                 @endif
                 <input id="id_document" name="id_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                 <x-input-error class="mt-2" :messages="$errors->get('id_document')" />
@@ -468,7 +468,7 @@
             <div>
                 <x-input-label for="license_document" :value="__('Licence Document')" />
                 @if ($student?->license_document_path)
-                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
+                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::disk('public')->url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
                 @endif
                 <input id="license_document" name="license_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                 <x-input-error class="mt-2" :messages="$errors->get('license_document')" />

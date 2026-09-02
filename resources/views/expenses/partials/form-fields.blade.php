@@ -84,7 +84,7 @@
 >
     <x-input-label for="receipt_photo" :value="__('Receipt Photo')" />
     @if ($expense?->receipt_photo_path)
-        <img src="{{ Storage::url($expense->receipt_photo_path) }}" alt="{{ __('Current receipt') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-gray-200">
+        <img src="{{ Storage::disk('public')->url($expense->receipt_photo_path) }}" alt="{{ __('Current receipt') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-gray-200">
     @endif
     <template x-if="previewUrl">
         <img :src="previewUrl" alt="{{ __('Captured receipt preview') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-amber-400">

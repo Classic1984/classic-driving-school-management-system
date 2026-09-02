@@ -93,7 +93,7 @@
 
                 <div class="rounded-xl ring-1 ring-gray-200 bg-gray-50/60 p-4 flex items-center gap-4">
                     @if ($student->photo_path)
-                        <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-lg ring-1 ring-gray-200 shrink-0">
+                        <img src="{{ Storage::disk('public')->url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-lg ring-1 ring-gray-200 shrink-0">
                     @else
                         <div class="h-16 w-16 rounded-lg ring-1 ring-gray-200 bg-amber-50 flex items-center justify-center text-amber-400 shrink-0">
                             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
@@ -1029,7 +1029,7 @@
                                 <div>
                                     <p class="text-xs text-gray-500 mb-1">{{ __('Passport Photo') }}</p>
                                     @if ($student->photo_path)
-                                        <img src="{{ Storage::url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-md border border-gray-200">
+                                        <img src="{{ Storage::disk('public')->url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-md border border-gray-200">
                                     @else
                                         <span class="text-sm text-gray-400">{{ __('Not uploaded') }}</span>
                                     @endif
@@ -1040,7 +1040,7 @@
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Identification Document') }}</p>
                                     @if ($student->id_document_path)
-                                        <p class="text-sm font-bold"><a href="{{ Storage::url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a></p>
+                                        <p class="text-sm font-bold"><a href="{{ Storage::disk('public')->url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a></p>
                                     @else
                                         <p class="text-sm text-gray-400">{{ __('Not uploaded') }}</p>
                                     @endif
@@ -1051,7 +1051,7 @@
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Licence Document') }}</p>
                                     @if ($student->license_document_path)
-                                        <p class="text-sm font-bold"><a href="{{ Storage::url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a></p>
+                                        <p class="text-sm font-bold"><a href="{{ Storage::disk('public')->url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a></p>
                                     @else
                                         <p class="text-sm text-gray-400">{{ __('Not uploaded') }}</p>
                                     @endif
