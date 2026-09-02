@@ -268,17 +268,39 @@ class StudentController extends Controller
     }
 
     /**
-     * Fields that can only be changed by a Director once a student is
-     * already registered - changing them (especially the training
-     * program, handled separately via course enrollment) has downstream
-     * effects on training duration, payments, and certificates, so a
-     * non-Director's attempt to change them is silently discarded here
-     * regardless of what the request contains. Hidden/disabled inputs on
-     * the edit form back this up, but this is the real enforcement.
+     * Fields whose changes are individually written to the activity log
+     * (with an old → new value) when a Director edits an already
+     * registered student. A subset of DIRECTOR_ONLY_FIELDS - the ones
+     * granular enough, and important enough, for a readable audit trail.
      *
      * @var list<string>
      */
     protected const DIRECTOR_LOCKED_FIELDS = ['name', 'date_of_birth', 'phone'];
+
+    /**
+     * Fields that can only be changed by a Director once a student is
+     * already registered. Changing any of them - especially the training
+     * program, handled separately via course enrollment - has downstream
+     * effects on training duration, payments, and certificates, so a
+     * non-Director's attempt to change them is silently discarded here
+     * regardless of what the request contains. A non-Director instead
+     * submits a correction request, which notifies every Director.
+     * Photo/ID/licence document uploads are exempt - re-attaching a file
+     * isn't a data edit in this sense. Hidden/disabled inputs on the edit
+     * form back this up, but this is the real enforcement.
+     *
+     * @var list<string>
+     */
+    protected const DIRECTOR_ONLY_FIELDS = [
+        'name', 'date_of_birth', 'phone',
+        'email', 'address', 'mother_maiden_name', 'sex',
+        'state_of_origin', 'local_government_area', 'occupation',
+        'course_type', 'vehicle_class', 'license_number',
+        'has_driving_experience', 'wears_glasses',
+        'referral_source', 'referral_source_other',
+        'next_of_kin_name', 'next_of_kin_address', 'next_of_kin_phone', 'next_of_kin_email',
+        'enrollment_date', 'status',
+    ];
 
     /**
      * Update the specified resource in storage.
@@ -316,7 +338,7 @@ class StudentController extends Controller
         $originalValues = $student->only(self::DIRECTOR_LOCKED_FIELDS);
 
         if (! $isDirector) {
-            foreach (self::DIRECTOR_LOCKED_FIELDS as $field) {
+            foreach (self::DIRECTOR_ONLY_FIELDS as $field) {
                 unset($data[$field]);
             }
         }

@@ -1258,7 +1258,7 @@ class StudentTest extends TestCase
         $this->assertDatabaseMissing('students', ['id' => $student->id]);
     }
 
-    public function test_a_secretary_cannot_change_a_students_locked_fields_but_can_change_others(): void
+    public function test_a_secretary_cannot_change_any_field_on_an_already_registered_student(): void
     {
         $secretary = User::factory()->secretary()->create();
         $student = Student::factory()->create([
@@ -1266,6 +1266,7 @@ class StudentTest extends TestCase
             'phone' => '555-0000',
             'date_of_birth' => '1995-05-05',
             'address' => 'Old Address',
+            'license_number' => 'ORIGINAL-LICENSE',
         ]);
 
         $response = $this->actingAs($secretary)->put("/students/{$student->id}", [
@@ -1274,9 +1275,10 @@ class StudentTest extends TestCase
             'phone' => '555-9999',
             'date_of_birth' => '2001-01-01',
             'address' => 'New Address',
+            'license_number' => 'TAMPERED-LICENSE',
             'course_type' => $student->course_type,
             'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
-            'status' => $student->status,
+            'status' => 'withdrawn',
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -1286,8 +1288,31 @@ class StudentTest extends TestCase
         $this->assertSame('Original Name', $student->name);
         $this->assertSame('555-0000', $student->phone);
         $this->assertSame('1995-05-05', $student->date_of_birth->toDateString());
-        // Unlocked fields still update normally.
-        $this->assertSame('New Address', $student->address);
+        // Every other field is Director-only too - a Secretary's changes
+        // are silently discarded, not just the original name/phone/DOB.
+        $this->assertSame('Old Address', $student->address);
+        $this->assertSame('ORIGINAL-LICENSE', $student->license_number);
+        $this->assertNotSame('withdrawn', $student->status);
+    }
+
+    public function test_a_director_can_still_change_a_students_previously_unlocked_fields(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create(['address' => 'Old Address']);
+
+        $response = $this->actingAs($director)->put("/students/{$student->id}", [
+            'name' => $student->name,
+            'email' => $student->email,
+            'phone' => $student->phone,
+            'date_of_birth' => $student->date_of_birth->format('Y-m-d'),
+            'address' => 'New Address',
+            'course_type' => $student->course_type,
+            'enrollment_date' => $student->enrollment_date->format('Y-m-d'),
+            'status' => $student->status,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertSame('New Address', $student->fresh()->address);
     }
 
     public function test_a_director_can_change_a_students_locked_fields_and_it_is_logged(): void
