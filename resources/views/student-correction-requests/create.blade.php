@@ -5,8 +5,22 @@
         </h2>
     </x-slot>
 
+    @php
+        $lockIconPath = 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
+    @endphp
+
     <div class="py-12">
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex items-center gap-4 mb-6 px-4 sm:px-0">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $lockIconPath }}" /></svg>
+                </span>
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ __('Request a Correction') }}</h3>
+                    <p class="text-sm text-gray-500 truncate">{{ $student->name }}</p>
+                </div>
+            </div>
+
             <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                 <p class="text-sm text-gray-600 mb-6">
                     {{ __('This information can only be changed by a Director. Describe what needs to change and why - a Director will review it and make the correction.') }}
