@@ -6,12 +6,24 @@
 [phases.build]
 cmds = ["npm ci", "npm run build"]
 
-# Run pending migrations, ensure the public/storage symlink exists (without
-# it, every uploaded file - expense receipts, student ID/license documents,
-# theory class materials - stores fine but 404s when linked to, since
-# Storage::disk('public')->url() points through that symlink; storage:link
-# is a no-op if it's already there, so this is safe on every restart), then
-# serve on the port Railway assigns via $PORT.
+# Recreate the storage subfolders Laravel expects to exist at boot before
+# doing anything else. If a Railway Volume is ever mounted at (or above)
+# storage/, it replaces whatever was baked into the image there with
+# whatever the volume actually has - on a brand new volume, that's
+# nothing, which crashes the very first artisan command (OptimizeClear,
+# called during migrate/storage:link) because storage/framework/{cache,
+# sessions,views} and storage/logs don't exist to write to. mkdir -p is a
+# no-op if they're already there, so this is safe whether or not a volume
+# is attached, and makes the app resilient to one being added later
+# without needing this start command touched again.
+#
+# Then run pending migrations, ensure the public/storage symlink exists
+# (without it, every uploaded file - expense receipts, student ID/license
+# documents, theory class materials - stores fine but 404s when linked to,
+# since Storage::disk('public')->url() points through that symlink when
+# AWS_BUCKET isn't set; storage:link is a no-op if it's already there, so
+# this is safe on every restart), then serve on the port Railway assigns
+# via $PORT.
 #
 # The scheduler (daily/weekly reminders, the database backup) does NOT run
 # in this container. It previously tried to via a backgrounded
@@ -26,4 +38,4 @@ cmds = ["npm ci", "npm run build"]
 # Activity Log page's "Background Scheduler" status to confirm it's
 # actually running.
 [start]
-cmd = "php artisan migrate --force || exit 1; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs storage/app/public; php artisan migrate --force || exit 1; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"
