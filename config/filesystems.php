@@ -38,14 +38,31 @@ return [
             'report' => false,
         ],
 
-        'public' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
-            'visibility' => 'public',
-            'throw' => false,
-            'report' => false,
-        ],
+        // Uploaded photos, documents, and receipts always go through the
+        // 'public' disk by name throughout the app. Which disk that
+        // actually is depends on whether an S3-compatible bucket (e.g.
+        // Cloudflare R2) is configured via AWS_BUCKET: with it set, files
+        // live in that bucket and survive redeploys on hosts with an
+        // ephemeral filesystem (Railway, etc.); without it, they fall
+        // back to local disk exactly as before. No controller or view
+        // code needs to change either way.
+        'public' => array_merge(
+            ['visibility' => 'public', 'throw' => false, 'report' => false],
+            env('AWS_BUCKET') ? [
+                'driver' => 's3',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'region' => env('AWS_DEFAULT_REGION', 'auto'),
+                'bucket' => env('AWS_BUCKET'),
+                'url' => env('AWS_URL'),
+                'endpoint' => env('AWS_ENDPOINT'),
+                'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', true),
+            ] : [
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            ]
+        ),
 
         's3' => [
             'driver' => 's3',
