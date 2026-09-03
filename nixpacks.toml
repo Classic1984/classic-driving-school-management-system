@@ -37,5 +37,15 @@ cmds = ["npm ci", "npm run build"]
 # ("php artisan schedule:run") on a recurring cron trigger - see the
 # Activity Log page's "Background Scheduler" status to confirm it's
 # actually running.
+#
+# mkdir -p alone previously failed *silently* here: if a mounted volume
+# owns storage/ with permissions the app user can't write to, mkdir exits
+# non-zero but the ";" chain swallows that and carries on as if the
+# folders existed, so the very next artisan command crashes with a
+# confusing "View path not found" instead of a permissions error. The
+# ls -la below prints exactly what's on disk (owner, mode, and whether
+# the mkdir actually produced anything) right before the app would crash,
+# so a real permissions problem is diagnosable from the deploy log
+# instead of guessed at.
 [start]
-cmd = "mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs storage/app/public; php artisan migrate --force || exit 1; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs storage/app/public; echo '--- storage/framework after mkdir ---'; ls -la storage storage/framework storage/framework/views storage/logs 2>&1; php artisan migrate --force || exit 1; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"
