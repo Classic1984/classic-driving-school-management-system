@@ -41,6 +41,15 @@ class DashboardController extends Controller
 
         $paymentTotals = null;
 
+        // "This Week" is a calendar week (Mon-Sun), which can straddle a
+        // month boundary - e.g. a week that starts on the last day of
+        // August and ends in September includes an August payment that
+        // "This Month" correctly excludes, so the week total can look
+        // larger than the month total even though nothing's wrong with
+        // the data. $paymentPeriodRanges spells out the actual dates so
+        // that overlap is visible instead of looking like a bug.
+        $paymentPeriodRanges = null;
+
         if ($request->user()->isDirector()) {
             $paymentTotals = [
                 'week' => Payment::where('status', 'paid')
@@ -51,6 +60,11 @@ class DashboardController extends Controller
                     ->whereMonth('payment_date', now()->month)
                     ->sum('amount'),
                 'all_time' => Payment::where('status', 'paid')->sum('amount'),
+            ];
+
+            $paymentPeriodRanges = [
+                'week' => now()->startOfWeek()->format('M j').' – '.now()->endOfWeek()->format('M j'),
+                'month' => now()->startOfMonth()->format('F Y'),
             ];
         }
 
@@ -359,7 +373,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
     }
 
     /**
