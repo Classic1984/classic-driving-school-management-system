@@ -65,7 +65,7 @@
             </div>
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-amber-400 to-amber-500 px-6 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 px-6 py-4">
                     <div class="flex items-center gap-2.5">
                         <svg class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-1.519-3.75L12 17.25m0 0-1.481-3.75M12 17.25V21m-7.5-3.75h15A2.25 2.25 0 0 0 21 15V6.75A2.25 2.25 0 0 0 18.75 4.5H5.25A2.25 2.25 0 0 0 3 6.75v8.5a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                         <h3 class="text-base font-bold text-black">{{ __('Course Records') }}</h3>
@@ -126,37 +126,66 @@
                 <div class="hidden sm:block overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
-                                <th class="px-3 py-3">#</th>
-                                <th class="px-3 py-3">
+                            @php
+                                $courseTypeIconPath = 'M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25';
+                                $calendarIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
+                                $clockIconPath = 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
+                                $tagIconPath = 'M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z M6 6h.008v.008H6V6Z';
+                                $personIconPath = 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z';
+                                $peopleIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
+                                $activityIconPath = 'M3.75 12h3l2.25-7.5 4.5 15L15.75 12h4.5';
+                            @endphp
+                            <tr class="bg-black rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <th class="px-3 py-3 whitespace-nowrap">#</th>
+                                <th class="px-3 py-3 whitespace-nowrap">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
-                                        {{ __('Name') }}
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $courseTypeIconPath }}" /></svg>
+                                        {{ __('Course Name') }}
                                     </span>
                                 </th>
-                                <th class="px-3 py-3">{{ __('Type') }}</th>
-                                <th class="px-3 py-3">{{ __('Schedule') }}</th>
-                                <th class="px-3 py-3">{{ __('Duration') }}</th>
-                                <th class="px-3 py-3">
+                                <th class="px-3 py-3 whitespace-nowrap">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
-                                        {{ __('Fee') }}
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $courseTypeIconPath }}" /></svg>
+                                        {{ __('Type') }}
                                     </span>
                                 </th>
-                                <th class="px-3 py-3">
+                                <th class="px-3 py-3 whitespace-nowrap">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                        {{ __('Schedule') }}
+                                    </span>
+                                </th>
+                                <th class="px-3 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                                        {{ __('Duration') }}
+                                    </span>
+                                </th>
+                                <th class="px-3 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tagIconPath }}" /></svg>
+                                        {{ __('Fee (₦)') }}
+                                    </span>
+                                </th>
+                                <th class="px-3 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         {{ __('Instructors') }}
                                     </span>
                                 </th>
-                                <th class="px-3 py-3">
+                                <th class="px-3 py-3 whitespace-nowrap">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $peopleIconPath }}" /></svg>
                                         {{ __('Students') }}
                                     </span>
                                 </th>
-                                <th class="px-3 py-3">{{ __('Status') }}</th>
-                                <th class="px-3 py-3"></th>
+                                <th class="px-3 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $activityIconPath }}" /></svg>
+                                        {{ __('Status') }}
+                                    </span>
+                                </th>
+                                <th class="px-3 py-3 whitespace-nowrap">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
@@ -166,7 +195,7 @@
                                 @endphp
                                 <tr class="border-l-4 {{ $accent['border'] }}">
                                     <td class="px-3 py-3 text-sm align-top text-gray-500">{{ $courses->firstItem() + $loop->index }}</td>
-                                    <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800">{{ $course->name }}</td>
+                                    <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800 whitespace-nowrap">{{ $course->name }}</td>
                                     <td class="px-3 py-3 text-sm align-top capitalize text-gray-600">{{ $course->course_type }}</td>
                                     <td class="px-3 py-3 text-sm align-top">
                                         <x-badge :color="$course->isWeekend() ? 'blue' : 'gray'" class="capitalize">{{ $course->schedule }}</x-badge>
