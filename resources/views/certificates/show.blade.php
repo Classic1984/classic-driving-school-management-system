@@ -113,10 +113,7 @@
                             <p class="text-[10px] uppercase tracking-widest text-amber-400">{{ __('Chief Instructor') }}</p>
                         </div>
                         <div class="flex justify-center order-first sm:order-none">
-                            <div class="relative flex h-24 w-24 items-center justify-center rounded-full border-2 border-amber-400 bg-gray-900 p-1.5">
-                                <span class="pointer-events-none absolute inset-1 rounded-full border border-dashed border-amber-500/50"></span>
-                                <x-qr-code :data="$certificate->verificationUrl()" class="relative bg-white p-1 rounded [&_svg]:h-16 [&_svg]:w-16" />
-                            </div>
+                            <x-qr-code :data="$certificate->verificationUrl()" class="bg-white p-1.5 rounded-md [&_svg]:h-16 [&_svg]:w-16" />
                         </div>
                         <div class="text-center sm:text-right">
                             <p class="border-t border-amber-500/40 pt-2 text-sm">&nbsp;</p>
