@@ -10,6 +10,7 @@ use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -18,11 +19,24 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
-        $courses = Course::with(['instructors', 'students'])->latest()->paginate(10);
+        $search = trim((string) $request->string('search'));
 
-        return view('courses.index', compact('courses'));
+        $courses = Course::with(['instructors', 'students'])
+            ->when($search !== '', fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $courseStats = [
+            'total' => Course::count(),
+            'total_students' => Student::count(),
+            'instructors' => Instructor::count(),
+            'active' => Course::where('status', 'active')->count(),
+        ];
+
+        return view('courses.index', compact('courses', 'courseStats'));
     }
 
     /**
