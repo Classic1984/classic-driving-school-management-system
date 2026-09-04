@@ -1205,7 +1205,12 @@
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
                                     </span>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                    <div>
+                                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                        @if (isset($paymentPeriodRanges[$period]))
+                                            <p class="text-[11px] font-medium text-gray-400">{{ $paymentPeriodRanges[$period] }}</p>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
