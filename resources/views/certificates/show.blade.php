@@ -121,13 +121,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-8 flex items-center justify-center gap-4">
-                        <div class="hidden sm:flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-full border-2 border-amber-400 text-amber-400 bg-gray-900">
-                            <span class="text-[7px] font-bold leading-tight tracking-wide">{{ __('DRIVE') }}</span>
-                            <span class="text-[7px] font-bold leading-tight tracking-wide">{{ __('SAFE') }}</span>
-                        </div>
-                        <p class="italic text-amber-400 text-sm">{{ __('"When you say Classic, you say it all."') }}</p>
-                    </div>
+                    <p class="mt-8 italic text-amber-400 text-sm">{{ __('"When you say Classic, you say it all."') }}</p>
 
                     <div class="mt-6 pt-4 border-t border-amber-500/30 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[10px] text-gray-400">
                         <span class="inline-flex items-center gap-1">
