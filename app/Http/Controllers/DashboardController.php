@@ -24,6 +24,13 @@ class DashboardController extends Controller
     {
         $stats = [
             'students' => Student::count(),
+            // A student is only ever "in a program" via a course enrollment -
+            // walk-in services (Learner's Permit, Driver's License
+            // Processing, Online Certificate) are billed independently of
+            // any course, so a student with no enrollment at all is someone
+            // who came in only for one of those, never a training program.
+            'students_in_program' => Student::whereHas('courses')->count(),
+            'students_walkin_only' => Student::whereDoesntHave('courses')->count(),
             'payments' => Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount'),
             'instructors' => Instructor::count(),
             'certificates' => Certificate::count(),
