@@ -138,6 +138,15 @@
                                 ['label' => 'Vehicle(s) In Use Today', 'value' => number_format($todaysOperations['vehicles_in_use']), 'href' => route('vehicles.index'), 'icon' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12'],
                                 ['label' => 'Active Instructors', 'value' => number_format($stats['instructors']), 'href' => route('instructors.index'), 'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z'],
                                 ['label' => 'Completed Training', 'value' => number_format($kpis['completed_training']), 'modal' => 'completed_training-modal', 'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z'],
+                                // "Absent Today" reads straight off the live Today's
+                                // Attendance roster (same modal), not the finalized
+                                // Attendance rows the week/month/year figures use - see
+                                // FinalizeDailyAttendance for why those two sources
+                                // differ during the day.
+                                ['label' => 'Absent Today', 'value' => number_format($absentToday->count()), 'modal' => 'absent-today-modal', 'icon' => 'M9.75 9.75l4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                                ['label' => 'Absent This Week', 'value' => number_format($absenceStats['week']), 'href' => route('absence-report.index', ['period' => 'week']), 'icon' => 'M9.75 9.75l4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                                ['label' => 'Absent This Month', 'value' => number_format($absenceStats['month']), 'href' => route('absence-report.index', ['period' => 'month']), 'icon' => 'M9.75 9.75l4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
+                                ['label' => 'Absent This Year', 'value' => number_format($absenceStats['year']), 'href' => route('absence-report.index', ['period' => 'year']), 'icon' => 'M9.75 9.75l4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
                             ],
                         ],
                         [
@@ -1040,12 +1049,6 @@
             </div>
 
             @php
-                $absenceIcon = [
-                    'today' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
-                    'week' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941',
-                    'month' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5',
-                    'year' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
-                ];
                 $calendarIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
 
                 $periodDarkAccent = [
@@ -1065,18 +1068,6 @@
                         'describe' => fn (string $periodLabel) => __('Total students trained :period', ['period' => strtolower($periodLabel)]),
                         // "Today" is skipped here - it already has its own row (as a
                         // modal) in the At a Glance Training & Operations tile.
-                        'periods' => ['week', 'month', 'year'],
-                    ],
-                    [
-                        'title' => 'Absences', 'subtitle' => 'Track student absences over time',
-                        'headerIcon' => 'M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm7-4h.008v.008H19V9.87Zm-1.5 1.5 3 3m0-3-3 3',
-                        'countLabel' => 'Students Absent', 'route' => 'absence-report.index', 'rowIcon' => null, 'stats' => $absenceStats,
-                        'describe' => fn (string $periodLabel) => __('Total students absent :period', ['period' => strtolower($periodLabel)]),
-                        // "Today" is skipped here - an absence is only recorded by
-                        // app:finalize-daily-attendance once the day closes (6pm), so
-                        // this figure reads as a misleading 0 all day regardless of who
-                        // has actually shown up. "Today's Attendance" above already
-                        // gives a live present/absent view for today specifically.
                         'periods' => ['week', 'month', 'year'],
                     ],
                 ];
@@ -1100,7 +1091,7 @@
                             <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] ?? $absenceIcon[$period] }}" /></svg>
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] }}" /></svg>
                                     </span>
                                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
                                 </div>

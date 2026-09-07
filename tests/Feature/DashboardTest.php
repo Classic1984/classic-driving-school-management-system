@@ -50,7 +50,7 @@ class DashboardTest extends TestCase
         $response->assertSee(route('training-report.index', ['period' => 'year']), false);
     }
 
-    public function test_dashboard_shows_absences_linking_to_the_absence_report(): void
+    public function test_at_a_glance_shows_absences_linking_to_the_absence_report(): void
     {
         $user = User::factory()->create();
         $course = Course::factory()->create();
@@ -68,14 +68,17 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Absences');
-        // "Today" is intentionally skipped in this panel - an absence is
-        // only recorded once the day closes (see FinalizeDailyAttendance),
-        // so a same-day figure here would misleadingly read as 0 all day.
-        $response->assertDontSee(route('absence-report.index', ['period' => 'today']), false);
+        // The standalone Absences panel is gone - its week/month/year
+        // figures now live as rows in the At a Glance Training &
+        // Operations tile, and "today" comes from the live Today's
+        // Attendance roster (a separate modal) rather than a finalized
+        // Attendance count, which would misleadingly read as 0 all day
+        // (see FinalizeDailyAttendance).
+        $response->assertSee('Absent This Week');
         $response->assertSee(route('absence-report.index', ['period' => 'week']), false);
         $response->assertSee(route('absence-report.index', ['period' => 'month']), false);
         $response->assertSee(route('absence-report.index', ['period' => 'year']), false);
+        $response->assertDontSee(route('absence-report.index', ['period' => 'today']), false);
     }
 
     public function test_dashboard_shows_live_counts_and_totals(): void
@@ -1489,5 +1492,25 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSeeInOrder(['Paid Today', 'Training — Manual Course']);
+    }
+
+    public function test_absent_today_reads_from_the_live_roster_not_a_finalized_attendance_count(): void
+    {
+        $this->travelTo(Carbon::parse('next Monday')->setTime(10, 0));
+
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['schedule' => 'weekday']);
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now()->subWeek(), 'status' => 'active', 'fee' => 50000]);
+
+        // No Attendance row of any kind exists for today - in particular,
+        // no finalized "absent" record (that only gets created by
+        // app:finalize-daily-attendance once the day closes) - yet this
+        // student is still expected today and hasn't checked in.
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('absentToday', fn ($absentToday) => $absentToday->count() === 1);
+        $response->assertSeeInOrder(['Absent Today', '1']);
     }
 }
