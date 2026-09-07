@@ -92,11 +92,13 @@
                             $transmissionLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Auto & Manual'];
                             $transmissionLabel = $primaryEnrolledCourse ? ($transmissionLabels[$primaryEnrolledCourse->course_type] ?? null) : null;
                             $trainedToday = $lastLogin && $lastLogin->updated_at->isToday();
+                            $serial = $trainees->firstItem() + $loop->index;
                         @endphp
                         <div class="group relative flex flex-col overflow-hidden rounded-xl p-5 ring-1 {{ $accent['ring'] }} shadow-sm {{ $trainedToday ? 'bg-amber-50/70' : 'bg-white' }}">
                             <span class="absolute inset-y-0 left-0 w-1 {{ $accent['edge'] }}"></span>
 
                             <div class="flex items-start gap-3">
+                                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500 mt-1">{{ $serial }}</span>
                                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-sm font-bold text-amber-400">
                                     {{ $initials }}
                                 </div>
