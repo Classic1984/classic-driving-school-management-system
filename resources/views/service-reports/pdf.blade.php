@@ -14,7 +14,7 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>{{ $service->name }} Report — {{ $label }} — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
+    <h2>{{ $service->name }} Report — {{ $label }} — Generated {{ now()->format('l, M j, Y g:i A') }}</h2>
     <p><strong>Total completed:</strong> {{ $completed->count() }}</p>
 
     <table>
@@ -31,8 +31,8 @@
                 <tr>
                     <td>{{ $studentService->student->student_id_number }}</td>
                     <td>{{ $studentService->student->name }}</td>
-                    <td>{{ $studentService->created_at->format('l, F j, Y') }}</td>
-                    <td>{{ $studentService->updated_at->format('l, F j, Y') }}</td>
+                    <td>{{ $studentService->created_at->format('l, M j, Y') }}</td>
+                    <td>{{ $studentService->updated_at->format('l, M j, Y') }}</td>
                 </tr>
             @empty
                 <tr>

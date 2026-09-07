@@ -43,7 +43,7 @@
                             </div>
                             <div>
                                 <dt class="text-xs uppercase tracking-wide text-gray-500">{{ __('Date') }}</dt>
-                                <dd class="text-gray-900">{{ $payment->payment_date->format('l, F j, Y') }}</dd>
+                                <dd class="text-gray-900">{{ $payment->payment_date->format('l, M j, Y') }}</dd>
                             </div>
                             <div>
                                 <dt class="text-xs uppercase tracking-wide text-gray-500">{{ __('Payment Method') }}</dt>
@@ -125,7 +125,7 @@
                         </div>
 
                         <div class="flex items-end justify-between mt-6">
-                            <p class="text-xs text-gray-400">{{ __('Printed on :date', ['date' => now()->format('l, F j, Y g:i A')]) }}</p>
+                            <p class="text-xs text-gray-400">{{ __('Printed on :date', ['date' => now()->format('l, M j, Y g:i A')]) }}</p>
                             <p class="text-xs italic text-gray-400 text-right">{{ __('"When you say Classic, you say it all."') }}</p>
                         </div>
                     </div>

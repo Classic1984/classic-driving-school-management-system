@@ -148,7 +148,7 @@
                                                 </div>
                                             </td>
                                             <td class="px-3 py-3 text-sm text-gray-600">₦{{ number_format($enrolledStudent->pivot->balance(), 2) }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrolledStudent->pivot->due_date)->format('l, F j, Y') ?? '—' }}</td>
+                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrolledStudent->pivot->due_date)->format('l, M j, Y') ?? '—' }}</td>
                                             <td class="px-3 py-3 text-sm">
                                                 <x-badge :color="match ($enrolledStudent->pivot->statusLabel()) {
                                                     'Registered' => 'gray',

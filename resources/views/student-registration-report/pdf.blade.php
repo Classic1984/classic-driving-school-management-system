@@ -14,7 +14,7 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Student Registration Report — {{ $label }} — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
+    <h2>Student Registration Report — {{ $label }} — Generated {{ now()->format('l, M j, Y g:i A') }}</h2>
 
     <table>
         <thead>
@@ -36,7 +36,7 @@
                     <td>{{ $student->email }}</td>
                     <td>{{ $student->phone }}</td>
                     <td>{{ $student->courses->pluck('name')->implode(', ') ?: '—' }}</td>
-                    <td>{{ $student->enrollment_date->format('l, F j, Y') }}</td>
+                    <td>{{ $student->enrollment_date->format('l, M j, Y') }}</td>
                     <td>{{ ucfirst($student->status) }}</td>
                 </tr>
             @empty

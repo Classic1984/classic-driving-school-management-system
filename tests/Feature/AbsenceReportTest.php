@@ -101,8 +101,8 @@ class AbsenceReportTest extends TestCase
         $response = $this->actingAs($user)->get('/absence-report?period=week');
 
         $response->assertOk();
-        $response->assertSee($monday->format('l, F j, Y'));
-        $response->assertSee($tuesday->format('l, F j, Y'));
+        $response->assertSee($monday->format('l, M j, Y'));
+        $response->assertSee($tuesday->format('l, M j, Y'));
         $response->assertSee('Monday Absentee');
         $response->assertSee('Tuesday Absentee');
     }

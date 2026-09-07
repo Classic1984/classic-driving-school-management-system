@@ -217,7 +217,7 @@
                                 @endphp
                                 <tr class="border-l-4 {{ $accent['border'] }}">
                                     <td class="px-3 py-3 text-sm align-top">
-                                        <p class="font-semibold text-gray-800">{{ $log->created_at->format('l, F j, Y') }}</p>
+                                        <p class="font-semibold text-gray-800">{{ $log->created_at->format('l, M j, Y') }}</p>
                                         <p class="text-xs text-gray-400">{{ $log->created_at->format('g:i A') }}</p>
                                     </td>
                                     <td class="px-3 py-3 text-sm align-top">

@@ -130,7 +130,7 @@
                                     $initials = collect(explode(' ', $payment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                                 @endphp
                                 <tr class="border-l-4 {{ $accent['border'] }}">
-                                    <td class="px-3 py-3 text-sm align-top text-gray-700">{{ $payment->payment_date->format('l, F j, Y') }}</td>
+                                    <td class="px-3 py-3 text-sm align-top text-gray-700">{{ $payment->payment_date->format('l, M j, Y') }}</td>
                                     <td class="px-3 py-3 text-xs font-mono align-top text-gray-500">{{ $payment->receipt_number }}</td>
                                     <td class="px-3 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">

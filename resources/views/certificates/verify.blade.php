@@ -29,7 +29,7 @@
             </div>
             <div>
                 <dt class="text-gray-500">{{ __('Date Issued') }}</dt>
-                <dd class="text-gray-900">{{ $certificate->issue_date->format('l, F j, Y') }}</dd>
+                <dd class="text-gray-900">{{ $certificate->issue_date->format('l, M j, Y') }}</dd>
             </div>
             @if ($certificate->instructor)
                 <div>

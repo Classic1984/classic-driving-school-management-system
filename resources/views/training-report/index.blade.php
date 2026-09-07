@@ -80,7 +80,7 @@
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                 </span>
                                 <div>
-                                    <p class="font-bold text-gray-900 whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($attendancesByDate->keys()->first())->format('l, F j, Y') }}</p>
+                                    <p class="font-bold text-gray-900 whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($attendancesByDate->keys()->first())->format('l, M j, Y') }}</p>
                                     <p class="text-sm text-gray-500">{{ trans_choice('{0} :count students|{1} :count student|[2,*] :count students', $studentsTrainedCount, ['count' => $studentsTrainedCount]) }}</p>
                                 </div>
                             </div>
@@ -93,7 +93,7 @@
                         <div class="mb-6 last:mb-0">
                             @if ($attendancesByDate->count() > 1)
                                 <h4 class="text-sm font-semibold text-gray-800 mb-2">
-                                    {{ \Illuminate\Support\Carbon::parse($date)->format('l, F j, Y') }}
+                                    {{ \Illuminate\Support\Carbon::parse($date)->format('l, M j, Y') }}
                                     <span class="font-normal text-gray-500">&middot; {{ trans_choice('{0} :count students|{1} :count student|[2,*] :count students', $dayAttendances->count(), ['count' => $dayAttendances->count()]) }}</span>
                                 </h4>
                             @endif

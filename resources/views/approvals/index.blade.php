@@ -118,7 +118,7 @@
                                 @endif
 
                                 <p class="mt-2 text-xs text-gray-400">
-                                    {{ __('Requested by :name on :date', ['name' => $item->requestedBy->name, 'date' => $item->created_at->format('l, F j, Y g:i A')]) }}
+                                    {{ __('Requested by :name on :date', ['name' => $item->requestedBy->name, 'date' => $item->created_at->format('l, M j, Y g:i A')]) }}
                                 </p>
                             </div>
 

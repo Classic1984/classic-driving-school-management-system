@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Financial Reports — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
+    <h2>Financial Reports — Generated {{ now()->format('l, M j, Y g:i A') }}</h2>
 
     <h3>Daily Payment Report — {{ $date }}</h3>
     <table>
