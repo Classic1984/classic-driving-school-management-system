@@ -194,42 +194,68 @@
                 </div>
             </div>
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mb-6">
-                <div class="flex items-center justify-between gap-3 mb-4">
+            @php
+                $sessionUserIconPath = 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z';
+                $sessionVehicleIconPath = 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12';
+            @endphp
+
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden mb-6">
+                <div class="flex items-center justify-between gap-3 p-6 pb-4">
                     <div class="flex items-center gap-2.5">
                         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                         </span>
-                        <h3 class="text-lg font-bold text-gray-900">{{ __("Today's Training Sessions") }}</h3>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-lg font-bold text-gray-900">{{ __("Today's Training Sessions") }}</h3>
+                            @if ($todaysTrainingSessions->isNotEmpty())
+                                <span class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1.5 rounded-full bg-black text-amber-400 text-xs font-bold">{{ $todaysTrainingSessions->count() }}</span>
+                            @endif
+                        </div>
                     </div>
-                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="text-sm font-semibold text-amber-600 hover:underline">{{ __('View Full Report') }}</a>
+                    <a href="{{ route('training-report.index', ['period' => 'today']) }}" class="text-sm font-semibold text-amber-600 hover:underline shrink-0">{{ __('View Full Report') }}</a>
                 </div>
 
                 @if ($todaysTrainingSessions->isEmpty())
-                    <p class="text-sm text-gray-500">{{ __('No training sessions logged yet today.') }}</p>
+                    <p class="px-6 pb-6 text-sm text-gray-500">{{ __('No training sessions logged yet today.') }}</p>
                 @else
-                    <div class="overflow-x-auto">
+                    <div class="max-h-[420px] overflow-y-auto">
                         <table class="min-w-full">
                             <thead>
-                                <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
-                                    <th class="px-3 py-2">{{ __('Student') }}</th>
-                                    <th class="px-3 py-2">{{ __('Course') }}</th>
-                                    <th class="px-3 py-2">{{ __('Instructor') }}</th>
-                                    <th class="px-3 py-2">{{ __('Vehicle') }}</th>
-                                    <th class="px-3 py-2">{{ __('Status') }}</th>
+                                <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                    <th class="sticky top-0 z-10 bg-gray-900 px-4 py-3 w-10">#</th>
+                                    <th class="sticky top-0 z-10 bg-gray-900 px-4 py-3">{{ __('Student') }}</th>
+                                    <th class="sticky top-0 z-10 bg-gray-900 px-4 py-3">{{ __('Course') }}</th>
+                                    <th class="sticky top-0 z-10 bg-gray-900 px-4 py-3">{{ __('Instructor') }}</th>
+                                    <th class="sticky top-0 z-10 bg-gray-900 px-4 py-3">{{ __('Vehicle') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @foreach ($todaysTrainingSessions as $session)
-                                    <tr>
-                                        <td class="px-3 py-2 text-sm font-semibold text-gray-800">
-                                            <a href="{{ route('students.show', $session->student_id) }}" class="hover:text-amber-600">{{ $session->student->name }}</a>
+                                    @php
+                                        $sessionInitials = collect(explode(' ', $session->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                                    @endphp
+                                    <tr class="hover:bg-amber-50/50 transition">
+                                        <td class="px-4 py-3 text-xs font-semibold text-gray-400">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-3">
+                                            <a href="{{ route('students.show', $session->student_id) }}" class="group flex items-center gap-3">
+                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-xs font-bold text-amber-400">{{ $sessionInitials }}</span>
+                                                <span class="text-sm font-semibold text-gray-800 group-hover:text-amber-600">{{ $session->student->name }}</span>
+                                            </a>
                                         </td>
-                                        <td class="px-3 py-2 text-sm text-gray-600">{{ $session->course->name }}</td>
-                                        <td class="px-3 py-2 text-sm text-gray-600">{{ $session->instructor->name }}</td>
-                                        <td class="px-3 py-2 text-sm text-gray-600">{{ $session->vehicle->name ?? '—' }}</td>
-                                        <td class="px-3 py-2 text-sm">
-                                            <x-badge color="green">{{ __(ucfirst($session->status)) }}</x-badge>
+                                        <td class="px-4 py-3">
+                                            <span class="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-800 ring-1 ring-amber-200">{{ $session->course->name }}</span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="flex items-center gap-1.5 text-sm text-gray-600">
+                                                <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sessionUserIconPath }}" /></svg>
+                                                {{ $session->instructor->name }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="flex items-center gap-1.5 text-sm text-gray-600">
+                                                <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sessionVehicleIconPath }}" /></svg>
+                                                {{ $session->vehicle->name ?? '—' }}
+                                            </span>
                                         </td>
                                     </tr>
                                 @endforeach
