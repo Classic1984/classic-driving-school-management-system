@@ -112,8 +112,13 @@ class StudentController extends Controller
         // "walkin" backs the dashboard's "Walk-in Services Only" card - a
         // student who never enrolled in a course, only ever billed for a
         // flat service like Learner's Permit or Driver's License Processing.
+        // That view shows which service(s) each student took instead of
+        // course-shaped columns that don't mean anything for them, so it
+        // needs studentServices eager loaded (with the allocations/payment
+        // chain amountPaid() walks) that the default listing doesn't.
         if ($request->query('enrollment') === 'walkin') {
-            $query->whereDoesntHave('courses');
+            $query->whereDoesntHave('courses')
+                ->with('studentServices.service', 'studentServices.allocations.payment');
         }
 
         $students = $query->latest()->paginate(10)->appends($request->query());

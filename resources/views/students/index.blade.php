@@ -11,6 +11,12 @@
             'completed' => ['color' => 'blue', 'border' => 'border-blue-500'],
             'withdrawn' => ['color' => 'red', 'border' => 'border-red-500'],
         ];
+        $isWalkinView = request('enrollment') === 'walkin';
+        $serviceStatusAccent = [
+            'paid' => ['color' => 'green', 'border' => 'border-green-500'],
+            'part_payment' => ['color' => 'amber', 'border' => 'border-amber-500'],
+            'unpaid' => ['color' => 'red', 'border' => 'border-red-500'],
+        ];
     @endphp
 
     <div class="py-6">
@@ -97,104 +103,209 @@
                 </form>
             </div>
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Student Records') }}</h3>
+            @if ($isWalkinView)
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-br from-amber-200 via-amber-300 to-amber-500 px-6 py-4">
+                        <div class="flex items-center gap-2.5">
+                            <svg class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" /></svg>
+                            <div>
+                                <h3 class="text-base font-bold text-black">{{ __('Walk-in Services Only') }}</h3>
+                                <p class="text-xs font-medium text-black/70">{{ __("Learner's Permit / Driver's License Processing - no course enrollment") }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('students.index') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-black px-3 py-2 text-sm font-semibold text-amber-400 hover:bg-gray-800 transition">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
+                            {{ __('All Students') }}
+                        </a>
+                    </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
-                                <th class="px-3 py-3">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0" /></svg>
-                                        {{ __('Student ID') }}
-                                    </span>
-                                </th>
-                                <th class="px-3 py-3">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                                        {{ __('Name') }}
-                                    </span>
-                                </th>
-                                <th class="px-3 py-3">{{ __('Email') }}</th>
-                                <th class="px-3 py-3">{{ __('Phone') }}</th>
-                                <th class="px-3 py-3">{{ __('Course') }}</th>
-                                <th class="px-3 py-3">{{ __('Status') }}</th>
-                                <th class="px-3 py-3">{{ __('Payment') }}</th>
-                                <th class="px-3 py-3">{{ __('App Access') }}</th>
-                                <th class="px-3 py-3"></th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse ($students as $student)
-                                @php
-                                    $accent = $statusAccent[$student->status] ?? ['color' => 'gray', 'border' => 'border-gray-300'];
-                                    $initials = collect(explode(' ', $student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
-                                @endphp
-                                <tr class="border-l-4 {{ $accent['border'] }}">
-                                    <td class="px-3 py-3 text-xs font-mono align-top text-gray-500">{{ $student->student_id_number }}</td>
-                                    <td class="px-3 py-3 text-sm align-top">
-                                        <div class="flex items-center gap-2">
-                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400 text-xs font-bold">{{ $initials }}</span>
-                                            <span class="font-semibold text-gray-800">{{ $student->name }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $student->email }}</td>
-                                    <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $student->phone }}</td>
-                                    <td class="px-3 py-3 text-sm align-top capitalize text-gray-600">{{ $student->course_type }}</td>
-                                    <td class="px-3 py-3 text-sm align-top">
-                                        <x-badge :color="$accent['color']" class="capitalize">{{ $student->status }}</x-badge>
-                                    </td>
-                                    <td class="px-3 py-3 text-sm align-top">
-                                        @if ($student->courses->contains(fn ($enrolledCourse) => $enrolledCourse->pivot->status === 'locked'))
-                                            <x-badge color="red">{{ __('Locked') }}</x-badge>
-                                        @else
-                                            <x-badge color="green">{{ __('Clear') }}</x-badge>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-3 text-sm align-top">
-                                        @if ($student->hasAppAccess())
-                                            <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
-                                                {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
-                                            </x-badge>
-                                        @else
-                                            <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
-                                        @endif
-                                    </td>
-                                    <td class="px-3 py-3 text-sm align-top text-right">
-                                        <div class="relative inline-block text-left" x-data="{ open: false }">
-                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-amber-100 hover:text-amber-600 transition">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c.621 0 1.125-.504 1.125-1.125S12.621 4.5 12 4.5s-1.125.504-1.125 1.125S11.379 6.75 12 6.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 10.5 12 10.5s-1.125.504-1.125 1.125S11.379 12.75 12 12.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 16.5 12 16.5s-1.125.504-1.125 1.125S11.379 18.75 12 18.75Z" /></svg>
-                                            </button>
-                                            <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
-                                                <a href="{{ route('students.show', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('View') }}</a>
-                                                <a href="{{ route('students.edit', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</a>
-                                                @if (auth()->user()->isAdmin())
-                                                    <form method="post" action="{{ route('students.destroy', $student) }}" onsubmit="return confirm('{{ __('Are you sure you want to remove this student?') }}');">
-                                                        @csrf
-                                                        @method('delete')
-                                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                                                    </form>
-                                                @endif
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="bg-black rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                        <th class="px-3 py-3">#</th>
+                                        <th class="px-3 py-3">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                                {{ __('Student') }}
+                                            </span>
+                                        </th>
+                                        <th class="px-3 py-3">{{ __('Phone') }}</th>
+                                        <th class="px-3 py-3">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                                                {{ __('Service(s) Taken') }}
+                                            </span>
+                                        </th>
+                                        <th class="px-3 py-3">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                                                {{ __('Amount') }}
+                                            </span>
+                                        </th>
+                                        <th class="px-3 py-3">{{ __('Payment Status') }}</th>
+                                        <th class="px-3 py-3"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @forelse ($students as $student)
+                                        @php
+                                            $initials = collect(explode(' ', $student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                                            $totalCharged = $student->studentServices->sum('price');
+                                            $totalPaid = $student->studentServices->sum->amountPaid();
+                                            $overallStatus = $totalCharged <= 0 ? 'unpaid' : ($totalPaid >= $totalCharged ? 'paid' : ($totalPaid > 0 ? 'part_payment' : 'unpaid'));
+                                            $serviceAccent = $serviceStatusAccent[$overallStatus];
+                                        @endphp
+                                        <tr class="border-l-4 {{ $serviceAccent['border'] }}">
+                                            <td class="px-3 py-3 text-sm align-top text-gray-500">{{ $students->firstItem() + $loop->index }}</td>
+                                            <td class="px-3 py-3 text-sm align-top">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400 text-xs font-bold">{{ $initials }}</span>
+                                                    <div>
+                                                        <p class="font-semibold text-gray-800">{{ $student->name }}</p>
+                                                        <p class="text-xs font-mono text-gray-400">{{ $student->student_id_number }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $student->phone }}</td>
+                                            <td class="px-3 py-3 text-sm align-top">
+                                                <div class="flex flex-wrap gap-1">
+                                                    @forelse ($student->studentServices as $studentService)
+                                                        <x-badge color="blue">{{ $studentService->service->name }}</x-badge>
+                                                    @empty
+                                                        <span class="text-gray-400">&mdash;</span>
+                                                    @endforelse
+                                                </div>
+                                            </td>
+                                            <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800">₦{{ number_format($totalCharged, 2) }}</td>
+                                            <td class="px-3 py-3 text-sm align-top">
+                                                <x-badge :color="$serviceAccent['color']">{{ __(match ($overallStatus) {
+                                                    'paid' => 'Paid',
+                                                    'part_payment' => 'Part Payment',
+                                                    default => 'Unpaid',
+                                                }) }}</x-badge>
+                                            </td>
+                                            <td class="px-3 py-3 text-sm align-top text-right">
+                                                <a href="{{ route('students.show', $student) }}" class="text-sm font-semibold text-amber-600 hover:underline">{{ __('View') }}</a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
+                                                {{ __('No walk-in students yet.') }}
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4">
+                            {{ $students->links() }}
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Student Records') }}</h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                    <th class="px-3 py-3">
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0" /></svg>
+                                            {{ __('Student ID') }}
+                                        </span>
+                                    </th>
+                                    <th class="px-3 py-3">
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                            {{ __('Name') }}
+                                        </span>
+                                    </th>
+                                    <th class="px-3 py-3">{{ __('Email') }}</th>
+                                    <th class="px-3 py-3">{{ __('Phone') }}</th>
+                                    <th class="px-3 py-3">{{ __('Course') }}</th>
+                                    <th class="px-3 py-3">{{ __('Status') }}</th>
+                                    <th class="px-3 py-3">{{ __('Payment') }}</th>
+                                    <th class="px-3 py-3">{{ __('App Access') }}</th>
+                                    <th class="px-3 py-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @forelse ($students as $student)
+                                    @php
+                                        $accent = $statusAccent[$student->status] ?? ['color' => 'gray', 'border' => 'border-gray-300'];
+                                        $initials = collect(explode(' ', $student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                                    @endphp
+                                    <tr class="border-l-4 {{ $accent['border'] }}">
+                                        <td class="px-3 py-3 text-xs font-mono align-top text-gray-500">{{ $student->student_id_number }}</td>
+                                        <td class="px-3 py-3 text-sm align-top">
+                                            <div class="flex items-center gap-2">
+                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400 text-xs font-bold">{{ $initials }}</span>
+                                                <span class="font-semibold text-gray-800">{{ $student->name }}</span>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">
-                                        {{ __('No students registered yet.') }}
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                        </td>
+                                        <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $student->email }}</td>
+                                        <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $student->phone }}</td>
+                                        <td class="px-3 py-3 text-sm align-top capitalize text-gray-600">{{ $student->course_type }}</td>
+                                        <td class="px-3 py-3 text-sm align-top">
+                                            <x-badge :color="$accent['color']" class="capitalize">{{ $student->status }}</x-badge>
+                                        </td>
+                                        <td class="px-3 py-3 text-sm align-top">
+                                            @if ($student->courses->contains(fn ($enrolledCourse) => $enrolledCourse->pivot->status === 'locked'))
+                                                <x-badge color="red">{{ __('Locked') }}</x-badge>
+                                            @else
+                                                <x-badge color="green">{{ __('Clear') }}</x-badge>
+                                            @endif
+                                        </td>
+                                        <td class="px-3 py-3 text-sm align-top">
+                                            @if ($student->hasAppAccess())
+                                                <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
+                                                    {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                                </x-badge>
+                                            @else
+                                                <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                            @endif
+                                        </td>
+                                        <td class="px-3 py-3 text-sm align-top text-right">
+                                            <div class="relative inline-block text-left" x-data="{ open: false }">
+                                                <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-amber-100 hover:text-amber-600 transition">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c.621 0 1.125-.504 1.125-1.125S12.621 4.5 12 4.5s-1.125.504-1.125 1.125S11.379 6.75 12 6.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 10.5 12 10.5s-1.125.504-1.125 1.125S11.379 12.75 12 12.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 16.5 12 16.5s-1.125.504-1.125 1.125S11.379 18.75 12 18.75Z" /></svg>
+                                                </button>
+                                                <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
+                                                    <a href="{{ route('students.show', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('View') }}</a>
+                                                    <a href="{{ route('students.edit', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</a>
+                                                    @if (auth()->user()->isAdmin())
+                                                        <form method="post" action="{{ route('students.destroy', $student) }}" onsubmit="return confirm('{{ __('Are you sure you want to remove this student?') }}');">
+                                                            @csrf
+                                                            @method('delete')
+                                                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">
+                                            {{ __('No students registered yet.') }}
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div class="mt-4">
-                    {{ $students->links() }}
+                    <div class="mt-4">
+                        {{ $students->links() }}
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </x-app-layout>
