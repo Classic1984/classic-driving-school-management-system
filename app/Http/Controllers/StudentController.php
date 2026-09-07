@@ -109,6 +109,13 @@ class StudentController extends Controller
             }
         }
 
+        // "walkin" backs the dashboard's "Walk-in Services Only" card - a
+        // student who never enrolled in a course, only ever billed for a
+        // flat service like Learner's Permit or Driver's License Processing.
+        if ($request->query('enrollment') === 'walkin') {
+            $query->whereDoesntHave('courses');
+        }
+
         $students = $query->latest()->paginate(10)->appends($request->query());
 
         // A search that narrows down to exactly one student means that's
