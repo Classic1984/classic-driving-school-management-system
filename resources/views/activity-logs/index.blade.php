@@ -92,7 +92,7 @@
                         </span>
                         <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
                             <div>
-                                <p class="text-sm font-semibold text-gray-800">{{ $log->created_at->format('Y-m-d') }}</p>
+                                <p class="text-sm font-semibold text-gray-800">{{ $log->created_at->format('l, F j, Y') }}</p>
                                 <p class="text-xs text-gray-400">{{ $log->created_at->format('g:i A') }}</p>
                             </div>
                             <div>

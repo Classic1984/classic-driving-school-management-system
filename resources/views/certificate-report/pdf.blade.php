@@ -14,7 +14,7 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Certificate Report — {{ $label }} — Generated {{ now()->format('Y-m-d H:i') }}</h2>
+    <h2>Certificate Report — {{ $label }} — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
 
     <table>
         <thead>
@@ -35,7 +35,7 @@
                     <td>{{ $certificate->student->name }}</td>
                     <td>{{ $certificate->course->name }}</td>
                     <td>{{ $certificate->instructor?->name ?? '—' }}</td>
-                    <td>{{ $certificate->issue_date->format('Y-m-d') }}</td>
+                    <td>{{ $certificate->issue_date->format('l, F j, Y') }}</td>
                 </tr>
             @empty
                 <tr>

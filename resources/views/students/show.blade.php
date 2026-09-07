@@ -158,7 +158,7 @@
                                     <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('Date of Birth') }}</p>
-                                        <p class="text-sm font-bold text-gray-900">{{ $student->date_of_birth->format('j M Y') }}</p>
+                                        <p class="text-sm font-bold text-gray-900">{{ $student->date_of_birth->format('l, F j, Y') }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
@@ -270,7 +270,7 @@
                             </div>
                             <div class="rounded-lg bg-gray-50 p-3">
                                 <p class="text-xs text-gray-500">{{ __('Enrollment Date') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('Y-m-d') }}</p>
+                                <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('l, F j, Y') }}</p>
                             </div>
                             <div class="rounded-lg bg-gray-50 p-3">
                                 <p class="text-xs text-gray-500">{{ __('Status') }}</p>
@@ -403,7 +403,7 @@
                                                         @endif
                                                     </td>
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrolledCourse->pivot->due_date)->format('Y-m-d') ?? '—' }}</td>
+                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrolledCourse->pivot->due_date)->format('l, F j, Y') ?? '—' }}</td>
                                                     <td class="px-3 py-3 text-sm">
                                                         <x-badge :color="match ($enrolledCourse->pivot->statusLabel()) {
                                                             'Registered' => 'gray',
@@ -477,9 +477,9 @@
                                                 <span>{{ $enrolledCourse->pivot->trainingCompletionPercentage() }}%</span>
                                             </div>
                                             <div class="mt-1 text-xs text-gray-500">
-                                                {{ __('Start Date') }}: {{ optional($enrolledCourse->pivot->enrolled_at)->format('Y-m-d') ?? '—' }}
+                                                {{ __('Start Date') }}: {{ optional($enrolledCourse->pivot->enrolled_at)->format('l, F j, Y') ?? '—' }}
                                                 &middot;
-                                                {{ __('Expected Completion') }}: {{ optional($enrolledCourse->pivot->expectedCompletionDate())->format('Y-m-d') ?? '—' }}
+                                                {{ __('Expected Completion') }}: {{ optional($enrolledCourse->pivot->expectedCompletionDate())->format('l, F j, Y') ?? '—' }}
                                             </div>
                                             @php
                                                 $upgradeStatus = $enrolledCourse->pivot->upgradeStatusLabel();
@@ -527,7 +527,7 @@
                                                             <p class="mt-1 text-xs text-gray-500">{{ $assessment->remarks }}</p>
                                                         @endif
                                                         <p class="mt-1 text-xs text-gray-400">
-                                                            {{ __('Assessed by') }} {{ $assessment->assessedBy?->name ?? '—' }} &middot; {{ $assessment->assessed_at->format('Y-m-d') }}
+                                                            {{ __('Assessed by') }} {{ $assessment->assessedBy?->name ?? '—' }} &middot; {{ $assessment->assessed_at->format('l, F j, Y') }}
                                                         </p>
                                                     @else
                                                         <p class="text-xs text-gray-500">{{ __('Not yet assessed.') }}</p>
@@ -626,7 +626,7 @@
                                     <tbody class="divide-y divide-gray-100 bg-white">
                                         @forelse ($student->attendances as $attendance)
                                             <tr>
-                                                <td class="px-3 py-3 text-sm text-gray-600">{{ $attendance->date->format('Y-m-d') }}</td>
+                                                <td class="px-3 py-3 text-sm text-gray-600">{{ $attendance->date->format('l, F j, Y') }}</td>
                                                 <td class="px-3 py-3 text-sm text-gray-600">{{ $attendance->course->name }}</td>
                                                 <td class="px-3 py-3 text-sm capitalize text-gray-600">{{ $attendance->type ?? '—' }}</td>
                                                 <td class="px-3 py-3 text-sm text-gray-600">{{ $attendance->duration ?? '—' }}</td>
@@ -835,7 +835,7 @@
                                         <tbody class="divide-y divide-gray-100 bg-white">
                                             @forelse ($student->payments as $payment)
                                                 <tr>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->payment_date->format('Y-m-d') }}</td>
+                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->payment_date->format('l, F j, Y') }}</td>
                                                     <td class="px-3 py-3 text-sm font-mono text-xs">
                                                         <a href="{{ route('payments.show', $payment) }}" class="text-amber-600 hover:underline">{{ $payment->receipt_number }}</a>
                                                     </td>
@@ -922,7 +922,7 @@
                                                             <div class="mt-1 text-xs text-gray-500">
                                                                 {{ $studentService->processingProgressPercent() }}%
                                                                 @if ($studentService->expectedReadyAt())
-                                                                    &middot; {{ __('Ready by :date', ['date' => $studentService->expectedReadyAt()->format('M j, Y')]) }}
+                                                                    &middot; {{ __('Ready by :date', ['date' => $studentService->expectedReadyAt()->format('l, F j, Y')]) }}
                                                                 @endif
                                                                 @if ($studentService->isOverdueProcessing())
                                                                     <x-badge color="red" class="ms-1">{{ __('Overdue') }}</x-badge>
@@ -995,7 +995,7 @@
                                             <tr>
                                                 <td class="px-3 py-3 text-sm font-mono text-gray-900">{{ $certificate->certificate_number }}</td>
                                                 <td class="px-3 py-3 text-sm text-gray-600">{{ $certificate->course->name }}</td>
-                                                <td class="px-3 py-3 text-sm text-gray-600">{{ $certificate->issue_date->format('Y-m-d') }}</td>
+                                                <td class="px-3 py-3 text-sm text-gray-600">{{ $certificate->issue_date->format('l, F j, Y') }}</td>
                                                 <td class="px-3 py-3 text-sm">
                                                     <x-badge color="amber">{{ __('Certified') }}</x-badge>
                                                 </td>

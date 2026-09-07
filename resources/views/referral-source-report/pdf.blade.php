@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Referral Source Report — {{ $label }} — Generated {{ now()->format('Y-m-d H:i') }}</h2>
+    <h2>Referral Source Report — {{ $label }} — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
 
     <table class="summary">
         <thead>

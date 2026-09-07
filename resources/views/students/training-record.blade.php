@@ -65,7 +65,7 @@
                             <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             {{ __('Date of Birth') }}
                         </dt>
-                        <dd class="text-sm text-gray-900 col-span-2">{{ optional($student->date_of_birth)->format('Y-m-d') ?? '—' }}</dd>
+                        <dd class="text-sm text-gray-900 col-span-2">{{ optional($student->date_of_birth)->format('l, F j, Y') ?? '—' }}</dd>
                     </div>
                     <div class="py-3 grid grid-cols-3 gap-4 items-center">
                         <dt class="text-sm text-gray-500 flex items-center gap-2">
@@ -119,7 +119,7 @@
                             @forelse ($student->attendances as $index => $attendance)
                                 <tr>
                                     <td class="px-2 py-2 text-sm">{{ $index + 1 }}</td>
-                                    <td class="px-2 py-2 text-sm">{{ $attendance->date->format('Y-m-d') }}</td>
+                                    <td class="px-2 py-2 text-sm">{{ $attendance->date->format('l, F j, Y') }}</td>
                                     <td class="px-2 py-2 text-sm">{{ $attendance->created_at->format('H:i') }}</td>
                                     <td class="px-2 py-2 text-sm">{{ $attendance->sessionPeriod() ?? '—' }}</td>
                                     <td class="px-2 py-2 text-sm">
