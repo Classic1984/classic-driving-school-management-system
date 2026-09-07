@@ -32,7 +32,7 @@ class DashboardController extends Controller
             'students_in_program' => Student::whereHas('courses')->count(),
             'students_walkin_only' => Student::whereDoesntHave('courses')->count(),
             'payments' => Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount'),
-            'instructors' => Instructor::count(),
+            'instructors' => Instructor::where('status', 'active')->count(),
             'certificates' => Certificate::count(),
             'new_leads' => Lead::where('status', 'new')->count(),
         ];
