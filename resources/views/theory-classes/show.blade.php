@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Theory Class') }} — {{ $theoryClass->class_date->format('l, M j, Y') }}
+            {{ __('Theory Class') }} — {{ $theoryClass->class_date->format('l, F j, Y') }}
         </h2>
     </x-slot>
 

@@ -44,7 +44,7 @@
                         <p class="mt-1 text-sm text-gray-900">
                             {{ match ($field) {
                                 'name' => $student->name,
-                                'date_of_birth' => optional($student->date_of_birth)->format('Y-m-d') ?? '—',
+                                'date_of_birth' => optional($student->date_of_birth)->format('l, F j, Y') ?? '—',
                                 'phone' => $student->phone,
                                 'program' => $student->courses->pluck('name')->implode(', ') ?: '—',
                                 default => '—',

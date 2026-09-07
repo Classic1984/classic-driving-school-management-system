@@ -16,10 +16,10 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Absence Report — {{ $label }} — Generated {{ now()->format('Y-m-d H:i') }}</h2>
+    <h2>Absence Report — {{ $label }} — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
 
     @forelse ($attendancesByDate as $date => $dayAttendances)
-        <h3>{{ \Illuminate\Support\Carbon::parse($date)->format('l, j F Y') }} <span>&middot; {{ trans_choice('{0} :count students|{1} :count student|[2,*] :count students', $dayAttendances->count(), ['count' => $dayAttendances->count()]) }}</span></h3>
+        <h3>{{ \Illuminate\Support\Carbon::parse($date)->format('l, F j, Y') }} <span>&middot; {{ trans_choice('{0} :count students|{1} :count student|[2,*] :count students', $dayAttendances->count(), ['count' => $dayAttendances->count()]) }}</span></h3>
         <table>
             <thead>
                 <tr>

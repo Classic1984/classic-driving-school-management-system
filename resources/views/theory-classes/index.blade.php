@@ -98,7 +98,7 @@
                                             </span>
                                             <div>
                                                 <p class="font-semibold text-gray-800">
-                                                    {{ $theoryClass->class_date->format('M j, Y') }}
+                                                    {{ $theoryClass->class_date->format('l, F j, Y') }}
                                                     @if ($theoryClass->class_date->isToday())
                                                         <x-badge color="amber" class="ms-1">{{ __('Today') }}</x-badge>
                                                     @endif

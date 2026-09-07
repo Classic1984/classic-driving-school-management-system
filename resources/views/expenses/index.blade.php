@@ -136,7 +136,7 @@
                             @forelse ($expenses as $expense)
                                 <tr>
                                     <td class="px-4 py-3 text-sm align-top">
-                                        <p class="font-semibold text-gray-800">{{ $expense->expense_date->format('M j, Y') }}</p>
+                                        <p class="font-semibold text-gray-800">{{ $expense->expense_date->format('l, F j, Y') }}</p>
                                         <p class="text-xs text-gray-400">{{ $expense->expense_date->format('D') }}</p>
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top">

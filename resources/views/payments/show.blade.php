@@ -49,7 +49,7 @@
                             <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Date') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $payment->payment_date->format('Y-m-d') }}</p>
+                                <p class="text-sm font-bold text-gray-900">{{ $payment->payment_date->format('l, F j, Y') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
@@ -139,7 +139,7 @@
                             <div class="text-sm">
                                 <p class="font-bold text-blue-900">{{ __('This payment was reversed.') }}</p>
                                 <p class="text-blue-800 mt-1">
-                                    {{ $payment->reversal->created_at->format('Y-m-d H:i') }} — {{ __('by') }} {{ $payment->reversal->reversedBy->name }}
+                                    {{ $payment->reversal->created_at->format('l, F j, Y g:i A') }} — {{ __('by') }} {{ $payment->reversal->reversedBy->name }}
                                 </p>
                                 <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $payment->reversal->reason }}</p>
                                 <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Amount Reversed') }}:</span> ₦{{ number_format($payment->reversal->amount, 2) }}</p>
@@ -154,7 +154,7 @@
                                 @foreach ($payment->corrections as $correction)
                                     <div class="text-sm rounded-lg bg-gray-50 ring-1 ring-gray-200 p-4">
                                         <p class="text-gray-500">
-                                            {{ $correction->created_at->format('Y-m-d H:i') }} — {{ __('by') }} {{ $correction->correctedBy->name }}
+                                            {{ $correction->created_at->format('l, F j, Y g:i A') }} — {{ __('by') }} {{ $correction->correctedBy->name }}
                                         </p>
                                         <p class="mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $correction->reason }}</p>
                                         <div class="mt-2 grid grid-cols-2 gap-4 text-xs">

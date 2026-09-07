@@ -115,7 +115,7 @@
                                                 <span class="text-[10px] font-bold uppercase text-amber-600">{{ $attendance->date->format('M') }}</span>
                                                 <span class="text-sm font-extrabold text-gray-900">{{ $attendance->date->format('j') }}</span>
                                             </span>
-                                            <span class="text-gray-600">{{ $attendance->date->format('Y-m-d') }}</span>
+                                            <span class="text-gray-600">{{ $attendance->date->format('l, F j, Y') }}</span>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top">

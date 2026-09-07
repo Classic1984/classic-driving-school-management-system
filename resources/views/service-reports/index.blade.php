@@ -101,13 +101,13 @@
                                     <td class="px-4 py-3 text-sm align-top text-gray-600">
                                         <span class="inline-flex items-center gap-1.5">
                                             <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                            {{ $studentService->created_at->format('d M Y') }}
+                                            {{ $studentService->created_at->format('l, F j, Y') }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top text-gray-600">
                                         <span class="inline-flex items-center gap-1.5">
                                             <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                            {{ $studentService->updated_at->format('d M Y') }}
+                                            {{ $studentService->updated_at->format('l, F j, Y') }}
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top">

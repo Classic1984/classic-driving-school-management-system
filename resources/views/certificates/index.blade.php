@@ -109,7 +109,7 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top">
-                                        <p class="text-gray-800">{{ $certificate->issue_date->format('Y-m-d') }}</p>
+                                        <p class="text-gray-800">{{ $certificate->issue_date->format('l, F j, Y') }}</p>
                                         <x-badge color="green" class="mt-1 inline-flex items-center gap-1">
                                             <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                             {{ __('Issued') }}

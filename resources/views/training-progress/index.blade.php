@@ -88,11 +88,11 @@
                                             </td>
                                             <td class="px-3 py-3 text-sm font-mono text-gray-600">{{ $enrollment->student->student_id_number }}</td>
                                             <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }} / {{ $enrollment->course->totalTrainingDays() }} {{ __('Days') }})</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrollment->enrolled_at)->format('Y-m-d') ?? '—' }}</td>
+                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrollment->enrolled_at)->format('l, F j, Y') ?? '—' }}</td>
                                             <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->course->totalTrainingDays() }}</td>
                                             <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->attendedDays() }}</td>
                                             <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->remainingTrainingDays() }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrollment->expectedCompletionDate())->format('Y-m-d') ?? '—' }}</td>
+                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrollment->expectedCompletionDate())->format('l, F j, Y') ?? '—' }}</td>
                                             <td class="px-3 py-3 text-sm font-semibold text-gray-900">{{ $enrollment->trainingCompletionPercentage() }}%</td>
                                             <td class="px-3 py-3 text-sm">
                                                 @php($label = $enrollment->trainingStatusLabel())

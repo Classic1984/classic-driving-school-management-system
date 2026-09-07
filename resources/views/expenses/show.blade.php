@@ -47,7 +47,7 @@
                             <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Expense Date') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $expense->expense_date->format('Y-m-d') }}</p>
+                                <p class="text-sm font-bold text-gray-900">{{ $expense->expense_date->format('l, F j, Y') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
