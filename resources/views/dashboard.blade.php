@@ -116,7 +116,7 @@
                     // wherever one already existed for that exact metric.
                     $summaryGroups = [
                         [
-                            'title' => 'Students', 'color' => 'purple',
+                            'title' => 'Students', 'color' => 'amber',
                             'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
                             'rows' => [
                                 ['label' => 'Active / Registered Students', 'value' => number_format($stats['students']), 'href' => route('students.index'), 'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z'],
@@ -127,7 +127,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Training & Operations', 'color' => 'blue',
+                            'title' => 'Training & Operations', 'color' => 'amber',
                             'icon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
                             'rows' => [
                                 ['label' => 'Training Today', 'value' => number_format($todaysOperations['training_sessions']), 'href' => route('training-report.index', ['period' => 'today']), 'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5'],
@@ -148,7 +148,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Certificates', 'color' => 'indigo',
+                            'title' => 'Certificates', 'color' => 'amber',
                             'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
                             'rows' => [
                                 ['label' => 'Certificates Issued', 'value' => number_format($stats['certificates']), 'href' => route('certificates.index'), 'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z'],
@@ -162,28 +162,24 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
                     @foreach ($summaryGroups as $group)
-                        @php $groupAccent = $kpiColors[$group['color']]; @endphp
-                        <div class="rounded-xl bg-gray-900 ring-1 ring-amber-400/40 p-4">
-                            <div class="flex items-center gap-2.5 pb-3 mb-1 border-b border-white/10">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ $groupAccent['icon'] }}">
+                        <div class="rounded-xl bg-gray-900/60 ring-1 ring-white/10 p-5">
+                            <div class="flex items-center gap-2.5 pb-3 mb-2 border-b border-white/10">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $group['icon'] }}" /></svg>
                                 </span>
-                                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-200">{{ __($group['title']) }}</h3>
+                                <h3 class="text-xs font-semibold uppercase tracking-widest text-gray-400">{{ __($group['title']) }}</h3>
                             </div>
 
-                            <div class="space-y-0.5">
+                            <div class="divide-y divide-white/5">
                                 @foreach ($group['rows'] as $row)
                                     @php $tag = $rowTag($row); @endphp
                                     <{{ $tag }}
                                         @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                                         @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                                        class="flex items-start justify-between gap-2 rounded-lg px-2 py-1.5 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-white/5' : '' }}"
+                                        class="group flex items-start justify-between gap-3 py-2 text-left w-full {{ $tag !== 'div' ? 'transition hover:opacity-70' : '' }}"
                                     >
-                                        <span class="flex items-start gap-1.5 min-w-0 text-xs text-gray-300">
-                                            <svg class="h-3.5 w-3.5 shrink-0 text-gray-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
-                                            <span>{{ __($row['label']) }}</span>
-                                        </span>
-                                        <span class="shrink-0 text-sm font-bold whitespace-nowrap {{ $groupAccent['value'] }}">{{ $row['value'] }}</span>
+                                        <span class="min-w-0 text-sm text-gray-300 {{ $tag !== 'div' ? 'group-hover:text-white' : '' }} transition">{{ __($row['label']) }}</span>
+                                        <span class="shrink-0 text-sm font-semibold tabular-nums whitespace-nowrap text-white">{{ $row['value'] }}</span>
                                     </{{ $tag }}>
                                 @endforeach
                             </div>
