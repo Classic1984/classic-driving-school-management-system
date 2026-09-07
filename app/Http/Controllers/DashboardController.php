@@ -226,7 +226,6 @@ class DashboardController extends Controller
             ->get()
             ->filter(fn (Enrollment $enrollment) => $enrollment->isAtRisk())
             ->sortByDesc(fn (Enrollment $enrollment) => ($enrollment->riskLevel() === 'high' ? 1000 : 0) + $enrollment->daysSinceLastTraining())
-            ->take(15)
             ->values();
 
         // Revenue Leakage: money already earned but never collected. The

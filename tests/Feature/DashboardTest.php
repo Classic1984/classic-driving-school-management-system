@@ -1417,4 +1417,25 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSeeInOrder(['At-Risk Students', '1']);
     }
+
+    public function test_the_at_risk_students_kpi_is_not_capped_at_fifteen(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 50000]);
+
+        for ($i = 0; $i < 16; $i++) {
+            $student = Student::factory()->create();
+            $course->students()->attach($student->id, [
+                'enrolled_at' => now()->toDateString(),
+                'due_date' => now()->addDays(2)->toDateString(),
+                'status' => 'active',
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('kpis', fn (array $kpis) => $kpis['at_risk_students'] === 16);
+        $response->assertViewHas('atRiskEnrollments', fn ($atRiskEnrollments) => $atRiskEnrollments->count() === 16);
+    }
 }
