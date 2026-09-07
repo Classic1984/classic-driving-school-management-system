@@ -164,7 +164,10 @@
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
                 @endphp
 
-                <h4 class="mt-6 text-xs font-bold uppercase tracking-widest text-gray-500">{{ __('At a Glance') }}</h4>
+                <h4 class="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-400">
+                    <span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                    {{ __('At a Glance') }}
+                </h4>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
                     @foreach ($summaryGroups as $group)
