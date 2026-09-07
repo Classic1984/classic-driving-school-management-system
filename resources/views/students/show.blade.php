@@ -21,6 +21,14 @@
         $documentTextIconPath = 'M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z';
         $arrowLeftIconPath = 'M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18';
         $noSymbolIconPath = 'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636';
+        $briefcaseIconPath = 'M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0';
+        $cogIconPath = 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.28Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z';
+        $truckIconPath = 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12';
+        $eyeIconPath = 'M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z';
+        $megaphoneIconPath = 'M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535';
+        $homeIconPath = 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75';
+        $activityIconPath = 'M3.75 12h3l2.25-7.5 4.5 15L15.75 12h4.5';
+        $devicePhoneIconPath = 'M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3';
     @endphp
 
     <div class="py-12">
@@ -212,98 +220,149 @@
                             </div>
                         </div>
 
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Additional Information') }}</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Mother Maiden Name') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $student->mother_maiden_name ?? '—' }}</p>
+                        <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
+                            <div class="flex items-center gap-2.5 bg-black px-4 py-3">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500 text-black">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                </span>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Additional Information') }}</h3>
                             </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Sex') }}</p>
-                                <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('State of Origin') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Local Govt. Area') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Occupation') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ match ($student->occupation) {
-                                    'student' => 'Student',
-                                    'business' => 'Business',
-                                    'other' => 'Others',
-                                    default => '—',
-                                } }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('License Number') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Course Type') }}</p>
-                                <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->course_type ?? '—' }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Vehicle Class') }}</p>
-                                <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->vehicle_class ?? '—' }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Previous Driving Experience') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Wears Glasses to Drive') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ is_null($student->wears_glasses) ? '—' : ($student->wears_glasses ? __('Yes') : __('No')) }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('How They Heard About Us') }}</p>
-                                <p class="text-sm font-bold text-gray-900 capitalize">
-                                    {{ $student->referral_source ?? '—' }}
-                                    @if ($student->referral_source === 'other' && $student->referral_source_other)
-                                        ({{ $student->referral_source_other }})
-                                    @endif
-                                </p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Enrollment Date') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('l, M j, Y') }}</p>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3">
-                                <p class="text-xs text-gray-500">{{ __('Status') }}</p>
-                                <x-badge :color="$studentStatusColor" class="capitalize mt-0.5">{{ $student->status }}</x-badge>
-                            </div>
-                            <div class="rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                <p class="text-xs text-gray-500 mb-0.5">{{ __('App Access') }}</p>
-                                @if ($student->hasAppAccess())
-                                    <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
-                                        {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
-                                    </x-badge>
-                                    @if (auth()->user()->canManageCourses())
-                                        @if (! $student->user->pin_set_at)
-                                            <form method="post" action="{{ route('students.access.resend', $student) }}" class="inline ms-2">
-                                                @csrf
-                                                <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Resend Login SMS') }}</button>
-                                            </form>
-                                        @endif
-                                        <form method="post" action="{{ route('students.access.destroy', $student) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this student\'s app access? Their PIN will stop working immediately.') }}');">
-                                            @csrf
-                                            @method('delete')
-                                            <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Revoke Access') }}</button>
-                                        </form>
-                                    @endif
-                                @else
-                                    <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
-                                    @if (auth()->user()->canManageCourses())
-                                        <form method="post" action="{{ route('students.access.store', $student) }}" class="inline ms-2">
-                                            @csrf
-                                            <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Enable App Access') }}</button>
-                                        </form>
-                                    @endif
-                                @endif
+                            <div class="p-3 sm:p-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Mother Maiden Name') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->mother_maiden_name ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Sex') }}</p>
+                                            <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('State of Origin') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $homeIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Local Govt. Area') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $briefcaseIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Occupation') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ match ($student->occupation) {
+                                                'student' => 'Student',
+                                                'business' => 'Business',
+                                                'other' => 'Others',
+                                                default => '—',
+                                            } }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('License Number') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cogIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Course Type') }}</p>
+                                            <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->course_type ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $truckIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Vehicle Class') }}</p>
+                                            <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->vehicle_class ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Previous Driving Experience') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $eyeIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Wears Glasses to Drive') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ is_null($student->wears_glasses) ? '—' : ($student->wears_glasses ? __('Yes') : __('No')) }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $megaphoneIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('How They Heard About Us') }}</p>
+                                            <p class="text-sm font-bold text-gray-900 capitalize">
+                                                {{ $student->referral_source ?? '—' }}
+                                                @if ($student->referral_source === 'other' && $student->referral_source_other)
+                                                    ({{ $student->referral_source_other }})
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Enrollment Date') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('l, M j, Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $activityIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Status') }}</p>
+                                            <x-badge :color="$studentStatusColor" class="capitalize mt-0.5">{{ $student->status }}</x-badge>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $devicePhoneIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500 mb-0.5">{{ __('App Access') }}</p>
+                                            @if ($student->hasAppAccess())
+                                                <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
+                                                    {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                                </x-badge>
+                                                @if (auth()->user()->canManageCourses())
+                                                    @if (! $student->user->pin_set_at)
+                                                        <form method="post" action="{{ route('students.access.resend', $student) }}" class="inline ms-2">
+                                                            @csrf
+                                                            <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Resend Login SMS') }}</button>
+                                                        </form>
+                                                    @endif
+                                                    <form method="post" action="{{ route('students.access.destroy', $student) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this student\'s app access? Their PIN will stop working immediately.') }}');">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Revoke Access') }}</button>
+                                                    </form>
+                                                @endif
+                                            @else
+                                                <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                                @if (auth()->user()->canManageCourses())
+                                                    <form method="post" action="{{ route('students.access.store', $student) }}" class="inline ms-2">
+                                                        @csrf
+                                                        <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Enable App Access') }}</button>
+                                                    </form>
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -316,24 +375,43 @@
                         @endif
                         <x-input-error :messages="$errors->get('student')" />
 
-                        <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Next of Kin') }}</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div class="rounded-lg bg-gray-50 p-3">
-                                    <p class="text-xs text-gray-500">{{ __('Name') }}</p>
-                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_name ?? '—' }}</p>
-                                </div>
-                                <div class="rounded-lg bg-gray-50 p-3">
-                                    <p class="text-xs text-gray-500">{{ __('Phone No.') }}</p>
-                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_phone ?? '—' }}</p>
-                                </div>
-                                <div class="rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                    <p class="text-xs text-gray-500">{{ __('Address') }}</p>
-                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_address ?? '—' }}</p>
-                                </div>
-                                <div class="rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                    <p class="text-xs text-gray-500">{{ __('Email') }}</p>
-                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_email ?? '—' }}</p>
+                        <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
+                            <div class="flex items-center gap-2.5 bg-black px-4 py-3">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500 text-black">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                                </span>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Next of Kin') }}</h3>
+                            </div>
+                            <div class="p-3 sm:p-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Name') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_name ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Phone No.') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_phone ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Address') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_address ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                                        <div>
+                                            <p class="text-xs text-gray-500">{{ __('Email') }}</p>
+                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_email ?? '—' }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
