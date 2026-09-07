@@ -40,6 +40,7 @@ class Expense extends Model
         'laundry' => 'Laundry',
         'perfume' => 'Perfume',
         'investment_saving' => 'Investment/Saving',
+        'saving' => 'Saving',
         'gift' => 'Gift',
         'miscellaneous' => 'Miscellaneous/Other',
     ];
