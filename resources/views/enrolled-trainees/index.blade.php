@@ -91,8 +91,9 @@
                             $initials = collect(explode(' ', $trainee->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                             $transmissionLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Auto & Manual'];
                             $transmissionLabel = $primaryEnrolledCourse ? ($transmissionLabels[$primaryEnrolledCourse->course_type] ?? null) : null;
+                            $enrolledToday = $trainee->enrollment_date->isToday();
                         @endphp
-                        <div class="group relative flex flex-col overflow-hidden rounded-xl bg-white p-5 ring-1 {{ $accent['ring'] }} shadow-sm">
+                        <div class="group relative flex flex-col overflow-hidden rounded-xl p-5 ring-1 {{ $accent['ring'] }} shadow-sm {{ $enrolledToday ? 'bg-amber-50/70' : 'bg-white' }}">
                             <span class="absolute inset-y-0 left-0 w-1 {{ $accent['edge'] }}"></span>
 
                             <div class="flex items-start gap-3">
@@ -165,6 +166,9 @@
                                 <span class="inline-flex items-center gap-1.5">
                                     <svg class="h-4 w-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                                     {{ __('Applied') }} {{ $trainee->enrollment_date->format('l, M j, Y') }}
+                                    @if ($enrolledToday)
+                                        <span class="inline-flex items-center rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">{{ __('Today') }}</span>
+                                    @endif
                                 </span>
                                 @if ($trainee->date_of_birth)
                                     <span class="inline-flex items-center gap-1.5">
