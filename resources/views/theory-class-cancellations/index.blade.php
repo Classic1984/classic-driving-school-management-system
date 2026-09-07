@@ -117,7 +117,7 @@
                             @forelse ($cancellations as $cancellation)
                                 <tr>
                                     <td class="px-4 py-3 text-sm align-top">
-                                        <span class="font-semibold text-gray-800">{{ $cancellation->class_date->format('l, F j, Y') }}</span>
+                                        <span class="font-semibold text-gray-800">{{ $cancellation->class_date->format('l, M j, Y') }}</span>
                                         @if ($cancellation->class_date->isFuture() || $cancellation->class_date->isToday())
                                             <x-badge color="amber" class="ms-1">{{ __('Upcoming') }}</x-badge>
                                         @endif

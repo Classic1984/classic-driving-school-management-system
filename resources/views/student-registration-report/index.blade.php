@@ -122,7 +122,7 @@
                                             <td class="px-4 py-3 text-sm text-gray-600">{{ $student->email }}</td>
                                             <td class="px-4 py-3 text-sm text-gray-600">{{ $student->phone }}</td>
                                             <td class="px-4 py-3 text-sm text-gray-600">{{ $student->courses->pluck('name')->implode(', ') ?: '—' }}</td>
-                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $student->enrollment_date->format('l, F j, Y') }}</td>
+                                            <td class="px-4 py-3 text-sm text-gray-600">{{ $student->enrollment_date->format('l, M j, Y') }}</td>
                                             <td class="px-4 py-3 text-sm">
                                                 <x-badge :color="match ($student->status) {
                                                     'active' => 'green',

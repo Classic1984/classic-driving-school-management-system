@@ -131,8 +131,8 @@ class TrainingReportTest extends TestCase
         $response = $this->actingAs($user)->get('/training-report?period=week');
 
         $response->assertOk();
-        $response->assertSee($monday->format('l, F j, Y'));
-        $response->assertSee($tuesday->format('l, F j, Y'));
+        $response->assertSee($monday->format('l, M j, Y'));
+        $response->assertSee($tuesday->format('l, M j, Y'));
         $response->assertSee('Monday Trainee');
         $response->assertSee('Tuesday Trainee');
     }

@@ -36,7 +36,7 @@
                         </span>
                         <div class="min-w-0 flex-1">
                             <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ $attendance->student->name }}</h3>
-                            <p class="text-sm text-gray-500">{{ $attendance->date->format('l, F j, Y') }}</p>
+                            <p class="text-sm text-gray-500">{{ $attendance->date->format('l, M j, Y') }}</p>
                         </div>
                         <x-badge :color="$statusMeta" class="capitalize">{{ $attendance->status }}</x-badge>
                     </div>
@@ -46,7 +46,7 @@
                             <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Date') }}</p>
-                                <p class="text-sm font-bold text-gray-900">{{ $attendance->date->format('l, F j, Y') }}</p>
+                                <p class="text-sm font-bold text-gray-900">{{ $attendance->date->format('l, M j, Y') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">

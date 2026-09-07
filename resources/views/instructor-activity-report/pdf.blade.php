@@ -14,7 +14,7 @@
 </head>
 <body>
     <h1>Classic Driving School &amp; Son Nigeria Limited</h1>
-    <h2>Instructor Activity Report — {{ $label }} — Generated {{ now()->format('l, F j, Y g:i A') }}</h2>
+    <h2>Instructor Activity Report — {{ $label }} — Generated {{ now()->format('l, M j, Y g:i A') }}</h2>
 
     <table>
         <thead>

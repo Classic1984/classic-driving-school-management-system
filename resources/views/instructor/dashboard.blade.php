@@ -2,7 +2,7 @@
     <div class="mb-6 flex items-start justify-between gap-4">
         <div>
             <p class="text-lg font-semibold text-gray-800">{{ __('Welcome, :name', ['name' => $instructor->name]) }}</p>
-            <p class="text-sm text-gray-500">{{ now()->format('l, F j, Y') }}</p>
+            <p class="text-sm text-gray-500">{{ now()->format('l, M j, Y') }}</p>
         </div>
         <form method="post" action="{{ route('instructor.logout') }}">
             @csrf
