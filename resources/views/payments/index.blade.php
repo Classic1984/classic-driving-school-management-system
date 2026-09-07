@@ -128,9 +128,17 @@
                                 @php
                                     $accent = $statusAccent[$payment->status] ?? ['color' => 'gray', 'border' => 'border-gray-300'];
                                     $initials = collect(explode(' ', $payment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                                    $paidToday = $payment->payment_date->isToday();
                                 @endphp
-                                <tr class="border-l-4 {{ $accent['border'] }}">
-                                    <td class="px-3 py-3 text-sm align-top text-gray-700">{{ $payment->payment_date->format('l, M j, Y') }}</td>
+                                <tr class="border-l-4 {{ $accent['border'] }} {{ $paidToday ? 'bg-amber-50/70' : '' }}">
+                                    <td class="px-3 py-3 text-sm align-top text-gray-700">
+                                        <div class="flex items-center gap-2">
+                                            {{ $payment->payment_date->format('l, M j, Y') }}
+                                            @if ($paidToday)
+                                                <span class="inline-flex items-center rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">{{ __('Today') }}</span>
+                                            @endif
+                                        </div>
+                                    </td>
                                     <td class="px-3 py-3 text-xs font-mono align-top text-gray-500">{{ $payment->receipt_number }}</td>
                                     <td class="px-3 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
