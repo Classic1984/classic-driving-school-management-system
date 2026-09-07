@@ -42,7 +42,9 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Training Statistics');
-        $response->assertSee(route('training-report.index', ['period' => 'today']), false);
+        // "Today" is intentionally skipped in this panel - it duplicates
+        // the At a Glance Training & Operations tile's "Students Trained
+        // Today" row.
         $response->assertSee(route('training-report.index', ['period' => 'week']), false);
         $response->assertSee(route('training-report.index', ['period' => 'month']), false);
         $response->assertSee(route('training-report.index', ['period' => 'year']), false);
@@ -958,9 +960,15 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee("Today's Operations");
         $response->assertSeeInOrder(['1', 'Student(s) Trained Today']);
-        $response->assertSeeInOrder(['1', 'Training Session(s) Logged']);
         $response->assertSeeInOrder(['1', 'Instructor(s) Active Today']);
-        $response->assertSeeInOrder(['1', 'Vehicle(s) In Use Today']);
+        // Training Session(s) Logged and Vehicle(s) In Use Today were
+        // dropped from this panel - they duplicated rows already in the
+        // At a Glance Training & Operations tile with the same value and
+        // the same link destination. "Vehicle(s) In Use Today" is the
+        // exact label At a Glance still uses, so assert it now appears
+        // only there (once), not also in this panel.
+        $response->assertDontSee('Training Session(s) Logged');
+        $this->assertSame(1, substr_count($response->getContent(), 'Vehicle(s) In Use Today'));
     }
 
     public function test_todays_operations_flags_students_approaching_completion_and_locked_students(): void
