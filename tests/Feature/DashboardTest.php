@@ -762,7 +762,6 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($director)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSee('Programme Upgrade Window');
 
         // Two compact count boxes, not a table of names directly on the page.
         $response->assertSee('Eligible for Upgrade');
@@ -778,7 +777,7 @@ class DashboardTest extends TestCase
         $response->assertSee('Sarah D');
     }
 
-    public function test_dashboard_does_not_list_an_enrollment_with_no_longer_programme_to_upgrade_into(): void
+    public function test_dashboard_does_not_count_an_enrollment_with_no_longer_programme_to_upgrade_into(): void
     {
         $user = User::factory()->create();
         $fourWeek = Course::factory()->create(['duration_weeks' => 4, 'status' => 'active']);
@@ -789,7 +788,8 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Programme Upgrade Window');
+        $response->assertViewHas('upgradeEligible', fn ($upgradeEligible) => $upgradeEligible->isEmpty());
+        $response->assertViewHas('upgradeClosed', fn ($upgradeClosed) => $upgradeClosed->isEmpty());
     }
 
     public function test_dashboard_keeps_counting_an_enrollment_long_after_its_upgrade_window_closed(): void
@@ -806,7 +806,7 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertSee('Upgrade Window Closed');
         $response->assertSee('Long Since Closed');
-        $response->assertDontSee('Eligible for Upgrade');
+        $response->assertViewHas('upgradeEligible', fn ($upgradeEligible) => $upgradeEligible->isEmpty());
     }
 
     public function test_a_director_gets_a_direct_upgrade_link_from_the_dashboard(): void
