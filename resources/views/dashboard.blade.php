@@ -295,9 +295,7 @@
                 $operationIcons = [
                     'pending_approvals' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
                     'students_trained' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
-                    'training_sessions' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
                     'instructors_active' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
-                    'vehicles_in_use' => 'M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 0h-12',
                     'payments_received_today' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
                     'payments_pending_count' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
                     'approaching_completion' => 'M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5',
@@ -332,25 +330,11 @@
                         'href' => route('training-report.index', ['period' => 'today']),
                     ],
                     [
-                        'key' => 'training_sessions', 'show' => true,
-                        'label' => 'Training Session(s) Logged', 'description' => 'Total training sessions recorded',
-                        'value' => number_format($todaysOperations['training_sessions']),
-                        'state' => 'ok', 'color' => 'green',
-                        'href' => route('training-report.index', ['period' => 'today']),
-                    ],
-                    [
                         'key' => 'instructors_active', 'show' => true,
                         'label' => 'Instructor(s) Active Today', 'description' => 'Instructors who are actively training',
                         'value' => number_format($todaysOperations['instructors_active']),
                         'state' => 'ok', 'color' => 'orange',
                         'href' => route('instructor-activity-report.index', ['period' => 'today']),
-                    ],
-                    [
-                        'key' => 'vehicles_in_use', 'show' => true,
-                        'label' => 'Vehicle(s) In Use Today', 'description' => 'Vehicles currently in use',
-                        'value' => number_format($todaysOperations['vehicles_in_use']),
-                        'state' => 'ok', 'color' => 'sky',
-                        'href' => route('vehicles.index'),
                     ],
                     [
                         'key' => 'payments_pending_count', 'show' => true,
@@ -475,7 +459,7 @@
                     @endforeach
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-3">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
                     @foreach ($smallRows as $row)
                         @php $accent = $operationAccent($row); $tag = $operationTag($row); @endphp
                         <{{ $tag }}
@@ -1034,8 +1018,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+                    {{-- "This Month" is skipped here - it already has its own row in the
+                         At a Glance Students tile, linking to the same report period. --}}
+                    @foreach (['today' => 'Today', 'week' => 'This Week', 'year' => 'This Year'] as $period => $periodLabel)
                         @php $accent = $newStudentsDarkAccent[$period]; @endphp
                         <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
                             <div class="flex items-center gap-2.5">
@@ -1069,18 +1055,24 @@
                     'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
                 ];
 
+                $allPeriodLabels = ['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'];
+
                 $periodTables = [
                     [
                         'title' => 'Training Statistics', 'subtitle' => 'Overview of student training performance',
                         'headerIcon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
                         'countLabel' => 'Students Trained', 'route' => 'training-report.index', 'rowIcon' => $calendarIconPath, 'stats' => $trainingStats,
                         'describe' => fn (string $periodLabel) => __('Total students trained :period', ['period' => strtolower($periodLabel)]),
+                        // "Today" is skipped here - it already has its own row (as a
+                        // modal) in the At a Glance Training & Operations tile.
+                        'periods' => ['week', 'month', 'year'],
                     ],
                     [
                         'title' => 'Absences', 'subtitle' => 'Track student absences over time',
                         'headerIcon' => 'M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm7-4h.008v.008H19V9.87Zm-1.5 1.5 3 3m0-3-3 3',
                         'countLabel' => 'Students Absent', 'route' => 'absence-report.index', 'rowIcon' => null, 'stats' => $absenceStats,
                         'describe' => fn (string $periodLabel) => __('Total students absent :period', ['period' => strtolower($periodLabel)]),
+                        'periods' => array_keys($allPeriodLabels),
                     ],
                 ];
             @endphp
@@ -1098,7 +1090,7 @@
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                        @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $period => $periodLabel)
+                        @foreach (array_intersect_key($allPeriodLabels, array_flip($table['periods'])) as $period => $periodLabel)
                             @php $accent = $periodDarkAccent[$period]; @endphp
                             <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
                                 <div class="flex items-center gap-2.5">
