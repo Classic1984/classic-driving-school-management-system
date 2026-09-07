@@ -1451,4 +1451,32 @@ class DashboardTest extends TestCase
         $response->assertOk();
         $response->assertViewHas('stats', fn (array $stats) => $stats['instructors'] === 2);
     }
+
+    public function test_the_revenue_today_modal_shows_what_each_payment_was_for(): void
+    {
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['name' => 'Manual Course']);
+        $student = Student::factory()->create(['name' => 'Paid Today']);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+        $enrollment = $student->courses()->where('course_id', $course->id)->first()->pivot;
+
+        $payment = Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 50000,
+            'payment_date' => today(),
+            'status' => 'paid',
+        ]);
+        PaymentAllocation::factory()->create([
+            'payment_id' => $payment->id,
+            'allocation_type' => 'training',
+            'enrollment_id' => $enrollment->id,
+            'amount' => 50000,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Paid Today', 'Training — Manual Course']);
+    }
 }

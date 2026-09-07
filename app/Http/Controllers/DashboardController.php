@@ -363,12 +363,13 @@ class DashboardController extends Controller
 
         $todaysAttendance = Attendance::where('status', 'present')->whereDate('date', today());
 
-        // Backing list for the "Revenue Today" modal - who paid today and
-        // how much each payment was, not just the summed total shown on
-        // the card itself.
+        // Backing list for the "Revenue Today" modal - who paid today, how
+        // much, and what for (via description(), so it also loads what
+        // that reads: each allocation's enrollment/course or student
+        // service), not just the summed total shown on the card itself.
         $todaysPayments = Payment::where('status', 'paid')
             ->whereDate('payment_date', today())
-            ->with('student')
+            ->with(['student', 'allocations.enrollment.course', 'allocations.studentService.service'])
             ->latest('payment_date')
             ->get();
 
