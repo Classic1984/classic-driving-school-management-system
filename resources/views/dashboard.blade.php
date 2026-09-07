@@ -162,7 +162,9 @@
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
                 @endphp
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+                <h4 class="mt-6 text-xs font-bold uppercase tracking-widest text-gray-500">{{ __('At a Glance') }}</h4>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
                     @foreach ($summaryGroups as $group)
                         @php $groupAccent = $kpiColors[$group['color']]; @endphp
                         <div class="rounded-xl bg-gray-900/60 ring-1 ring-white/10 p-5">
