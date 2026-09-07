@@ -392,7 +392,7 @@
                         'label' => 'Revenue Today', 'description' => 'Total revenue generated today',
                         'value' => '₦'.number_format($todaysOperations['payments_received_today'], 2),
                         'state' => 'ok', 'color' => 'emerald',
-                        'href' => route('payments.index'),
+                        'modal' => 'todays-payments-modal',
                     ],
                 ])->filter(fn (array $row) => $row['show'])->values();
 
@@ -730,6 +730,28 @@
                     </x-modal>
                 @endif
             @endif
+
+            <x-modal name="todays-payments-modal">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">💰 {{ __('Revenue Today') }}</h3>
+                    @if ($todaysPayments->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('No payments have been recorded today yet.') }}</p>
+                    @else
+                        <p class="text-xs text-gray-500 mb-3">{{ __(':count payment(s) recorded today', ['count' => $todaysPayments->count()]) }}</p>
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($todaysPayments as $payment)
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <a href="{{ route('students.show', $payment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $payment->student->name }}</a>
+                                    <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment->amount, 2) }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="mt-4 text-right">
+                        <x-secondary-button x-on:click="$dispatch('close-modal', 'todays-payments-modal')">{{ __('Close') }}</x-secondary-button>
+                    </div>
+                </div>
+            </x-modal>
 
             @if ($approachingCompletionEnrollments->isNotEmpty())
                 <x-modal name="approaching-completion-modal">
