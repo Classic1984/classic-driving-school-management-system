@@ -373,14 +373,6 @@ class DashboardController extends Controller
             ->latest('payment_date')
             ->get();
 
-        // Backing list for the dashboard's compact "Today's Training
-        // Sessions" table - the actual attendance records behind the
-        // "Training Today" / "Students Trained Today" summary numbers.
-        $todaysTrainingSessions = (clone $todaysAttendance)
-            ->with(['student', 'course', 'instructor', 'vehicle'])
-            ->latest('created_at')
-            ->get();
-
         // Today's Operations: a same-day snapshot, distinct from the KPI
         // cards above (which are cumulative/current totals) - what
         // actually happened or needs attention today specifically.
@@ -397,7 +389,7 @@ class DashboardController extends Controller
                 + StudentCorrectionRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'todaysTrainingSessions', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
     }
 
     /**
