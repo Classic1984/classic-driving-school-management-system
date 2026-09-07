@@ -1072,7 +1072,12 @@
                         'headerIcon' => 'M17 20h5v-1a4 4 0 0 0-3-3.87M9 20H4v-1a4 4 0 0 1 3-3.87m6-1.13a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm7-4h.008v.008H19V9.87Zm-1.5 1.5 3 3m0-3-3 3',
                         'countLabel' => 'Students Absent', 'route' => 'absence-report.index', 'rowIcon' => null, 'stats' => $absenceStats,
                         'describe' => fn (string $periodLabel) => __('Total students absent :period', ['period' => strtolower($periodLabel)]),
-                        'periods' => array_keys($allPeriodLabels),
+                        // "Today" is skipped here - an absence is only recorded by
+                        // app:finalize-daily-attendance once the day closes (6pm), so
+                        // this figure reads as a misleading 0 all day regardless of who
+                        // has actually shown up. "Today's Attendance" above already
+                        // gives a live present/absent view for today specifically.
+                        'periods' => ['week', 'month', 'year'],
                     ],
                 ];
             @endphp
