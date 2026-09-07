@@ -69,7 +69,10 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Absences');
-        $response->assertSee(route('absence-report.index', ['period' => 'today']), false);
+        // "Today" is intentionally skipped in this panel - an absence is
+        // only recorded once the day closes (see FinalizeDailyAttendance),
+        // so a same-day figure here would misleadingly read as 0 all day.
+        $response->assertDontSee(route('absence-report.index', ['period' => 'today']), false);
         $response->assertSee(route('absence-report.index', ['period' => 'week']), false);
         $response->assertSee(route('absence-report.index', ['period' => 'month']), false);
         $response->assertSee(route('absence-report.index', ['period' => 'year']), false);
