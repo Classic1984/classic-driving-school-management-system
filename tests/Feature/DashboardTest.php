@@ -1438,4 +1438,17 @@ class DashboardTest extends TestCase
         $response->assertViewHas('kpis', fn (array $kpis) => $kpis['at_risk_students'] === 16);
         $response->assertViewHas('atRiskEnrollments', fn ($atRiskEnrollments) => $atRiskEnrollments->count() === 16);
     }
+
+    public function test_the_active_instructors_stat_excludes_inactive_instructors(): void
+    {
+        $user = User::factory()->create();
+        Instructor::factory()->create(['status' => 'active']);
+        Instructor::factory()->create(['status' => 'active']);
+        Instructor::factory()->create(['status' => 'inactive']);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('stats', fn (array $stats) => $stats['instructors'] === 2);
+    }
 }
