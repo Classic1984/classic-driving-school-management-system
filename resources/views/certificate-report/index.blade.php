@@ -17,41 +17,54 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="p-6 sm:p-8 pb-0">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 print:hidden">
-                        <div class="inline-flex items-center gap-1 rounded-full bg-gray-100 p-1">
-                            @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $tabLabel)
-                                <a
-                                    href="{{ route('certificate-report.index', ['period' => $value]) }}"
-                                    class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900' }}"
-                                >{{ __($tabLabel) }}</a>
-                            @endforeach
+                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $certificateIconPath }}" /></svg>
+
+                    <div class="relative flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $certificateIconPath }}" /></svg>
+                            </span>
+                            <div>
+                                <h3 class="text-xl font-bold text-white">{{ __('Certificate Report') }}</h3>
+                                <p class="text-sm text-gray-400">{{ __('Certificates issued to students') }} — {{ __($label) }}</p>
+                            </div>
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                        <div class="flex flex-wrap items-center gap-2 print:hidden">
+                            <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-white/10 transition">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $printerIconPath }}" /></svg>
                                 {{ __('Print') }}
                             </button>
-                            <a href="{{ route('certificate-report.export', ['period' => $period]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-green-300 bg-white px-4 py-2 text-sm font-semibold text-green-700 hover:bg-green-50 transition">
+                            <a href="{{ route('certificate-report.export', ['period' => $period]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-green-400/30 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-400 hover:bg-green-500/20 transition">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
                                 {{ __('Export Excel') }}
                             </a>
-                            <a href="{{ route('certificate-report.export-pdf', ['period' => $period]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-red-300 bg-white px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-50 transition">
+                            <a href="{{ route('certificate-report.export-pdf', ['period' => $period]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-red-400/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-red-500/20 transition">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L13.5 15.75m0 0-2.25 2.25M13.5 15.75l2.25 2.25M13.5 15.75l-2.25-2.25M9.75 5.25v-.375A1.125 1.125 0 0 1 10.875 3.75h.375c1.5 0 2.812.86 3.444 2.115M9.75 5.25v2.625a1.125 1.125 0 0 1-1.125 1.125h-.375m0 0h-1.5A2.625 2.625 0 0 0 4.125 11.625v9.75c0 .621.504 1.125 1.125 1.125h11.25c.621 0 1.125-.504 1.125-1.125v-2.625" /></svg>
                                 {{ __('Download PDF') }}
                             </a>
                         </div>
                     </div>
 
-                    <div class="mt-6 inline-flex items-center gap-3 rounded-2xl ring-1 ring-gray-200 bg-white px-5 py-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $certificateIconPath }}" /></svg>
-                        </span>
-                        <div>
-                            <p class="text-sm text-gray-500">{{ __('Certificates issued') }}</p>
-                            <p class="text-2xl font-extrabold text-gray-900">{{ $certificates->count() }}</p>
+                    <div class="relative inline-flex items-center gap-1 rounded-full bg-white/5 ring-1 ring-white/10 p-1 mt-6 print:hidden">
+                        @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $tabLabel)
+                            <a
+                                href="{{ route('certificate-report.index', ['period' => $value]) }}"
+                                class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-amber-500 text-black' : 'text-gray-300 hover:text-white' }}"
+                            >{{ __($tabLabel) }}</a>
+                        @endforeach
+                    </div>
+
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-gray-900 to-gray-900 ring-1 ring-amber-400/30 p-5 mt-6 max-w-sm">
+                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $certificateIconPath }}" /></svg>
+                        <div class="relative flex items-center gap-3">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $certificateIconPath }}" /></svg>
+                            </span>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-300">{{ __('Certificates Issued') }}</p>
                         </div>
+                        <p class="relative text-4xl font-extrabold text-amber-400 mt-3">{{ $certificates->count() }}</p>
                     </div>
                 </div>
 
@@ -91,21 +104,18 @@
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($certificates as $certificate)
-                                        <tr>
+                                        @php $certificateInitials = collect(explode(' ', $certificate->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
+                                        <tr class="hover:bg-amber-50/40 transition">
                                             <td class="px-4 py-3">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
-                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $certificateIconPath }}" /></svg>
-                                                    </span>
-                                                    <a href="{{ route('certificates.show', $certificate) }}" class="font-mono text-sm text-amber-600 hover:underline print:text-gray-900 print:no-underline">
-                                                        {{ $certificate->certificate_number }}
-                                                    </a>
-                                                </div>
+                                                <a href="{{ route('certificates.show', $certificate) }}" class="font-mono text-sm text-amber-600 hover:underline print:text-gray-900 print:no-underline">
+                                                    {{ $certificate->certificate_number }}
+                                                </a>
                                             </td>
                                             <td class="px-4 py-3 font-mono text-sm text-gray-600">{{ $certificate->student->student_id_number }}</td>
                                             <td class="px-4 py-3 text-sm">
-                                                <a href="{{ route('students.show', $certificate->student) }}" class="font-semibold text-amber-600 hover:underline print:text-gray-900 print:no-underline">
-                                                    {{ $certificate->student->name }}
+                                                <a href="{{ route('students.show', $certificate->student) }}" class="group flex items-center gap-2.5">
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $certificateInitials }}</span>
+                                                    <span class="font-semibold text-gray-900 group-hover:text-amber-600 print:text-gray-900">{{ $certificate->student->name }}</span>
                                                 </a>
                                             </td>
                                             <td class="px-4 py-3 text-sm text-gray-600">{{ $certificate->course->name }}</td>
