@@ -18,47 +18,63 @@
     $sort = request()->query("{$pageName}_sort", 'oldest');
 @endphp
 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden mt-6">
-    <div class="flex flex-col sm:flex-row sm:items-start gap-4 p-8 pb-5">
-        <div class="flex items-start gap-4 flex-1 min-w-0">
-            <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-black">
-                <svg class="h-8 w-8 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                    @foreach ($iconPaths as $path)
-                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
-                    @endforeach
-                </svg>
-            </div>
-            <div class="min-w-0 flex-1">
-                <h3 class="text-xl font-bold text-gray-900">{{ __($title) }}</h3>
-                <p class="text-sm text-gray-500">{{ __($subtitle) }}</p>
-            </div>
-        </div>
-        <div class="flex flex-wrap items-center gap-2 shrink-0">
-            <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 ring-1 ring-amber-200 px-4 py-2 text-sm font-semibold text-amber-700">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                {{ $requests->total() }} {{ __('Pending') }}
-            </span>
-            <a href="{{ route('service-reports.index', $requests->first()->service) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-400 hover:bg-amber-500 px-5 py-2.5 text-sm font-bold text-black transition">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6 12v.375a.375.375 0 0 1-.375.375h-6a.375.375 0 0 1-.375-.375v-.375m6.75 0h-6.75m6.75 0v-.375a.375.375 0 0 0-.375-.375h-6a.375.375 0 0 0-.375.375v.375m6.75 0H15m-6.75 3h6.75m-6.75 0v.375a.375.375 0 0 0 .375.375h6a.375.375 0 0 0 .375-.375v-.375m0 0H15M9.75 5.25v-.375A1.125 1.125 0 0 1 10.875 3.75h.375c1.5 0 2.812.86 3.444 2.115M9.75 5.25v2.625a1.125 1.125 0 0 1-1.125 1.125h-.375m0 0h-1.5A2.625 2.625 0 0 0 4.125 11.625v9.75c0 .621.504 1.125 1.125 1.125h11.25c.621 0 1.125-.504 1.125-1.125v-2.625" /></svg>
-                {{ __('View Full Report') }}
-            </a>
-        </div>
-    </div>
+    <div class="relative overflow-hidden bg-black p-6 sm:p-8">
+        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
+            @foreach ($iconPaths as $path)
+                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
+            @endforeach
+        </svg>
 
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 px-8">
-        @foreach ([
-            ['value' => $stats['total_students'], 'label' => 'Total Students', 'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z', 'accent' => 'bg-purple-500/10 text-purple-600'],
-            ['value' => $stats['charged'], 'label' => 'Charged', 'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5', 'accent' => 'bg-blue-500/10 text-blue-600'],
-            ['value' => $stats['paid'], 'label' => 'Paid', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z', 'accent' => 'bg-green-500/10 text-green-600'],
-            ['value' => $stats['completed'], 'label' => $completedLabel, 'icon' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z', 'accent' => 'bg-indigo-500/10 text-indigo-600'],
-        ] as $tile)
-            <div class="flex flex-col items-center text-center rounded-xl bg-gray-50 ring-1 ring-gray-200 p-4">
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg {{ $tile['accent'] }}">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tile['icon'] }}" /></svg>
+        <div class="relative flex flex-col sm:flex-row sm:items-start gap-4">
+            <div class="flex items-start gap-4 flex-1 min-w-0">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        @foreach ($iconPaths as $path)
+                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
+                        @endforeach
+                    </svg>
                 </span>
-                <p class="mt-2 text-2xl font-extrabold text-gray-900">{{ $tile['value'] }}</p>
-                <p class="text-xs text-gray-600">{{ __($tile['label']) }}</p>
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-xl font-bold text-white">{{ __($title) }}</h3>
+                    <p class="text-sm text-gray-400">{{ __($subtitle) }}</p>
+                </div>
             </div>
-        @endforeach
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <span class="inline-flex items-center gap-2 rounded-full bg-amber-500/15 ring-1 ring-amber-400/30 px-4 py-2 text-sm font-semibold text-amber-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                    {{ $requests->total() }} {{ __('Pending') }}
+                </span>
+                <a href="{{ route('service-reports.index', $requests->first()->service) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-5 py-2.5 text-sm font-bold text-black transition">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6 12v.375a.375.375 0 0 1-.375.375h-6a.375.375 0 0 1-.375-.375v-.375m6.75 0h-6.75m6.75 0v-.375a.375.375 0 0 0-.375-.375h-6a.375.375 0 0 0-.375.375v.375m6.75 0H15m-6.75 3h6.75m-6.75 0v.375a.375.375 0 0 0 .375.375h6a.375.375 0 0 0 .375-.375v-.375m0 0H15M9.75 5.25v-.375A1.125 1.125 0 0 1 10.875 3.75h.375c1.5 0 2.812.86 3.444 2.115M9.75 5.25v2.625a1.125 1.125 0 0 1-1.125 1.125h-.375m0 0h-1.5A2.625 2.625 0 0 0 4.125 11.625v9.75c0 .621.504 1.125 1.125 1.125h11.25c.621 0 1.125-.504 1.125-1.125v-2.625" /></svg>
+                    {{ __('View Full Report') }}
+                </a>
+            </div>
+        </div>
+
+        <div class="relative grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+            @foreach ([
+                ['value' => $stats['total_students'], 'label' => 'Total Students', 'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z', 'color' => 'purple'],
+                ['value' => $stats['charged'], 'label' => 'Charged', 'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5', 'color' => 'blue'],
+                ['value' => $stats['paid'], 'label' => 'Paid', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z', 'color' => 'green'],
+                ['value' => $stats['completed'], 'label' => $completedLabel, 'icon' => 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.982 21.14a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z', 'color' => 'indigo'],
+            ] as $tile)
+                @php
+                    $tileAccent = [
+                        'purple' => ['icon' => 'bg-purple-500/15 text-purple-400', 'text' => 'text-purple-400', 'ring' => 'ring-purple-400/30'],
+                        'blue' => ['icon' => 'bg-blue-500/15 text-blue-400', 'text' => 'text-blue-400', 'ring' => 'ring-blue-400/30'],
+                        'green' => ['icon' => 'bg-green-500/15 text-green-400', 'text' => 'text-green-400', 'ring' => 'ring-green-400/30'],
+                        'indigo' => ['icon' => 'bg-indigo-500/15 text-indigo-400', 'text' => 'text-indigo-400', 'ring' => 'ring-indigo-400/30'],
+                    ][$tile['color']];
+                @endphp
+                <div class="flex flex-col items-center text-center rounded-xl bg-white/5 ring-1 {{ $tileAccent['ring'] }} p-4">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-lg {{ $tileAccent['icon'] }}">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tile['icon'] }}" /></svg>
+                    </span>
+                    <p class="mt-2 text-2xl font-extrabold {{ $tileAccent['text'] }}">{{ $tile['value'] }}</p>
+                    <p class="text-xs text-gray-400">{{ __($tile['label']) }}</p>
+                </div>
+            @endforeach
+        </div>
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-4 px-8 pt-6">
