@@ -17,46 +17,48 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="p-6 sm:p-8 pb-4">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+
+                    <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                                <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             </span>
                             <div>
-                                <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Student Training Progress') }}</h3>
-                                <p class="text-sm text-gray-500">{{ __('Every active enrollment and how far along it is') }}</p>
+                                <h3 class="text-xl font-bold text-white">{{ __('Student Training Progress') }}</h3>
+                                <p class="text-sm text-gray-400">{{ __('Every active enrollment and how far along it is') }}</p>
                             </div>
                         </div>
-                        <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 ring-1 ring-amber-200 px-4 py-2 text-sm font-semibold text-amber-700">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-amber-500/15 ring-1 ring-amber-400/30 px-4 py-2 text-sm font-semibold text-amber-400">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             {{ $enrollments->total() }} {{ __('Enrollments') }}
                         </span>
                     </div>
                 </div>
 
-                <div class="px-6 sm:px-8 pb-6 sm:pb-8">
+                <div class="p-6 sm:p-8">
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                <thead class="bg-black">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
                                         <th class="px-3 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                                 {{ __('Student') }}
                                             </span>
                                         </th>
                                         <th class="px-3 py-3">{{ __('Student ID') }}</th>
                                         <th class="px-3 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
                                                 {{ __('Program') }}
                                             </span>
                                         </th>
                                         <th class="px-3 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                                 {{ __('Start Date') }}
                                             </span>
                                         </th>
@@ -67,7 +69,7 @@
                                         <th class="px-3 py-3">{{ __('Completion') }}</th>
                                         <th class="px-3 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                                                 {{ __('Status') }}
                                             </span>
                                         </th>
@@ -75,16 +77,13 @@
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($enrollments as $enrollment)
-                                        <tr>
+                                        @php $trainingProgressInitials = collect(explode(' ', $enrollment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
+                                        <tr class="hover:bg-amber-50/40 transition">
                                             <td class="px-3 py-3 text-sm">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                                    </span>
-                                                    <a href="{{ route('students.show', $enrollment->student_id) }}" class="font-semibold text-gray-800 hover:text-amber-600">
-                                                        {{ $enrollment->student->name }}
-                                                    </a>
-                                                </div>
+                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="group flex items-center gap-2.5">
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $trainingProgressInitials }}</span>
+                                                    <span class="font-semibold text-gray-800 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
+                                                </a>
                                             </td>
                                             <td class="px-3 py-3 text-sm font-mono text-gray-600">{{ $enrollment->student->student_id_number }}</td>
                                             <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }} / {{ $enrollment->course->totalTrainingDays() }} {{ __('Days') }})</td>
