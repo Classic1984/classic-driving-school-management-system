@@ -119,19 +119,11 @@
                     default => ['color' => 'red', 'classes' => 'bg-red-100 text-red-600', 'icon' => 'M6 18 18 6M6 6l12 12'],
                 };
                 $initials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
-                $avatarPalette = [
-                    ['bg' => 'bg-amber-100', 'text' => 'text-amber-700'],
-                    ['bg' => 'bg-pink-100', 'text' => 'text-pink-700'],
-                    ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
-                    ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
-                    ['bg' => 'bg-purple-100', 'text' => 'text-purple-700'],
-                ];
-                $avatar = $avatarPalette[$loop->index % count($avatarPalette)];
             @endphp
             <div class="rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 p-5">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full {{ $avatar['bg'] }} text-lg font-bold {{ $avatar['text'] }}">
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-100 text-lg font-bold text-amber-700">
                             {{ $initials }}
                         </div>
                         <div class="min-w-0">
