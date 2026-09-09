@@ -7,30 +7,36 @@
 
     @php
         $academicCapIconPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';
-        $personIconPath = 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z';
-        $bookOpenIconPath = 'M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.25c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25';
         $calendarIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
-        $shieldCheckIconPath = 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z';
         $noSymbolIconPath = 'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636';
+
+        $rowPalette = [
+            ['border' => 'border-amber-400', 'bg' => 'bg-amber-50/70', 'avatar' => 'bg-amber-400'],
+            ['border' => 'border-blue-400', 'bg' => 'bg-blue-50/70', 'avatar' => 'bg-blue-400'],
+            ['border' => 'border-purple-400', 'bg' => 'bg-purple-50/70', 'avatar' => 'bg-purple-400'],
+            ['border' => 'border-green-400', 'bg' => 'bg-green-50/70', 'avatar' => 'bg-green-400'],
+            ['border' => 'border-rose-400', 'bg' => 'bg-rose-50/70', 'avatar' => 'bg-rose-400'],
+        ];
+        $gridCols = 'grid-cols-[40px_1.8fr_110px_1.5fr_140px_90px_90px_110px_140px_100px_130px]';
     @endphp
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             </span>
                             <div>
                                 <h3 class="text-xl font-bold text-white">{{ __('Student Training Progress') }}</h3>
-                                <p class="text-sm text-gray-400">{{ __('Every active enrollment and how far along it is') }}</p>
+                                <p class="text-sm text-blue-200">{{ __('Every active enrollment and how far along it is') }}</p>
                             </div>
                         </div>
-                        <span class="inline-flex items-center gap-2 rounded-full bg-amber-500/15 ring-1 ring-amber-400/30 px-4 py-2 text-sm font-semibold text-amber-400">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-bold text-white">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             {{ $enrollments->total() }} {{ __('Enrollments') }}
                         </span>
@@ -38,87 +44,68 @@
                 </div>
 
                 <div class="p-6 sm:p-8">
-                    <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
-                                        <th class="px-3 py-3">
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                                {{ __('Student') }}
+                    <div class="overflow-x-auto">
+                        <div class="w-full min-w-[1400px]">
+                            <div class="grid {{ $gridCols }} gap-4 rounded-t-lg bg-blue-950 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-blue-200">
+                                <span>#</span>
+                                <span>{{ __('Student') }}</span>
+                                <span>{{ __('Student ID') }}</span>
+                                <span>{{ __('Program') }}</span>
+                                <span>{{ __('Start Date') }}</span>
+                                <span>{{ __('Total Days') }}</span>
+                                <span>{{ __('Days Used') }}</span>
+                                <span>{{ __('Days Remaining') }}</span>
+                                <span>{{ __('Expected Completion') }}</span>
+                                <span>{{ __('Completion') }}</span>
+                                <span>{{ __('Status') }}</span>
+                            </div>
+
+                            <div class="space-y-2 pt-2">
+                                @forelse ($enrollments as $enrollment)
+                                    @php
+                                        $trainingProgressInitials = collect(explode(' ', $enrollment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                                        $rowAccent = $rowPalette[$loop->index % count($rowPalette)];
+                                        $rowNumber = $enrollments->firstItem() + $loop->index;
+                                        $label = $enrollment->trainingStatusLabel();
+                                    @endphp
+                                    <div class="grid {{ $gridCols }} gap-4 items-center rounded-lg border-l-4 {{ $rowAccent['border'] }} {{ $rowAccent['bg'] }} px-4 py-4">
+                                        <div class="text-sm font-semibold text-gray-400">{{ $rowNumber }}</div>
+                                        <div class="min-w-0">
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="group flex items-center gap-2.5">
+                                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white {{ $rowAccent['avatar'] }}">{{ $trainingProgressInitials }}</span>
+                                                <span class="truncate font-semibold text-gray-900 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
+                                            </a>
+                                        </div>
+                                        <div class="text-sm font-mono text-gray-600">{{ $enrollment->student->student_id_number }}</div>
+                                        <div class="min-w-0 text-sm text-gray-600">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }} / {{ $enrollment->course->totalTrainingDays() }} {{ __('Days') }})</div>
+                                        <div class="text-sm text-gray-600">{{ optional($enrollment->enrolled_at)->format('l, M j, Y') ?? '—' }}</div>
+                                        <div class="text-sm text-gray-600">{{ $enrollment->course->totalTrainingDays() }}</div>
+                                        <div class="text-sm text-gray-600">{{ $enrollment->attendedDays() }}</div>
+                                        <div class="text-sm text-gray-600">{{ $enrollment->remainingTrainingDays() }}</div>
+                                        <div class="text-sm text-gray-600">{{ optional($enrollment->expectedCompletionDate())->format('l, M j, Y') ?? '—' }}</div>
+                                        <div class="text-sm font-bold text-gray-900">{{ $enrollment->trainingCompletionPercentage() }}%</div>
+                                        <div>
+                                            <x-badge :color="match ($label) {
+                                                'Completed' => 'blue',
+                                                'Expired' => 'red',
+                                                default => 'green',
+                                            }">{{ __($label) }}</x-badge>
+                                            @if ($enrollment->status === 'locked')
+                                                <span class="block text-xs text-gray-500 mt-0.5">{{ $enrollment->lockedReasonLabel() }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="px-4 py-10 text-center">
+                                        <div class="flex flex-col items-center gap-2">
+                                            <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 text-gray-300">
+                                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $noSymbolIconPath }}" /></svg>
                                             </span>
-                                        </th>
-                                        <th class="px-3 py-3">{{ __('Student ID') }}</th>
-                                        <th class="px-3 py-3">
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
-                                                {{ __('Program') }}
-                                            </span>
-                                        </th>
-                                        <th class="px-3 py-3">
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                                {{ __('Start Date') }}
-                                            </span>
-                                        </th>
-                                        <th class="px-3 py-3">{{ __('Total Days') }}</th>
-                                        <th class="px-3 py-3">{{ __('Days Used') }}</th>
-                                        <th class="px-3 py-3">{{ __('Days Remaining') }}</th>
-                                        <th class="px-3 py-3">{{ __('Expected Completion') }}</th>
-                                        <th class="px-3 py-3">{{ __('Completion') }}</th>
-                                        <th class="px-3 py-3">
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
-                                                {{ __('Status') }}
-                                            </span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 bg-white">
-                                    @forelse ($enrollments as $enrollment)
-                                        @php $trainingProgressInitials = collect(explode(' ', $enrollment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
-                                        <tr class="hover:bg-amber-50/40 transition">
-                                            <td class="px-3 py-3 text-sm">
-                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="group flex items-center gap-2.5">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $trainingProgressInitials }}</span>
-                                                    <span class="font-semibold text-gray-800 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
-                                                </a>
-                                            </td>
-                                            <td class="px-3 py-3 text-sm font-mono text-gray-600">{{ $enrollment->student->student_id_number }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }} / {{ $enrollment->course->totalTrainingDays() }} {{ __('Days') }})</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrollment->enrolled_at)->format('l, M j, Y') ?? '—' }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->course->totalTrainingDays() }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->attendedDays() }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ $enrollment->remainingTrainingDays() }}</td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrollment->expectedCompletionDate())->format('l, M j, Y') ?? '—' }}</td>
-                                            <td class="px-3 py-3 text-sm font-semibold text-gray-900">{{ $enrollment->trainingCompletionPercentage() }}%</td>
-                                            <td class="px-3 py-3 text-sm">
-                                                @php($label = $enrollment->trainingStatusLabel())
-                                                <x-badge :color="match ($label) {
-                                                    'Completed' => 'blue',
-                                                    'Expired' => 'red',
-                                                    default => 'green',
-                                                }">{{ __($label) }}</x-badge>
-                                                @if ($enrollment->status === 'locked')
-                                                    <span class="block text-xs text-gray-500 mt-0.5">{{ $enrollment->lockedReasonLabel() }}</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="10" class="px-3 py-10 text-center">
-                                                <div class="flex flex-col items-center gap-2">
-                                                    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 text-gray-300">
-                                                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $noSymbolIconPath }}" /></svg>
-                                                    </span>
-                                                    <p class="text-sm text-gray-500">{{ __('No enrollments yet.') }}</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                            <p class="text-sm text-gray-500">{{ __('No enrollments yet.') }}</p>
+                                        </div>
+                                    </div>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
 
