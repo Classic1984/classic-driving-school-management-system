@@ -1490,7 +1490,7 @@
                         'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'text' => 'text-indigo-400'],
                     ];
                     $statusAccents = [
-                        'Active' => ['bar' => 'bg-amber-500', 'chip' => 'bg-amber-50 text-amber-700', 'dot' => 'bg-amber-500'],
+                        'Active' => ['bar' => 'bg-amber-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
                         'Completed' => ['bar' => 'bg-green-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
                         'Expired' => ['bar' => 'bg-red-500', 'chip' => 'bg-red-50 text-red-700', 'dot' => 'bg-red-500'],
                     ];
@@ -1691,21 +1691,31 @@
                     </x-modal>
                 @endforeach
 
+                @php
+                    $rowPalette = [
+                        ['border' => 'border-amber-400', 'bg' => 'bg-amber-50/70', 'avatar' => 'bg-amber-400'],
+                        ['border' => 'border-blue-400', 'bg' => 'bg-blue-50/70', 'avatar' => 'bg-blue-400'],
+                        ['border' => 'border-purple-400', 'bg' => 'bg-purple-50/70', 'avatar' => 'bg-purple-400'],
+                        ['border' => 'border-green-400', 'bg' => 'bg-green-50/70', 'avatar' => 'bg-green-400'],
+                        ['border' => 'border-rose-400', 'bg' => 'bg-rose-50/70', 'avatar' => 'bg-rose-400'],
+                    ];
+                    $trainingProgressReportPages = (int) ceil(max($trainingProgressTotalEnrollments, 1) / 20);
+                @endphp
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden mt-6">
-                    <div class="relative overflow-hidden bg-black p-6 sm:p-8">
-                        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+                    <div class="relative overflow-hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 p-6 sm:p-8">
+                        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
 
                         <div class="relative flex flex-wrap items-center justify-between gap-4">
                             <div class="flex items-center gap-4">
-                                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/30">
                                     <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
                                 </span>
                                 <div>
                                     <h4 class="text-xl font-bold text-white">{{ __('Training Overview') }}</h4>
-                                    <p class="text-sm text-gray-400">{{ __('Detailed progress of all students') }}</p>
+                                    <p class="text-sm text-blue-200">{{ __('Detailed progress of all students') }}</p>
                                 </div>
                             </div>
-                            <a href="{{ route('training-progress.index') }}" class="inline-flex items-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-amber-400 transition">
+                            <a href="{{ route('training-progress.index') }}" class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-rose-400 transition">
                                 {{ __('View All Students') }}
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                             </a>
@@ -1714,16 +1724,17 @@
 
                     <div class="p-6 sm:p-8">
                     <div class="overflow-x-auto">
-                        <div class="w-full min-w-[880px]">
-                            <div class="grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 rounded-t-lg bg-black px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-amber-400" role="row">
-                                <span class="[grid-area:1/1]">{{ __('Student') }}</span>
-                                <span class="[grid-area:1/2]">{{ __('Program') }}</span>
-                                <span class="[grid-area:1/3]">{{ __('Duration') }}</span>
-                                <span class="[grid-area:1/4]">{{ __('Overall Progress') }}</span>
-                                <span class="[grid-area:1/5]">{{ __('Status') }}</span>
-                                <span class="[grid-area:1/6]"></span>
+                        <div class="w-full min-w-[920px]">
+                            <div class="grid grid-cols-[40px_2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 rounded-t-lg bg-blue-950 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-blue-200" role="row">
+                                <span class="[grid-area:1/1]">#</span>
+                                <span class="[grid-area:1/2]">{{ __('Student') }}</span>
+                                <span class="[grid-area:1/3]">{{ __('Program') }}</span>
+                                <span class="[grid-area:1/4]">{{ __('Duration') }}</span>
+                                <span class="[grid-area:1/5]">{{ __('Overall Progress') }}</span>
+                                <span class="[grid-area:1/6]">{{ __('Status') }}</span>
+                                <span class="[grid-area:1/7]"></span>
                             </div>
-                            <div class="divide-y divide-gray-100 ring-1 ring-t-0 ring-gray-200 rounded-b-lg overflow-hidden">
+                            <div class="space-y-2 pt-2">
                                 @foreach ($trainingProgress as $enrollment)
                                     @php
                                         $label = $enrollment->trainingStatusLabel();
@@ -1733,40 +1744,45 @@
                                         $experienceLabel = is_null($enrollment->student->has_driving_experience) ? null : ($enrollment->student->has_driving_experience ? __('Partial Experience') : __('Non-Experience'));
                                         $transmissionLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Auto & Manual'];
                                         $transmissionLabel = $transmissionLabels[$enrollment->course->course_type] ?? null;
+                                        $rowAccent = $rowPalette[$loop->index % count($rowPalette)];
                                     @endphp
                                     <a
                                         href="{{ route('students.show', $enrollment->student_id) }}"
-                                        class="group grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 items-center px-4 py-4 bg-white hover:bg-amber-50 transition"
+                                        class="group grid grid-cols-[40px_2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 items-center rounded-lg border-l-4 {{ $rowAccent['border'] }} {{ $rowAccent['bg'] }} px-4 py-4 transition hover:brightness-95"
                                         role="row"
                                     >
-                                        <div class="[grid-area:1/1] flex items-center gap-3 min-w-0">
-                                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold bg-amber-100 text-amber-800">{{ $initials }}</span>
+                                        <div class="[grid-area:1/1] text-sm font-semibold text-gray-400">{{ $loop->iteration }}</div>
+                                        <div class="[grid-area:1/2] flex items-center gap-3 min-w-0">
+                                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white {{ $rowAccent['avatar'] }}">{{ $initials }}</span>
                                             <span class="truncate font-semibold text-gray-900 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
+                                            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/70 text-gray-400">
+                                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                            </span>
                                         </div>
-                                        <div class="[grid-area:1/2] min-w-0 text-sm">
+                                        <div class="[grid-area:1/3] min-w-0 text-sm">
                                             <p class="font-semibold text-gray-900">{{ $experienceLabel ?? $enrollment->course->name }}</p>
                                             @if ($transmissionLabel)
                                                 <p class="text-gray-500">{{ $transmissionLabel }}</p>
                                             @endif
                                         </div>
-                                        <div class="[grid-area:1/3] flex items-center gap-1.5 text-sm text-gray-600">
+                                        <div class="[grid-area:1/4] flex items-center gap-1.5 text-sm text-gray-600">
                                             <svg class="h-4 w-4 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                             {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}
                                         </div>
-                                        <div class="[grid-area:1/4]">
-                                            <p class="text-sm font-bold {{ $accent['dot'] === 'bg-red-500' ? 'text-red-600' : ($accent['dot'] === 'bg-green-500' ? 'text-green-600' : 'text-amber-600') }}">{{ $percent }}%</p>
-                                            <div class="mt-1 h-1.5 w-full max-w-[8rem] overflow-hidden rounded-full bg-gray-100">
+                                        <div class="[grid-area:1/5]">
+                                            <p class="text-sm font-bold text-gray-900">{{ $percent }}%</p>
+                                            <div class="mt-1 h-1.5 w-full max-w-[8rem] overflow-hidden rounded-full bg-gray-200">
                                                 <div class="h-full rounded-full {{ $accent['bar'] }}" style="width: {{ $percent }}%"></div>
                                             </div>
                                         </div>
-                                        <div class="[grid-area:1/5]">
+                                        <div class="[grid-area:1/6]">
                                             <span class="inline-flex items-center gap-1.5 rounded-full {{ $accent['chip'] }} px-3 py-1 text-xs font-semibold">
                                                 <span class="h-1.5 w-1.5 rounded-full {{ $accent['dot'] }}"></span>
                                                 {{ __($label) }}
                                             </span>
                                         </div>
-                                        <div class="[grid-area:1/6] flex justify-end">
-                                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
+                                        <div class="[grid-area:1/7] flex justify-end">
+                                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/70 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                             </span>
                                         </div>
@@ -1774,6 +1790,29 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+                        <p class="text-sm text-gray-500">
+                            {{ __('Showing 1 - :count of :total students', ['count' => $trainingProgress->count(), 'total' => number_format($trainingProgressTotalEnrollments)]) }}
+                        </p>
+                        @if ($trainingProgressReportPages > 1)
+                            <nav class="flex items-center gap-1.5">
+                                <a href="{{ route('training-progress.index') }}" class="flex h-8 w-8 items-center justify-center rounded-full ring-1 ring-gray-300 text-gray-400 hover:bg-gray-50 transition">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                                </a>
+                                @for ($page = 1; $page <= min($trainingProgressReportPages, 5); $page++)
+                                    @if ($page === 1)
+                                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-blue-950 text-sm font-bold text-white">1</span>
+                                    @else
+                                        <a href="{{ route('training-progress.index', ['page' => $page]) }}" class="flex h-8 w-8 items-center justify-center rounded-full ring-1 ring-gray-300 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">{{ $page }}</a>
+                                    @endif
+                                @endfor
+                                <a href="{{ route('training-progress.index', ['page' => 2]) }}" class="flex h-8 w-8 items-center justify-center rounded-full ring-1 ring-gray-300 text-gray-400 hover:bg-gray-50 transition">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                                </a>
+                            </nav>
+                        @endif
                     </div>
                     </div>
                 </div>
