@@ -1489,7 +1489,6 @@
                         'pink' => ['icon' => 'bg-pink-500/10 text-pink-400', 'text' => 'text-pink-400'],
                         'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'text' => 'text-indigo-400'],
                     ];
-                    $avatarColors = ['bg-amber-100 text-amber-800', 'bg-blue-100 text-blue-800', 'bg-purple-100 text-purple-800', 'bg-green-100 text-green-800', 'bg-rose-100 text-rose-800'];
                     $statusAccents = [
                         'Active' => ['bar' => 'bg-amber-500', 'chip' => 'bg-amber-50 text-amber-700', 'dot' => 'bg-amber-500'],
                         'Completed' => ['bar' => 'bg-green-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
@@ -1731,7 +1730,6 @@
                                         $percent = $enrollment->trainingCompletionPercentage();
                                         $accent = $statusAccents[$label] ?? $statusAccents['Active'];
                                         $initials = collect(explode(' ', $enrollment->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
-                                        $avatarColor = $avatarColors[$loop->index % count($avatarColors)];
                                         $experienceLabel = is_null($enrollment->student->has_driving_experience) ? null : ($enrollment->student->has_driving_experience ? __('Partial Experience') : __('Non-Experience'));
                                         $transmissionLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Auto & Manual'];
                                         $transmissionLabel = $transmissionLabels[$enrollment->course->course_type] ?? null;
@@ -1742,7 +1740,7 @@
                                         role="row"
                                     >
                                         <div class="[grid-area:1/1] flex items-center gap-3 min-w-0">
-                                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold {{ $avatarColor }}">{{ $initials }}</span>
+                                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold bg-amber-100 text-amber-800">{{ $initials }}</span>
                                             <span class="truncate font-semibold text-gray-900 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
                                         </div>
                                         <div class="[grid-area:1/2] min-w-0 text-sm">
