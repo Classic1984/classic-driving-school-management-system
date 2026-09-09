@@ -1692,26 +1692,31 @@
                     </x-modal>
                 @endforeach
 
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6">
-                    <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                        <div class="flex items-center gap-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
-                            </span>
-                            <div>
-                                <h4 class="text-lg font-bold text-gray-900">{{ __('Training Overview') }}</h4>
-                                <p class="text-sm text-gray-500">{{ __('Detailed progress of all students') }}</p>
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden mt-6">
+                    <div class="relative overflow-hidden bg-black p-6 sm:p-8">
+                        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+
+                        <div class="relative flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex items-center gap-4">
+                                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                                    <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+                                </span>
+                                <div>
+                                    <h4 class="text-xl font-bold text-white">{{ __('Training Overview') }}</h4>
+                                    <p class="text-sm text-gray-400">{{ __('Detailed progress of all students') }}</p>
+                                </div>
                             </div>
+                            <a href="{{ route('training-progress.index') }}" class="inline-flex items-center gap-2 rounded-full bg-amber-500 px-5 py-2.5 text-sm font-bold text-black hover:bg-amber-400 transition">
+                                {{ __('View All Students') }}
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
+                            </a>
                         </div>
-                        <a href="{{ route('training-progress.index') }}" class="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-bold text-amber-400 hover:bg-gray-800 transition">
-                            {{ __('View All Students') }}
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
-                        </a>
                     </div>
 
+                    <div class="p-6 sm:p-8">
                     <div class="overflow-x-auto">
                         <div class="w-full min-w-[880px]">
-                            <div class="grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 rounded-t-lg bg-gray-50 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-gray-500" role="row">
+                            <div class="grid grid-cols-[2.4fr_1.5fr_110px_1.5fr_130px_40px] gap-4 rounded-t-lg bg-black px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-amber-400" role="row">
                                 <span class="[grid-area:1/1]">{{ __('Student') }}</span>
                                 <span class="[grid-area:1/2]">{{ __('Program') }}</span>
                                 <span class="[grid-area:1/3]">{{ __('Duration') }}</span>
@@ -1771,6 +1776,7 @@
                                 @endforeach
                             </div>
                         </div>
+                    </div>
                     </div>
                 </div>
             @endif
