@@ -79,10 +79,22 @@ class CorporatePaymentTest extends TestCase
         ]);
 
         $payment = CorporatePayment::first();
-        $this->assertSame(
-            'REC-2026-'.str_pad((string) $payment->id, 5, '0', STR_PAD_LEFT),
-            $payment->receipt_number
-        );
+        $this->assertSame('REC-2026-00001', $payment->receipt_number);
+    }
+
+    public function test_receipt_numbers_increment_within_a_year_and_reset_the_next(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 300000, 'sort_order' => 0]);
+
+        $first = $invoice->payments()->create(['amount' => 50000, 'payment_method' => 'cash', 'payment_date' => '2026-03-01', 'recorded_by' => $director->id]);
+        $second = $invoice->payments()->create(['amount' => 50000, 'payment_method' => 'cash', 'payment_date' => '2026-06-01', 'recorded_by' => $director->id]);
+        $thirdYear = $invoice->payments()->create(['amount' => 50000, 'payment_method' => 'cash', 'payment_date' => '2027-01-01', 'recorded_by' => $director->id]);
+
+        $this->assertSame('REC-2026-00001', $first->receipt_number);
+        $this->assertSame('REC-2026-00002', $second->receipt_number);
+        $this->assertSame('REC-2027-00001', $thirdYear->receipt_number);
     }
 
     public function test_the_record_payment_button_is_hidden_once_an_invoice_is_paid(): void

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -35,6 +36,21 @@ class CorporateInvoiceSetting extends Model
         'payment_terms',
         'updated_by',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'quotation_numbering_year' => 'integer',
+            'quotation_numbering_sequence' => 'integer',
+            'invoice_numbering_year' => 'integer',
+            'invoice_numbering_sequence' => 'integer',
+            'receipt_numbering_year' => 'integer',
+            'receipt_numbering_sequence' => 'integer',
+        ];
+    }
 
     /**
      * payment_terms is stored as one bullet per line - split into a clean
@@ -93,5 +109,31 @@ class CorporateInvoiceSetting extends Model
             'quotation_prefix' => 'QUO',
             'receipt_prefix' => 'REC',
         ]);
+    }
+
+    /**
+     * The next number in a document type's per-year sequence (1, 2, 3...
+     * for quotations issued in 2026, starting back at 1 for 2027), so
+     * printed numbers read INV-2026-00001, INV-2027-00001 rather than
+     * counting up forever across years. Locks the settings row for the
+     * duration of the transaction so two documents created back-to-back
+     * can never be handed the same number.
+     */
+    public static function nextSequence(string $type, int $year): int
+    {
+        static::current();
+
+        return DB::transaction(function () use ($type, $year) {
+            $settings = static::query()->lockForUpdate()->firstOrFail();
+
+            $yearColumn = "{$type}_numbering_year";
+            $sequenceColumn = "{$type}_numbering_sequence";
+
+            $sequence = $settings->{$yearColumn} === $year ? $settings->{$sequenceColumn} + 1 : 1;
+
+            $settings->forceFill([$yearColumn => $year, $sequenceColumn => $sequence])->save();
+
+            return $sequence;
+        });
     }
 }

@@ -104,6 +104,24 @@ class CorporateInvoiceSettingTest extends TestCase
         $this->assertNull(CorporateInvoiceSetting::current()->signatureDataUri());
     }
 
+    public function test_next_sequence_increments_within_a_year_and_resets_the_next(): void
+    {
+        $this->assertSame(1, CorporateInvoiceSetting::nextSequence('invoice', 2026));
+        $this->assertSame(2, CorporateInvoiceSetting::nextSequence('invoice', 2026));
+        $this->assertSame(3, CorporateInvoiceSetting::nextSequence('invoice', 2026));
+        $this->assertSame(1, CorporateInvoiceSetting::nextSequence('invoice', 2027));
+        $this->assertSame(2, CorporateInvoiceSetting::nextSequence('invoice', 2027));
+    }
+
+    public function test_next_sequence_is_tracked_independently_per_document_type(): void
+    {
+        $this->assertSame(1, CorporateInvoiceSetting::nextSequence('invoice', 2026));
+        $this->assertSame(2, CorporateInvoiceSetting::nextSequence('invoice', 2026));
+        $this->assertSame(1, CorporateInvoiceSetting::nextSequence('quotation', 2026));
+        $this->assertSame(1, CorporateInvoiceSetting::nextSequence('receipt', 2026));
+        $this->assertSame(3, CorporateInvoiceSetting::nextSequence('invoice', 2026));
+    }
+
     public function test_signature_data_uri_embeds_the_uploaded_image(): void
     {
         Storage::fake('public');

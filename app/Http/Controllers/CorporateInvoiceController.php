@@ -83,7 +83,21 @@ class CorporateInvoiceController extends Controller
         $corporateInvoice->load(['company', 'items', 'payments']);
         $settings = CorporateInvoiceSetting::current();
 
-        return view('corporate.invoices.show', ['invoice' => $corporateInvoice, 'settings' => $settings]);
+        // ActivityLog has no polymorphic link back to the record it
+        // describes - every entry is just a human-readable sentence - so
+        // matching on the invoice number is the only way to pull this
+        // invoice's own history out of the shared log. The number is a
+        // fixed-width zero-padded suffix, so it can't accidentally match
+        // a different invoice's number as a substring.
+        // Ordered newest-first by id, not just created_at - two entries
+        // logged in the same request cycle can share an identical
+        // second-precision timestamp, which would otherwise leave their
+        // relative order undefined.
+        $activityLogs = ActivityLog::where('description', 'like', "%{$corporateInvoice->invoice_number}%")
+            ->orderByDesc('id')
+            ->get();
+
+        return view('corporate.invoices.show', ['invoice' => $corporateInvoice, 'settings' => $settings, 'activityLogs' => $activityLogs]);
     }
 
     /**

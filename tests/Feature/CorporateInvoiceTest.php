@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\CorporateInvoiceMail;
+use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
@@ -62,10 +63,20 @@ class CorporateInvoiceTest extends TestCase
         $this->actingAs($director)->post('/corporate-invoices', $this->validInvoicePayload());
         $invoice = CorporateInvoice::first();
 
-        $this->assertSame(
-            'INV-'.$invoice->invoice_date->format('Y').'-'.str_pad((string) $invoice->id, 5, '0', STR_PAD_LEFT),
-            $invoice->invoice_number
-        );
+        $this->assertSame('INV-'.$invoice->invoice_date->format('Y').'-00001', $invoice->invoice_number);
+    }
+
+    public function test_invoice_numbers_increment_within_a_year_and_reset_the_next(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $first = CorporateInvoice::factory()->create(['invoice_date' => '2026-03-01']);
+        $second = CorporateInvoice::factory()->create(['invoice_date' => '2026-06-01']);
+        $thirdYear = CorporateInvoice::factory()->create(['invoice_date' => '2027-01-01']);
+
+        $this->assertSame('INV-2026-00001', $first->invoice_number);
+        $this->assertSame('INV-2026-00002', $second->invoice_number);
+        $this->assertSame('INV-2027-00001', $thirdYear->invoice_number);
     }
 
     public function test_the_invoice_document_shows_the_company_items_and_total_in_words(): void
@@ -395,6 +406,48 @@ class CorporateInvoiceTest extends TestCase
         $response->assertRedirect(route('corporate-invoices.show', $invoice));
         $this->assertSame('invoice-has-payments', session('status'));
         $this->assertDatabaseHas('corporate_invoices', ['id' => $invoice->id]);
+    }
+
+    public function test_the_invoice_page_shows_its_own_activity_timeline(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+
+        $response = $this->actingAs($director)->post('/corporate-invoices', [
+            'corporate_company_id' => $company->id,
+            'invoice_date' => '2026-09-09',
+            'due_date' => '2026-09-16',
+            'items' => [
+                ['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000],
+            ],
+        ]);
+        $invoice = CorporateInvoice::first();
+        $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/send");
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}");
+
+        $response->assertOk();
+        $response->assertSeeInOrder([
+            "Sent corporate invoice {$invoice->invoice_number}",
+            "Created corporate invoice {$invoice->invoice_number}",
+        ]);
+    }
+
+    public function test_the_invoice_activity_timeline_does_not_leak_another_invoices_entries(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoiceOne = CorporateInvoice::factory()->create();
+        $invoiceOne->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+        $invoiceTwo = CorporateInvoice::factory()->create();
+        $invoiceTwo->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+        ActivityLog::record("Created corporate invoice {$invoiceOne->invoice_number} for a company");
+        ActivityLog::record("Created corporate invoice {$invoiceTwo->invoice_number} for a company");
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoiceOne->id}");
+
+        $response->assertOk();
+        $response->assertSee($invoiceOne->invoice_number);
+        $response->assertDontSee("Created corporate invoice {$invoiceTwo->invoice_number}");
     }
 
     /**

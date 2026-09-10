@@ -53,10 +53,18 @@ class CorporateQuotationTest extends TestCase
         $this->actingAs($director)->post('/corporate-quotations', $this->validPayload());
         $quotation = CorporateQuotation::first();
 
-        $this->assertSame(
-            'QUO-'.$quotation->issue_date->format('Y').'-'.str_pad((string) $quotation->id, 5, '0', STR_PAD_LEFT),
-            $quotation->quotation_number
-        );
+        $this->assertSame('QUO-'.$quotation->issue_date->format('Y').'-00001', $quotation->quotation_number);
+    }
+
+    public function test_quotation_numbers_increment_within_a_year_and_reset_the_next(): void
+    {
+        $first = CorporateQuotation::factory()->create(['issue_date' => '2026-03-01']);
+        $second = CorporateQuotation::factory()->create(['issue_date' => '2026-06-01']);
+        $thirdYear = CorporateQuotation::factory()->create(['issue_date' => '2027-01-01']);
+
+        $this->assertSame('QUO-2026-00001', $first->quotation_number);
+        $this->assertSame('QUO-2026-00002', $second->quotation_number);
+        $this->assertSame('QUO-2027-00001', $thirdYear->quotation_number);
     }
 
     public function test_a_director_can_mark_a_quotation_as_sent(): void
@@ -254,6 +262,37 @@ class CorporateQuotationTest extends TestCase
         $response->assertRedirect(route('corporate-quotations.show', $quotation));
         $this->assertSame('quotation-already-converted-cannot-delete', session('status'));
         $this->assertDatabaseHas('corporate_quotations', ['id' => $quotation->id]);
+    }
+
+    public function test_the_quotation_page_shows_its_own_activity_timeline(): void
+    {
+        $director = User::factory()->director()->create();
+        $this->actingAs($director)->post('/corporate-quotations', $this->validPayload());
+        $quotation = CorporateQuotation::first();
+        $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/send");
+
+        $response = $this->actingAs($director)->get("/corporate-quotations/{$quotation->id}");
+
+        $response->assertOk();
+        $response->assertSeeInOrder([
+            "Sent corporate quotation {$quotation->quotation_number}",
+            "Created corporate quotation {$quotation->quotation_number}",
+        ]);
+    }
+
+    public function test_converting_a_quotation_shows_up_in_both_the_quotation_and_invoice_timelines(): void
+    {
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/convert");
+        $invoice = CorporateInvoice::first();
+
+        $expected = "Converted corporate quotation {$quotation->quotation_number} to invoice {$invoice->invoice_number}";
+
+        $this->actingAs($director)->get("/corporate-quotations/{$quotation->id}")->assertSee($expected);
+        $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}")->assertSee($expected);
     }
 
     /**

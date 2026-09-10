@@ -82,7 +82,15 @@ class CorporateQuotationController extends Controller
     {
         $corporateQuotation->load(['company', 'items', 'convertedInvoice']);
 
-        return view('corporate.quotations.show', ['quotation' => $corporateQuotation]);
+        // See the matching comment in CorporateInvoiceController::show() -
+        // ActivityLog entries are matched by number (not a foreign key),
+        // ordered by id rather than created_at so same-second entries
+        // still come out newest-first.
+        $activityLogs = ActivityLog::where('description', 'like', "%{$corporateQuotation->quotation_number}%")
+            ->orderByDesc('id')
+            ->get();
+
+        return view('corporate.quotations.show', ['quotation' => $corporateQuotation, 'activityLogs' => $activityLogs]);
     }
 
     /**

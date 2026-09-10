@@ -203,22 +203,21 @@ class CorporateInvoice extends Model
 
     /**
      * invoice_number is deliberately not fillable: it's a permanent,
-     * system-assigned identifier derived from the row's own auto-increment
-     * id, in the form {prefix}-{invoice year}-{00001} - same two-phase
-     * approach as Certificate::certificate_number.
+     * system-assigned identifier in the form {prefix}-{invoice year}-
+     * {00001}, using the same two-phase creating-then-created approach as
+     * Certificate::certificate_number, but the sequence itself resets
+     * every year (see CorporateInvoiceSetting::nextSequence()) rather than
+     * counting up forever against the row's own auto-increment id.
      */
     protected static function booted(): void
     {
         static::created(function (CorporateInvoice $invoice) {
             $prefix = CorporateInvoiceSetting::current()->invoice_prefix ?: 'INV';
+            $year = (int) $invoice->invoice_date->format('Y');
+            $sequence = CorporateInvoiceSetting::nextSequence('invoice', $year);
 
             $invoice->forceFill([
-                'invoice_number' => sprintf(
-                    '%s-%s-%s',
-                    $prefix,
-                    $invoice->invoice_date->format('Y'),
-                    str_pad((string) $invoice->id, 5, '0', STR_PAD_LEFT)
-                ),
+                'invoice_number' => sprintf('%s-%d-%05d', $prefix, $year, $sequence),
             ])->save();
         });
     }
