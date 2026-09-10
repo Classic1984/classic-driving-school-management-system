@@ -63,10 +63,20 @@ class CorporateInvoiceTest extends TestCase
         $this->actingAs($director)->post('/corporate-invoices', $this->validInvoicePayload());
         $invoice = CorporateInvoice::first();
 
-        $this->assertSame(
-            'INV-'.$invoice->invoice_date->format('Y').'-'.str_pad((string) $invoice->id, 5, '0', STR_PAD_LEFT),
-            $invoice->invoice_number
-        );
+        $this->assertSame('INV-'.$invoice->invoice_date->format('Y').'-00001', $invoice->invoice_number);
+    }
+
+    public function test_invoice_numbers_increment_within_a_year_and_reset_the_next(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $first = CorporateInvoice::factory()->create(['invoice_date' => '2026-03-01']);
+        $second = CorporateInvoice::factory()->create(['invoice_date' => '2026-06-01']);
+        $thirdYear = CorporateInvoice::factory()->create(['invoice_date' => '2027-01-01']);
+
+        $this->assertSame('INV-2026-00001', $first->invoice_number);
+        $this->assertSame('INV-2026-00002', $second->invoice_number);
+        $this->assertSame('INV-2027-00001', $thirdYear->invoice_number);
     }
 
     public function test_the_invoice_document_shows_the_company_items_and_total_in_words(): void

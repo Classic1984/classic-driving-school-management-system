@@ -53,10 +53,18 @@ class CorporateQuotationTest extends TestCase
         $this->actingAs($director)->post('/corporate-quotations', $this->validPayload());
         $quotation = CorporateQuotation::first();
 
-        $this->assertSame(
-            'QUO-'.$quotation->issue_date->format('Y').'-'.str_pad((string) $quotation->id, 5, '0', STR_PAD_LEFT),
-            $quotation->quotation_number
-        );
+        $this->assertSame('QUO-'.$quotation->issue_date->format('Y').'-00001', $quotation->quotation_number);
+    }
+
+    public function test_quotation_numbers_increment_within_a_year_and_reset_the_next(): void
+    {
+        $first = CorporateQuotation::factory()->create(['issue_date' => '2026-03-01']);
+        $second = CorporateQuotation::factory()->create(['issue_date' => '2026-06-01']);
+        $thirdYear = CorporateQuotation::factory()->create(['issue_date' => '2027-01-01']);
+
+        $this->assertSame('QUO-2026-00001', $first->quotation_number);
+        $this->assertSame('QUO-2026-00002', $second->quotation_number);
+        $this->assertSame('QUO-2027-00001', $thirdYear->quotation_number);
     }
 
     public function test_a_director_can_mark_a_quotation_as_sent(): void

@@ -110,22 +110,21 @@ class CorporateQuotation extends Model
 
     /**
      * quotation_number is deliberately not fillable: it's a permanent,
-     * system-assigned identifier derived from the row's own auto-increment
-     * id, in the form {prefix}-{issue year}-{00001} - same two-phase
-     * approach as Certificate::certificate_number.
+     * system-assigned identifier in the form {prefix}-{issue year}-
+     * {00001}, using the same two-phase creating-then-created approach as
+     * Certificate::certificate_number, but the sequence itself resets
+     * every year (see CorporateInvoiceSetting::nextSequence()) rather than
+     * counting up forever against the row's own auto-increment id.
      */
     protected static function booted(): void
     {
         static::created(function (CorporateQuotation $quotation) {
             $prefix = CorporateInvoiceSetting::current()->quotation_prefix ?: 'QUO';
+            $year = (int) $quotation->issue_date->format('Y');
+            $sequence = CorporateInvoiceSetting::nextSequence('quotation', $year);
 
             $quotation->forceFill([
-                'quotation_number' => sprintf(
-                    '%s-%s-%s',
-                    $prefix,
-                    $quotation->issue_date->format('Y'),
-                    str_pad((string) $quotation->id, 5, '0', STR_PAD_LEFT)
-                ),
+                'quotation_number' => sprintf('%s-%d-%05d', $prefix, $year, $sequence),
             ])->save();
         });
     }
