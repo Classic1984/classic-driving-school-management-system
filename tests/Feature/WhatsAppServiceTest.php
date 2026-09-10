@@ -86,4 +86,41 @@ class WhatsAppServiceTest extends TestCase
 
         $this->assertFalse($result);
     }
+
+    public function test_send_document_sends_a_freeform_message_with_a_media_url(): void
+    {
+        $this->fakeTwilioConfig();
+        Http::fake(['api.twilio.com/*' => Http::response(['sid' => 'SM123'], 201)]);
+
+        $result = (new WhatsAppService)->sendDocument('08031234567', 'https://example.com/invoice.pdf', 'Invoice INV-2026-00001');
+
+        $this->assertTrue($result);
+        Http::assertSent(function ($request) {
+            return $request['To'] === 'whatsapp:+2348031234567'
+                && $request['MediaUrl'] === 'https://example.com/invoice.pdf'
+                && $request['Body'] === 'Invoice INV-2026-00001';
+        });
+    }
+
+    public function test_send_document_does_nothing_when_twilio_is_not_configured(): void
+    {
+        config(['services.twilio.account_sid' => null]);
+        Http::fake();
+
+        $result = (new WhatsAppService)->sendDocument('08031234567', 'https://example.com/invoice.pdf', 'Invoice INV-2026-00001');
+
+        $this->assertFalse($result);
+        Http::assertNothingSent();
+    }
+
+    public function test_send_document_returns_false_when_the_phone_number_is_blank(): void
+    {
+        $this->fakeTwilioConfig();
+        Http::fake();
+
+        $result = (new WhatsAppService)->sendDocument(null, 'https://example.com/invoice.pdf', 'Invoice INV-2026-00001');
+
+        $this->assertFalse($result);
+        Http::assertNothingSent();
+    }
 }

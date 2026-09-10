@@ -8,7 +8,9 @@ use App\Models\CorporateInvoice;
 use App\Models\CorporateQuotation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CorporateQuotationTest extends TestCase
@@ -157,6 +159,42 @@ class CorporateQuotationTest extends TestCase
             ->assertSessionHasErrors('recipient_email');
 
         Mail::assertNothingSent();
+    }
+
+    public function test_a_director_can_send_the_quotation_via_whatsapp(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake(['api.twilio.com/*' => Http::response(['sid' => 'SM123'], 201)]);
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['phone' => '08031234567']);
+        $quotation = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id]);
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/whatsapp");
+
+        $response->assertRedirect(route('corporate-quotations.show', $quotation));
+        $this->assertSame('quotation-whatsapp-sent', session('status'));
+        Http::assertSent(fn ($request) => $request['To'] === 'whatsapp:+2348031234567');
+    }
+
+    public function test_sending_the_quotation_via_whatsapp_fails_gracefully_when_twilio_is_not_configured(): void
+    {
+        Storage::fake('public');
+        Http::fake();
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/whatsapp");
+
+        $response->assertRedirect(route('corporate-quotations.show', $quotation));
+        $this->assertSame('quotation-whatsapp-failed', session('status'));
+        Http::assertNothingSent();
     }
 
     /**

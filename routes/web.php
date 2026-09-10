@@ -213,15 +213,18 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::post('corporate-invoices/{corporateInvoice}/cancel', [CorporateInvoiceController::class, 'cancel'])->name('corporate-invoices.cancel');
         Route::get('corporate-invoices/{corporateInvoice}/pdf', [CorporateInvoiceController::class, 'pdf'])->name('corporate-invoices.pdf');
         Route::post('corporate-invoices/{corporateInvoice}/email', [CorporateInvoiceController::class, 'email'])->name('corporate-invoices.email');
+        Route::post('corporate-invoices/{corporateInvoice}/whatsapp', [CorporateInvoiceController::class, 'whatsapp'])->name('corporate-invoices.whatsapp');
         Route::post('corporate-invoices/{corporateInvoice}/payments', [CorporatePaymentController::class, 'store'])->name('corporate-invoices.payments.store');
         Route::get('corporate-payments/{corporatePayment}/receipt', [CorporatePaymentController::class, 'receipt'])->name('corporate-payments.receipt');
         Route::get('corporate-payments/{corporatePayment}/receipt/pdf', [CorporatePaymentController::class, 'receiptPdf'])->name('corporate-payments.receipt.pdf');
         Route::post('corporate-payments/{corporatePayment}/receipt/email', [CorporatePaymentController::class, 'receiptEmail'])->name('corporate-payments.receipt.email');
+        Route::post('corporate-payments/{corporatePayment}/receipt/whatsapp', [CorporatePaymentController::class, 'receiptWhatsapp'])->name('corporate-payments.receipt.whatsapp');
         Route::resource('corporate-quotations', CorporateQuotationController::class)->only(['index', 'create', 'store', 'show']);
         Route::post('corporate-quotations/{corporateQuotation}/send', [CorporateQuotationController::class, 'send'])->name('corporate-quotations.send');
         Route::post('corporate-quotations/{corporateQuotation}/convert', [CorporateQuotationController::class, 'convert'])->name('corporate-quotations.convert');
         Route::get('corporate-quotations/{corporateQuotation}/pdf', [CorporateQuotationController::class, 'pdf'])->name('corporate-quotations.pdf');
         Route::post('corporate-quotations/{corporateQuotation}/email', [CorporateQuotationController::class, 'email'])->name('corporate-quotations.email');
+        Route::post('corporate-quotations/{corporateQuotation}/whatsapp', [CorporateQuotationController::class, 'whatsapp'])->name('corporate-quotations.whatsapp');
     });
 
     Route::resource('leads', LeadController::class)->except(['show']);
