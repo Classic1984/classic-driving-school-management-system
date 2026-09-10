@@ -90,6 +90,19 @@ class WhatsAppService
     }
 
     /**
+     * Whether Twilio's WhatsApp credentials are present, so callers can
+     * tell an unconfigured integration apart from a send that failed for
+     * some other reason (bad number, Twilio rejection) and give the
+     * director a more useful message than a generic failure.
+     */
+    public function isConfigured(): bool
+    {
+        return (bool) (config('services.twilio.account_sid')
+            && config('services.twilio.auth_token')
+            && config('services.twilio.whatsapp_from'));
+    }
+
+    /**
      * Normalize a Nigerian phone number to E.164 digits (234XXXXXXXXXX,
      * no leading "+" or "0") - the "+" is added when building the "To"
      * value since Twilio expects "whatsapp:+234...".

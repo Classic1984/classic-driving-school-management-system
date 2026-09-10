@@ -86,6 +86,27 @@ class CorporateQuotationController extends Controller
     }
 
     /**
+     * Delete the quotation. Blocked once it's been converted to an
+     * invoice - the invoice would otherwise be left referencing a
+     * quotation that no longer exists.
+     */
+    public function destroy(CorporateQuotation $corporateQuotation): RedirectResponse
+    {
+        if ($corporateQuotation->status === 'converted') {
+            return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-already-converted-cannot-delete');
+        }
+
+        $number = $corporateQuotation->quotation_number;
+        $companyId = $corporateQuotation->corporate_company_id;
+        $companyName = $corporateQuotation->company->name;
+        $corporateQuotation->delete();
+
+        ActivityLog::record("Deleted corporate quotation {$number} for {$companyName}");
+
+        return Redirect::route('corporate-companies.show', $companyId)->with('status', 'quotation-deleted');
+    }
+
+    /**
      * Mark the quotation as sent to the company.
      */
     public function send(Request $request, CorporateQuotation $corporateQuotation): RedirectResponse
@@ -187,6 +208,14 @@ class CorporateQuotationController extends Controller
     public function whatsapp(WhatsAppService $whatsapp, CorporateQuotation $corporateQuotation): RedirectResponse
     {
         $corporateQuotation->load(['company', 'items']);
+
+        if (! $whatsapp->isConfigured()) {
+            return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-whatsapp-not-configured');
+        }
+
+        if (! $corporateQuotation->company->phone) {
+            return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-whatsapp-no-phone');
+        }
 
         $path = "corporate/quotations/{$corporateQuotation->quotation_number}-".Str::random(40).'.pdf';
         Storage::disk('public')->put($path, $this->buildPdf($corporateQuotation)->output());

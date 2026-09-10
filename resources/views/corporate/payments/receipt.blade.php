@@ -50,8 +50,16 @@
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Receipt emailed successfully.') }}</p>
             @elseif (session('status') === 'receipt-whatsapp-sent')
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Receipt sent via WhatsApp.') }}</p>
+            @elseif (session('status') === 'receipt-whatsapp-not-configured')
+                <p class="print-hidden text-sm font-medium text-red-600">{{ __('WhatsApp sending isn\'t set up yet. Ask your developer to add the Twilio WhatsApp credentials.') }}</p>
+            @elseif (session('status') === 'receipt-whatsapp-no-phone')
+                <p class="print-hidden text-sm font-medium text-red-600">
+                    {{ __('This company has no phone number on file.') }}
+                    <a href="{{ route('corporate-companies.edit', $payment->invoice->corporate_company_id) }}" class="underline hover:no-underline">{{ __('Add one') }}</a>
+                    {{ __('and try again.') }}
+                </p>
             @elseif (session('status') === 'receipt-whatsapp-failed')
-                <p class="print-hidden text-sm font-medium text-red-600">{{ __('Could not send the receipt via WhatsApp. Check the company phone number and WhatsApp settings.') }}</p>
+                <p class="print-hidden text-sm font-medium text-red-600">{{ __('WhatsApp could not deliver this message. Double-check the phone number is correct and on WhatsApp.') }}</p>
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">

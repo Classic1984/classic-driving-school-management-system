@@ -17,6 +17,12 @@
 
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if (session('status') === 'invoice-deleted')
+                <p class="text-sm font-medium text-green-600">{{ __('Invoice deleted successfully.') }}</p>
+            @elseif (session('status') === 'quotation-deleted')
+                <p class="text-sm font-medium text-green-600">{{ __('Quotation deleted successfully.') }}</p>
+            @endif
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="relative overflow-hidden bg-black p-6 sm:p-8">
                     <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>

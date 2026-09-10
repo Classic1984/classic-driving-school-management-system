@@ -87,6 +87,28 @@ class CorporateInvoiceController extends Controller
     }
 
     /**
+     * Delete the invoice. Blocked once a payment has been recorded
+     * against it - deleting would silently destroy that payment history
+     * (items and payments cascade-delete with the invoice), so a paid or
+     * partially-paid invoice should be cancelled instead, never deleted.
+     */
+    public function destroy(CorporateInvoice $corporateInvoice): RedirectResponse
+    {
+        if ($corporateInvoice->payments()->exists()) {
+            return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-has-payments');
+        }
+
+        $number = $corporateInvoice->invoice_number;
+        $companyId = $corporateInvoice->corporate_company_id;
+        $companyName = $corporateInvoice->company->name;
+        $corporateInvoice->delete();
+
+        ActivityLog::record("Deleted corporate invoice {$number} for {$companyName}");
+
+        return Redirect::route('corporate-companies.show', $companyId)->with('status', 'invoice-deleted');
+    }
+
+    /**
      * Mark the invoice as sent to the company.
      */
     public function send(Request $request, CorporateInvoice $corporateInvoice): RedirectResponse
@@ -170,6 +192,14 @@ class CorporateInvoiceController extends Controller
     public function whatsapp(WhatsAppService $whatsapp, CorporateInvoice $corporateInvoice): RedirectResponse
     {
         $corporateInvoice->load(['company', 'items']);
+
+        if (! $whatsapp->isConfigured()) {
+            return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-whatsapp-not-configured');
+        }
+
+        if (! $corporateInvoice->company->phone) {
+            return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-whatsapp-no-phone');
+        }
 
         $path = "corporate/invoices/{$corporateInvoice->invoice_number}-".Str::random(40).'.pdf';
         Storage::disk('public')->put($path, $this->buildPdf($corporateInvoice)->output());
