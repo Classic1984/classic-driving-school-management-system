@@ -7,8 +7,10 @@ use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -122,5 +124,23 @@ class CorporateInvoiceController extends Controller
         ActivityLog::record("Cancelled corporate invoice {$corporateInvoice->invoice_number} ({$corporateInvoice->cancellation_reason})");
 
         return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-cancelled');
+    }
+
+    /**
+     * Download the invoice as a PDF.
+     */
+    public function pdf(CorporateInvoice $corporateInvoice): Response
+    {
+        $corporateInvoice->load(['company', 'items']);
+        $settings = CorporateInvoiceSetting::current();
+        $signatureDataUri = $settings->signatureDataUri();
+
+        $pdf = Pdf::loadView('corporate.invoices.pdf', [
+            'invoice' => $corporateInvoice,
+            'settings' => $settings,
+            'signatureDataUri' => $signatureDataUri,
+        ]);
+
+        return $pdf->download("{$corporateInvoice->invoice_number}.pdf");
     }
 }

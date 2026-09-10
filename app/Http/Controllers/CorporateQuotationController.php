@@ -7,8 +7,10 @@ use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateQuotation;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -141,5 +143,17 @@ class CorporateQuotationController extends Controller
         ActivityLog::record("Converted corporate quotation {$corporateQuotation->quotation_number} to invoice {$invoice->invoice_number}");
 
         return Redirect::route('corporate-invoices.show', $invoice)->with('status', 'invoice-created');
+    }
+
+    /**
+     * Download the quotation as a PDF.
+     */
+    public function pdf(CorporateQuotation $corporateQuotation): Response
+    {
+        $corporateQuotation->load(['company', 'items']);
+
+        $pdf = Pdf::loadView('corporate.quotations.pdf', ['quotation' => $corporateQuotation]);
+
+        return $pdf->download("{$corporateQuotation->quotation_number}.pdf");
     }
 }
