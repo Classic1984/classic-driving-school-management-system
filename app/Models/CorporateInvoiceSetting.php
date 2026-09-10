@@ -173,7 +173,7 @@ class CorporateInvoiceSetting extends Model
             'programme_options' => "Defensive Driving\nAuto Course\nManual Course\nCombined Course\nAuto Advanced\nManual Advanced",
             'duration_options' => "One Day\nThree Days\nOne Week\nTwo Weeks\nOne Month",
             'driver_count_options' => "1\n5\n10\n20\n50",
-            'service_options' => "Certificate of Completion\nRegistration Fee\nTraining Materials\nAssessment Fee",
+            'service_options' => "Certificate of Completion\nRegistration Fee\nTraining Materials\nAssessment Fee\nFeeding Allowance",
         ]);
     }
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
 use App\Http\Controllers\CertificateVerificationController;
 use App\Http\Controllers\CorporateCompanyController;
+use App\Http\Controllers\CorporateCompanyDriverController;
 use App\Http\Controllers\CorporateInvoiceController;
 use App\Http\Controllers\CorporateInvoiceSettingController;
 use App\Http\Controllers\CorporatePaymentController;
@@ -207,6 +208,8 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         // staff/drivers in bulk, billed separately from individual
         // students. Director-only, same as the rest of this group.
         Route::resource('corporate-companies', CorporateCompanyController::class);
+        Route::post('corporate-companies/{corporateCompany}/drivers', [CorporateCompanyDriverController::class, 'store'])->name('corporate-companies.drivers.store');
+        Route::delete('corporate-company-drivers/{corporateCompanyDriver}', [CorporateCompanyDriverController::class, 'destroy'])->name('corporate-company-drivers.destroy');
         Route::get('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'edit'])->name('corporate-invoice-settings.edit');
         Route::put('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'update'])->name('corporate-invoice-settings.update');
         Route::resource('corporate-invoices', CorporateInvoiceController::class)->only(['index', 'create', 'store', 'show', 'destroy']);

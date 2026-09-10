@@ -177,6 +177,16 @@ class CorporateInvoiceSettingTest extends TestCase
         $response->assertSee('Certificate of Completion');
     }
 
+    public function test_the_default_service_options_include_a_feeding_allowance(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/corporate-invoice-settings');
+
+        $response->assertOk();
+        $response->assertSee('Feeding Allowance');
+    }
+
     public function test_next_sequence_increments_within_a_year_and_resets_the_next(): void
     {
         $this->assertSame(1, CorporateInvoiceSetting::nextSequence('invoice', 2026));
