@@ -76,32 +76,17 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <div>
                             <x-input-label for="programme_name" :value="__('Programme')" />
-                            <x-text-input id="programme_name" name="programme_name" type="text" list="programme-options" class="block w-full mt-1" placeholder="{{ __('e.g. Defensive Driving') }}" :value="old('programme_name')" />
+                            <x-combobox id="programme_name" name="programme_name" :options="$programmeOptions" :value="old('programme_name')" placeholder="{{ __('e.g. Defensive Driving') }}" class="mt-1" />
                         </div>
                         <div>
                             <x-input-label for="duration_label" :value="__('Duration')" />
-                            <x-text-input id="duration_label" name="duration_label" type="text" list="duration-options" class="block w-full mt-1" placeholder="{{ __('e.g. Two Weeks') }}" :value="old('duration_label')" />
+                            <x-combobox id="duration_label" name="duration_label" :options="$durationOptions" :value="old('duration_label')" placeholder="{{ __('e.g. Two Weeks') }}" class="mt-1" />
                         </div>
                         <div>
                             <x-input-label for="participant_count" :value="__('Number of Drivers')" />
-                            <x-text-input id="participant_count" name="participant_count" type="number" min="1" list="driver-count-options" class="block w-full mt-1" :value="old('participant_count')" />
+                            <x-combobox id="participant_count" name="participant_count" type="number" min="1" :options="$driverCountOptions" :value="old('participant_count')" class="mt-1" />
                         </div>
                     </div>
-                    <datalist id="programme-options">
-                        @foreach ($programmeOptions as $option)
-                            <option value="{{ $option }}"></option>
-                        @endforeach
-                    </datalist>
-                    <datalist id="duration-options">
-                        @foreach ($durationOptions as $option)
-                            <option value="{{ $option }}"></option>
-                        @endforeach
-                    </datalist>
-                    <datalist id="driver-count-options">
-                        @foreach ($driverCountOptions as $option)
-                            <option value="{{ $option }}"></option>
-                        @endforeach
-                    </datalist>
                     <div>
                         <x-input-label for="course_coverage" :value="__('Course Coverage (optional, one topic per line)')" />
                         <textarea id="course_coverage" name="course_coverage" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("Defensive Driving Principles\nHazard Identification & Risk Management") }}">{{ old('course_coverage') }}</textarea>

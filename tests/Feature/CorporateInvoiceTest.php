@@ -246,10 +246,9 @@ class CorporateInvoiceTest extends TestCase
         $response = $this->actingAs($director)->get('/corporate-invoices/create');
 
         $response->assertOk();
-        $response->assertSee('list="programme-options"', false);
-        $response->assertSee('<option value="Defensive Driving">', false);
-        $response->assertSee('<option value="Two Weeks">', false);
-        $response->assertSee('<option value="5">', false);
+        $response->assertSee('Driving\u0022,\u0022Basic Driving', false);
+        $response->assertSee('Week\u0022,\u0022Two Weeks', false);
+        $response->assertSee('\u00221\u0022,\u00225\u0022', false);
     }
 
     public function test_a_director_can_download_the_invoice_as_a_pdf(): void
