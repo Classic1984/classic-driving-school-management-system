@@ -261,7 +261,7 @@
 
             <div>
                 <x-input-label for="license_number" :value="__('License Number')" />
-                <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number)" />
+                <x-text-input id="license_number" name="license_number" type="text" class="mt-1 block w-full" :value="old('license_number', $student?->license_number ?? request('license_number'))" />
                 <x-input-error class="mt-2" :messages="$errors->get('license_number')" />
             </div>
 

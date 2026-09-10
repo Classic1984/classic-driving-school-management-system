@@ -219,6 +219,16 @@ class StudentTest extends TestCase
         $response->assertSee('name="license_document"', false);
     }
 
+    public function test_the_create_form_is_prefilled_with_a_license_number_from_query_params(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/students/create?license_number=DL-88213');
+
+        $response->assertOk();
+        $response->assertSee('value="DL-88213"', false);
+    }
+
     public function test_the_create_form_offers_course_enrollment_to_a_secretary_too(): void
     {
         $secretary = User::factory()->secretary()->create();
