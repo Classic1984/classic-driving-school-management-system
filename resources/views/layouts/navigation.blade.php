@@ -79,6 +79,9 @@
             <x-responsive-nav-link :href="route('corporate-companies.index')" :active="request()->routeIs('corporate-companies.*')">
                 {{ __('Companies') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('corporate-invoice-settings.edit')" :active="request()->routeIs('corporate-invoice-settings.*')">
+                {{ __('Invoice Settings') }}
+            </x-responsive-nav-link>
         @endif
     </nav>
 

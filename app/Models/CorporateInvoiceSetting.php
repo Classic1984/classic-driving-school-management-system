@@ -40,10 +40,19 @@ class CorporateInvoiceSetting extends Model
     /**
      * The one settings row, created on first access if it doesn't exist yet
      * rather than requiring a seeder - there's nothing meaningful to
-     * pre-fill, the Director enters real bank/company details themselves.
+     * pre-fill except the numbering prefixes, which the Director can still
+     * change later. The prefix defaults are passed explicitly here (not
+     * left to the migration's column default) because Eloquent doesn't
+     * re-read column defaults back into the model after an insert - without
+     * this, the freshly created instance's prefix attributes would be null
+     * in PHP even though the database row itself correctly has "QUO" etc.
      */
     public static function current(): self
     {
-        return static::query()->firstOrCreate([]);
+        return static::query()->firstOrCreate([], [
+            'invoice_prefix' => 'INV',
+            'quotation_prefix' => 'QUO',
+            'receipt_prefix' => 'REC',
+        ]);
     }
 }
