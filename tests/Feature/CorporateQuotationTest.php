@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Mail\CorporateQuotationMail;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateQuotation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class CorporateQuotationTest extends TestCase
@@ -123,6 +125,38 @@ class CorporateQuotationTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_a_director_can_email_the_quotation_to_the_company(): void
+    {
+        Mail::fake();
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['email' => 'accounts@arco.example']);
+        $quotation = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id]);
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/email", [
+            'recipient_email' => 'accounts@arco.example',
+        ]);
+
+        $response->assertRedirect(route('corporate-quotations.show', $quotation));
+        Mail::assertSent(CorporateQuotationMail::class, function (CorporateQuotationMail $mail) use ($quotation) {
+            return $mail->quotation->is($quotation) && $mail->hasTo('accounts@arco.example');
+        });
+    }
+
+    public function test_emailing_a_quotation_requires_a_valid_recipient_email(): void
+    {
+        Mail::fake();
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $this->actingAs($director)
+            ->post("/corporate-quotations/{$quotation->id}/email", ['recipient_email' => 'not-an-email'])
+            ->assertSessionHasErrors('recipient_email');
+
+        Mail::assertNothingSent();
     }
 
     /**

@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCorporateQuotationRequest;
+use App\Mail\CorporateQuotationMail;
 use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateQuotation;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF as PdfDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -152,8 +155,28 @@ class CorporateQuotationController extends Controller
     {
         $corporateQuotation->load(['company', 'items']);
 
-        $pdf = Pdf::loadView('corporate.quotations.pdf', ['quotation' => $corporateQuotation]);
+        return $this->buildPdf($corporateQuotation)->download("{$corporateQuotation->quotation_number}.pdf");
+    }
 
-        return $pdf->download("{$corporateQuotation->quotation_number}.pdf");
+    /**
+     * Email the quotation PDF to the given address.
+     */
+    public function email(Request $request, CorporateQuotation $corporateQuotation): RedirectResponse
+    {
+        $recipientEmail = $request->validate(['recipient_email' => ['required', 'email']])['recipient_email'];
+        $corporateQuotation->load(['company', 'items']);
+
+        $pdfContent = $this->buildPdf($corporateQuotation)->output();
+
+        Mail::to($recipientEmail)->send(new CorporateQuotationMail($corporateQuotation, $pdfContent));
+
+        ActivityLog::record("Emailed corporate quotation {$corporateQuotation->quotation_number} to {$recipientEmail}");
+
+        return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-emailed');
+    }
+
+    private function buildPdf(CorporateQuotation $corporateQuotation): PdfDocument
+    {
+        return Pdf::loadView('corporate.quotations.pdf', ['quotation' => $corporateQuotation]);
     }
 }

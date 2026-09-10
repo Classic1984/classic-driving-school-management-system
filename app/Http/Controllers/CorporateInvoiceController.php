@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCorporateInvoiceRequest;
+use App\Mail\CorporateInvoiceMail;
 use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF as PdfDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -132,15 +135,37 @@ class CorporateInvoiceController extends Controller
     public function pdf(CorporateInvoice $corporateInvoice): Response
     {
         $corporateInvoice->load(['company', 'items']);
-        $settings = CorporateInvoiceSetting::current();
-        $signatureDataUri = $settings->signatureDataUri();
 
-        $pdf = Pdf::loadView('corporate.invoices.pdf', [
+        return $this->buildPdf($corporateInvoice)->download("{$corporateInvoice->invoice_number}.pdf");
+    }
+
+    /**
+     * Email the invoice PDF to the given address (defaulting to the
+     * company's own email, but overridable in case it should go
+     * elsewhere for this one invoice).
+     */
+    public function email(Request $request, CorporateInvoice $corporateInvoice): RedirectResponse
+    {
+        $recipientEmail = $request->validate(['recipient_email' => ['required', 'email']])['recipient_email'];
+        $corporateInvoice->load(['company', 'items']);
+
+        $pdfContent = $this->buildPdf($corporateInvoice)->output();
+
+        Mail::to($recipientEmail)->send(new CorporateInvoiceMail($corporateInvoice, $pdfContent));
+
+        ActivityLog::record("Emailed corporate invoice {$corporateInvoice->invoice_number} to {$recipientEmail}");
+
+        return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-emailed');
+    }
+
+    private function buildPdf(CorporateInvoice $corporateInvoice): PdfDocument
+    {
+        $settings = CorporateInvoiceSetting::current();
+
+        return Pdf::loadView('corporate.invoices.pdf', [
             'invoice' => $corporateInvoice,
             'settings' => $settings,
-            'signatureDataUri' => $signatureDataUri,
+            'signatureDataUri' => $settings->signatureDataUri(),
         ]);
-
-        return $pdf->download("{$corporateInvoice->invoice_number}.pdf");
     }
 }

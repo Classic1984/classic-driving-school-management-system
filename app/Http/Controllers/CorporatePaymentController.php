@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCorporatePaymentRequest;
+use App\Mail\CorporateReceiptMail;
 use App\Models\ActivityLog;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
 use App\Models\CorporatePayment;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF as PdfDocument;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -55,10 +59,31 @@ class CorporatePaymentController extends Controller
     public function receiptPdf(CorporatePayment $corporatePayment): Response
     {
         $corporatePayment->load('invoice.company');
+
+        return $this->buildPdf($corporatePayment)->download("{$corporatePayment->receipt_number}.pdf");
+    }
+
+    /**
+     * Email the receipt PDF to the given address.
+     */
+    public function receiptEmail(Request $request, CorporatePayment $corporatePayment): RedirectResponse
+    {
+        $recipientEmail = $request->validate(['recipient_email' => ['required', 'email']])['recipient_email'];
+        $corporatePayment->load('invoice.company');
+
+        $pdfContent = $this->buildPdf($corporatePayment)->output();
+
+        Mail::to($recipientEmail)->send(new CorporateReceiptMail($corporatePayment, $pdfContent));
+
+        ActivityLog::record("Emailed corporate receipt {$corporatePayment->receipt_number} to {$recipientEmail}");
+
+        return Redirect::route('corporate-payments.receipt', $corporatePayment)->with('status', 'receipt-emailed');
+    }
+
+    private function buildPdf(CorporatePayment $corporatePayment): PdfDocument
+    {
         $settings = CorporateInvoiceSetting::current();
 
-        $pdf = Pdf::loadView('corporate.payments.receipt-pdf', ['payment' => $corporatePayment, 'settings' => $settings]);
-
-        return $pdf->download("{$corporatePayment->receipt_number}.pdf");
+        return Pdf::loadView('corporate.payments.receipt-pdf', ['payment' => $corporatePayment, 'settings' => $settings]);
     }
 }
