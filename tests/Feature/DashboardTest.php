@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
 use App\Models\Course;
 use App\Models\DiscountRequest;
 use App\Models\Instructor;
@@ -104,6 +106,44 @@ class DashboardTest extends TestCase
         $response->assertSee('4');
     }
 
+    public function test_paid_today_includes_a_corporate_invoice_payment_recorded_today(): void
+    {
+        $user = User::factory()->create();
+
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()]);
+        $company = CorporateCompany::factory()->create();
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->payments()->create([
+            'amount' => 300,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now(),
+            'recorded_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('stats', fn (array $stats) => (float) $stats['payments'] === 800.0);
+    }
+
+    public function test_the_revenue_today_modal_shows_a_corporate_invoice_payment(): void
+    {
+        $user = User::factory()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->payments()->create([
+            'amount' => 300,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now(),
+            'recorded_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSeeInOrder(['Arco Worldwide', "Invoice {$invoice->invoice_number}"]);
+    }
+
     public function test_dashboard_shows_a_new_leads_count_linking_to_the_filtered_lead_list(): void
     {
         $user = User::factory()->create();
@@ -166,6 +206,28 @@ class DashboardTest extends TestCase
         $response->assertSee('This Month');
         $response->assertSee('All Time');
         $response->assertSee('1,000.00');
+    }
+
+    public function test_payment_totals_include_corporate_invoice_payments(): void
+    {
+        $director = User::factory()->director()->create();
+
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()]);
+        $company = CorporateCompany::factory()->create();
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->payments()->create([
+            'amount' => 300,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now(),
+            'recorded_by' => $director->id,
+        ]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('paymentTotals', fn (array $totals) => (float) $totals['week'] === 800.0
+            && (float) $totals['month'] === 800.0
+            && (float) $totals['all_time'] === 800.0);
     }
 
     public function test_the_total_payments_cards_link_to_the_payments_index_by_period(): void

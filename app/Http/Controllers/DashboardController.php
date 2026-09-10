@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\CorporatePayment;
 use App\Models\DiscountRequest;
 use App\Models\Enrollment;
 use App\Models\Instructor;
@@ -31,7 +32,12 @@ class DashboardController extends Controller
             // who came in only for one of those, never a training program.
             'students_in_program' => Student::whereHas('courses')->count(),
             'students_walkin_only' => Student::whereDoesntHave('courses')->count(),
-            'payments' => Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount'),
+            // Includes corporate invoice payments (e.g. one just recorded
+            // against an invoice converted from a quotation) alongside
+            // individual student payments - both are real money received
+            // by the school today.
+            'payments' => Payment::where('status', 'paid')->whereDate('payment_date', today())->sum('amount')
+                + CorporatePayment::whereDate('payment_date', today())->sum('amount'),
             'instructors' => Instructor::where('status', 'active')->count(),
             'certificates' => Certificate::count(),
             'new_leads' => Lead::where('status', 'new')->count(),
@@ -61,12 +67,16 @@ class DashboardController extends Controller
             $paymentTotals = [
                 'week' => Payment::where('status', 'paid')
                     ->whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])
-                    ->sum('amount'),
+                    ->sum('amount')
+                    + CorporatePayment::whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])->sum('amount'),
                 'month' => Payment::where('status', 'paid')
                     ->whereYear('payment_date', now()->year)
                     ->whereMonth('payment_date', now()->month)
-                    ->sum('amount'),
-                'all_time' => Payment::where('status', 'paid')->sum('amount'),
+                    ->sum('amount')
+                    + CorporatePayment::whereYear('payment_date', now()->year)
+                        ->whereMonth('payment_date', now()->month)
+                        ->sum('amount'),
+                'all_time' => Payment::where('status', 'paid')->sum('amount') + CorporatePayment::sum('amount'),
             ];
 
             $paymentPeriodRanges = [
@@ -365,14 +375,37 @@ class DashboardController extends Controller
         $todaysAttendance = Attendance::where('status', 'present')->whereDate('date', today());
 
         // Backing list for the "Revenue Today" modal - who paid today, how
-        // much, and what for (via description(), so it also loads what
-        // that reads: each allocation's enrollment/course or student
-        // service), not just the summed total shown on the card itself.
-        $todaysPayments = Payment::where('status', 'paid')
+        // much, and what for, not just the summed total shown on the card
+        // itself. Combines individual student payments (via description(),
+        // which also loads what that reads: each allocation's
+        // enrollment/course or student service) with corporate invoice
+        // payments, normalized to one shape since they don't share a model.
+        $todaysStudentPayments = Payment::where('status', 'paid')
             ->whereDate('payment_date', today())
             ->with(['student', 'allocations.enrollment.course', 'allocations.studentService.service'])
-            ->latest('payment_date')
-            ->get();
+            ->get()
+            ->map(fn (Payment $payment) => [
+                'name' => $payment->student->name,
+                'href' => route('students.show', $payment->student_id),
+                'detail' => $payment->description(),
+                'amount' => (float) $payment->amount,
+                'paid_at' => $payment->payment_date,
+            ]);
+
+        $todaysCorporatePayments = CorporatePayment::whereDate('payment_date', today())
+            ->with('invoice.company')
+            ->get()
+            ->map(fn (CorporatePayment $payment) => [
+                'name' => $payment->invoice->company->name,
+                'href' => route('corporate-invoices.show', $payment->corporate_invoice_id),
+                'detail' => __('Invoice :number', ['number' => $payment->invoice->invoice_number]),
+                'amount' => (float) $payment->amount,
+                'paid_at' => $payment->payment_date,
+            ]);
+
+        $todaysPayments = $todaysStudentPayments->concat($todaysCorporatePayments)
+            ->sortByDesc('paid_at')
+            ->values();
 
         // Today's Operations: a same-day snapshot, distinct from the KPI
         // cards above (which are cumulative/current totals) - what

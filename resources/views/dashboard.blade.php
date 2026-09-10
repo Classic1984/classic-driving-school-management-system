@@ -699,10 +699,10 @@
                             @foreach ($todaysPayments as $payment)
                                 <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                     <div class="min-w-0">
-                                        <a href="{{ route('students.show', $payment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $payment->student->name }}</a>
-                                        <p class="text-xs text-gray-500 truncate">{{ $payment->description() }}</p>
+                                        <a href="{{ $payment['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $payment['name'] }}</a>
+                                        <p class="text-xs text-gray-500 truncate">{{ $payment['detail'] }}</p>
                                     </div>
-                                    <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment->amount, 2) }}</div>
+                                    <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment['amount'], 2) }}</div>
                                 </div>
                             @endforeach
                         </div>
