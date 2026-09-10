@@ -251,6 +251,17 @@ class CorporateInvoiceTest extends TestCase
         $response->assertSee('\u00221\u0022,\u00225\u0022', false);
     }
 
+    public function test_the_create_form_shows_a_hint_when_no_training_detail_presets_are_configured(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/corporate-invoices/create');
+
+        $response->assertOk();
+        $response->assertSee('No suggestions yet.');
+        $response->assertSee(route('corporate-invoice-settings.edit'), false);
+    }
+
     public function test_a_director_can_download_the_invoice_as_a_pdf(): void
     {
         $director = User::factory()->director()->create();
