@@ -80,6 +80,36 @@ class CorporateInvoiceTest extends TestCase
         $response->assertSee('Seventy-Five Thousand Naira Only.');
     }
 
+    /**
+     * totalInWords() previously used PHP's intl NumberFormatter, which
+     * crashed this exact page with a 500 in production because ext-intl
+     * isn't declared in composer.json and wasn't actually installed there -
+     * it just happened to be present in local/CI environments. Rewritten
+     * in plain PHP; these cases pin the wording so a future change can't
+     * silently reintroduce a dependency on an extension that might not be
+     * present everywhere this app runs.
+     */
+    public function test_total_in_words_spells_out_a_range_of_amounts(): void
+    {
+        // Pairs, not an associative array keyed by amount - PHP silently
+        // truncates float array keys to integers, which would drop the
+        // ".35" from 101219.35 before the test ever saw it.
+        $cases = [
+            [0.0, 'Zero Naira Only.'],
+            [1.0, 'One Naira Only.'],
+            [75000.0, 'Seventy-Five Thousand Naira Only.'],
+            [101219.35, 'One Hundred One Thousand Two Hundred Nineteen Naira, Thirty-Five Kobo Only.'],
+            [1000000.0, 'One Million Naira Only.'],
+        ];
+
+        foreach ($cases as [$amount, $expected]) {
+            $invoice = CorporateInvoice::factory()->create();
+            $invoice->items()->create(['description' => 'Item', 'quantity' => 1, 'unit_price' => $amount, 'sort_order' => 0]);
+
+            $this->assertSame($expected, $invoice->totalInWords(), "Amount {$amount} spelled incorrectly.");
+        }
+    }
+
     public function test_the_invoice_document_shows_settings_bank_details_and_payment_terms(): void
     {
         $director = User::factory()->director()->create();
