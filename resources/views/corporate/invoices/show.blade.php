@@ -20,6 +20,9 @@
             'cancelled' => ['classes' => 'bg-gray-200 text-gray-700', 'label' => 'Cancelled'],
             default => ['classes' => 'bg-amber-100 text-amber-700', 'label' => 'Pending'],
         };
+        $plusIconPath = 'M12 9v3.75m0 0v3.75m0-3.75h3.75m-3.75 0h-3.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
+        $receiptIconPath = 'M9 14.25 6.75 12l2.25-2.25M15 9.75l2.25 2.25-2.25 2.25M3.375 21h17.25c.621 0 1.125-.504 1.125-1.125V4.125C21.75 3.504 21.246 3 20.625 3H3.375C2.754 3 2.25 3.504 2.25 4.125v15.75c0 .621.504 1.125 1.125 1.125Z';
+        $canRecordPayment = ! in_array($invoice->status, ['paid', 'cancelled'], true);
     @endphp
 
     <style>
@@ -37,6 +40,12 @@
                     <span class="text-sm text-gray-500">{{ __('Balance:') }} ₦{{ number_format($invoice->balance(), 0) }}</span>
                 </div>
                 <div class="flex items-center gap-2">
+                    @if ($canRecordPayment)
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'record-payment')" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-4 py-2 text-sm font-bold text-black transition">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $plusIconPath }}" /></svg>
+                            {{ __('Record Payment') }}
+                        </button>
+                    @endif
                     <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $printerIconPath }}" /></svg>
                         {{ __('Print') }}
@@ -49,6 +58,28 @@
 
             @if (session('status') === 'invoice-created')
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Invoice created successfully.') }}</p>
+            @elseif (session('status') === 'payment-recorded')
+                <p class="print-hidden text-sm font-medium text-green-600">{{ __('Payment recorded successfully.') }}</p>
+            @endif
+
+            @if ($invoice->payments->isNotEmpty())
+                <div class="print-hidden bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+                    <h4 class="text-sm font-bold uppercase tracking-wide text-gray-500 mb-3">{{ __('Payments') }}</h4>
+                    <ul class="divide-y divide-gray-100">
+                        @foreach ($invoice->payments as $payment)
+                            <li class="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
+                                <div>
+                                    <span class="font-bold text-gray-900">₦{{ number_format((float) $payment->amount, 0) }}</span>
+                                    <span class="text-gray-500">— {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }} · {{ $payment->payment_date->format('M j, Y') }}</span>
+                                </div>
+                                <a href="{{ route('corporate-payments.receipt', $payment) }}" class="inline-flex items-center gap-1.5 text-amber-600 hover:underline font-semibold">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                                    {{ __('View Receipt') }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
@@ -211,5 +242,50 @@
                 </div>
             </div>
         </div>
+
+        @if ($canRecordPayment)
+            <x-modal name="record-payment" focusable>
+                <form method="post" action="{{ route('corporate-invoices.payments.store', $invoice) }}" class="p-6 space-y-4">
+                    @csrf
+                    <h2 class="text-lg font-bold text-gray-900">{{ __('Record Payment') }}</h2>
+                    <p class="text-sm text-gray-500">{{ __('Invoice :number — balance ₦:balance', ['number' => $invoice->invoice_number, 'balance' => number_format($invoice->balance(), 0)]) }}</p>
+
+                    <div>
+                        <x-input-label for="amount" :value="__('Amount Paid (₦)')" />
+                        <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="block w-full mt-1" :value="old('amount', $invoice->balance())" required autofocus />
+                        <x-input-error class="mt-2" :messages="$errors->get('amount')" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="payment_method" :value="__('Payment Method')" />
+                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                            @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
+                                <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
+                            @endforeach
+                        </select>
+                        <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="payment_date" :value="__('Payment Date')" />
+                        <x-text-input id="payment_date" name="payment_date" type="date" class="block w-full mt-1" :value="old('payment_date', now()->format('Y-m-d'))" required />
+                        <x-input-error class="mt-2" :messages="$errors->get('payment_date')" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="transaction_reference" :value="__('Transaction Reference (optional)')" />
+                        <x-text-input id="transaction_reference" name="transaction_reference" type="text" class="block w-full mt-1" :value="old('transaction_reference')" />
+                        <x-input-error class="mt-2" :messages="$errors->get('transaction_reference')" />
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-2.5 text-sm font-bold text-amber-400 transition">
+                            {{ __('Confirm Payment') }}
+                        </button>
+                        <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'record-payment')">{{ __('Cancel') }}</x-secondary-button>
+                    </div>
+                </form>
+            </x-modal>
+        @endif
     </div>
 </x-app-layout>

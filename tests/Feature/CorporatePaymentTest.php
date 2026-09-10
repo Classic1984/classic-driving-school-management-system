@@ -1,0 +1,118 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
+use App\Models\CorporatePayment;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class CorporatePaymentTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_a_secretary_cannot_record_a_corporate_payment(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $invoice = CorporateInvoice::factory()->create();
+
+        $this->actingAs($secretary)
+            ->post("/corporate-invoices/{$invoice->id}/payments", ['amount' => 1000, 'payment_method' => 'cash', 'payment_date' => now()->format('Y-m-d')])
+            ->assertForbidden();
+    }
+
+    public function test_a_director_can_record_a_partial_payment(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/payments", [
+            'amount' => 30000,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now()->format('Y-m-d'),
+            'transaction_reference' => 'TXN-001',
+        ]);
+
+        $response->assertRedirect(route('corporate-invoices.show', $invoice));
+        $this->assertDatabaseHas('corporate_payments', [
+            'corporate_invoice_id' => $invoice->id,
+            'amount' => 30000,
+            'recorded_by' => $director->id,
+        ]);
+        $this->assertSame('pending', $invoice->fresh()->status);
+        $this->assertSame(45000.0, $invoice->fresh()->balance());
+    }
+
+    public function test_the_invoice_is_marked_paid_once_payments_cover_the_total(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/payments", [
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => now()->format('Y-m-d'),
+        ]);
+
+        $this->assertSame('paid', $invoice->fresh()->status);
+        $this->assertSame(0.0, $invoice->fresh()->balance());
+    }
+
+    public function test_a_payment_is_assigned_a_sequential_receipt_number(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/payments", [
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => '2026-09-10',
+        ]);
+
+        $payment = CorporatePayment::first();
+        $this->assertSame(
+            'REC-2026-'.str_pad((string) $payment->id, 5, '0', STR_PAD_LEFT),
+            $payment->receipt_number
+        );
+    }
+
+    public function test_the_record_payment_button_is_hidden_once_an_invoice_is_paid(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'paid']);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('Record Payment');
+    }
+
+    public function test_a_director_can_view_a_payment_receipt(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id, 'programme_name' => 'Defensive Driving']);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $payment = $invoice->payments()->create([
+            'amount' => 75000,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => '2026-09-10',
+            'recorded_by' => $director->id,
+        ]);
+
+        $response = $this->actingAs($director)->get("/corporate-payments/{$payment->id}/receipt");
+
+        $response->assertOk();
+        $response->assertSee('Arco Worldwide');
+        $response->assertSee('Defensive Driving');
+        $response->assertSee($payment->receipt_number);
+        $response->assertSee('₦75,000');
+        $response->assertSee('bank transfer');
+    }
+}
