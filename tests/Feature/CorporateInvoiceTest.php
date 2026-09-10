@@ -234,6 +234,24 @@ class CorporateInvoiceTest extends TestCase
         $response->assertSee('value="'.$company->id.'" selected', false);
     }
 
+    public function test_the_create_form_offers_the_configured_training_detail_presets(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update([
+            'programme_options' => "Defensive Driving\nBasic Driving",
+            'duration_options' => "One Week\nTwo Weeks",
+            'driver_count_options' => "1\n5",
+        ]);
+
+        $response = $this->actingAs($director)->get('/corporate-invoices/create');
+
+        $response->assertOk();
+        $response->assertSee('list="programme-options"', false);
+        $response->assertSee('<option value="Defensive Driving">', false);
+        $response->assertSee('<option value="Two Weeks">', false);
+        $response->assertSee('<option value="5">', false);
+    }
+
     public function test_a_director_can_download_the_invoice_as_a_pdf(): void
     {
         $director = User::factory()->director()->create();

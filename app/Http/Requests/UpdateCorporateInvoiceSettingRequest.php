@@ -33,6 +33,9 @@ class UpdateCorporateInvoiceSettingRequest extends FormRequest
             'invoice_prefix' => ['nullable', 'string', 'max:20', 'alpha_dash'],
             'quotation_prefix' => ['nullable', 'string', 'max:20', 'alpha_dash'],
             'receipt_prefix' => ['nullable', 'string', 'max:20', 'alpha_dash'],
+            'programme_options' => ['nullable', 'string'],
+            'duration_options' => ['nullable', 'string'],
+            'driver_count_options' => ['nullable', 'string'],
             'signature' => ['nullable', 'image', 'max:2048'],
             'remove_signature' => ['nullable', 'boolean'],
         ];

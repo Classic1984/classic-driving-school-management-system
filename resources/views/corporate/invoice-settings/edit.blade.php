@@ -11,6 +11,7 @@
         $bankIconPath = 'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m3-3h.75m-.75 3h.75m3-3h.75m-.75 3h.75M6 21V9.75a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 .75.75V21M1.5 9.75l10.5-6 10.5 6';
         $hashtagIconPath = 'M5.25 9h13.5m-13.5 6.75h13.5M8.25 3v18m7.5-18v18';
         $signatureIconPath = 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM3 19.5c0-3.728 3.582-6.75 8-6.75s8 3.022 8 6.75';
+        $listIconPath = 'M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z';
     @endphp
 
     <div class="py-6">
@@ -118,6 +119,31 @@
                             <x-text-input id="receipt_prefix" name="receipt_prefix" type="text" class="block w-full mt-1" placeholder="REC" :value="old('receipt_prefix', $settings->receipt_prefix)" />
                             <p class="mt-1 text-xs text-gray-400">{{ __('e.g. :example', ['example' => ($settings->receipt_prefix ?: 'REC').'-2026-00001']) }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('receipt_prefix')" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
+                    <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-1">
+                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $listIconPath }}" /></svg>
+                        {{ __('Training Details Presets') }}
+                    </h4>
+                    <p class="text-xs text-gray-400 mb-4">{{ __('One value per line. These show up as suggestions on the Programme, Duration, and Number of Drivers fields when creating a quotation or invoice - typing something else is always fine too.') }}</p>
+                    <div class="max-w-xl grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                            <x-input-label for="programme_options" :value="__('Programmes')" />
+                            <textarea id="programme_options" name="programme_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("Defensive Driving\nBasic Driving\nAdvanced Driving") }}">{{ old('programme_options', $settings->programme_options) }}</textarea>
+                            <x-input-error class="mt-2" :messages="$errors->get('programme_options')" />
+                        </div>
+                        <div>
+                            <x-input-label for="duration_options" :value="__('Durations')" />
+                            <textarea id="duration_options" name="duration_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("One Week\nTwo Weeks\nOne Day") }}">{{ old('duration_options', $settings->duration_options) }}</textarea>
+                            <x-input-error class="mt-2" :messages="$errors->get('duration_options')" />
+                        </div>
+                        <div>
+                            <x-input-label for="driver_count_options" :value="__('Number of Drivers')" />
+                            <textarea id="driver_count_options" name="driver_count_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("1\n5\n10") }}">{{ old('driver_count_options', $settings->driver_count_options) }}</textarea>
+                            <x-input-error class="mt-2" :messages="$errors->get('driver_count_options')" />
                         </div>
                     </div>
                 </div>

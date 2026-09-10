@@ -7,6 +7,7 @@ use App\Mail\CorporateQuotationMail;
 use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
+use App\Models\CorporateInvoiceSetting;
 use App\Models\CorporateQuotation;
 use App\Services\WhatsAppService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -43,8 +44,15 @@ class CorporateQuotationController extends Controller
     {
         $companies = CorporateCompany::orderBy('name')->get(['id', 'name']);
         $selectedCompanyId = $request->query('corporate_company_id');
+        $settings = CorporateInvoiceSetting::current();
 
-        return view('corporate.quotations.create', compact('companies', 'selectedCompanyId'));
+        return view('corporate.quotations.create', [
+            'companies' => $companies,
+            'selectedCompanyId' => $selectedCompanyId,
+            'programmeOptions' => $settings->programmeOptionsList(),
+            'durationOptions' => $settings->durationOptionsList(),
+            'driverCountOptions' => $settings->driverCountOptionsList(),
+        ]);
     }
 
     /**

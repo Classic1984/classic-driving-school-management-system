@@ -43,8 +43,15 @@ class CorporateInvoiceController extends Controller
     {
         $companies = CorporateCompany::orderBy('name')->get(['id', 'name']);
         $selectedCompanyId = $request->query('corporate_company_id');
+        $settings = CorporateInvoiceSetting::current();
 
-        return view('corporate.invoices.create', compact('companies', 'selectedCompanyId'));
+        return view('corporate.invoices.create', [
+            'companies' => $companies,
+            'selectedCompanyId' => $selectedCompanyId,
+            'programmeOptions' => $settings->programmeOptionsList(),
+            'durationOptions' => $settings->durationOptionsList(),
+            'driverCountOptions' => $settings->driverCountOptionsList(),
+        ]);
     }
 
     /**

@@ -34,6 +34,9 @@ class CorporateInvoiceSetting extends Model
         'quotation_prefix',
         'receipt_prefix',
         'payment_terms',
+        'programme_options',
+        'duration_options',
+        'driver_count_options',
         'updated_by',
     ];
 
@@ -62,6 +65,50 @@ class CorporateInvoiceSetting extends Model
     public function paymentTermsList(): array
     {
         return collect(preg_split('/\r\n|\r|\n/', (string) $this->payment_terms))
+            ->map(fn ($line) => trim($line))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Suggested Programme values for the quotation/invoice create forms'
+     * pick-from-a-list-or-type-your-own field, one per line.
+     *
+     * @return array<int, string>
+     */
+    public function programmeOptionsList(): array
+    {
+        return $this->splitLines($this->programme_options);
+    }
+
+    /**
+     * Suggested Duration values, same convention as programmeOptionsList().
+     *
+     * @return array<int, string>
+     */
+    public function durationOptionsList(): array
+    {
+        return $this->splitLines($this->duration_options);
+    }
+
+    /**
+     * Suggested Number of Drivers values, same convention as
+     * programmeOptionsList().
+     *
+     * @return array<int, string>
+     */
+    public function driverCountOptionsList(): array
+    {
+        return $this->splitLines($this->driver_count_options);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function splitLines(?string $value): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', (string) $value))
             ->map(fn ($line) => trim($line))
             ->filter()
             ->values()
