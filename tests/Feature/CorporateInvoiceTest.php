@@ -251,13 +251,31 @@ class CorporateInvoiceTest extends TestCase
         $response->assertSee('\u00221\u0022,\u00225\u0022', false);
     }
 
-    public function test_the_create_form_shows_a_hint_when_no_training_detail_presets_are_configured(): void
+    public function test_the_create_form_has_seeded_training_detail_presets_the_first_time(): void
     {
         $director = User::factory()->director()->create();
 
         $response = $this->actingAs($director)->get('/corporate-invoices/create');
 
         $response->assertOk();
+        $response->assertSee('Driving\u0022,', false);
+        $response->assertSee('One Week\u0022,', false);
+        $response->assertSee('\u00221\u0022,', false);
+    }
+
+    public function test_the_create_form_shows_a_hint_when_training_detail_presets_are_left_blank(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update([
+            'programme_options' => '',
+            'duration_options' => '',
+            'driver_count_options' => '',
+        ]);
+
+        $response = $this->actingAs($director)->get('/corporate-invoices/create');
+
+        $response->assertOk();
+        $response->assertSee('options: []', false);
         $response->assertSee('No suggestions yet.');
         $response->assertSee(route('corporate-invoice-settings.edit'), false);
     }
