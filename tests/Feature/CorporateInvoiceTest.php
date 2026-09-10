@@ -247,6 +247,20 @@ class CorporateInvoiceTest extends TestCase
         $response->assertSee('value="'.$company->id.'" selected', false);
     }
 
+    public function test_the_create_form_offers_the_configured_service_options(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update([
+            'service_options' => "Certificate of Completion\nRegistration Fee",
+        ]);
+
+        $response = $this->actingAs($director)->get('/corporate-invoices/create');
+
+        $response->assertOk();
+        $response->assertSee('Certificate of Completion');
+        $response->assertSee('Registration Fee');
+    }
+
     public function test_the_create_form_offers_the_configured_training_detail_presets(): void
     {
         $director = User::factory()->director()->create();

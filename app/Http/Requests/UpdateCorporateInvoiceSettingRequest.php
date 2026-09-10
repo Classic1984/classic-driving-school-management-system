@@ -37,6 +37,7 @@ class UpdateCorporateInvoiceSettingRequest extends FormRequest
             'programme_options' => ['nullable', 'string'],
             'duration_options' => ['nullable', 'string'],
             'driver_count_options' => ['nullable', 'string'],
+            'service_options' => ['nullable', 'string'],
             'signature' => ['nullable', 'image', 'max:2048'],
             'remove_signature' => ['nullable', 'boolean'],
         ];

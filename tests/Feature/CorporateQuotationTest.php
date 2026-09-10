@@ -154,6 +154,20 @@ class CorporateQuotationTest extends TestCase
         $response->assertSee('\u00221\u0022,\u00225\u0022', false);
     }
 
+    public function test_the_create_form_offers_the_configured_service_options(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update([
+            'service_options' => "Certificate of Completion\nRegistration Fee",
+        ]);
+
+        $response = $this->actingAs($director)->get('/corporate-quotations/create');
+
+        $response->assertOk();
+        $response->assertSee('Certificate of Completion');
+        $response->assertSee('Registration Fee');
+    }
+
     public function test_the_quotation_document_shows_the_school_website(): void
     {
         $director = User::factory()->director()->create();

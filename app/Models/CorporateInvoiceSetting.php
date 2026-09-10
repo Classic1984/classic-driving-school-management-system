@@ -38,6 +38,7 @@ class CorporateInvoiceSetting extends Model
         'programme_options',
         'duration_options',
         'driver_count_options',
+        'service_options',
         'updated_by',
     ];
 
@@ -105,6 +106,18 @@ class CorporateInvoiceSetting extends Model
     }
 
     /**
+     * Suggested line-item description values for a quotation/invoice's
+     * Charges table (e.g. "Certificate of Completion"), same convention as
+     * programmeOptionsList().
+     *
+     * @return array<int, string>
+     */
+    public function serviceOptionsList(): array
+    {
+        return $this->splitLines($this->service_options);
+    }
+
+    /**
      * @return array<int, string>
      */
     private function splitLines(?string $value): array
@@ -160,6 +173,7 @@ class CorporateInvoiceSetting extends Model
             'programme_options' => "Defensive Driving\nAuto Course\nManual Course\nCombined Course\nAuto Advanced\nManual Advanced",
             'duration_options' => "One Day\nThree Days\nOne Week\nTwo Weeks\nOne Month",
             'driver_count_options' => "1\n5\n10\n20\n50",
+            'service_options' => "Certificate of Completion\nRegistration Fee\nTraining Materials\nAssessment Fee",
         ]);
     }
 

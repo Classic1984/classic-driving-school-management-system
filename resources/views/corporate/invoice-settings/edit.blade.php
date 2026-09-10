@@ -133,8 +133,8 @@
                         <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $listIconPath }}" /></svg>
                         {{ __('Training Details Presets') }}
                     </h4>
-                    <p class="text-xs text-gray-400 mb-4">{{ __('One value per line. These show up as suggestions on the Programme, Duration, and Number of Drivers fields when creating a quotation or invoice - typing something else is always fine too.') }}</p>
-                    <div class="max-w-xl grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <p class="text-xs text-gray-400 mb-4">{{ __('One value per line. These show up as suggestions on the Programme, Duration, Number of Drivers, and Charges fields when creating a quotation or invoice - typing something else is always fine too.') }}</p>
+                    <div class="max-w-3xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div>
                             <x-input-label for="programme_options" :value="__('Programmes')" />
                             <textarea id="programme_options" name="programme_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("Defensive Driving\nBasic Driving\nAdvanced Driving") }}">{{ old('programme_options', $settings->programme_options) }}</textarea>
@@ -149,6 +149,11 @@
                             <x-input-label for="driver_count_options" :value="__('Number of Drivers')" />
                             <textarea id="driver_count_options" name="driver_count_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("1\n5\n10") }}">{{ old('driver_count_options', $settings->driver_count_options) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('driver_count_options')" />
+                        </div>
+                        <div>
+                            <x-input-label for="service_options" :value="__('Charges')" />
+                            <textarea id="service_options" name="service_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("Certificate of Completion\nRegistration Fee") }}">{{ old('service_options', $settings->service_options) }}</textarea>
+                            <x-input-error class="mt-2" :messages="$errors->get('service_options')" />
                         </div>
                     </div>
                 </div>
