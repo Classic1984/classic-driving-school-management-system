@@ -124,6 +124,23 @@ class CorporateInvoiceSettingTest extends TestCase
         ]);
     }
 
+    public function test_a_director_can_save_training_detail_presets(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->put('/corporate-invoice-settings', [
+            'programme_options' => "Defensive Driving\nBasic Driving\n\n",
+            'duration_options' => "One Week\nTwo Weeks",
+            'driver_count_options' => "1\n5\n10",
+        ]);
+
+        $response->assertRedirect(route('corporate-invoice-settings.edit'));
+        $settings = CorporateInvoiceSetting::current();
+        $this->assertSame(['Defensive Driving', 'Basic Driving'], $settings->programmeOptionsList());
+        $this->assertSame(['One Week', 'Two Weeks'], $settings->durationOptionsList());
+        $this->assertSame(['1', '5', '10'], $settings->driverCountOptionsList());
+    }
+
     public function test_next_sequence_increments_within_a_year_and_resets_the_next(): void
     {
         $this->assertSame(1, CorporateInvoiceSetting::nextSequence('invoice', 2026));

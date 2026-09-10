@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Mail\CorporateQuotationMail;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
+use App\Models\CorporateInvoiceSetting;
 use App\Models\CorporateQuotation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -134,6 +135,24 @@ class CorporateQuotationTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('value="'.$company->id.'" selected', false);
+    }
+
+    public function test_the_create_form_offers_the_configured_training_detail_presets(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update([
+            'programme_options' => "Defensive Driving\nBasic Driving",
+            'duration_options' => "One Week\nTwo Weeks",
+            'driver_count_options' => "1\n5",
+        ]);
+
+        $response = $this->actingAs($director)->get('/corporate-quotations/create');
+
+        $response->assertOk();
+        $response->assertSee('list="programme-options"', false);
+        $response->assertSee('<option value="Defensive Driving">', false);
+        $response->assertSee('<option value="Two Weeks">', false);
+        $response->assertSee('<option value="5">', false);
     }
 
     public function test_a_director_can_download_the_quotation_as_a_pdf(): void
