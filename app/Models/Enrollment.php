@@ -148,10 +148,20 @@ class Enrollment extends Pivot
     }
 
     /**
-     * The remaining balance owed for this course.
+     * The remaining balance owed for this course. Always zero for a
+     * corporate-sponsored student (see Student::isCorporateSponsored()) -
+     * their employer, not them, is responsible for the fee, and that
+     * company's own invoice already tracks whatever it still owes. Tracking
+     * a second balance here would either double-count money the company
+     * already paid, or wrongly show the student owing money that was never
+     * theirs to begin with.
      */
     public function balance(): float
     {
+        if ($this->student->isCorporateSponsored()) {
+            return 0.0;
+        }
+
         return max(0, $this->fee() - $this->amountPaid());
     }
 
@@ -266,6 +276,21 @@ class Enrollment extends Pivot
     }
 
     /**
+     * Whether this active, corporate-sponsored enrollment's sponsor has an
+     * invoice that's gone unpaid past its due date. A warning only - see
+     * balance(), the sponsoring company (not this student) owes the money,
+     * so this never locks the enrollment the way an individual overdue
+     * balance does; it just flags the student (and, on the company's own
+     * page, the company) for staff to follow up on.
+     */
+    public function isCorporateSponsorOverdue(): bool
+    {
+        return $this->status === 'active'
+            && $this->student->isCorporateSponsored()
+            && $this->student->corporateCompany->hasOverdueInvoice();
+    }
+
+    /**
      * Human-readable reasons this enrollment is currently flagged at
      * risk, for display next to it - empty when it isn't at risk.
      */
@@ -284,22 +309,25 @@ class Enrollment extends Pivot
                 : 'Payment due today';
         }
 
+        if ($this->isCorporateSponsorOverdue()) {
+            $reasons[] = "Sponsor company invoice overdue ({$this->student->corporateCompany->name})";
+        }
+
         return $reasons;
     }
 
     /**
-     * "high" when both the attendance and payment risk signals are
-     * present at once - these students are the most likely to be lost
-     * entirely - "medium" when only one signal is present, null when
-     * neither is (not at risk).
+     * "high" when two or more risk signals are present at once - these
+     * students are the most likely to be lost entirely - "medium" when
+     * exactly one signal is present, null when none are (not at risk).
      */
     public function riskLevel(): ?string
     {
-        $signals = (int) $this->isAttendanceRisk() + (int) $this->isPaymentRisk();
+        $signals = (int) $this->isAttendanceRisk() + (int) $this->isPaymentRisk() + (int) $this->isCorporateSponsorOverdue();
 
-        return match ($signals) {
-            2 => 'high',
-            1 => 'medium',
+        return match (true) {
+            $signals >= 2 => 'high',
+            $signals === 1 => 'medium',
             default => null,
         };
     }

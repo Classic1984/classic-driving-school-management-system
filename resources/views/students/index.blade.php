@@ -246,7 +246,14 @@
                                         <td class="px-3 py-3 text-sm align-top">
                                             <div class="flex items-center gap-2">
                                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400 text-xs font-bold">{{ $initials }}</span>
-                                                <span class="font-semibold text-gray-800">{{ $student->name }}</span>
+                                                <div>
+                                                    <span class="font-semibold text-gray-800">{{ $student->name }}</span>
+                                                    @if ($student->isCorporateSponsored())
+                                                        <div>
+                                                            <x-badge :color="$student->corporateCompany->hasOverdueInvoice() ? 'red' : 'amber'">{{ $student->corporateCompany->name }}</x-badge>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $student->email }}</td>

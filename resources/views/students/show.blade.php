@@ -114,6 +114,16 @@
                             <span class="h-2 w-2 rounded-full {{ $statusDotClasses[$studentStatusColor] }}"></span>
                             <span class="text-sm font-medium capitalize {{ $statusTextClasses[$studentStatusColor] }}">{{ $student->status }}</span>
                         </div>
+                        @if ($student->isCorporateSponsored())
+                            <div class="mt-1.5">
+                                <x-badge :color="$student->corporateCompany->hasOverdueInvoice() ? 'red' : 'amber'">
+                                    {{ __('Sponsored by :company', ['company' => $student->corporateCompany->name]) }}
+                                </x-badge>
+                            </div>
+                            @if ($student->corporateCompany->hasOverdueInvoice())
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ __("This company's invoice is overdue - follow up with them.") }}</p>
+                            @endif
+                        @endif
                         @if ($levelLabel || $transmissionLabel)
                             <p class="mt-1 text-sm text-gray-600">{{ collect([$levelLabel, $transmissionLabel])->filter()->implode(' • ') }}</p>
                         @endif

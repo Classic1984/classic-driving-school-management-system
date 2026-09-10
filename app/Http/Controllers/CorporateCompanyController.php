@@ -93,6 +93,7 @@ class CorporateCompanyController extends Controller
             'quotations' => fn ($query) => $query->latest(),
             'invoices' => fn ($query) => $query->latest(),
             'drivers' => fn ($query) => $query->orderBy('name'),
+            'drivers.student',
         ]);
 
         $quotationStatus = $request->query('quotation_status');

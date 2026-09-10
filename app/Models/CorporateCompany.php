@@ -49,6 +49,23 @@ class CorporateCompany extends Model
         return $this->hasMany(CorporateCompanyDriver::class);
     }
 
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class);
+    }
+
+    /**
+     * Whether this company has any invoice that's gone unpaid past its due
+     * date - the trigger for flagging both the company and its drivers as
+     * at risk (see Enrollment::isCorporateSponsorOverdue()). Reads the
+     * already-loaded invoices collection when available (the company show
+     * page eager loads it) rather than querying again.
+     */
+    public function hasOverdueInvoice(): bool
+    {
+        return $this->invoices->contains(fn (CorporateInvoice $invoice) => $invoice->isOverdue());
+    }
+
     /**
      * company_reference is deliberately not fillable: it's a permanent,
      * system-assigned identifier derived from the row's own auto-increment

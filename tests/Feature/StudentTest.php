@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Http\Controllers\StudentController;
 use App\Models\Attendance;
 use App\Models\Certificate;
+use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Service;
@@ -1386,5 +1388,49 @@ class StudentTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('Director-controlled information');
         $response->assertSee('name="name"', false);
+    }
+
+    public function test_the_index_shows_a_sponsoring_company_badge_for_a_corporate_sponsored_student(): void
+    {
+        $user = User::factory()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+        Student::factory()->create(['name' => 'Sponsored Driver', 'corporate_company_id' => $company->id]);
+
+        $response = $this->actingAs($user)->get('/students');
+
+        $response->assertOk();
+        $response->assertSee('Sponsored Driver');
+        $response->assertSee('Arco Worldwide');
+    }
+
+    public function test_the_show_page_flags_a_corporate_sponsored_student_whose_company_has_an_overdue_invoice(): void
+    {
+        $user = User::factory()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'sent',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+        $student = Student::factory()->create(['corporate_company_id' => $company->id]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Sponsored by Arco Worldwide');
+        $response->assertSee("This company's invoice is overdue");
+    }
+
+    public function test_the_show_page_does_not_flag_a_corporate_sponsored_student_whose_company_is_current(): void
+    {
+        $user = User::factory()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+        $student = Student::factory()->create(['corporate_company_id' => $company->id]);
+
+        $response = $this->actingAs($user)->get("/students/{$student->id}");
+
+        $response->assertOk();
+        $response->assertSee('Sponsored by Arco Worldwide');
+        $response->assertDontSee('invoice is overdue');
     }
 }

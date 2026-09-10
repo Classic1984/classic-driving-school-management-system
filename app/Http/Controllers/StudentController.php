@@ -51,7 +51,7 @@ class StudentController extends Controller
             }
         }
 
-        $query = Student::with(['courses', 'user']);
+        $query = Student::with(['courses', 'user', 'corporateCompany.invoices']);
 
         if ($hasSearch) {
             $query->where(function ($inner) use ($search) {
@@ -242,6 +242,7 @@ class StudentController extends Controller
     {
         $student->load([
             'courses',
+            'corporateCompany.invoices',
             'payments' => fn ($query) => $query->with(['recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])->latest('payment_date'),
             'certificates' => fn ($query) => $query->with('course')->latest('issue_date'),
             'attendances' => fn ($query) => $query->with(['course', 'instructor', 'vehicle'])->latest('date'),

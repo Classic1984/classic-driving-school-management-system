@@ -40,4 +40,15 @@ class CorporateCompanyDriver extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
+
+    /**
+     * The real Student record this driver became once quick-enrolled, if
+     * any. student_id is deliberately not fillable - only
+     * CorporateCompanyDriverController@enrollStore sets it, never a
+     * submitted form field.
+     */
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
 }

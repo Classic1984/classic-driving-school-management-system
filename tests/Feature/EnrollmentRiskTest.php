@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Attendance;
+use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -152,5 +154,67 @@ class EnrollmentRiskTest extends TestCase
 
         $this->assertContains('Absent 9 day(s)', $reasons);
         $this->assertContains('Payment due in 4 day(s)', $reasons);
+    }
+
+    public function test_a_corporate_sponsored_enrollment_has_no_individual_balance(): void
+    {
+        $company = CorporateCompany::factory()->create();
+        $course = Course::factory()->create(['fee' => 75000]);
+        $student = Student::factory()->create(['corporate_company_id' => $company->id]);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'status' => 'active',
+            'fee' => 75000,
+        ]);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        $this->assertSame(0.0, $enrollment->balance());
+        $this->assertFalse($enrollment->isAttendanceRisk());
+        $this->assertFalse($enrollment->isPaymentRisk());
+    }
+
+    public function test_a_corporate_sponsored_enrollment_is_flagged_when_the_company_has_an_overdue_invoice(): void
+    {
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'sent',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+        $course = Course::factory()->create(['fee' => 75000]);
+        $student = Student::factory()->create(['corporate_company_id' => $company->id]);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'status' => 'active',
+            'fee' => 75000,
+        ]);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        $this->assertTrue($company->hasOverdueInvoice());
+        $this->assertTrue($enrollment->isCorporateSponsorOverdue());
+        $this->assertSame('medium', $enrollment->riskLevel());
+        $this->assertContains("Sponsor company invoice overdue ({$company->name})", $enrollment->riskReasons());
+    }
+
+    public function test_a_corporate_sponsored_enrollment_is_not_flagged_while_the_companys_invoices_are_current(): void
+    {
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'paid',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+        $course = Course::factory()->create(['fee' => 75000]);
+        $student = Student::factory()->create(['corporate_company_id' => $company->id]);
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->toDateString(),
+            'status' => 'active',
+            'fee' => 75000,
+        ]);
+        $enrollment = Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail();
+
+        $this->assertFalse($company->hasOverdueInvoice());
+        $this->assertFalse($enrollment->isCorporateSponsorOverdue());
+        $this->assertNull($enrollment->riskLevel());
     }
 }
