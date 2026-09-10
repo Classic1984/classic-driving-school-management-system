@@ -123,4 +123,16 @@ class WhatsAppServiceTest extends TestCase
         $this->assertFalse($result);
         Http::assertNothingSent();
     }
+
+    public function test_is_configured_reflects_whether_all_three_twilio_settings_are_present(): void
+    {
+        config(['services.twilio.account_sid' => null, 'services.twilio.auth_token' => null, 'services.twilio.whatsapp_from' => null]);
+        $this->assertFalse((new WhatsAppService)->isConfigured());
+
+        $this->fakeTwilioConfig();
+        $this->assertTrue((new WhatsAppService)->isConfigured());
+
+        config(['services.twilio.whatsapp_from' => null]);
+        $this->assertFalse((new WhatsAppService)->isConfigured());
+    }
 }

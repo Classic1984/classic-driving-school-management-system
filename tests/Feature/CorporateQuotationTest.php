@@ -204,8 +204,56 @@ class CorporateQuotationTest extends TestCase
         $response = $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/whatsapp");
 
         $response->assertRedirect(route('corporate-quotations.show', $quotation));
-        $this->assertSame('quotation-whatsapp-failed', session('status'));
+        $this->assertSame('quotation-whatsapp-not-configured', session('status'));
         Http::assertNothingSent();
+    }
+
+    public function test_sending_the_quotation_via_whatsapp_fails_gracefully_when_the_company_has_no_phone(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake();
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['phone' => null]);
+        $quotation = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id]);
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/whatsapp");
+
+        $response->assertRedirect(route('corporate-quotations.show', $quotation));
+        $this->assertSame('quotation-whatsapp-no-phone', session('status'));
+        Http::assertNothingSent();
+    }
+
+    public function test_a_director_can_delete_a_quotation(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $quotation = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id]);
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->delete("/corporate-quotations/{$quotation->id}");
+
+        $response->assertRedirect(route('corporate-companies.show', $company));
+        $this->assertDatabaseMissing('corporate_quotations', ['id' => $quotation->id]);
+    }
+
+    public function test_a_converted_quotation_cannot_be_deleted(): void
+    {
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+        $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/convert");
+
+        $response = $this->actingAs($director)->delete("/corporate-quotations/{$quotation->id}");
+
+        $response->assertRedirect(route('corporate-quotations.show', $quotation));
+        $this->assertSame('quotation-already-converted-cannot-delete', session('status'));
+        $this->assertDatabaseHas('corporate_quotations', ['id' => $quotation->id]);
     }
 
     /**

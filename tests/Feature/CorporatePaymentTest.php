@@ -226,7 +226,34 @@ class CorporatePaymentTest extends TestCase
         $response = $this->actingAs($director)->post("/corporate-payments/{$payment->id}/receipt/whatsapp");
 
         $response->assertRedirect(route('corporate-payments.receipt', $payment));
-        $this->assertSame('receipt-whatsapp-failed', session('status'));
+        $this->assertSame('receipt-whatsapp-not-configured', session('status'));
+        Http::assertNothingSent();
+    }
+
+    public function test_sending_the_receipt_via_whatsapp_fails_gracefully_when_the_company_has_no_phone(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake();
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['phone' => null]);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $payment = $invoice->payments()->create([
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => '2026-09-10',
+            'recorded_by' => $director->id,
+        ]);
+
+        $response = $this->actingAs($director)->post("/corporate-payments/{$payment->id}/receipt/whatsapp");
+
+        $response->assertRedirect(route('corporate-payments.receipt', $payment));
+        $this->assertSame('receipt-whatsapp-no-phone', session('status'));
         Http::assertNothingSent();
     }
 }

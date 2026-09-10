@@ -92,6 +92,14 @@ class CorporatePaymentController extends Controller
     {
         $corporatePayment->load('invoice.company');
 
+        if (! $whatsapp->isConfigured()) {
+            return Redirect::route('corporate-payments.receipt', $corporatePayment)->with('status', 'receipt-whatsapp-not-configured');
+        }
+
+        if (! $corporatePayment->invoice->company->phone) {
+            return Redirect::route('corporate-payments.receipt', $corporatePayment)->with('status', 'receipt-whatsapp-no-phone');
+        }
+
         $path = "corporate/receipts/{$corporatePayment->receipt_number}-".Str::random(40).'.pdf';
         Storage::disk('public')->put($path, $this->buildPdf($corporatePayment)->output());
         $url = Storage::disk('public')->url($path);

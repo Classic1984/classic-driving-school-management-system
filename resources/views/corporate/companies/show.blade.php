@@ -17,6 +17,12 @@
 
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            @if (session('status') === 'invoice-deleted')
+                <p class="text-sm font-medium text-green-600">{{ __('Invoice deleted successfully.') }}</p>
+            @elseif (session('status') === 'quotation-deleted')
+                <p class="text-sm font-medium text-green-600">{{ __('Quotation deleted successfully.') }}</p>
+            @endif
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="relative overflow-hidden bg-black p-6 sm:p-8">
                     <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
@@ -86,21 +92,42 @@
                     @endif
                 </div>
 
+                @php
+                    $statusColor = fn (string $status) => match ($status) {
+                        'paid', 'approved' => 'green',
+                        'rejected', 'expired', 'overdue', 'cancelled' => 'red',
+                        'sent', 'converted' => 'blue',
+                        default => 'amber',
+                    };
+                    $quotationStatuses = ['draft', 'sent', 'approved', 'rejected', 'expired', 'converted'];
+                    $invoiceStatuses = ['pending', 'sent', 'paid', 'overdue', 'cancelled'];
+                @endphp
+
                 <div class="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                         <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500">
                             <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                             {{ __('Quotations') }}
                         </h4>
-                        @if ($company->quotations->isEmpty())
-                            <p class="mt-3 text-sm text-gray-500">{{ __('No quotations yet.') }}</p>
+
+                        @if ($company->quotations->isNotEmpty())
+                            <div class="flex flex-wrap gap-1.5 mt-3">
+                                <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'invoice_status' => $invoiceStatus])) }}#quotations" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $quotationStatus ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-black text-amber-400' }}">{{ __('All') }}</a>
+                                @foreach ($quotationStatuses as $status)
+                                    <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'quotation_status' => $status, 'invoice_status' => $invoiceStatus])) }}#quotations" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $quotationStatus === $status ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ __(ucfirst($status)) }}</a>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if ($filteredQuotations->isEmpty())
+                            <p id="quotations" class="mt-3 text-sm text-gray-500">{{ $quotationStatus ? __('No quotations with this status.') : __('No quotations yet.') }}</p>
                         @else
-                            <ul class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
-                                @foreach ($company->quotations as $quotation)
+                            <ul id="quotations" class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
+                                @foreach ($filteredQuotations as $quotation)
                                     <li>
                                         <a href="{{ route('corporate-quotations.show', $quotation) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-amber-50/40 transition">
                                             <span class="font-mono text-gray-700">{{ $quotation->quotation_number }}</span>
-                                            <x-badge color="amber">{{ __(ucfirst($quotation->status)) }}</x-badge>
+                                            <x-badge :color="$statusColor($quotation->displayStatus())">{{ __(ucfirst($quotation->displayStatus())) }}</x-badge>
                                         </a>
                                     </li>
                                 @endforeach
@@ -113,15 +140,25 @@
                             <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                             {{ __('Invoices') }}
                         </h4>
-                        @if ($company->invoices->isEmpty())
-                            <p class="mt-3 text-sm text-gray-500">{{ __('No invoices yet.') }}</p>
+
+                        @if ($company->invoices->isNotEmpty())
+                            <div class="flex flex-wrap gap-1.5 mt-3">
+                                <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'quotation_status' => $quotationStatus])) }}#invoices" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $invoiceStatus ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-black text-amber-400' }}">{{ __('All') }}</a>
+                                @foreach ($invoiceStatuses as $status)
+                                    <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'invoice_status' => $status, 'quotation_status' => $quotationStatus])) }}#invoices" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $invoiceStatus === $status ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ __(ucfirst($status)) }}</a>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if ($filteredInvoices->isEmpty())
+                            <p id="invoices" class="mt-3 text-sm text-gray-500">{{ $invoiceStatus ? __('No invoices with this status.') : __('No invoices yet.') }}</p>
                         @else
-                            <ul class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
-                                @foreach ($company->invoices as $invoice)
+                            <ul id="invoices" class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
+                                @foreach ($filteredInvoices as $invoice)
                                     <li>
                                         <a href="{{ route('corporate-invoices.show', $invoice) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-amber-50/40 transition">
                                             <span class="font-mono text-gray-700">{{ $invoice->invoice_number }}</span>
-                                            <x-badge color="amber">{{ __(ucfirst($invoice->status)) }}</x-badge>
+                                            <x-badge :color="$statusColor($invoice->displayStatus())">{{ __(ucfirst($invoice->displayStatus())) }}</x-badge>
                                         </a>
                                     </li>
                                 @endforeach

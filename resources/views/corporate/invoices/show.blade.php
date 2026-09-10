@@ -27,6 +27,8 @@
         $canRecordPayment = ! in_array($invoice->status, ['paid', 'cancelled'], true);
         $canSend = $invoice->status === 'pending';
         $canCancel = ! in_array($invoice->status, ['paid', 'cancelled'], true);
+        $canDelete = $invoice->payments->isEmpty();
+        $trashIconPath = 'M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0';
     @endphp
 
     <style>
@@ -84,6 +86,12 @@
                             {{ __('Cancel Invoice') }}
                         </button>
                     @endif
+                    @if ($canDelete)
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'delete-invoice')" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 transition">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $trashIconPath }}" /></svg>
+                            {{ __('Delete') }}
+                        </button>
+                    @endif
                     <a href="{{ route('corporate-companies.show', $invoice->corporate_company_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-4 py-2 text-sm font-bold text-amber-400 transition">
                         {{ __('Back to Company') }}
                     </a>
@@ -106,8 +114,18 @@
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Invoice emailed successfully.') }}</p>
             @elseif (session('status') === 'invoice-whatsapp-sent')
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Invoice sent via WhatsApp.') }}</p>
+            @elseif (session('status') === 'invoice-whatsapp-not-configured')
+                <p class="print-hidden text-sm font-medium text-red-600">{{ __('WhatsApp sending isn\'t set up yet. Ask your developer to add the Twilio WhatsApp credentials.') }}</p>
+            @elseif (session('status') === 'invoice-whatsapp-no-phone')
+                <p class="print-hidden text-sm font-medium text-red-600">
+                    {{ __('This company has no phone number on file.') }}
+                    <a href="{{ route('corporate-companies.edit', $invoice->corporate_company_id) }}" class="underline hover:no-underline">{{ __('Add one') }}</a>
+                    {{ __('and try again.') }}
+                </p>
             @elseif (session('status') === 'invoice-whatsapp-failed')
-                <p class="print-hidden text-sm font-medium text-red-600">{{ __('Could not send the invoice via WhatsApp. Check the company phone number and WhatsApp settings.') }}</p>
+                <p class="print-hidden text-sm font-medium text-red-600">{{ __('WhatsApp could not deliver this message. Double-check the phone number is correct and on WhatsApp.') }}</p>
+            @elseif (session('status') === 'invoice-has-payments')
+                <p class="print-hidden text-sm font-medium text-red-600">{{ __('This invoice has payments recorded and cannot be deleted. Cancel it instead.') }}</p>
             @endif
 
             @if ($invoice->status === 'cancelled' && $invoice->cancellation_reason)
@@ -258,6 +276,12 @@
                             @if ($settings->bank_account_number)
                                 <div class="flex gap-2"><span class="font-bold text-gray-700 w-32 shrink-0">{{ __('Account Number:') }}</span><span class="text-gray-900">{{ $settings->bank_account_number }}</span></div>
                             @endif
+                            @if (! $settings->bank_name && ! $settings->bank_account_name && ! $settings->bank_account_number)
+                                <p class="print-hidden text-gray-400 italic">
+                                    {{ __('No bank details on file yet.') }}
+                                    <a href="{{ route('corporate-invoice-settings.edit') }}" class="text-amber-600 hover:underline not-italic">{{ __('Add them in Invoice Settings') }}</a>
+                                </p>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -360,6 +384,24 @@
                             {{ __('Confirm Cancellation') }}
                         </button>
                         <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'cancel-invoice')">{{ __('Never Mind') }}</x-secondary-button>
+                    </div>
+                </form>
+            </x-modal>
+        @endif
+
+        @if ($canDelete)
+            <x-modal name="delete-invoice" focusable>
+                <form method="post" action="{{ route('corporate-invoices.destroy', $invoice) }}" class="p-6 space-y-4">
+                    @csrf
+                    @method('DELETE')
+                    <h2 class="text-lg font-bold text-gray-900">{{ __('Delete Invoice') }}</h2>
+                    <p class="text-sm text-gray-500">{{ __('Invoice :number and its line items will be permanently deleted. This cannot be undone.', ['number' => $invoice->invoice_number]) }}</p>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-red-600 hover:bg-red-700 px-5 py-2.5 text-sm font-bold text-white transition">
+                            {{ __('Confirm Delete') }}
+                        </button>
+                        <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'delete-invoice')">{{ __('Never Mind') }}</x-secondary-button>
                     </div>
                 </form>
             </x-modal>

@@ -319,8 +319,82 @@ class CorporateInvoiceTest extends TestCase
         $response = $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/whatsapp");
 
         $response->assertRedirect(route('corporate-invoices.show', $invoice));
-        $this->assertSame('invoice-whatsapp-failed', session('status'));
+        $this->assertSame('invoice-whatsapp-not-configured', session('status'));
         Http::assertNothingSent();
+    }
+
+    public function test_sending_the_invoice_via_whatsapp_fails_gracefully_when_the_company_has_no_phone(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake();
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['phone' => null]);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/whatsapp");
+
+        $response->assertRedirect(route('corporate-invoices.show', $invoice));
+        $this->assertSame('invoice-whatsapp-no-phone', session('status'));
+        Http::assertNothingSent();
+    }
+
+    public function test_sending_the_invoice_via_whatsapp_fails_gracefully_when_twilio_rejects_it(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake(['api.twilio.com/*' => Http::response(['message' => 'invalid number'], 400)]);
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['phone' => '08031234567']);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/whatsapp");
+
+        $response->assertRedirect(route('corporate-invoices.show', $invoice));
+        $this->assertSame('invoice-whatsapp-failed', session('status'));
+    }
+
+    public function test_a_director_can_delete_an_invoice_with_no_payments(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->delete("/corporate-invoices/{$invoice->id}");
+
+        $response->assertRedirect(route('corporate-companies.show', $company));
+        $this->assertDatabaseMissing('corporate_invoices', ['id' => $invoice->id]);
+        $this->assertDatabaseMissing('corporate_invoice_items', ['corporate_invoice_id' => $invoice->id]);
+    }
+
+    public function test_an_invoice_with_payments_cannot_be_deleted(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $invoice->payments()->create([
+            'amount' => 30000,
+            'payment_method' => 'cash',
+            'payment_date' => now(),
+            'recorded_by' => $director->id,
+        ]);
+
+        $response = $this->actingAs($director)->delete("/corporate-invoices/{$invoice->id}");
+
+        $response->assertRedirect(route('corporate-invoices.show', $invoice));
+        $this->assertSame('invoice-has-payments', session('status'));
+        $this->assertDatabaseHas('corporate_invoices', ['id' => $invoice->id]);
     }
 
     /**

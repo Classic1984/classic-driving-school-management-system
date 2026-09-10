@@ -208,7 +208,7 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::resource('corporate-companies', CorporateCompanyController::class);
         Route::get('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'edit'])->name('corporate-invoice-settings.edit');
         Route::put('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'update'])->name('corporate-invoice-settings.update');
-        Route::resource('corporate-invoices', CorporateInvoiceController::class)->only(['index', 'create', 'store', 'show']);
+        Route::resource('corporate-invoices', CorporateInvoiceController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
         Route::post('corporate-invoices/{corporateInvoice}/send', [CorporateInvoiceController::class, 'send'])->name('corporate-invoices.send');
         Route::post('corporate-invoices/{corporateInvoice}/cancel', [CorporateInvoiceController::class, 'cancel'])->name('corporate-invoices.cancel');
         Route::get('corporate-invoices/{corporateInvoice}/pdf', [CorporateInvoiceController::class, 'pdf'])->name('corporate-invoices.pdf');
@@ -219,7 +219,7 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('corporate-payments/{corporatePayment}/receipt/pdf', [CorporatePaymentController::class, 'receiptPdf'])->name('corporate-payments.receipt.pdf');
         Route::post('corporate-payments/{corporatePayment}/receipt/email', [CorporatePaymentController::class, 'receiptEmail'])->name('corporate-payments.receipt.email');
         Route::post('corporate-payments/{corporatePayment}/receipt/whatsapp', [CorporatePaymentController::class, 'receiptWhatsapp'])->name('corporate-payments.receipt.whatsapp');
-        Route::resource('corporate-quotations', CorporateQuotationController::class)->only(['index', 'create', 'store', 'show']);
+        Route::resource('corporate-quotations', CorporateQuotationController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
         Route::post('corporate-quotations/{corporateQuotation}/send', [CorporateQuotationController::class, 'send'])->name('corporate-quotations.send');
         Route::post('corporate-quotations/{corporateQuotation}/convert', [CorporateQuotationController::class, 'convert'])->name('corporate-quotations.convert');
         Route::get('corporate-quotations/{corporateQuotation}/pdf', [CorporateQuotationController::class, 'pdf'])->name('corporate-quotations.pdf');
