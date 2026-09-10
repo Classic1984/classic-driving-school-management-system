@@ -156,6 +156,7 @@ class CorporateInvoiceSettingTest extends TestCase
             'programme_options' => "Defensive Driving\nBasic Driving\n\n",
             'duration_options' => "One Week\nTwo Weeks",
             'driver_count_options' => "1\n5\n10",
+            'service_options' => "Certificate of Completion\nRegistration Fee",
         ]);
 
         $response->assertRedirect(route('corporate-invoice-settings.edit'));
@@ -163,6 +164,17 @@ class CorporateInvoiceSettingTest extends TestCase
         $this->assertSame(['Defensive Driving', 'Basic Driving'], $settings->programmeOptionsList());
         $this->assertSame(['One Week', 'Two Weeks'], $settings->durationOptionsList());
         $this->assertSame(['1', '5', '10'], $settings->driverCountOptionsList());
+        $this->assertSame(['Certificate of Completion', 'Registration Fee'], $settings->serviceOptionsList());
+    }
+
+    public function test_a_director_sees_the_default_service_options_the_first_time(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/corporate-invoice-settings');
+
+        $response->assertOk();
+        $response->assertSee('Certificate of Completion');
     }
 
     public function test_next_sequence_increments_within_a_year_and_resets_the_next(): void

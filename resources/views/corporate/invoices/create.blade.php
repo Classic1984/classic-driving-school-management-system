@@ -9,16 +9,39 @@
         $receiptIconPath = ['M9 14.25 6.75 12l2.25-2.25M15 9.75l2.25 2.25-2.25 2.25M3.375 21h17.25c.621 0 1.125-.504 1.125-1.125V4.125C21.75 3.504 21.246 3 20.625 3H3.375C2.754 3 2.25 3.504 2.25 4.125v15.75c0 .621.504 1.125 1.125 1.125Z'];
         $trashIconPath = 'M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0';
         $plusIconPath = 'M12 9v3.75m0 0v3.75m0-3.75h3.75m-3.75 0h-3.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
+        $chevronDownIconPath = 'm19.5 8.25-7.5 7.5-7.5-7.5';
     @endphp
 
     <div
         class="py-6"
         x-data="{
-            items: [{ description: '', quantity: 1, unit_price: '' }],
-            addItem() { this.items.push({ description: '', quantity: 1, unit_price: '' }); },
+            items: [{ description: '', quantity: 1, unit_price: '', showSuggestions: false, menuTop: 0, menuLeft: 0, menuWidth: 0 }],
+            serviceOptions: @js($serviceOptions),
+            addItem() { this.items.push({ description: '', quantity: 1, unit_price: '', showSuggestions: false, menuTop: 0, menuLeft: 0, menuWidth: 0 }); },
             removeItem(index) { if (this.items.length > 1) this.items.splice(index, 1); },
             amount(item) { const q = parseFloat(item.quantity) || 0; const p = parseFloat(item.unit_price) || 0; return (q * p).toLocaleString(); },
             total() { return this.items.reduce((sum, item) => sum + ((parseFloat(item.quantity) || 0) * (parseFloat(item.unit_price) || 0)), 0).toLocaleString(); },
+            filteredServiceOptions(item) {
+                return item.description === ''
+                    ? this.serviceOptions
+                    : this.serviceOptions.filter((option) => option.toLowerCase().includes(item.description.toLowerCase()));
+            },
+            // The suggestion list is teleported to <body> (see the field
+            // markup below) so it isn't clipped by the Charges table's
+            // horizontal-scroll wrapper - overflow-x-auto forces
+            // overflow-y to auto too (per the CSS overflow interop rule),
+            // which would otherwise cut the dropdown off a few pixels
+            // below the input. Teleporting means it's no longer
+            // positioned by CSS relative to the input, so its coordinates
+            // are computed from the input's own bounding box instead.
+            openSuggestions(item, event) {
+                const rect = event.target.getBoundingClientRect();
+                item.menuTop = rect.bottom + window.scrollY;
+                item.menuLeft = rect.left + window.scrollX;
+                item.menuWidth = rect.width;
+                item.showSuggestions = true;
+            },
+            selectService(item, option) { item.description = option; item.showSuggestions = false; },
         }"
     >
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -118,7 +141,39 @@
                                 <template x-for="(item, index) in items" :key="index">
                                     <tr class="border-t border-gray-100">
                                         <td class="py-2 pr-3">
-                                            <input type="text" :name="`items[${index}][description]`" x-model="item.description" class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" required>
+                                            <div class="relative">
+                                                <input
+                                                    type="text"
+                                                    :name="`items[${index}][description]`"
+                                                    x-model="item.description"
+                                                    x-on:focus="openSuggestions(item, $event)"
+                                                    x-on:input="openSuggestions(item, $event)"
+                                                    x-on:blur="item.showSuggestions = false"
+                                                    autocomplete="off"
+                                                    class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm pr-8"
+                                                    required
+                                                >
+                                                <button type="button" x-on:mousedown.prevent="item.showSuggestions = !item.showSuggestions" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chevronDownIconPath }}" /></svg>
+                                                </button>
+                                                <template x-teleport="body">
+                                                    <ul
+                                                        x-show="item.showSuggestions"
+                                                        x-cloak
+                                                        :style="`position:absolute; top:${item.menuTop}px; left:${item.menuLeft}px; width:${item.menuWidth}px;`"
+                                                        class="z-50 mt-1 max-h-48 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-gray-200"
+                                                    >
+                                                        <template x-for="option in filteredServiceOptions(item)" :key="option">
+                                                            <li x-on:mousedown.prevent="selectService(item, option)" x-text="option" class="cursor-pointer px-3 py-2 text-gray-700 hover:bg-amber-50"></li>
+                                                        </template>
+                                                        <li x-show="serviceOptions.length === 0" class="px-3 py-2 text-gray-400 italic">
+                                                            {{ __('No suggestions yet.') }}
+                                                            <a href="{{ route('corporate-invoice-settings.edit') }}" class="not-italic text-amber-600 hover:underline">{{ __('Add some in Invoice Settings') }}</a>
+                                                        </li>
+                                                        <li x-show="serviceOptions.length > 0 && filteredServiceOptions(item).length === 0" class="px-3 py-2 text-gray-400 italic">{{ __('No matches - your typed value will still be used.') }}</li>
+                                                    </ul>
+                                                </template>
+                                            </div>
                                         </td>
                                         <td class="py-2 px-3">
                                             <input type="number" step="0.01" min="0.01" :name="`items[${index}][quantity]`" x-model="item.quantity" class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" required>

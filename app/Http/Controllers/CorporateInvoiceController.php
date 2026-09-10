@@ -51,6 +51,7 @@ class CorporateInvoiceController extends Controller
             'programmeOptions' => $settings->programmeOptionsList(),
             'durationOptions' => $settings->durationOptionsList(),
             'driverCountOptions' => $settings->driverCountOptionsList(),
+            'serviceOptions' => $settings->serviceOptionsList(),
         ]);
     }
 
