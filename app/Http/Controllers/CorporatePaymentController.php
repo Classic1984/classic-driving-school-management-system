@@ -7,7 +7,9 @@ use App\Models\ActivityLog;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
 use App\Models\CorporatePayment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -45,5 +47,18 @@ class CorporatePaymentController extends Controller
         $settings = CorporateInvoiceSetting::current();
 
         return view('corporate.payments.receipt', ['payment' => $corporatePayment, 'settings' => $settings]);
+    }
+
+    /**
+     * Download the payment's receipt as a PDF.
+     */
+    public function receiptPdf(CorporatePayment $corporatePayment): Response
+    {
+        $corporatePayment->load('invoice.company');
+        $settings = CorporateInvoiceSetting::current();
+
+        $pdf = Pdf::loadView('corporate.payments.receipt-pdf', ['payment' => $corporatePayment, 'settings' => $settings]);
+
+        return $pdf->download("{$corporatePayment->receipt_number}.pdf");
     }
 }

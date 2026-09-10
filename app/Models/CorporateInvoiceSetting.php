@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * A single-row settings table holding the company/bank details and
@@ -49,6 +50,25 @@ class CorporateInvoiceSetting extends Model
             ->filter()
             ->values()
             ->all();
+    }
+
+    /**
+     * The signature image as a data: URI, for embedding directly in a PDF.
+     * dompdf can't fetch remote URLs (enable_remote is off) and the
+     * "public" disk can be S3-backed in production (see
+     * config/filesystems.php), so a plain local file path or a Storage URL
+     * won't reliably work either - inlining the bytes sidesteps both.
+     */
+    public function signatureDataUri(): ?string
+    {
+        if (! $this->signature_path || ! Storage::disk('public')->exists($this->signature_path)) {
+            return null;
+        }
+
+        $mimeType = Storage::disk('public')->mimeType($this->signature_path);
+        $contents = base64_encode(Storage::disk('public')->get($this->signature_path));
+
+        return "data:{$mimeType};base64,{$contents}";
     }
 
     public function updater(): BelongsTo

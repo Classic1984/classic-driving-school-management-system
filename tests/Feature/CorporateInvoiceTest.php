@@ -7,6 +7,8 @@ use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CorporateInvoiceTest extends TestCase
@@ -205,6 +207,34 @@ class CorporateInvoiceTest extends TestCase
 
         $this->assertSame('paid', $invoice->fresh()->status);
         $this->assertNull($invoice->fresh()->cancellation_reason);
+    }
+
+    public function test_a_director_can_download_the_invoice_as_a_pdf(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}/pdf");
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_the_invoice_pdf_still_renders_when_a_signature_is_uploaded(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update([
+            'signature_path' => UploadedFile::fake()->image('signature.png')->store('corporate/signatures', 'public'),
+        ]);
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}/pdf");
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
     }
 
     /**

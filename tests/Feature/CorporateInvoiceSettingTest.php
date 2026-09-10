@@ -98,4 +98,27 @@ class CorporateInvoiceSettingTest extends TestCase
 
         $this->assertDatabaseCount('corporate_invoice_settings', 1);
     }
+
+    public function test_signature_data_uri_is_null_without_an_uploaded_signature(): void
+    {
+        $this->assertNull(CorporateInvoiceSetting::current()->signatureDataUri());
+    }
+
+    public function test_signature_data_uri_embeds_the_uploaded_image(): void
+    {
+        Storage::fake('public');
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)->put('/corporate-invoice-settings', [
+            'invoice_prefix' => 'INV',
+            'quotation_prefix' => 'QUO',
+            'receipt_prefix' => 'REC',
+            'signature' => UploadedFile::fake()->image('signature.png'),
+        ]);
+
+        $dataUri = CorporateInvoiceSetting::current()->signatureDataUri();
+
+        $this->assertNotNull($dataUri);
+        $this->assertStringStartsWith('data:image/png;base64,', $dataUri);
+    }
 }

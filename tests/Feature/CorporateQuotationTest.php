@@ -113,6 +113,18 @@ class CorporateQuotationTest extends TestCase
         $this->assertSame($firstInvoiceId, $quotation->fresh()->converted_invoice_id);
     }
 
+    public function test_a_director_can_download_the_quotation_as_a_pdf(): void
+    {
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-quotations/{$quotation->id}/pdf");
+
+        $response->assertOk();
+        $response->assertHeader('content-type', 'application/pdf');
+    }
+
     /**
      * @return array<string, mixed>
      */

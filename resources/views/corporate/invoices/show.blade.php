@@ -63,6 +63,10 @@
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $printerIconPath }}" /></svg>
                         {{ __('Print') }}
                     </button>
+                    <a href="{{ route('corporate-invoices.pdf', $invoice) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-3L12 16.5m0 0 3.75-3.75M12 16.5V3" /></svg>
+                        {{ __('Download PDF') }}
+                    </a>
                     @if ($canCancel)
                         <button type="button" x-data x-on:click="$dispatch('open-modal', 'cancel-invoice')" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-red-300 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $xCircleIconPath }}" /></svg>
