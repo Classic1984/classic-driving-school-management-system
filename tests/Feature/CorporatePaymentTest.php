@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Mail\CorporateReceiptMail;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
+use App\Models\CorporateInvoiceSetting;
 use App\Models\CorporatePayment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -130,6 +131,27 @@ class CorporatePaymentTest extends TestCase
         $response->assertSee($payment->receipt_number);
         $response->assertSee('₦75,000');
         $response->assertSee('bank transfer');
+    }
+
+    public function test_the_receipt_shows_the_school_website(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateInvoiceSetting::current()->update(['website' => 'classicdriving.com.ng']);
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $payment = $invoice->payments()->create([
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => '2026-09-10',
+            'recorded_by' => $director->id,
+        ]);
+
+        $screenResponse = $this->actingAs($director)->get("/corporate-payments/{$payment->id}/receipt");
+        $pdfResponse = $this->actingAs($director)->get("/corporate-payments/{$payment->id}/receipt/pdf");
+
+        $screenResponse->assertOk();
+        $screenResponse->assertSee('classicdriving.com.ng');
+        $pdfResponse->assertOk();
     }
 
     public function test_a_director_can_download_the_receipt_as_a_pdf(): void

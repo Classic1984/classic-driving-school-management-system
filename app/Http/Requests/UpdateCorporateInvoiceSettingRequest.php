@@ -30,6 +30,7 @@ class UpdateCorporateInvoiceSettingRequest extends FormRequest
             'bank_account_number' => ['nullable', 'string', 'max:50'],
             'phone' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
+            'website' => ['nullable', 'string', 'max:255'],
             'invoice_prefix' => ['nullable', 'string', 'max:20', 'alpha_dash'],
             'quotation_prefix' => ['nullable', 'string', 'max:20', 'alpha_dash'],
             'receipt_prefix' => ['nullable', 'string', 'max:20', 'alpha_dash'],

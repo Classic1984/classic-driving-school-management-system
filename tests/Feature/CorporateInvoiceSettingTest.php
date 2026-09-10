@@ -37,6 +37,30 @@ class CorporateInvoiceSettingTest extends TestCase
         $response->assertSee('value="REC"', false);
     }
 
+    public function test_a_director_sees_the_default_website_the_first_time(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/corporate-invoice-settings');
+
+        $response->assertOk();
+        $response->assertSee('value="classicdriving.com.ng"', false);
+    }
+
+    public function test_a_director_can_update_the_website(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->put('/corporate-invoice-settings', [
+            'website' => 'www.classicdriving.com.ng',
+        ]);
+
+        $response->assertRedirect(route('corporate-invoice-settings.edit'));
+        $this->assertDatabaseHas('corporate_invoice_settings', [
+            'website' => 'www.classicdriving.com.ng',
+        ]);
+    }
+
     public function test_a_director_can_update_the_company_and_bank_details(): void
     {
         $director = User::factory()->director()->create();

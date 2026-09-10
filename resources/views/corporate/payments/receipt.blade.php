@@ -63,11 +63,11 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="text-center pb-4 border-b-2 border-blue-900">
+                <div class="text-center pb-4 border-b-2 border-black">
                     <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600 mb-2">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $checkCircleIconPath }}" /></svg>
                     </span>
-                    <h1 class="text-2xl font-black text-blue-900 tracking-wide">{{ __('PAYMENT RECEIPT') }}</h1>
+                    <h1 class="text-2xl font-black text-black tracking-wide">{{ __('PAYMENT RECEIPT') }}</h1>
                     <p class="text-sm text-gray-500 mt-1">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
                 </div>
 
@@ -88,7 +88,7 @@
                     </div>
                     <div class="flex justify-between py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Amount Paid') }}</dt>
-                        <dd class="text-xl font-black text-blue-900">₦{{ number_format((float) $payment->amount, 0) }}</dd>
+                        <dd class="text-xl font-black text-black">₦{{ number_format((float) $payment->amount, 0) }}</dd>
                     </div>
                     <div class="flex justify-between py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Payment Method') }}</dt>
@@ -119,6 +119,9 @@
                 @endif
 
                 <p class="mt-8 text-center text-xs text-gray-400">{{ __('Thank you for choosing :company.', ['company' => $settings->company_name ?: 'Classic Driving School']) }}</p>
+                @if ($settings->website)
+                    <p class="text-center text-xs font-semibold text-amber-600 mt-1">{{ $settings->website }}</p>
+                @endif
             </div>
         </div>
     </div>

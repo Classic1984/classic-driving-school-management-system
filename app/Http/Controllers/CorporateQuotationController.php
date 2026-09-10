@@ -98,7 +98,11 @@ class CorporateQuotationController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        return view('corporate.quotations.show', ['quotation' => $corporateQuotation, 'activityLogs' => $activityLogs]);
+        return view('corporate.quotations.show', [
+            'quotation' => $corporateQuotation,
+            'activityLogs' => $activityLogs,
+            'settings' => CorporateInvoiceSetting::current(),
+        ]);
     }
 
     /**
@@ -254,6 +258,9 @@ class CorporateQuotationController extends Controller
 
     private function buildPdf(CorporateQuotation $corporateQuotation): PdfDocument
     {
-        return Pdf::loadView('corporate.quotations.pdf', ['quotation' => $corporateQuotation]);
+        return Pdf::loadView('corporate.quotations.pdf', [
+            'quotation' => $corporateQuotation,
+            'settings' => CorporateInvoiceSetting::current(),
+        ]);
     }
 }

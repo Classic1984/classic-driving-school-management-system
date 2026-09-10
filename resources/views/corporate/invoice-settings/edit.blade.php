@@ -66,6 +66,11 @@
                                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
                             </div>
                         </div>
+                        <div>
+                            <x-input-label for="website" :value="__('Website')" />
+                            <x-text-input id="website" name="website" type="text" class="block w-full mt-1" placeholder="classicdriving.com.ng" :value="old('website', $settings->website)" />
+                            <x-input-error class="mt-2" :messages="$errors->get('website')" />
+                        </div>
                     </div>
                 </div>
 
