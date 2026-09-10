@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\CorporateInvoiceMail;
+use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
@@ -395,6 +396,48 @@ class CorporateInvoiceTest extends TestCase
         $response->assertRedirect(route('corporate-invoices.show', $invoice));
         $this->assertSame('invoice-has-payments', session('status'));
         $this->assertDatabaseHas('corporate_invoices', ['id' => $invoice->id]);
+    }
+
+    public function test_the_invoice_page_shows_its_own_activity_timeline(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+
+        $response = $this->actingAs($director)->post('/corporate-invoices', [
+            'corporate_company_id' => $company->id,
+            'invoice_date' => '2026-09-09',
+            'due_date' => '2026-09-16',
+            'items' => [
+                ['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000],
+            ],
+        ]);
+        $invoice = CorporateInvoice::first();
+        $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/send");
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}");
+
+        $response->assertOk();
+        $response->assertSeeInOrder([
+            "Sent corporate invoice {$invoice->invoice_number}",
+            "Created corporate invoice {$invoice->invoice_number}",
+        ]);
+    }
+
+    public function test_the_invoice_activity_timeline_does_not_leak_another_invoices_entries(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoiceOne = CorporateInvoice::factory()->create();
+        $invoiceOne->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+        $invoiceTwo = CorporateInvoice::factory()->create();
+        $invoiceTwo->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+        ActivityLog::record("Created corporate invoice {$invoiceOne->invoice_number} for a company");
+        ActivityLog::record("Created corporate invoice {$invoiceTwo->invoice_number} for a company");
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoiceOne->id}");
+
+        $response->assertOk();
+        $response->assertSee($invoiceOne->invoice_number);
+        $response->assertDontSee("Created corporate invoice {$invoiceTwo->invoice_number}");
     }
 
     /**

@@ -256,6 +256,37 @@ class CorporateQuotationTest extends TestCase
         $this->assertDatabaseHas('corporate_quotations', ['id' => $quotation->id]);
     }
 
+    public function test_the_quotation_page_shows_its_own_activity_timeline(): void
+    {
+        $director = User::factory()->director()->create();
+        $this->actingAs($director)->post('/corporate-quotations', $this->validPayload());
+        $quotation = CorporateQuotation::first();
+        $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/send");
+
+        $response = $this->actingAs($director)->get("/corporate-quotations/{$quotation->id}");
+
+        $response->assertOk();
+        $response->assertSeeInOrder([
+            "Sent corporate quotation {$quotation->quotation_number}",
+            "Created corporate quotation {$quotation->quotation_number}",
+        ]);
+    }
+
+    public function test_converting_a_quotation_shows_up_in_both_the_quotation_and_invoice_timelines(): void
+    {
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $this->actingAs($director)->post("/corporate-quotations/{$quotation->id}/convert");
+        $invoice = CorporateInvoice::first();
+
+        $expected = "Converted corporate quotation {$quotation->quotation_number} to invoice {$invoice->invoice_number}";
+
+        $this->actingAs($director)->get("/corporate-quotations/{$quotation->id}")->assertSee($expected);
+        $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}")->assertSee($expected);
+    }
+
     /**
      * @return array<string, mixed>
      */

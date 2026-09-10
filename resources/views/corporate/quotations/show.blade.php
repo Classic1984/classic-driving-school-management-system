@@ -203,6 +203,11 @@
                     <p class="text-sm text-gray-600 mt-6">{{ $quotation->notes }}</p>
                 @endif
             </div>
+
+            <div class="print-hidden bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
+                <h4 class="text-sm font-bold uppercase tracking-wide text-gray-500 mb-4">{{ __('Activity') }}</h4>
+                <x-activity-timeline :logs="$activityLogs" />
+            </div>
         </div>
     </div>
 
