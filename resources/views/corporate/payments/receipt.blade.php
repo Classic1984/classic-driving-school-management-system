@@ -8,6 +8,7 @@
     @php
         $printerIconPath = 'M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.055 48.055 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z';
         $checkCircleIconPath = 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
+        $globeIconPath = 'M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418';
     @endphp
 
     <style>
@@ -63,52 +64,52 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="text-center pb-4 border-b-2 border-black">
+                <div class="text-center pb-6 border-b-2 border-amber-400">
                     <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600 mb-2">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $checkCircleIconPath }}" /></svg>
                     </span>
-                    <h1 class="text-2xl font-black text-black tracking-wide">{{ __('PAYMENT RECEIPT') }}</h1>
-                    <p class="text-sm text-gray-500 mt-1">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
+                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight bg-gradient-to-b from-amber-300 via-amber-600 to-black bg-clip-text text-transparent">{{ __('PAYMENT RECEIPT') }}</h1>
+                    <p class="text-sm font-extrabold uppercase tracking-[0.15em] text-black mt-1">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
                 </div>
 
-                <dl class="mt-6 divide-y divide-gray-100 text-sm">
-                    <div class="flex justify-between py-2.5">
+                <dl class="mt-6 rounded-2xl overflow-hidden ring-2 ring-amber-300 divide-y divide-amber-100 text-sm">
+                    <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Received From') }}</dt>
                         <dd class="font-bold text-gray-900">{{ $payment->invoice->company->name }}</dd>
                     </div>
                     @if ($payment->invoice->programme_name)
-                        <div class="flex justify-between py-2.5">
+                        <div class="flex justify-between px-4 py-2.5">
                             <dt class="font-semibold text-gray-500">{{ __('Programme') }}</dt>
                             <dd class="text-gray-900">{{ $payment->invoice->programme_name }}</dd>
                         </div>
                     @endif
-                    <div class="flex justify-between py-2.5">
+                    <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Invoice No.') }}</dt>
                         <dd class="font-mono text-gray-900">{{ $payment->invoice->invoice_number }}</dd>
                     </div>
-                    <div class="flex justify-between py-2.5">
-                        <dt class="font-semibold text-gray-500">{{ __('Amount Paid') }}</dt>
-                        <dd class="text-xl font-black text-black">₦{{ number_format((float) $payment->amount, 0) }}</dd>
+                    <div class="flex justify-between items-center px-4 py-3 bg-black">
+                        <dt class="font-semibold text-amber-400">{{ __('Amount Paid') }}</dt>
+                        <dd class="text-xl font-black text-amber-400">₦{{ number_format((float) $payment->amount, 0) }}</dd>
                     </div>
-                    <div class="flex justify-between py-2.5">
+                    <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Payment Method') }}</dt>
                         <dd class="text-gray-900 capitalize">{{ str_replace('_', ' ', $payment->payment_method) }}</dd>
                     </div>
                     @if ($payment->transaction_reference)
-                        <div class="flex justify-between py-2.5">
+                        <div class="flex justify-between px-4 py-2.5">
                             <dt class="font-semibold text-gray-500">{{ __('Transaction Reference') }}</dt>
                             <dd class="text-gray-900">{{ $payment->transaction_reference }}</dd>
                         </div>
                     @endif
-                    <div class="flex justify-between py-2.5">
+                    <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Payment Date') }}</dt>
                         <dd class="text-gray-900">{{ $payment->payment_date->format('d F Y') }}</dd>
                     </div>
-                    <div class="flex justify-between py-2.5">
+                    <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Status') }}</dt>
                         <dd><span class="inline-flex items-center rounded-full bg-green-100 text-green-700 px-2.5 py-1 text-xs font-bold">{{ __('PAID') }}</span></dd>
                     </div>
-                    <div class="flex justify-between py-2.5">
+                    <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Receipt No.') }}</dt>
                         <dd class="font-mono text-gray-900">{{ $payment->receipt_number }}</dd>
                     </div>
@@ -118,10 +119,16 @@
                     <p class="mt-4 text-sm text-gray-500">{{ $payment->notes }}</p>
                 @endif
 
-                <p class="mt-8 text-center text-xs text-gray-400">{{ __('Thank you for choosing :company.', ['company' => $settings->company_name ?: 'Classic Driving School']) }}</p>
-                @if ($settings->website)
-                    <p class="text-center text-xs font-semibold text-amber-600 mt-1">{{ $settings->website }}</p>
-                @endif
+                <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+                    <p class="text-2xl text-gray-900" style="font-family: 'Dancing Script', cursive;">{{ __('Thank You!') }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ __('For choosing :company.', ['company' => $settings->company_name ?: 'Classic Driving School']) }}</p>
+                    @if ($settings->website)
+                        <p class="flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-600 mt-2">
+                            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $globeIconPath }}" /></svg>
+                            {{ $settings->website }}
+                        </p>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
