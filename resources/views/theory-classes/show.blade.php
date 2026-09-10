@@ -227,7 +227,7 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-right" x-show="!editing">
                                                     <div class="flex items-center justify-end gap-2">
-                                                        @unless ($entry['attendance'])
+                                                        @if (($entry['attendance']->status ?? null) !== 'present')
                                                             <form method="post" action="{{ route('theory-classes.attendances.store', $theoryClass) }}">
                                                                 @csrf
                                                                 <input type="hidden" name="student_id" value="{{ $entry['student']->id }}">
@@ -237,7 +237,7 @@
                                                                     {{ __('Mark Present') }}
                                                                 </button>
                                                             </form>
-                                                        @endunless
+                                                        @endif
                                                         <button type="button" @click="editing = true" class="text-sm text-amber-600 hover:underline">
                                                             {{ $entry['attendance'] ? __('Edit') : __('Other') }}
                                                         </button>

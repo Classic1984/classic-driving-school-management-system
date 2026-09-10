@@ -393,6 +393,64 @@ class TheoryClassTest extends TestCase
         $response->assertSee('Mark Present');
     }
 
+    public function test_the_roster_page_shows_a_mark_present_button_for_a_student_marked_absent(): void
+    {
+        $user = User::factory()->create();
+        $student = $this->activeStudent();
+        $theoryClass = TheoryClass::factory()->create();
+        TheoryClassAttendance::factory()->create([
+            'theory_class_id' => $theoryClass->id,
+            'student_id' => $student->id,
+            'status' => 'absent',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('theory-classes.show', $theoryClass));
+
+        $response->assertOk();
+        $response->assertSee('Mark Present');
+    }
+
+    public function test_the_roster_page_hides_the_mark_present_button_once_a_student_is_present(): void
+    {
+        $user = User::factory()->create();
+        $student = $this->activeStudent();
+        $theoryClass = TheoryClass::factory()->create();
+        TheoryClassAttendance::factory()->create([
+            'theory_class_id' => $theoryClass->id,
+            'student_id' => $student->id,
+            'status' => 'present',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('theory-classes.show', $theoryClass));
+
+        $response->assertOk();
+        $response->assertDontSee('Mark Present');
+    }
+
+    public function test_clicking_mark_present_flips_an_absent_student_to_present(): void
+    {
+        $user = User::factory()->create();
+        $student = $this->activeStudent();
+        $theoryClass = TheoryClass::factory()->create();
+        TheoryClassAttendance::factory()->create([
+            'theory_class_id' => $theoryClass->id,
+            'student_id' => $student->id,
+            'status' => 'absent',
+        ]);
+
+        $response = $this->actingAs($user)->post(route('theory-classes.attendances.store', $theoryClass), [
+            'student_id' => $student->id,
+            'status' => 'present',
+        ]);
+
+        $response->assertRedirect(route('theory-classes.show', $theoryClass));
+        $this->assertDatabaseHas('theory_class_attendances', [
+            'theory_class_id' => $theoryClass->id,
+            'student_id' => $student->id,
+            'status' => 'present',
+        ]);
+    }
+
     public function test_an_admin_can_delete_a_theory_class_and_its_attendance_records(): void
     {
         $user = User::factory()->create();
