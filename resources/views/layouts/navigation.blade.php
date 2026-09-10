@@ -79,6 +79,9 @@
             <x-responsive-nav-link :href="route('corporate-companies.index')" :active="request()->routeIs('corporate-companies.*')">
                 {{ __('Companies') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('corporate-quotations.index')" :active="request()->routeIs('corporate-quotations.*')">
+                {{ __('Quotations') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('corporate-invoices.index')" :active="request()->routeIs('corporate-invoices.*')">
                 {{ __('Invoices') }}
             </x-responsive-nav-link>

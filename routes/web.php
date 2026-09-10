@@ -15,6 +15,7 @@ use App\Http\Controllers\CorporateCompanyController;
 use App\Http\Controllers\CorporateInvoiceController;
 use App\Http\Controllers\CorporateInvoiceSettingController;
 use App\Http\Controllers\CorporatePaymentController;
+use App\Http\Controllers\CorporateQuotationController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscountRequestController;
@@ -210,6 +211,9 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::resource('corporate-invoices', CorporateInvoiceController::class)->only(['index', 'create', 'store', 'show']);
         Route::post('corporate-invoices/{corporateInvoice}/payments', [CorporatePaymentController::class, 'store'])->name('corporate-invoices.payments.store');
         Route::get('corporate-payments/{corporatePayment}/receipt', [CorporatePaymentController::class, 'receipt'])->name('corporate-payments.receipt');
+        Route::resource('corporate-quotations', CorporateQuotationController::class)->only(['index', 'create', 'store', 'show']);
+        Route::post('corporate-quotations/{corporateQuotation}/send', [CorporateQuotationController::class, 'send'])->name('corporate-quotations.send');
+        Route::post('corporate-quotations/{corporateQuotation}/convert', [CorporateQuotationController::class, 'convert'])->name('corporate-quotations.convert');
     });
 
     Route::resource('leads', LeadController::class)->except(['show']);
