@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Mail\CorporateReceiptMail;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporatePayment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class CorporatePaymentTest extends TestCase
@@ -132,5 +134,49 @@ class CorporatePaymentTest extends TestCase
 
         $response->assertOk();
         $response->assertHeader('content-type', 'application/pdf');
+    }
+
+    public function test_a_director_can_email_the_receipt_to_the_company(): void
+    {
+        Mail::fake();
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['email' => 'accounts@arco.example']);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $payment = $invoice->payments()->create([
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => '2026-09-10',
+            'recorded_by' => $director->id,
+        ]);
+
+        $response = $this->actingAs($director)->post("/corporate-payments/{$payment->id}/receipt/email", [
+            'recipient_email' => 'accounts@arco.example',
+        ]);
+
+        $response->assertRedirect(route('corporate-payments.receipt', $payment));
+        Mail::assertSent(CorporateReceiptMail::class, function (CorporateReceiptMail $mail) use ($payment) {
+            return $mail->payment->is($payment) && $mail->hasTo('accounts@arco.example');
+        });
+    }
+
+    public function test_emailing_a_receipt_requires_a_valid_recipient_email(): void
+    {
+        Mail::fake();
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $payment = $invoice->payments()->create([
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => '2026-09-10',
+            'recorded_by' => $director->id,
+        ]);
+
+        $this->actingAs($director)
+            ->post("/corporate-payments/{$payment->id}/receipt/email", ['recipient_email' => 'not-an-email'])
+            ->assertSessionHasErrors('recipient_email');
+
+        Mail::assertNothingSent();
     }
 }
