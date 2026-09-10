@@ -50,6 +50,46 @@ class WhatsAppService
     }
 
     /**
+     * Send a document (e.g. an invoice PDF) over WhatsApp via Twilio's
+     * MediaUrl parameter. Unlike send(), this is a freeform message - no
+     * ContentSid template - since it's director-initiated on demand
+     * rather than an automated reminder. Returns false (without
+     * throwing) if Twilio isn't fully configured or the number can't be
+     * normalized.
+     */
+    public function sendDocument(?string $to, string $mediaUrl, string $caption): bool
+    {
+        $accountSid = config('services.twilio.account_sid');
+        $authToken = config('services.twilio.auth_token');
+        $from = config('services.twilio.whatsapp_from');
+
+        if (! $accountSid || ! $authToken || ! $from) {
+            return false;
+        }
+
+        $phone = $this->normalize($to);
+
+        if (! $phone) {
+            return false;
+        }
+
+        $response = Http::asForm()
+            ->withBasicAuth($accountSid, $authToken)
+            ->post("https://api.twilio.com/2010-04-01/Accounts/{$accountSid}/Messages.json", [
+                'From' => "whatsapp:{$from}",
+                'To' => "whatsapp:+{$phone}",
+                'Body' => $caption,
+                'MediaUrl' => $mediaUrl,
+            ]);
+
+        if ($response->failed()) {
+            Log::warning('Twilio WhatsApp document failed to send.', ['to' => $phone, 'response' => $response->body()]);
+        }
+
+        return $response->successful();
+    }
+
+    /**
      * Normalize a Nigerian phone number to E.164 digits (234XXXXXXXXXX,
      * no leading "+" or "0") - the "+" is added when building the "To"
      * value since Twilio expects "whatsapp:+234...".

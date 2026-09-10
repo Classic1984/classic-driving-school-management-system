@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateInvoiceSetting;
+use App\Services\WhatsAppService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as PdfDocument;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +17,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CorporateInvoiceController extends Controller
@@ -156,6 +159,34 @@ class CorporateInvoiceController extends Controller
         ActivityLog::record("Emailed corporate invoice {$corporateInvoice->invoice_number} to {$recipientEmail}");
 
         return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-emailed');
+    }
+
+    /**
+     * Send the invoice PDF to the company's phone number over WhatsApp.
+     * The PDF is stored on the public disk at an unguessable path so
+     * Twilio can fetch it by URL - nothing links or lists this path.
+     */
+    public function whatsapp(WhatsAppService $whatsapp, CorporateInvoice $corporateInvoice): RedirectResponse
+    {
+        $corporateInvoice->load(['company', 'items']);
+
+        $path = "corporate/invoices/{$corporateInvoice->invoice_number}-".Str::random(40).'.pdf';
+        Storage::disk('public')->put($path, $this->buildPdf($corporateInvoice)->output());
+        $url = Storage::disk('public')->url($path);
+
+        $sent = $whatsapp->sendDocument(
+            $corporateInvoice->company->phone,
+            $url,
+            "Invoice {$corporateInvoice->invoice_number} from Classic Driving School — Total Due: ₦".number_format($corporateInvoice->total(), 0)
+        );
+
+        if (! $sent) {
+            return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-whatsapp-failed');
+        }
+
+        ActivityLog::record("Sent corporate invoice {$corporateInvoice->invoice_number} to {$corporateInvoice->company->name} via WhatsApp");
+
+        return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-whatsapp-sent');
     }
 
     private function buildPdf(CorporateInvoice $corporateInvoice): PdfDocument

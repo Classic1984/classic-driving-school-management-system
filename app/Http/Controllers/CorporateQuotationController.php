@@ -8,6 +8,7 @@ use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateQuotation;
+use App\Services\WhatsAppService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Barryvdh\DomPDF\PDF as PdfDocument;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +17,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CorporateQuotationController extends Controller
@@ -173,6 +176,34 @@ class CorporateQuotationController extends Controller
         ActivityLog::record("Emailed corporate quotation {$corporateQuotation->quotation_number} to {$recipientEmail}");
 
         return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-emailed');
+    }
+
+    /**
+     * Send the quotation PDF to the company's phone number over WhatsApp.
+     * The PDF is stored on the public disk at an unguessable path so
+     * Twilio can fetch it by URL - nothing links or lists this path.
+     */
+    public function whatsapp(WhatsAppService $whatsapp, CorporateQuotation $corporateQuotation): RedirectResponse
+    {
+        $corporateQuotation->load(['company', 'items']);
+
+        $path = "corporate/quotations/{$corporateQuotation->quotation_number}-".Str::random(40).'.pdf';
+        Storage::disk('public')->put($path, $this->buildPdf($corporateQuotation)->output());
+        $url = Storage::disk('public')->url($path);
+
+        $sent = $whatsapp->sendDocument(
+            $corporateQuotation->company->phone,
+            $url,
+            "Quotation {$corporateQuotation->quotation_number} from Classic Driving School — Total: ₦".number_format($corporateQuotation->total(), 0)
+        );
+
+        if (! $sent) {
+            return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-whatsapp-failed');
+        }
+
+        ActivityLog::record("Sent corporate quotation {$corporateQuotation->quotation_number} to {$corporateQuotation->company->name} via WhatsApp");
+
+        return Redirect::route('corporate-quotations.show', $corporateQuotation)->with('status', 'quotation-whatsapp-sent');
     }
 
     private function buildPdf(CorporateQuotation $corporateQuotation): PdfDocument
