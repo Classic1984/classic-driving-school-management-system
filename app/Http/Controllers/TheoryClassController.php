@@ -87,7 +87,7 @@ class TheoryClassController extends Controller
             'instructor_id' => ['nullable', 'integer', 'exists:instructors,id'],
             'start_time' => ['nullable', 'date_format:H:i'],
             'notes' => ['nullable', 'string'],
-            'materials' => ['nullable', 'file', 'mimes:pdf,doc,docx,ppt,pptx,jpg,jpeg,png', 'max:20480'],
+            'materials' => ['nullable', 'file', 'mimes:pdf,doc,docx,xls,xlsx,csv,ppt,pptx,jpg,jpeg,png', 'max:20480'],
         ]);
         unset($data['materials']);
 

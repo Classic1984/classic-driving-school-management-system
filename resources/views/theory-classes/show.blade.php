@@ -110,8 +110,8 @@
                             </div>
 
                             <div class="w-full">
-                                <x-input-label for="materials" :value="__('Lecture Material (PDF, Word, PowerPoint, or image)')" />
-                                <input id="materials" name="materials" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/*" class="mt-1 block w-full text-sm text-gray-700 file:me-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-gray-100 file:text-sm file:font-medium hover:file:bg-gray-200">
+                                <x-input-label for="materials" :value="__('Lecture Material (PDF, Word, Excel, PowerPoint, or image)')" />
+                                <input id="materials" name="materials" type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.ppt,.pptx,image/*" class="mt-1 block w-full text-sm text-gray-700 file:me-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-gray-100 file:text-sm file:font-medium hover:file:bg-gray-200">
                                 <x-input-error class="mt-2" :messages="$errors->get('materials')" />
                                 @if ($theoryClass->materials_path)
                                     <p class="mt-1 text-xs text-gray-500">

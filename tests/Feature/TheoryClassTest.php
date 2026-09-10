@@ -231,6 +231,24 @@ class TheoryClassTest extends TestCase
         $this->assertSame('second.pdf', $theoryClass->materials_original_name);
     }
 
+    public function test_a_course_manager_can_upload_a_spreadsheet_as_lecture_material(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $theoryClass = TheoryClass::factory()->create();
+        $file = UploadedFile::fake()->create('attendance-plan.xlsx', 200, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $response = $this->actingAs($user)->patch(route('theory-classes.update', $theoryClass), [
+            'materials' => $file,
+        ]);
+
+        $response->assertRedirect(route('theory-classes.show', $theoryClass));
+        $theoryClass->refresh();
+        $this->assertNotNull($theoryClass->materials_path);
+        $this->assertSame('attendance-plan.xlsx', $theoryClass->materials_original_name);
+        Storage::disk('public')->assertExists($theoryClass->materials_path);
+    }
+
     public function test_uploading_material_of_a_disallowed_type_is_rejected(): void
     {
         Storage::fake('public');
