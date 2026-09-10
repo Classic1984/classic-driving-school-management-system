@@ -210,16 +210,22 @@
                                         <p class="font-semibold text-gray-900">{{ $driver->name }}</p>
                                         <p class="text-xs text-gray-500">{{ implode(' · ', array_filter([$driver->phone, $driver->license_number])) ?: '—' }}</p>
                                     </div>
-                                    <form method="post" action="{{ route('corporate-company-drivers.destroy', $driver) }}" onsubmit="return confirm('{{ __('Remove :name from this company?', ['name' => $driver->name]) }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-gray-400 hover:text-red-600 transition" title="{{ __('Remove driver') }}">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $trashIconPath }}" /></svg>
-                                        </button>
-                                    </form>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <a href="{{ route('students.create', ['name' => $driver->name, 'phone' => $driver->phone, 'license_number' => $driver->license_number]) }}" class="text-xs font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                            {{ __('Register as Student') }}
+                                        </a>
+                                        <form method="post" action="{{ route('corporate-company-drivers.destroy', $driver) }}" onsubmit="return confirm('{{ __('Remove :name from this company?', ['name' => $driver->name]) }}')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-gray-400 hover:text-red-600 transition" title="{{ __('Remove driver') }}">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $trashIconPath }}" /></svg>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </li>
                             @endforeach
                         </ul>
+                        <p class="mt-2 text-xs text-gray-500">{{ __("\"Register as Student\" pre-fills the student registration form with this driver's name, phone, and license number - complete it there to enroll them in a course so they show up in training/attendance.") }}</p>
                     @endif
                 </div>
             </div>

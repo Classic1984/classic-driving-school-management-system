@@ -283,6 +283,27 @@ class CorporateCompanyTest extends TestCase
         $response->assertSee(route('corporate-company-drivers.destroy', $driver), false);
     }
 
+    public function test_the_company_page_links_a_driver_to_prefilled_student_registration(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $driver = CorporateCompanyDriver::factory()->create([
+            'corporate_company_id' => $company->id,
+            'name' => 'Musa Ibrahim',
+            'phone' => '08098765432',
+            'license_number' => 'DL-12345',
+        ]);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}");
+
+        $response->assertOk();
+        $response->assertSee(e(route('students.create', [
+            'name' => 'Musa Ibrahim',
+            'phone' => '08098765432',
+            'license_number' => 'DL-12345',
+        ])), false);
+    }
+
     public function test_a_director_can_remove_a_driver_from_a_company(): void
     {
         $director = User::factory()->director()->create();
