@@ -110,12 +110,63 @@ class CorporateInvoice extends Model
         $naira = (int) floor($total);
         $kobo = (int) round(($total - $naira) * 100);
 
-        $formatter = new \NumberFormatter('en', \NumberFormatter::SPELLOUT);
-        $spell = fn (int $n) => ucwords($formatter->format($n), " \t\r\n\f\v-");
-
         return $kobo > 0
-            ? "{$spell($naira)} Naira, {$spell($kobo)} Kobo Only."
-            : "{$spell($naira)} Naira Only.";
+            ? self::spellNumber($naira).' Naira, '.self::spellNumber($kobo).' Kobo Only.'
+            : self::spellNumber($naira).' Naira Only.';
+    }
+
+    /**
+     * Spells out a non-negative integer in English words (e.g. 75000 ->
+     * "Seventy-Five Thousand"). Written in plain PHP rather than using
+     * PHP's intl NumberFormatter::SPELLOUT, because ext-intl isn't declared
+     * anywhere in composer.json and so isn't guaranteed to be installed on
+     * every deployment target - it happens to be present in local/CI
+     * environments but was missing in production, which crashed this page
+     * with a 500 the moment an invoice with a real total was opened.
+     */
+    private static function spellNumber(int $number): string
+    {
+        if ($number === 0) {
+            return 'Zero';
+        }
+
+        $ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
+            'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        $tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        $scales = ['', ' Thousand', ' Million', ' Billion', ' Trillion'];
+
+        $chunkToWords = function (int $chunk) use ($ones, $tens): string {
+            $words = [];
+            if ($chunk >= 100) {
+                $words[] = $ones[intdiv($chunk, 100)].' Hundred';
+                $chunk %= 100;
+            }
+            if ($chunk >= 20) {
+                $tensWord = $tens[intdiv($chunk, 10)];
+                $remainder = $chunk % 10;
+                $words[] = $remainder > 0 ? "{$tensWord}-{$ones[$remainder]}" : $tensWord;
+            } elseif ($chunk > 0) {
+                $words[] = $ones[$chunk];
+            }
+
+            return implode(' ', $words);
+        };
+
+        $chunks = [];
+        while ($number > 0) {
+            $chunks[] = $number % 1000;
+            $number = intdiv($number, 1000);
+        }
+
+        $parts = [];
+        foreach (array_reverse($chunks, true) as $index => $chunk) {
+            if ($chunk === 0) {
+                continue;
+            }
+            $parts[] = $chunkToWords($chunk).$scales[$index];
+        }
+
+        return implode(' ', $parts);
     }
 
     /**
