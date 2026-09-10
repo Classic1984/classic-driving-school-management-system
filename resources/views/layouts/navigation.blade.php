@@ -74,6 +74,11 @@
             <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
                 {{ __('Staff') }}
             </x-responsive-nav-link>
+
+            <p class="px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Corporate') }}</p>
+            <x-responsive-nav-link :href="route('corporate-companies.index')" :active="request()->routeIs('corporate-companies.*')">
+                {{ __('Companies') }}
+            </x-responsive-nav-link>
         @endif
     </nav>
 

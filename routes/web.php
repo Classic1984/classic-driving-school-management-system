@@ -11,6 +11,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
 use App\Http\Controllers\CertificateVerificationController;
+use App\Http\Controllers\CorporateCompanyController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscountRequestController;
@@ -196,6 +197,11 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         // one is instructor-only and lives in routes/instructor-auth.php.
         Route::patch('assessment-requests/{assessmentRequest}/approve', [AssessmentRequestController::class, 'approve'])->name('assessment-requests.approve');
         Route::patch('assessment-requests/{assessmentRequest}/reject', [AssessmentRequestController::class, 'reject'])->name('assessment-requests.reject');
+
+        // Corporate Invoicing - companies that pay to train their own
+        // staff/drivers in bulk, billed separately from individual
+        // students. Director-only, same as the rest of this group.
+        Route::resource('corporate-companies', CorporateCompanyController::class);
     });
 
     Route::resource('leads', LeadController::class)->except(['show']);
