@@ -76,4 +76,51 @@ class CorporateInvoiceController extends Controller
 
         return view('corporate.invoices.show', ['invoice' => $corporateInvoice, 'settings' => $settings]);
     }
+
+    /**
+     * Mark the invoice as sent to the company.
+     */
+    public function send(Request $request, CorporateInvoice $corporateInvoice): RedirectResponse
+    {
+        if ($corporateInvoice->status !== 'pending') {
+            return Redirect::back()->with('status', 'invoice-cannot-send');
+        }
+
+        $corporateInvoice->update([
+            'status' => 'sent',
+            'sent_by' => $request->user()->id,
+            'sent_at' => now(),
+        ]);
+
+        ActivityLog::record("Sent corporate invoice {$corporateInvoice->invoice_number} to {$corporateInvoice->company->name}");
+
+        return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-sent');
+    }
+
+    /**
+     * Cancel the invoice. Blocked once it's fully paid - undoing a paid
+     * invoice is a refund/reversal decision, not a cancellation, and isn't
+     * handled here.
+     */
+    public function cancel(Request $request, CorporateInvoice $corporateInvoice): RedirectResponse
+    {
+        if ($corporateInvoice->status === 'paid') {
+            return Redirect::back()->with('status', 'invoice-cannot-cancel');
+        }
+
+        $request->validate([
+            'cancellation_reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        $corporateInvoice->update([
+            'status' => 'cancelled',
+            'cancelled_by' => $request->user()->id,
+            'cancelled_at' => now(),
+            'cancellation_reason' => $request->string('cancellation_reason'),
+        ]);
+
+        ActivityLog::record("Cancelled corporate invoice {$corporateInvoice->invoice_number} ({$corporateInvoice->cancellation_reason})");
+
+        return Redirect::route('corporate-invoices.show', $corporateInvoice)->with('status', 'invoice-cancelled');
+    }
 }
