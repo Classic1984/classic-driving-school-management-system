@@ -179,8 +179,8 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead>
-                                    <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                <thead class="bg-black">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
                                         <th class="px-4 py-3">
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
@@ -197,7 +197,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($roster as $entry)
-                                        <tr x-data="{ editing: false }">
+                                        <tr x-data="{ editing: false }" class="hover:bg-amber-50/40 transition">
                                             <td class="px-4 py-3 text-sm">
                                                 <div class="flex items-center gap-2">
                                                     <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
@@ -226,9 +226,22 @@
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-3 text-right" x-show="!editing">
-                                                    <button type="button" @click="editing = true" class="text-sm text-amber-600 hover:underline">
-                                                        {{ $entry['attendance'] ? __('Edit') : __('Mark') }}
-                                                    </button>
+                                                    <div class="flex items-center justify-end gap-2">
+                                                        @unless ($entry['attendance'])
+                                                            <form method="post" action="{{ route('theory-classes.attendances.store', $theoryClass) }}">
+                                                                @csrf
+                                                                <input type="hidden" name="student_id" value="{{ $entry['student']->id }}">
+                                                                <input type="hidden" name="status" value="present">
+                                                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-md bg-green-600 hover:bg-green-700 px-3 py-1.5 text-xs font-bold text-white transition">
+                                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $checkCircleIconPath }}" /></svg>
+                                                                    {{ __('Mark Present') }}
+                                                                </button>
+                                                            </form>
+                                                        @endunless
+                                                        <button type="button" @click="editing = true" class="text-sm text-amber-600 hover:underline">
+                                                            {{ $entry['attendance'] ? __('Edit') : __('Other') }}
+                                                        </button>
+                                                    </div>
                                                 </td>
 
                                                 <td class="px-4 py-3" colspan="4" x-show="editing">

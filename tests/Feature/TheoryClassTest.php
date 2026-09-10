@@ -361,6 +361,80 @@ class TheoryClassTest extends TestCase
         $this->assertDatabaseCount('theory_classes', 0);
     }
 
+    public function test_clicking_mark_present_creates_a_present_attendance_record_with_no_other_fields(): void
+    {
+        $user = User::factory()->create();
+        $student = $this->activeStudent();
+        $theoryClass = TheoryClass::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('theory-classes.attendances.store', $theoryClass), [
+            'student_id' => $student->id,
+            'status' => 'present',
+        ]);
+
+        $response->assertRedirect(route('theory-classes.show', $theoryClass));
+        $this->assertDatabaseHas('theory_class_attendances', [
+            'theory_class_id' => $theoryClass->id,
+            'student_id' => $student->id,
+            'status' => 'present',
+            'marked_by' => $user->id,
+        ]);
+    }
+
+    public function test_the_roster_page_shows_a_mark_present_button_for_an_unmarked_student(): void
+    {
+        $user = User::factory()->create();
+        $this->activeStudent();
+        $theoryClass = TheoryClass::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('theory-classes.show', $theoryClass));
+
+        $response->assertOk();
+        $response->assertSee('Mark Present');
+    }
+
+    public function test_an_admin_can_delete_a_theory_class_and_its_attendance_records(): void
+    {
+        $user = User::factory()->create();
+        $student = $this->activeStudent();
+        $theoryClass = TheoryClass::factory()->create();
+        TheoryClassAttendance::factory()->create([
+            'theory_class_id' => $theoryClass->id,
+            'student_id' => $student->id,
+            'status' => 'present',
+        ]);
+
+        $response = $this->actingAs($user)->delete(route('theory-classes.destroy', $theoryClass));
+
+        $response->assertRedirect(route('theory-classes.index'));
+        $this->assertDatabaseMissing('theory_classes', ['id' => $theoryClass->id]);
+        $this->assertDatabaseMissing('theory_class_attendances', ['theory_class_id' => $theoryClass->id]);
+    }
+
+    public function test_a_non_admin_cannot_delete_a_theory_class(): void
+    {
+        $user = User::factory()->create(['role' => 'admin']);
+        $theoryClass = TheoryClass::factory()->create();
+
+        $response = $this->actingAs($user)->delete(route('theory-classes.destroy', $theoryClass));
+
+        $response->assertForbidden();
+        $this->assertDatabaseHas('theory_classes', ['id' => $theoryClass->id]);
+    }
+
+    public function test_the_index_page_only_shows_the_delete_button_to_an_admin(): void
+    {
+        $director = User::factory()->create();
+        $nonAdmin = User::factory()->create(['role' => 'admin']);
+        $theoryClass = TheoryClass::factory()->create();
+
+        $asDirector = $this->actingAs($director)->get(route('theory-classes.index'));
+        $asNonAdmin = $this->actingAs($nonAdmin)->get(route('theory-classes.index'));
+
+        $asDirector->assertSee('Delete this theory class and its attendance records? This cannot be undone.', false);
+        $asNonAdmin->assertDontSee('Delete this theory class and its attendance records? This cannot be undone.', false);
+    }
+
     public function test_student_theory_progress_summarizes_their_attendance_and_scores(): void
     {
         $student = Student::factory()->create(['enrollment_date' => today()->subWeeks(3)]);
