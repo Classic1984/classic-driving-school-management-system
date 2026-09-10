@@ -110,6 +110,19 @@ class CorporatePaymentTest extends TestCase
         $response->assertDontSee('Record Payment');
     }
 
+    public function test_the_record_payment_form_offers_percentage_quick_select_buttons(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'pending']);
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}");
+
+        $response->assertOk();
+        $response->assertSee('pct in [50, 60, 80]', false);
+        $response->assertSee('Full Balance');
+    }
+
     public function test_a_director_can_view_a_payment_receipt(): void
     {
         $director = User::factory()->director()->create();

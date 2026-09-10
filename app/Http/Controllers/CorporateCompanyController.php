@@ -89,7 +89,11 @@ class CorporateCompanyController extends Controller
      */
     public function show(Request $request, CorporateCompany $corporateCompany): View
     {
-        $corporateCompany->load(['quotations' => fn ($query) => $query->latest(), 'invoices' => fn ($query) => $query->latest()]);
+        $corporateCompany->load([
+            'quotations' => fn ($query) => $query->latest(),
+            'invoices' => fn ($query) => $query->latest(),
+            'drivers' => fn ($query) => $query->orderBy('name'),
+        ]);
 
         $quotationStatus = $request->query('quotation_status');
         $invoiceStatus = $request->query('invoice_status');

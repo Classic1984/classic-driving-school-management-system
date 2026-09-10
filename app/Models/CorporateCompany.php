@@ -44,6 +44,11 @@ class CorporateCompany extends Model
         return $this->hasMany(CorporateInvoice::class);
     }
 
+    public function drivers(): HasMany
+    {
+        return $this->hasMany(CorporateCompanyDriver::class);
+    }
+
     /**
      * company_reference is deliberately not fillable: it's a permanent,
      * system-assigned identifier derived from the row's own auto-increment

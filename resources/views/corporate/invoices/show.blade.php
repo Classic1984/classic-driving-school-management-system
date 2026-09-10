@@ -385,9 +385,19 @@
                     <h2 class="text-lg font-bold text-gray-900">{{ __('Record Payment') }}</h2>
                     <p class="text-sm text-gray-500">{{ __('Invoice :number — balance ₦:balance', ['number' => $invoice->invoice_number, 'balance' => number_format($invoice->balance(), 0)]) }}</p>
 
-                    <div>
+                    <div x-data="{ total: {{ $invoice->total() }}, balance: {{ $invoice->balance() }} }">
                         <x-input-label for="amount" :value="__('Amount Paid (₦)')" />
-                        <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="block w-full mt-1" :value="old('amount', $invoice->balance())" required autofocus />
+                        <x-text-input x-ref="amount" id="amount" name="amount" type="number" step="0.01" min="0.01" class="block w-full mt-1" :value="old('amount', $invoice->balance())" required autofocus />
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                            <template x-for="pct in [50, 60, 80]" :key="pct">
+                                <button type="button" x-on:click="$refs.amount.value = Math.min(balance, Math.round(total * pct) / 100)" class="rounded-full bg-amber-50 hover:bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200 transition">
+                                    <span x-text="pct"></span>%
+                                </button>
+                            </template>
+                            <button type="button" x-on:click="$refs.amount.value = balance" class="rounded-full bg-gray-100 hover:bg-gray-200 px-2.5 py-1 text-xs font-semibold text-gray-600 transition">
+                                {{ __('Full Balance') }}
+                            </button>
+                        </div>
                         <x-input-error class="mt-2" :messages="$errors->get('amount')" />
                     </div>
 

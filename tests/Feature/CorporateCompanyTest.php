@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\CorporateCompany;
+use App\Models\CorporateCompanyDriver;
 use App\Models\CorporateInvoice;
 use App\Models\CorporateQuotation;
 use App\Models\User;
@@ -223,5 +224,74 @@ class CorporateCompanyTest extends TestCase
 
         $response->assertSee('Arco Worldwide');
         $response->assertDontSee('Bright Logistics');
+    }
+
+    public function test_a_director_can_add_a_driver_to_a_company(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+
+        $response = $this->actingAs($director)->post("/corporate-companies/{$company->id}/drivers", [
+            'name' => 'Musa Ibrahim',
+            'phone' => '08098765432',
+            'license_number' => 'DL-12345',
+        ]);
+
+        $response->assertRedirect(route('corporate-companies.show', $company).'#drivers');
+        $this->assertDatabaseHas('corporate_company_drivers', [
+            'corporate_company_id' => $company->id,
+            'name' => 'Musa Ibrahim',
+            'phone' => '08098765432',
+            'license_number' => 'DL-12345',
+            'created_by' => $director->id,
+        ]);
+    }
+
+    public function test_a_secretary_cannot_add_a_driver_to_a_company(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $company = CorporateCompany::factory()->create();
+
+        $this->actingAs($secretary)
+            ->post("/corporate-companies/{$company->id}/drivers", ['name' => 'Musa Ibrahim'])
+            ->assertForbidden();
+    }
+
+    public function test_adding_a_driver_requires_a_name(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+
+        $this->actingAs($director)
+            ->post("/corporate-companies/{$company->id}/drivers", ['name' => ''])
+            ->assertSessionHasErrors('name');
+    }
+
+    public function test_the_company_page_lists_its_enrolled_drivers(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $driver = CorporateCompanyDriver::factory()->create([
+            'corporate_company_id' => $company->id,
+            'name' => 'Chidi Okafor',
+        ]);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}");
+
+        $response->assertOk();
+        $response->assertSee('Chidi Okafor');
+        $response->assertSee(route('corporate-company-drivers.destroy', $driver), false);
+    }
+
+    public function test_a_director_can_remove_a_driver_from_a_company(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $driver = CorporateCompanyDriver::factory()->create(['corporate_company_id' => $company->id]);
+
+        $response = $this->actingAs($director)->delete("/corporate-company-drivers/{$driver->id}");
+
+        $response->assertRedirect(route('corporate-companies.show', $company));
+        $this->assertDatabaseMissing('corporate_company_drivers', ['id' => $driver->id]);
     }
 }
