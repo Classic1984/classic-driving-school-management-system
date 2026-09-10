@@ -209,6 +209,8 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'edit'])->name('corporate-invoice-settings.edit');
         Route::put('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'update'])->name('corporate-invoice-settings.update');
         Route::resource('corporate-invoices', CorporateInvoiceController::class)->only(['index', 'create', 'store', 'show']);
+        Route::post('corporate-invoices/{corporateInvoice}/send', [CorporateInvoiceController::class, 'send'])->name('corporate-invoices.send');
+        Route::post('corporate-invoices/{corporateInvoice}/cancel', [CorporateInvoiceController::class, 'cancel'])->name('corporate-invoices.cancel');
         Route::post('corporate-invoices/{corporateInvoice}/payments', [CorporatePaymentController::class, 'store'])->name('corporate-invoices.payments.store');
         Route::get('corporate-payments/{corporatePayment}/receipt', [CorporatePaymentController::class, 'receipt'])->name('corporate-payments.receipt');
         Route::resource('corporate-quotations', CorporateQuotationController::class)->only(['index', 'create', 'store', 'show']);

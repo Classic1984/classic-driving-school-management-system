@@ -142,6 +142,71 @@ class CorporateInvoiceTest extends TestCase
         $response->assertDontSee('COURSE COVERAGE');
     }
 
+    public function test_a_director_can_mark_a_pending_invoice_as_sent(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'pending']);
+
+        $response = $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/send");
+
+        $response->assertRedirect(route('corporate-invoices.show', $invoice));
+        $this->assertSame('sent', $invoice->fresh()->status);
+        $this->assertSame($director->id, $invoice->fresh()->sent_by);
+        $this->assertNotNull($invoice->fresh()->sent_at);
+    }
+
+    public function test_an_already_sent_invoice_cannot_be_marked_sent_again(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'paid']);
+
+        $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/send");
+
+        $this->assertSame('paid', $invoice->fresh()->status);
+    }
+
+    public function test_a_director_can_cancel_an_invoice_with_a_reason(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'pending']);
+
+        $response = $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/cancel", [
+            'cancellation_reason' => 'Client postponed the training indefinitely',
+        ]);
+
+        $response->assertRedirect(route('corporate-invoices.show', $invoice));
+        $invoice->refresh();
+        $this->assertSame('cancelled', $invoice->status);
+        $this->assertSame($director->id, $invoice->cancelled_by);
+        $this->assertNotNull($invoice->cancelled_at);
+        $this->assertSame('Client postponed the training indefinitely', $invoice->cancellation_reason);
+    }
+
+    public function test_cancelling_an_invoice_requires_a_reason(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'pending']);
+
+        $this->actingAs($director)
+            ->post("/corporate-invoices/{$invoice->id}/cancel", [])
+            ->assertSessionHasErrors('cancellation_reason');
+
+        $this->assertSame('pending', $invoice->fresh()->status);
+    }
+
+    public function test_a_fully_paid_invoice_cannot_be_cancelled(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create(['status' => 'paid']);
+
+        $this->actingAs($director)->post("/corporate-invoices/{$invoice->id}/cancel", [
+            'cancellation_reason' => 'Attempted cancellation',
+        ]);
+
+        $this->assertSame('paid', $invoice->fresh()->status);
+        $this->assertNull($invoice->fresh()->cancellation_reason);
+    }
+
     /**
      * @return array<string, mixed>
      */
