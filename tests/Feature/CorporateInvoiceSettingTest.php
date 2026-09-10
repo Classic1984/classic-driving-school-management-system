@@ -104,6 +104,26 @@ class CorporateInvoiceSettingTest extends TestCase
         $this->assertNull(CorporateInvoiceSetting::current()->signatureDataUri());
     }
 
+    public function test_leaving_the_prefixes_blank_defaults_them_automatically(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->put('/corporate-invoice-settings', [
+            'company_name' => 'Classic Driving School & Son Nigeria Limited',
+            'invoice_prefix' => '',
+            'quotation_prefix' => '',
+            'receipt_prefix' => '',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect(route('corporate-invoice-settings.edit'));
+        $this->assertDatabaseHas('corporate_invoice_settings', [
+            'invoice_prefix' => 'INV',
+            'quotation_prefix' => 'QUO',
+            'receipt_prefix' => 'REC',
+        ]);
+    }
+
     public function test_next_sequence_increments_within_a_year_and_resets_the_next(): void
     {
         $this->assertSame(1, CorporateInvoiceSetting::nextSequence('invoice', 2026));

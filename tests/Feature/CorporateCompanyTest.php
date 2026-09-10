@@ -102,6 +102,30 @@ class CorporateCompanyTest extends TestCase
         $this->assertDatabaseMissing('corporate_companies', ['id' => $company->id]);
     }
 
+    public function test_the_companies_list_shows_a_delete_button_for_a_company_with_no_documents(): void
+    {
+        $director = User::factory()->director()->create();
+        CorporateCompany::factory()->create();
+
+        $response = $this->actingAs($director)->get('/corporate-companies');
+
+        $response->assertOk();
+        $response->assertSee('name="_method" value="DELETE"', false);
+    }
+
+    public function test_the_companies_list_hides_the_delete_button_for_a_company_with_documents(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+
+        $response = $this->actingAs($director)->get('/corporate-companies');
+
+        $response->assertOk();
+        $response->assertDontSee('name="_method" value="DELETE"', false);
+        $response->assertSee('cannot be deleted');
+    }
+
     public function test_the_company_page_links_to_creating_and_viewing_its_quotations_and_invoices(): void
     {
         $director = User::factory()->director()->create();

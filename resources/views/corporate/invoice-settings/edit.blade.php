@@ -95,26 +95,27 @@
                 </div>
 
                 <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
-                    <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-4">
+                    <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-1">
                         <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $hashtagIconPath }}" /></svg>
                         {{ __('Document Numbering') }}
                     </h4>
+                    <p class="text-xs text-gray-400 mb-4">{{ __('The number itself is always assigned automatically and resets every year - these prefixes are optional labels, and default to QUO/INV/REC if left blank.') }}</p>
                     <div class="max-w-xl grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <div>
-                            <x-input-label for="quotation_prefix" :value="__('Quotation Prefix')" />
-                            <x-text-input id="quotation_prefix" name="quotation_prefix" type="text" class="block w-full mt-1" :value="old('quotation_prefix', $settings->quotation_prefix)" required />
+                            <x-input-label for="quotation_prefix" :value="__('Quotation Prefix (optional)')" />
+                            <x-text-input id="quotation_prefix" name="quotation_prefix" type="text" class="block w-full mt-1" placeholder="QUO" :value="old('quotation_prefix', $settings->quotation_prefix)" />
                             <p class="mt-1 text-xs text-gray-400">{{ __('e.g. :example', ['example' => ($settings->quotation_prefix ?: 'QUO').'-2026-00001']) }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('quotation_prefix')" />
                         </div>
                         <div>
-                            <x-input-label for="invoice_prefix" :value="__('Invoice Prefix')" />
-                            <x-text-input id="invoice_prefix" name="invoice_prefix" type="text" class="block w-full mt-1" :value="old('invoice_prefix', $settings->invoice_prefix)" required />
+                            <x-input-label for="invoice_prefix" :value="__('Invoice Prefix (optional)')" />
+                            <x-text-input id="invoice_prefix" name="invoice_prefix" type="text" class="block w-full mt-1" placeholder="INV" :value="old('invoice_prefix', $settings->invoice_prefix)" />
                             <p class="mt-1 text-xs text-gray-400">{{ __('e.g. :example', ['example' => ($settings->invoice_prefix ?: 'INV').'-2026-00001']) }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('invoice_prefix')" />
                         </div>
                         <div>
-                            <x-input-label for="receipt_prefix" :value="__('Receipt Prefix')" />
-                            <x-text-input id="receipt_prefix" name="receipt_prefix" type="text" class="block w-full mt-1" :value="old('receipt_prefix', $settings->receipt_prefix)" required />
+                            <x-input-label for="receipt_prefix" :value="__('Receipt Prefix (optional)')" />
+                            <x-text-input id="receipt_prefix" name="receipt_prefix" type="text" class="block w-full mt-1" placeholder="REC" :value="old('receipt_prefix', $settings->receipt_prefix)" />
                             <p class="mt-1 text-xs text-gray-400">{{ __('e.g. :example', ['example' => ($settings->receipt_prefix ?: 'REC').'-2026-00001']) }}</p>
                             <x-input-error class="mt-2" :messages="$errors->get('receipt_prefix')" />
                         </div>
