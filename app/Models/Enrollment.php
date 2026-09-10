@@ -10,6 +10,7 @@ use App\Services\WebPushService;
 use App\Services\WhatsAppService;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
@@ -468,7 +469,7 @@ class Enrollment extends Pivot
      * records it was computed from - never an approximation built by
      * re-filtering a different, unrelated list.
      *
-     * @return array{stats: array<string, int>, groups: array<string, \Illuminate\Support\Collection>}
+     * @return array{stats: array<string, int>, groups: array<string, Collection>}
      */
     public static function trainingProgressBreakdown(): array
     {
