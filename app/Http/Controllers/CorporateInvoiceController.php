@@ -39,11 +39,12 @@ class CorporateInvoiceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
         $companies = CorporateCompany::orderBy('name')->get(['id', 'name']);
+        $selectedCompanyId = $request->query('corporate_company_id');
 
-        return view('corporate.invoices.create', compact('companies'));
+        return view('corporate.invoices.create', compact('companies', 'selectedCompanyId'));
     }
 
     /**

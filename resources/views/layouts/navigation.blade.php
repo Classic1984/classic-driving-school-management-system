@@ -76,17 +76,11 @@
             </x-responsive-nav-link>
 
             <p class="px-4 pt-4 pb-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('Corporate') }}</p>
-            <x-responsive-nav-link :href="route('corporate-companies.index')" :active="request()->routeIs('corporate-companies.*')">
+            <x-responsive-nav-link
+                :href="route('corporate-companies.index')"
+                :active="request()->routeIs('corporate-companies.*', 'corporate-quotations.*', 'corporate-invoices.*', 'corporate-payments.*', 'corporate-invoice-settings.*')"
+            >
                 {{ __('Companies') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('corporate-quotations.index')" :active="request()->routeIs('corporate-quotations.*')">
-                {{ __('Quotations') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('corporate-invoices.index')" :active="request()->routeIs('corporate-invoices.*')">
-                {{ __('Invoices') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('corporate-invoice-settings.edit')" :active="request()->routeIs('corporate-invoice-settings.*')">
-                {{ __('Invoice Settings') }}
             </x-responsive-nav-link>
         @endif
     </nav>

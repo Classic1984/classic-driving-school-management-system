@@ -45,7 +45,7 @@
                         <select id="corporate_company_id" name="corporate_company_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                             <option value="">{{ __('Select a company…') }}</option>
                             @foreach ($companies as $company)
-                                <option value="{{ $company->id }}" @selected(old('corporate_company_id') == $company->id)>{{ $company->name }}</option>
+                                <option value="{{ $company->id }}" @selected(old('corporate_company_id', $selectedCompanyId) == $company->id)>{{ $company->name }}</option>
                             @endforeach
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('corporate_company_id')" />
@@ -154,7 +154,7 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                         {{ __('Save Quotation') }}
                     </button>
-                    <a href="{{ route('corporate-quotations.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 hover:bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition">
+                    <a href="{{ $selectedCompanyId ? route('corporate-companies.show', $selectedCompanyId) : route('corporate-companies.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 hover:bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                         {{ __('Cancel') }}
                     </a>
