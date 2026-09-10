@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use Database\Factories\CorporateQuotationFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CorporateQuotation extends Model
 {
+    /** @use HasFactory<CorporateQuotationFactory> */
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -15,6 +20,10 @@ class CorporateQuotation extends Model
      */
     protected $fillable = [
         'corporate_company_id',
+        'programme_name',
+        'duration_label',
+        'participant_count',
+        'course_coverage',
         'status',
         'issue_date',
         'valid_until',
@@ -65,6 +74,38 @@ class CorporateQuotation extends Model
     public function total(): float
     {
         return $this->items->sum(fn (CorporateQuotationItem $item) => $item->amount());
+    }
+
+    /**
+     * course_coverage is stored as one topic per line - same convention as
+     * CorporateInvoice::courseCoverageList().
+     *
+     * @return array<int, string>
+     */
+    public function courseCoverageList(): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', (string) $this->course_coverage))
+            ->map(fn ($line) => trim($line))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * "Expired" is a computed display state (like CorporateInvoice's
+     * "Overdue"), not a stored status - draft/sent/approved/rejected/
+     * converted are the only values the `status` column itself ever holds.
+     */
+    public function isExpired(): bool
+    {
+        return ! in_array($this->status, ['approved', 'rejected', 'converted'], true)
+            && $this->valid_until !== null
+            && $this->valid_until->isPast();
+    }
+
+    public function displayStatus(): string
+    {
+        return $this->isExpired() ? 'expired' : $this->status;
     }
 
     /**
