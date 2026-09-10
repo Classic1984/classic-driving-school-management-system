@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use Database\Factories\CorporateInvoiceFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CorporateInvoice extends Model
 {
+    /** @use HasFactory<CorporateInvoiceFactory> */
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -21,6 +26,7 @@ class CorporateInvoice extends Model
         'programme_name',
         'duration_label',
         'participant_count',
+        'course_coverage',
         'status',
         'created_by',
         'sent_by',
@@ -91,6 +97,41 @@ class CorporateInvoice extends Model
     public function balance(): float
     {
         return max(0, $this->total() - $this->amountPaid());
+    }
+
+    /**
+     * The total, spelled out for the printed document (e.g. "Seventy-Five
+     * Thousand Naira Only."), the way a paper invoice traditionally repeats
+     * the amount in words to guard against a figure being altered.
+     */
+    public function totalInWords(): string
+    {
+        $total = $this->total();
+        $naira = (int) floor($total);
+        $kobo = (int) round(($total - $naira) * 100);
+
+        $formatter = new \NumberFormatter('en', \NumberFormatter::SPELLOUT);
+        $spell = fn (int $n) => ucwords($formatter->format($n), " \t\r\n\f\v-");
+
+        return $kobo > 0
+            ? "{$spell($naira)} Naira, {$spell($kobo)} Kobo Only."
+            : "{$spell($naira)} Naira Only.";
+    }
+
+    /**
+     * course_coverage is stored as one topic per line - split into a clean
+     * list for the printed document, dropping blank lines so stray
+     * whitespace in the textarea doesn't render as empty rows.
+     *
+     * @return array<int, string>
+     */
+    public function courseCoverageList(): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', (string) $this->course_coverage))
+            ->map(fn ($line) => trim($line))
+            ->filter()
+            ->values()
+            ->all();
     }
 
     /**

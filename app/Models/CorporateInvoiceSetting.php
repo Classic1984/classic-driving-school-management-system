@@ -19,6 +19,8 @@ class CorporateInvoiceSetting extends Model
      */
     protected $fillable = [
         'company_name',
+        'tagline',
+        'slogan',
         'address',
         'bank_account_name',
         'bank_name',
@@ -29,8 +31,25 @@ class CorporateInvoiceSetting extends Model
         'invoice_prefix',
         'quotation_prefix',
         'receipt_prefix',
+        'payment_terms',
         'updated_by',
     ];
+
+    /**
+     * payment_terms is stored as one bullet per line - split into a clean
+     * list for the printed document, same convention as
+     * CorporateInvoice::courseCoverageList().
+     *
+     * @return array<int, string>
+     */
+    public function paymentTermsList(): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', (string) $this->payment_terms))
+            ->map(fn ($line) => trim($line))
+            ->filter()
+            ->values()
+            ->all();
+    }
 
     public function updater(): BelongsTo
     {
