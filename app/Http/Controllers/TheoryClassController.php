@@ -115,6 +115,22 @@ class TheoryClassController extends Controller
     }
 
     /**
+     * Delete a theory class session, along with its attendance records
+     * (cascade-deleted at the DB level) - for removing a duplicate or
+     * mistakenly-created session. Admin-only, matching the destroy gate
+     * already used for courses/instructors/vehicles/attendances.
+     */
+    public function destroy(TheoryClass $theoryClass): RedirectResponse
+    {
+        $date = $theoryClass->class_date->toFormattedDateString();
+        $theoryClass->delete();
+
+        ActivityLog::record("Deleted the theory class on {$date}");
+
+        return Redirect::route('theory-classes.index')->with('status', 'theory-class-deleted');
+    }
+
+    /**
      * Push the newly-assigned instructor that they've got a theory class
      * to teach, if they've got the app installed and notifications
      * enabled - a no-op otherwise (WebPushService itself checks app
