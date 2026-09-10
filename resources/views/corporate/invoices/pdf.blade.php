@@ -6,11 +6,11 @@
     <style>
         body { font-family: sans-serif; font-size: 12px; color: #1f2937; }
         table { border-collapse: collapse; }
-        .header-table { width: 100%; border-bottom: 3px solid #1e3a8a; padding-bottom: 10px; margin-bottom: 16px; }
-        .company-name { font-size: 22px; font-weight: bold; color: #1e3a8a; margin: 0; }
+        .header-table { width: 100%; border-bottom: 3px solid #000000; padding-bottom: 10px; margin-bottom: 16px; }
+        .company-name { font-size: 22px; font-weight: bold; color: #000000; margin: 0; }
         .tagline { color: #6b7280; margin: 4px 0 0; font-size: 11px; }
-        .slogan { color: #1e40af; font-style: italic; margin: 2px 0 0; font-size: 11px; }
-        .invoice-title { font-size: 30px; font-weight: bold; color: #1e3a8a; text-align: right; margin: 0; }
+        .slogan { color: #b45309; font-style: italic; margin: 2px 0 0; font-size: 11px; }
+        .invoice-title { font-size: 30px; font-weight: bold; color: #000000; text-align: right; margin: 0; }
         .meta-table { width: 100%; font-size: 11px; margin-top: 6px; }
         .meta-table td { padding: 1px 0; text-align: right; }
         .meta-label { font-weight: bold; padding-right: 6px; }
@@ -18,24 +18,24 @@
         .boxes-table td { width: 50%; vertical-align: top; padding: 0 6px; }
         .boxes-table td:first-child { padding-left: 0; }
         .boxes-table td:last-child { padding-right: 0; }
-        .box-header { background: #1e3a8a; color: #ffffff; font-weight: bold; font-size: 11px; padding: 6px 10px; }
-        .box-body { border: 1px solid #bfdbfe; border-top: none; padding: 10px; font-size: 11px; }
+        .box-header { background: #000000; color: #fbbf24; font-weight: bold; font-size: 11px; padding: 6px 10px; }
+        .box-body { border: 1px solid #fde68a; border-top: none; padding: 10px; font-size: 11px; }
         .box-body .name { font-size: 14px; font-weight: bold; color: #111827; }
-        .items-table { width: 100%; margin-top: 16px; border: 1px solid #bfdbfe; }
-        .items-table th { background: #1e3a8a; color: #ffffff; text-align: left; padding: 6px 10px; font-size: 11px; }
-        .items-table td { border-top: 1px solid #dbeafe; padding: 6px 10px; font-size: 11px; }
+        .items-table { width: 100%; margin-top: 16px; border: 1px solid #fde68a; }
+        .items-table th { background: #000000; color: #fbbf24; text-align: left; padding: 6px 10px; font-size: 11px; }
+        .items-table td { border-top: 1px solid #fef3c7; padding: 6px 10px; font-size: 11px; }
         .items-table .num { text-align: right; }
-        .total-table { width: 50%; margin-left: 50%; margin-top: 12px; border: 1px solid #bfdbfe; }
+        .total-table { width: 50%; margin-left: 50%; margin-top: 12px; border: 1px solid #fde68a; }
         .total-table td { padding: 8px 10px; font-size: 12px; }
-        .total-label { background: #eff6ff; color: #1e3a8a; font-weight: bold; }
-        .total-value { background: #1e3a8a; color: #ffffff; font-weight: bold; font-size: 16px; text-align: right; }
+        .total-label { background: #fffbeb; color: #000000; font-weight: bold; }
+        .total-value { background: #000000; color: #fbbf24; font-weight: bold; font-size: 16px; text-align: right; }
         .words { margin-top: 10px; font-size: 11px; }
-        .coverage-table { width: 100%; margin-top: 16px; border: 1px solid #bfdbfe; }
+        .coverage-table { width: 100%; margin-top: 16px; border: 1px solid #fde68a; }
         .coverage-table td { padding: 6px 10px; font-size: 11px; width: 50%; }
         .signature-box { width: 45%; margin-top: 16px; }
         .signature-img { height: 50px; }
         .signature-line { border-top: 1px solid #9ca3af; margin-top: 24px; padding-top: 4px; }
-        .footer { border-top: 2px solid #1e3a8a; margin-top: 24px; padding-top: 8px; font-size: 10px; color: #1e3a8a; width: 100%; }
+        .footer { border-top: 2px solid #000000; margin-top: 24px; padding-top: 8px; font-size: 10px; color: #000000; width: 100%; }
         .footer td { padding: 2px 0; }
     </style>
 </head>
@@ -121,7 +121,7 @@
 
     @if (! empty($invoice->courseCoverageList()))
         <table class="coverage-table">
-            <tr><td colspan="2" class="box-header" style="color:#fff;">COURSE COVERAGE</td></tr>
+            <tr><td colspan="2" class="box-header">COURSE COVERAGE</td></tr>
             @foreach (array_chunk($invoice->courseCoverageList(), 2) as $pair)
                 <tr>
                     <td>{{ $pair[0] }}</td>
@@ -180,13 +180,16 @@
             @if ($settings->phone)
                 <td>{{ $settings->phone }}</td>
             @endif
-            @if ($settings->slogan)
-                <td style="text-align: center; font-style: italic;">{{ $settings->slogan }}</td>
+            @if ($settings->website)
+                <td style="text-align: center;">{{ $settings->website }}</td>
             @endif
             @if ($settings->address)
                 <td style="text-align: right;">{{ $settings->address }}</td>
             @endif
         </tr>
+        @if ($settings->slogan)
+            <tr><td colspan="3" style="text-align: center; font-style: italic; padding-top: 4px;">{{ $settings->slogan }}</td></tr>
+        @endif
     </table>
 </body>
 </html>

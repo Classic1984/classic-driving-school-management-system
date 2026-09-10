@@ -8,6 +8,7 @@
     @php
         $phoneIconPath = 'M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z';
         $mapPinIconPath = 'M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z';
+        $globeIconPath = 'M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418';
         $printerIconPath = 'M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.055 48.055 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z';
 
         $courseCoverage = $invoice->courseCoverageList();
@@ -155,18 +156,18 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="flex flex-wrap items-start justify-between gap-6 pb-4 border-b-2 border-blue-900">
+                <div class="flex flex-wrap items-start justify-between gap-6 pb-4 border-b-2 border-black">
                     <div>
-                        <h1 class="text-3xl sm:text-4xl font-black text-blue-900 tracking-tight leading-none">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</h1>
+                        <h1 class="text-3xl sm:text-4xl font-black text-black tracking-tight leading-none">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</h1>
                         @if ($settings->tagline)
                             <p class="text-gray-500 mt-1">{{ $settings->tagline }}</p>
                         @endif
                         @if ($settings->slogan)
-                            <p class="italic text-blue-700 text-sm mt-1">{{ $settings->slogan }}</p>
+                            <p class="italic text-amber-600 text-sm mt-1">{{ $settings->slogan }}</p>
                         @endif
                     </div>
                     <div class="text-right">
-                        <h2 class="text-3xl sm:text-5xl font-black text-blue-900 leading-none">{{ __('INVOICE') }}</h2>
+                        <h2 class="text-3xl sm:text-5xl font-black text-black leading-none">{{ __('INVOICE') }}</h2>
                         <dl class="mt-2 text-sm">
                             <div class="flex justify-end gap-2">
                                 <dt class="font-bold text-gray-700">{{ __('Invoice No:') }}</dt>
@@ -181,15 +182,15 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <div class="rounded-lg overflow-hidden ring-1 ring-blue-200">
-                        <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('BILL TO') }}</div>
+                    <div class="rounded-lg overflow-hidden ring-1 ring-amber-200">
+                        <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('BILL TO') }}</div>
                         <div class="bg-white px-4 py-4">
                             <p class="text-lg font-bold text-gray-900">{{ $invoice->company->name }}</p>
                             <p class="text-gray-600 text-sm mt-1">{{ implode(', ', array_filter([$invoice->company->address, $invoice->company->city])) }}</p>
                         </div>
                     </div>
-                    <div class="rounded-lg overflow-hidden ring-1 ring-blue-200">
-                        <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('TRAINING DETAILS') }}</div>
+                    <div class="rounded-lg overflow-hidden ring-1 ring-amber-200">
+                        <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('TRAINING DETAILS') }}</div>
                         <div class="bg-white px-4 py-4 text-sm space-y-1.5">
                             @if ($invoice->programme_name)
                                 <div class="flex gap-2"><span class="font-bold text-gray-700 w-24 shrink-0">{{ __('Course:') }}</span><span class="text-gray-900">{{ $invoice->programme_name }}</span></div>
@@ -204,17 +205,17 @@
                     </div>
                 </div>
 
-                <div class="rounded-lg overflow-hidden ring-1 ring-blue-200 mt-6">
+                <div class="rounded-lg overflow-hidden ring-1 ring-amber-200 mt-6">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-blue-900 text-white text-left text-sm font-bold">
+                            <tr class="bg-black text-amber-400 text-left text-sm font-bold">
                                 <th class="px-4 py-2">{{ __('Description') }}</th>
                                 <th class="px-4 py-2 text-center w-20">{{ __('Qty') }}</th>
                                 <th class="px-4 py-2 text-right w-36">{{ __('Unit Price (₦)') }}</th>
                                 <th class="px-4 py-2 text-right w-36">{{ __('Amount (₦)') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-blue-100">
+                        <tbody class="bg-white divide-y divide-amber-100">
                             @foreach ($invoice->items as $item)
                                 <tr>
                                     <td class="px-4 py-3 text-sm text-gray-900">{{ $item->description }}</td>
@@ -228,20 +229,20 @@
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <div class="flex w-full sm:w-1/2 rounded-lg overflow-hidden ring-1 ring-blue-200">
-                        <div class="flex-1 bg-blue-50 text-blue-900 font-bold text-sm flex items-center px-4 py-3">{{ __('TOTAL AMOUNT DUE') }}</div>
-                        <div class="bg-blue-900 text-white font-black text-xl flex items-center px-4 py-3">₦{{ number_format($invoice->total(), 0) }}</div>
+                    <div class="flex w-full sm:w-1/2 rounded-lg overflow-hidden ring-1 ring-amber-200">
+                        <div class="flex-1 bg-amber-50 text-black font-bold text-sm flex items-center px-4 py-3">{{ __('TOTAL AMOUNT DUE') }}</div>
+                        <div class="bg-black text-amber-400 font-black text-xl flex items-center px-4 py-3">₦{{ number_format($invoice->total(), 0) }}</div>
                     </div>
                 </div>
 
                 <p class="text-sm text-gray-700 mt-3"><span class="font-bold">{{ __('Amount in Words:') }}</span> {{ $invoice->totalInWords() }}</p>
 
                 @if (! empty($courseCoveragePairs))
-                    <div class="rounded-lg overflow-hidden ring-1 ring-blue-200 mt-6">
-                        <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('COURSE COVERAGE') }}</div>
-                        <div class="bg-white divide-y divide-blue-100">
+                    <div class="rounded-lg overflow-hidden ring-1 ring-amber-200 mt-6">
+                        <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('COURSE COVERAGE') }}</div>
+                        <div class="bg-white divide-y divide-amber-100">
                             @foreach ($courseCoveragePairs as $pair)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-blue-100 {{ $loop->even ? 'bg-blue-50/60' : '' }}">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-amber-100 {{ $loop->even ? 'bg-amber-50/60' : '' }}">
                                     @foreach ($pair as $topic)
                                         <div class="px-4 py-2 text-sm text-gray-800">{{ $topic }}</div>
                                     @endforeach
@@ -253,8 +254,8 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                     @if (! empty($paymentTerms))
-                        <div class="rounded-lg overflow-hidden ring-1 ring-blue-200">
-                            <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('PAYMENT TERMS') }}</div>
+                        <div class="rounded-lg overflow-hidden ring-1 ring-amber-200">
+                            <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('PAYMENT TERMS') }}</div>
                             <div class="bg-white px-4 py-4">
                                 <ul class="text-sm text-gray-700 space-y-1.5 list-disc list-inside">
                                     @foreach ($paymentTerms as $term)
@@ -264,8 +265,8 @@
                             </div>
                         </div>
                     @endif
-                    <div class="rounded-lg overflow-hidden ring-1 ring-blue-200">
-                        <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('PAYMENT DETAILS') }}</div>
+                    <div class="rounded-lg overflow-hidden ring-1 ring-amber-200">
+                        <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('PAYMENT DETAILS') }}</div>
                         <div class="bg-white px-4 py-4 text-sm space-y-1.5">
                             @if ($settings->bank_name)
                                 <div class="flex gap-2"><span class="font-bold text-gray-700 w-32 shrink-0">{{ __('Bank Name:') }}</span><span class="text-gray-900">{{ $settings->bank_name }}</span></div>
@@ -286,8 +287,8 @@
                     </div>
                 </div>
 
-                <div class="rounded-lg overflow-hidden ring-1 ring-blue-200 mt-6 max-w-sm">
-                    <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __("DIRECTOR'S SIGNATURE") }}</div>
+                <div class="rounded-lg overflow-hidden ring-1 ring-amber-200 mt-6 max-w-sm">
+                    <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __("DIRECTOR'S SIGNATURE") }}</div>
                     <div class="bg-white px-4 py-4 text-center">
                         @if ($settings->signature_path)
                             <img src="{{ Storage::disk('public')->url($settings->signature_path) }}" alt="{{ __('Signature') }}" class="h-16 mx-auto object-contain">
@@ -301,11 +302,17 @@
                     </div>
                 </div>
 
-                <div class="border-t-2 border-blue-900 mt-8 pt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-blue-900">
+                <div class="border-t-2 border-black mt-8 pt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-black">
                     @if ($settings->phone)
                         <span class="flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                             {{ $settings->phone }}
+                        </span>
+                    @endif
+                    @if ($settings->website)
+                        <span class="flex items-center gap-1.5">
+                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $globeIconPath }}" /></svg>
+                            {{ $settings->website }}
                         </span>
                     @endif
                     @if ($settings->slogan)
@@ -313,7 +320,7 @@
                     @endif
                     @if ($settings->address)
                         <span class="flex items-center gap-1.5">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                             {{ $settings->address }}
                         </span>
                     @endif

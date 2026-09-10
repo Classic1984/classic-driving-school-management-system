@@ -8,6 +8,9 @@
     @php
         $printerIconPath = 'M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.055 48.055 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z';
         $arrowRightIconPath = 'M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3';
+        $phoneIconPath = 'M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z';
+        $mapPinIconPath = 'M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z';
+        $globeIconPath = 'M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418';
         $trashIconPath = 'M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0';
         $canDelete = $quotation->status !== 'converted';
 
@@ -111,13 +114,13 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="flex flex-wrap items-start justify-between gap-6 pb-4 border-b-2 border-blue-900">
+                <div class="flex flex-wrap items-start justify-between gap-6 pb-4 border-b-2 border-black">
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-black text-blue-900 tracking-tight leading-none">{{ strtoupper($quotation->company->name) }}</h1>
+                        <h1 class="text-2xl sm:text-3xl font-black text-black tracking-tight leading-none">{{ strtoupper($quotation->company->name) }}</h1>
                         <p class="text-gray-500 text-sm mt-1">{{ implode(', ', array_filter([$quotation->company->address, $quotation->company->city])) }}</p>
                     </div>
                     <div class="text-right">
-                        <h2 class="text-3xl sm:text-4xl font-black text-blue-900 leading-none">{{ __('QUOTATION') }}</h2>
+                        <h2 class="text-3xl sm:text-4xl font-black text-black leading-none">{{ __('QUOTATION') }}</h2>
                         <dl class="mt-2 text-sm">
                             <div class="flex justify-end gap-2">
                                 <dt class="font-bold text-gray-700">{{ __('Quotation No:') }}</dt>
@@ -138,8 +141,8 @@
                 </div>
 
                 @if ($quotation->programme_name || $quotation->duration_label || $quotation->participant_count)
-                    <div class="rounded-lg overflow-hidden ring-1 ring-blue-200 mt-6">
-                        <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('TRAINING DETAILS') }}</div>
+                    <div class="rounded-lg overflow-hidden ring-1 ring-amber-200 mt-6">
+                        <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('TRAINING DETAILS') }}</div>
                         <div class="bg-white px-4 py-4 text-sm space-y-1.5">
                             @if ($quotation->programme_name)
                                 <div class="flex gap-2"><span class="font-bold text-gray-700 w-24 shrink-0">{{ __('Course:') }}</span><span class="text-gray-900">{{ $quotation->programme_name }}</span></div>
@@ -154,17 +157,17 @@
                     </div>
                 @endif
 
-                <div class="rounded-lg overflow-hidden ring-1 ring-blue-200 mt-6">
+                <div class="rounded-lg overflow-hidden ring-1 ring-amber-200 mt-6">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-blue-900 text-white text-left text-sm font-bold">
+                            <tr class="bg-black text-amber-400 text-left text-sm font-bold">
                                 <th class="px-4 py-2">{{ __('Description') }}</th>
                                 <th class="px-4 py-2 text-center w-20">{{ __('Qty') }}</th>
                                 <th class="px-4 py-2 text-right w-36">{{ __('Unit Price (₦)') }}</th>
                                 <th class="px-4 py-2 text-right w-36">{{ __('Amount (₦)') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-blue-100">
+                        <tbody class="bg-white divide-y divide-amber-100">
                             @foreach ($quotation->items as $item)
                                 <tr>
                                     <td class="px-4 py-3 text-sm text-gray-900">{{ $item->description }}</td>
@@ -178,18 +181,18 @@
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <div class="flex w-full sm:w-1/2 rounded-lg overflow-hidden ring-1 ring-blue-200">
-                        <div class="flex-1 bg-blue-50 text-blue-900 font-bold text-sm flex items-center px-4 py-3">{{ __('TOTAL') }}</div>
-                        <div class="bg-blue-900 text-white font-black text-xl flex items-center px-4 py-3">₦{{ number_format($quotation->total(), 0) }}</div>
+                    <div class="flex w-full sm:w-1/2 rounded-lg overflow-hidden ring-1 ring-amber-200">
+                        <div class="flex-1 bg-amber-50 text-black font-bold text-sm flex items-center px-4 py-3">{{ __('TOTAL') }}</div>
+                        <div class="bg-black text-amber-400 font-black text-xl flex items-center px-4 py-3">₦{{ number_format($quotation->total(), 0) }}</div>
                     </div>
                 </div>
 
                 @if (! empty($courseCoveragePairs))
-                    <div class="rounded-lg overflow-hidden ring-1 ring-blue-200 mt-6">
-                        <div class="bg-blue-900 text-white font-bold text-sm tracking-wide px-4 py-2">{{ __('COURSE COVERAGE') }}</div>
-                        <div class="bg-white divide-y divide-blue-100">
+                    <div class="rounded-lg overflow-hidden ring-1 ring-amber-200 mt-6">
+                        <div class="bg-black text-amber-400 font-bold text-sm tracking-wide px-4 py-2">{{ __('COURSE COVERAGE') }}</div>
+                        <div class="bg-white divide-y divide-amber-100">
                             @foreach ($courseCoveragePairs as $pair)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-blue-100 {{ $loop->even ? 'bg-blue-50/60' : '' }}">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-amber-100 {{ $loop->even ? 'bg-amber-50/60' : '' }}">
                                     @foreach ($pair as $topic)
                                         <div class="px-4 py-2 text-sm text-gray-800">{{ $topic }}</div>
                                     @endforeach
@@ -201,6 +204,29 @@
 
                 @if ($quotation->notes)
                     <p class="text-sm text-gray-600 mt-6">{{ $quotation->notes }}</p>
+                @endif
+
+                @if ($settings->phone || $settings->website || $settings->address)
+                    <div class="border-t-2 border-black mt-8 pt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-black">
+                        @if ($settings->phone)
+                            <span class="flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                                {{ $settings->phone }}
+                            </span>
+                        @endif
+                        @if ($settings->website)
+                            <span class="flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $globeIconPath }}" /></svg>
+                                {{ $settings->website }}
+                            </span>
+                        @endif
+                        @if ($settings->address)
+                            <span class="flex items-center gap-1.5">
+                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                {{ $settings->address }}
+                            </span>
+                        @endif
+                    </div>
                 @endif
             </div>
 

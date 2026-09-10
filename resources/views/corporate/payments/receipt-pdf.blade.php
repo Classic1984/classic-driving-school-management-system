@@ -6,15 +6,16 @@
     <style>
         body { font-family: sans-serif; font-size: 12px; color: #1f2937; }
         table { border-collapse: collapse; width: 100%; }
-        .header { text-align: center; border-bottom: 3px solid #1e3a8a; padding-bottom: 12px; margin-bottom: 16px; }
-        .header h1 { font-size: 20px; color: #1e3a8a; margin: 8px 0 0; }
+        .header { text-align: center; border-bottom: 3px solid #000000; padding-bottom: 12px; margin-bottom: 16px; }
+        .header h1 { font-size: 20px; color: #000000; margin: 8px 0 0; }
         .header p { color: #6b7280; margin: 4px 0 0; font-size: 11px; }
         .rows td { padding: 8px 0; border-bottom: 1px solid #f3f4f6; font-size: 12px; }
         .rows .label { color: #6b7280; font-weight: bold; }
         .rows .value { text-align: right; }
-        .amount { font-size: 18px; font-weight: bold; color: #1e3a8a; }
+        .amount { font-size: 18px; font-weight: bold; color: #000000; }
         .status-paid { color: #15803d; font-weight: bold; }
         .footer { margin-top: 24px; text-align: center; font-size: 10px; color: #9ca3af; }
+        .footer .website { color: #b45309; font-weight: bold; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -39,6 +40,11 @@
         <tr><td class="label">Receipt No.</td><td class="value">{{ $payment->receipt_number }}</td></tr>
     </table>
 
-    <p class="footer">Thank you for choosing {{ $settings->company_name ?: 'Classic Driving School' }}.</p>
+    <p class="footer">
+        Thank you for choosing {{ $settings->company_name ?: 'Classic Driving School' }}.
+        @if ($settings->website)
+            <br><span class="website">{{ $settings->website }}</span>
+        @endif
+    </p>
 </body>
 </html>
