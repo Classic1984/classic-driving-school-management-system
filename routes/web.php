@@ -210,6 +210,8 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::resource('corporate-companies', CorporateCompanyController::class);
         Route::post('corporate-companies/{corporateCompany}/drivers', [CorporateCompanyDriverController::class, 'store'])->name('corporate-companies.drivers.store');
         Route::delete('corporate-company-drivers/{corporateCompanyDriver}', [CorporateCompanyDriverController::class, 'destroy'])->name('corporate-company-drivers.destroy');
+        Route::get('corporate-company-drivers/{corporateCompanyDriver}/enroll', [CorporateCompanyDriverController::class, 'enrollCreate'])->name('corporate-company-drivers.enroll-create');
+        Route::post('corporate-company-drivers/{corporateCompanyDriver}/enroll', [CorporateCompanyDriverController::class, 'enrollStore'])->name('corporate-company-drivers.enroll-store');
         Route::get('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'edit'])->name('corporate-invoice-settings.edit');
         Route::put('corporate-invoice-settings', [CorporateInvoiceSettingController::class, 'update'])->name('corporate-invoice-settings.update');
         Route::resource('corporate-invoices', CorporateInvoiceController::class)->only(['index', 'create', 'store', 'show', 'destroy']);

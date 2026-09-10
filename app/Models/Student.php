@@ -37,6 +37,7 @@ class Student extends Model
         'next_of_kin_phone',
         'next_of_kin_email',
         'license_number',
+        'corporate_company_id',
         'course_type',
         'vehicle_class',
         'has_driving_experience',
@@ -100,6 +101,28 @@ class Student extends Model
     public function hasAppAccess(): bool
     {
         return $this->user_id !== null;
+    }
+
+    /**
+     * The corporate client sponsoring this student's training, if they were
+     * quick-enrolled from that company's driver roster rather than
+     * registered and paying individually.
+     */
+    public function corporateCompany(): BelongsTo
+    {
+        return $this->belongsTo(CorporateCompany::class);
+    }
+
+    /**
+     * Whether a corporate client - not this student themselves - is
+     * responsible for their training fee. See Enrollment::balance(), which
+     * waives the individual balance for a sponsored student rather than
+     * tracking a second, redundant payment for money the company already
+     * paid via its own invoice.
+     */
+    public function isCorporateSponsored(): bool
+    {
+        return $this->corporate_company_id !== null;
     }
 
     /**

@@ -315,4 +315,60 @@ class CorporateCompanyTest extends TestCase
         $response->assertRedirect(route('corporate-companies.show', $company));
         $this->assertDatabaseMissing('corporate_company_drivers', ['id' => $driver->id]);
     }
+
+    public function test_a_company_with_an_overdue_invoice_reports_it(): void
+    {
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'sent',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+
+        $this->assertTrue($company->hasOverdueInvoice());
+    }
+
+    public function test_a_company_with_only_paid_invoices_has_no_overdue_invoice(): void
+    {
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'paid',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+
+        $this->assertFalse($company->hasOverdueInvoice());
+    }
+
+    public function test_the_company_page_shows_a_banner_when_it_has_an_overdue_invoice(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'sent',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}");
+
+        $response->assertOk();
+        $response->assertSee('This company has an overdue invoice');
+    }
+
+    public function test_the_company_page_hides_the_overdue_banner_when_invoices_are_current(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        CorporateInvoice::factory()->create([
+            'corporate_company_id' => $company->id,
+            'status' => 'paid',
+            'due_date' => now()->subWeek()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}");
+
+        $response->assertOk();
+        $response->assertDontSee('This company has an overdue invoice');
+    }
 }

@@ -15,6 +15,7 @@
         $receiptIconPath = 'M9 14.25 6.75 12l2.25-2.25M15 9.75l2.25 2.25-2.25 2.25M3.375 21h17.25c.621 0 1.125-.504 1.125-1.125V4.125C21.75 3.504 21.246 3 20.625 3H3.375C2.754 3 2.25 3.504 2.25 4.125v15.75c0 .621.504 1.125 1.125 1.125Z';
         $usersIconPath = 'M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z';
         $trashIconPath = 'm14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0';
+        $warningIconPath = 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z';
     @endphp
 
     <div class="py-6">
@@ -180,6 +181,13 @@
                         <span class="text-gray-400 font-normal normal-case">({{ $company->drivers->count() }})</span>
                     </h4>
 
+                    @if ($company->hasOverdueInvoice())
+                        <div class="mt-3 flex items-start gap-2 rounded-xl bg-red-50 ring-1 ring-red-200 p-4">
+                            <svg class="h-5 w-5 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $warningIconPath }}" /></svg>
+                            <p class="text-sm font-semibold text-red-700">{{ __('This company has an overdue invoice. Its drivers are flagged below until it is settled.') }}</p>
+                        </div>
+                    @endif
+
                     <form method="post" action="{{ route('corporate-companies.drivers.store', $company) }}" class="mt-3 flex flex-wrap items-end gap-3">
                         @csrf
                         <div class="flex-1 min-w-[10rem]">
@@ -207,13 +215,27 @@
                             @foreach ($company->drivers as $driver)
                                 <li class="flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-amber-50/40 transition">
                                     <div>
-                                        <p class="font-semibold text-gray-900">{{ $driver->name }}</p>
+                                        <p class="font-semibold text-gray-900 flex items-center gap-1.5">
+                                            {{ $driver->name }}
+                                            @if ($driver->student_id && $company->hasOverdueInvoice())
+                                                <svg class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" title="{{ __('Sponsor company invoice overdue') }}"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $warningIconPath }}" /></svg>
+                                            @endif
+                                        </p>
                                         <p class="text-xs text-gray-500">{{ implode(' · ', array_filter([$driver->phone, $driver->license_number])) ?: '—' }}</p>
                                     </div>
                                     <div class="flex items-center gap-3 shrink-0">
-                                        <a href="{{ route('students.create', ['name' => $driver->name, 'phone' => $driver->phone, 'license_number' => $driver->license_number]) }}" class="text-xs font-semibold text-amber-600 hover:underline whitespace-nowrap">
-                                            {{ __('Register as Student') }}
-                                        </a>
+                                        @if ($driver->student_id)
+                                            <a href="{{ route('students.show', $driver->student) }}" class="text-xs font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                                {{ __('View Student') }}
+                                            </a>
+                                        @else
+                                            <a href="{{ route('corporate-company-drivers.enroll-create', $driver) }}" class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 px-3 py-1.5 text-xs font-bold text-black transition whitespace-nowrap">
+                                                {{ __('Enroll as Student') }}
+                                            </a>
+                                            <a href="{{ route('students.create', ['name' => $driver->name, 'phone' => $driver->phone, 'license_number' => $driver->license_number]) }}" class="text-xs font-semibold text-gray-400 hover:text-amber-600 hover:underline whitespace-nowrap">
+                                                {{ __('or full form') }}
+                                            </a>
+                                        @endif
                                         <form method="post" action="{{ route('corporate-company-drivers.destroy', $driver) }}" onsubmit="return confirm('{{ __('Remove :name from this company?', ['name' => $driver->name]) }}')">
                                             @csrf
                                             @method('DELETE')
@@ -225,7 +247,7 @@
                                 </li>
                             @endforeach
                         </ul>
-                        <p class="mt-2 text-xs text-gray-500">{{ __("\"Register as Student\" pre-fills the student registration form with this driver's name, phone, and license number - complete it there to enroll them in a course so they show up in training/attendance.") }}</p>
+                        <p class="mt-2 text-xs text-gray-500">{{ __('"Enroll as Student" creates a real student record for this driver right away (their fee is covered by the company, no payment needed) - the smaller "or full form" link opens the complete registration form instead, if you need to capture their full profile.') }}</p>
                     @endif
                 </div>
             </div>
