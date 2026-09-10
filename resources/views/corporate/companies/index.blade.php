@@ -123,8 +123,17 @@
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $company->quotations_count }}</td>
                                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $company->invoices_count }}</td>
-                                                <td class="px-4 py-3 text-right">
+                                                <td class="px-4 py-3 text-right space-x-3 whitespace-nowrap">
                                                     <a href="{{ route('corporate-companies.edit', $company) }}" class="text-sm font-semibold text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                                    @if ($company->quotations_count === 0 && $company->invoices_count === 0)
+                                                        <form method="post" action="{{ route('corporate-companies.destroy', $company) }}" class="inline" onsubmit="return confirm('{{ __('Delete this company? This cannot be undone.') }}');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-sm font-semibold text-red-600 hover:underline">{{ __('Delete') }}</button>
+                                                        </form>
+                                                    @else
+                                                        <span class="text-sm font-semibold text-gray-300 cursor-not-allowed" title="{{ __('Has quotations or invoices, so it cannot be deleted.') }}">{{ __('Delete') }}</span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach
