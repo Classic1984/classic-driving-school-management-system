@@ -155,6 +155,9 @@ class CorporateInvoiceSetting extends Model
             'invoice_prefix' => 'INV',
             'quotation_prefix' => 'QUO',
             'receipt_prefix' => 'REC',
+            'programme_options' => "Defensive Driving\nAuto Course\nManual Course\nCombined Course\nAuto Advanced\nManual Advanced",
+            'duration_options' => "One Day\nThree Days\nOne Week\nTwo Weeks\nOne Month",
+            'driver_count_options' => "1\n5\n10\n20\n50",
         ]);
     }
 
