@@ -31,7 +31,13 @@
                                 <p class="text-sm text-gray-400 font-mono">{{ $company->company_reference }}</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <a href="{{ route('corporate-quotations.create', ['corporate_company_id' => $company->id]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-white/10 transition">
+                                {{ __('New Quotation') }}
+                            </a>
+                            <a href="{{ route('corporate-invoices.create', ['corporate_company_id' => $company->id]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-white/10 transition">
+                                {{ __('New Invoice') }}
+                            </a>
                             <a href="{{ route('corporate-companies.edit', $company) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-white/10 transition">
                                 {{ __('Edit') }}
                             </a>
@@ -91,9 +97,11 @@
                         @else
                             <ul class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
                                 @foreach ($company->quotations as $quotation)
-                                    <li class="flex items-center justify-between px-4 py-3 text-sm">
-                                        <span class="font-mono text-gray-700">{{ $quotation->quotation_number }}</span>
-                                        <x-badge color="amber">{{ __(ucfirst($quotation->status)) }}</x-badge>
+                                    <li>
+                                        <a href="{{ route('corporate-quotations.show', $quotation) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-amber-50/40 transition">
+                                            <span class="font-mono text-gray-700">{{ $quotation->quotation_number }}</span>
+                                            <x-badge color="amber">{{ __(ucfirst($quotation->status)) }}</x-badge>
+                                        </a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -110,9 +118,11 @@
                         @else
                             <ul class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
                                 @foreach ($company->invoices as $invoice)
-                                    <li class="flex items-center justify-between px-4 py-3 text-sm">
-                                        <span class="font-mono text-gray-700">{{ $invoice->invoice_number }}</span>
-                                        <x-badge color="amber">{{ __(ucfirst($invoice->status)) }}</x-badge>
+                                    <li>
+                                        <a href="{{ route('corporate-invoices.show', $invoice) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-amber-50/40 transition">
+                                            <span class="font-mono text-gray-700">{{ $invoice->invoice_number }}</span>
+                                            <x-badge color="amber">{{ __(ucfirst($invoice->status)) }}</x-badge>
+                                        </a>
                                     </li>
                                 @endforeach
                             </ul>

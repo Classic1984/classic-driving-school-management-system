@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
+use App\Models\CorporateQuotation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -98,6 +100,22 @@ class CorporateCompanyTest extends TestCase
 
         $response->assertRedirect(route('corporate-companies.index'));
         $this->assertDatabaseMissing('corporate_companies', ['id' => $company->id]);
+    }
+
+    public function test_the_company_page_links_to_creating_and_viewing_its_quotations_and_invoices(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $quotation = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}");
+
+        $response->assertOk();
+        $response->assertSee(route('corporate-quotations.create', ['corporate_company_id' => $company->id]), false);
+        $response->assertSee(route('corporate-invoices.create', ['corporate_company_id' => $company->id]), false);
+        $response->assertSee(route('corporate-quotations.show', $quotation), false);
+        $response->assertSee(route('corporate-invoices.show', $invoice), false);
     }
 
     public function test_the_companies_list_can_be_searched_by_name(): void

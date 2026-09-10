@@ -84,8 +84,8 @@
                             {{ __('Cancel Invoice') }}
                         </button>
                     @endif
-                    <a href="{{ route('corporate-invoices.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-4 py-2 text-sm font-bold text-amber-400 transition">
-                        {{ __('Back to Invoices') }}
+                    <a href="{{ route('corporate-companies.show', $invoice->corporate_company_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-4 py-2 text-sm font-bold text-amber-400 transition">
+                        {{ __('Back to Company') }}
                     </a>
                 </div>
             </div>

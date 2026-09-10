@@ -212,6 +212,17 @@ class CorporateInvoiceTest extends TestCase
         $this->assertNull($invoice->fresh()->cancellation_reason);
     }
 
+    public function test_the_create_form_preselects_the_company_given_in_the_query_string(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/create?corporate_company_id={$company->id}");
+
+        $response->assertOk();
+        $response->assertSee('value="'.$company->id.'" selected', false);
+    }
+
     public function test_a_director_can_download_the_invoice_as_a_pdf(): void
     {
         $director = User::factory()->director()->create();
