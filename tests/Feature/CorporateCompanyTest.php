@@ -118,6 +118,77 @@ class CorporateCompanyTest extends TestCase
         $response->assertSee(route('corporate-invoices.show', $invoice), false);
     }
 
+    public function test_the_companies_index_shows_invoice_dashboard_stats(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $paid = CorporateInvoice::factory()->create(['status' => 'paid']);
+        $paid->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 50000, 'sort_order' => 0]);
+        $paid->payments()->create(['amount' => 50000, 'payment_method' => 'cash', 'payment_date' => now(), 'recorded_by' => $director->id]);
+
+        $pending = CorporateInvoice::factory()->create(['status' => 'pending', 'due_date' => now()->addWeek()->format('Y-m-d')]);
+        $pending->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 30000, 'sort_order' => 0]);
+
+        $overdue = CorporateInvoice::factory()->create(['status' => 'sent', 'due_date' => now()->subWeek()->format('Y-m-d')]);
+        $overdue->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 20000, 'sort_order' => 0]);
+
+        CorporateInvoice::factory()->create(['status' => 'cancelled']);
+
+        $response = $this->actingAs($director)->get('/corporate-companies');
+
+        $response->assertOk();
+        $response->assertViewHas('stats', [
+            'totalInvoices' => 4, // including the cancelled one
+            'pendingInvoices' => 1,
+            'paidInvoices' => 1,
+            'overdueInvoices' => 1,
+            'totalOutstanding' => 50000.0, // 30,000 pending + 20,000 overdue; cancelled excluded
+            'totalCollected' => 50000.0,
+        ]);
+    }
+
+    public function test_a_companys_quotations_can_be_filtered_by_status(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $draft = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id, 'status' => 'draft']);
+        $sent = CorporateQuotation::factory()->create(['corporate_company_id' => $company->id, 'status' => 'sent']);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}?quotation_status=sent");
+
+        $response->assertOk();
+        $response->assertSee($sent->quotation_number);
+        $response->assertDontSee($draft->quotation_number);
+    }
+
+    public function test_a_companys_invoices_can_be_filtered_by_status(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $pending = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id, 'status' => 'pending']);
+        $paid = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id, 'status' => 'paid']);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}?invoice_status=paid");
+
+        $response->assertOk();
+        $response->assertSee($paid->invoice_number);
+        $response->assertDontSee($pending->invoice_number);
+    }
+
+    public function test_a_companys_overdue_invoices_can_be_filtered_even_though_overdue_is_not_a_stored_status(): void
+    {
+        $director = User::factory()->director()->create();
+        $company = CorporateCompany::factory()->create();
+        $overdue = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id, 'status' => 'sent', 'due_date' => now()->subWeek()->format('Y-m-d')]);
+        $onTime = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id, 'status' => 'sent', 'due_date' => now()->addWeek()->format('Y-m-d')]);
+
+        $response = $this->actingAs($director)->get("/corporate-companies/{$company->id}?invoice_status=overdue");
+
+        $response->assertOk();
+        $response->assertSee($overdue->invoice_number);
+        $response->assertDontSee($onTime->invoice_number);
+    }
+
     public function test_the_companies_list_can_be_searched_by_name(): void
     {
         $director = User::factory()->director()->create();

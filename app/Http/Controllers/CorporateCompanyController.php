@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCorporateCompanyRequest;
 use App\Http\Requests\UpdateCorporateCompanyRequest;
 use App\Models\ActivityLog;
 use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -27,7 +28,37 @@ class CorporateCompanyController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('corporate.companies.index', compact('companies', 'search'));
+        return view('corporate.companies.index', [
+            'companies' => $companies,
+            'search' => $search,
+            'stats' => $this->computeStats(),
+        ]);
+    }
+
+    /**
+     * Dashboard stat tiles shown above the companies list. There's no
+     * separate "Corporate Dashboard" page - directors get one entry point
+     * into this whole area (Companies), so the overview lives right here.
+     *
+     * @return array<string, int|float>
+     */
+    private function computeStats(): array
+    {
+        $invoices = CorporateInvoice::with(['items', 'payments'])->get();
+
+        $active = $invoices->reject(fn (CorporateInvoice $invoice) => $invoice->status === 'cancelled');
+        $overdue = $active->filter(fn (CorporateInvoice $invoice) => $invoice->isOverdue());
+        $paid = $invoices->where('status', 'paid');
+        $pending = $active->reject(fn (CorporateInvoice $invoice) => $invoice->status === 'paid' || $invoice->isOverdue());
+
+        return [
+            'totalInvoices' => $invoices->count(),
+            'pendingInvoices' => $pending->count(),
+            'paidInvoices' => $paid->count(),
+            'overdueInvoices' => $overdue->count(),
+            'totalOutstanding' => $active->sum(fn (CorporateInvoice $invoice) => $invoice->balance()),
+            'totalCollected' => $invoices->sum(fn (CorporateInvoice $invoice) => $invoice->amountPaid()),
+        ];
     }
 
     /**
@@ -56,11 +87,27 @@ class CorporateCompanyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(CorporateCompany $corporateCompany): View
+    public function show(Request $request, CorporateCompany $corporateCompany): View
     {
         $corporateCompany->load(['quotations' => fn ($query) => $query->latest(), 'invoices' => fn ($query) => $query->latest()]);
 
-        return view('corporate.companies.show', ['company' => $corporateCompany]);
+        $quotationStatus = $request->query('quotation_status');
+        $invoiceStatus = $request->query('invoice_status');
+
+        return view('corporate.companies.show', [
+            'company' => $corporateCompany,
+            'quotationStatus' => $quotationStatus,
+            'invoiceStatus' => $invoiceStatus,
+            // Filtered in PHP rather than SQL because "expired"/"overdue"
+            // are computed display states (see displayStatus()), not
+            // values the status column itself ever holds.
+            'filteredQuotations' => $quotationStatus
+                ? $corporateCompany->quotations->filter(fn ($quotation) => $quotation->displayStatus() === $quotationStatus)->values()
+                : $corporateCompany->quotations,
+            'filteredInvoices' => $invoiceStatus
+                ? $corporateCompany->invoices->filter(fn ($invoice) => $invoice->displayStatus() === $invoiceStatus)->values()
+                : $corporateCompany->invoices,
+        ]);
     }
 
     /**

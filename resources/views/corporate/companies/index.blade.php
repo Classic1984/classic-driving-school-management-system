@@ -40,6 +40,33 @@
                         </div>
                     </div>
 
+                    <div class="relative grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-6">
+                        <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
+                            <p class="text-xs text-gray-400">{{ __('Total Invoices') }}</p>
+                            <p class="text-lg font-bold text-white mt-1">{{ $stats['totalInvoices'] }}</p>
+                        </div>
+                        <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
+                            <p class="text-xs text-gray-400">{{ __('Pending') }}</p>
+                            <p class="text-lg font-bold text-amber-400 mt-1">{{ $stats['pendingInvoices'] }}</p>
+                        </div>
+                        <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
+                            <p class="text-xs text-gray-400">{{ __('Paid') }}</p>
+                            <p class="text-lg font-bold text-green-400 mt-1">{{ $stats['paidInvoices'] }}</p>
+                        </div>
+                        <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
+                            <p class="text-xs text-gray-400">{{ __('Overdue') }}</p>
+                            <p class="text-lg font-bold text-red-400 mt-1">{{ $stats['overdueInvoices'] }}</p>
+                        </div>
+                        <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
+                            <p class="text-xs text-gray-400">{{ __('Total Outstanding') }}</p>
+                            <p class="text-lg font-bold text-white mt-1">₦{{ number_format($stats['totalOutstanding'], 0) }}</p>
+                        </div>
+                        <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
+                            <p class="text-xs text-gray-400">{{ __('Total Collected') }}</p>
+                            <p class="text-lg font-bold text-white mt-1">₦{{ number_format($stats['totalCollected'], 0) }}</p>
+                        </div>
+                    </div>
+
                     <form method="get" class="relative mt-6 max-w-sm">
                         <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center text-gray-500">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $searchIconPath }}" /></svg>
