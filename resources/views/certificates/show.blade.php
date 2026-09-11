@@ -134,7 +134,7 @@
                         </span>
                         <span class="inline-flex items-center gap-1">
                             <svg class="h-3.5 w-3.5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 21c-1.657 0-3-4.03-3-9s1.343-9 3-9 3 4.03 3 9-1.343 9-3 9ZM3.75 9h16.5M3.75 15h16.5" /></svg>
-                            {{ __('classicdriving.com.ng') }}
+                            {{ __('https://classicdriving.com.ng') }}
                         </span>
                     </div>
                 </div>
