@@ -208,6 +208,32 @@ class DashboardTest extends TestCase
         $response->assertSee('1,000.00');
     }
 
+    public function test_this_weeks_payment_total_includes_a_payment_dated_the_first_day_of_the_week(): void
+    {
+        // Regression test: whereBetween() against a date column with an
+        // uncast Carbon lower bound stringifies as "Y-m-d 00:00:00", which
+        // sorts *after* a plain "Y-m-d" stored value - silently excluding
+        // a payment dated exactly on the Monday the week starts.
+        $director = User::factory()->director()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->startOfWeek()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('paymentTotals', fn (array $totals) => (float) $totals['week'] === 500.0);
+    }
+
+    public function test_this_weeks_new_students_count_includes_a_student_enrolled_the_first_day_of_the_week(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create(['enrollment_date' => now()->startOfWeek()->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertViewHas('newStudentTotals', fn (array $totals) => $totals['week'] === 1);
+    }
+
     public function test_payment_totals_include_corporate_invoice_payments(): void
     {
         $director = User::factory()->director()->create();

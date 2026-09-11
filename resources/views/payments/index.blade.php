@@ -70,6 +70,9 @@
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-wider">{{ __("Today's Total") }}</p>
                         <p class="text-2xl font-extrabold mt-0.5">₦{{ number_format($todayTotal, 2) }}</p>
+                        @if ($corporateTodayTotal > 0)
+                            <p class="text-[11px] font-medium text-amber-400/80 mt-0.5">{{ __('Includes ₦:amount from corporate invoices', ['amount' => number_format($corporateTodayTotal, 2)]) }}</p>
+                        @endif
                     </div>
                 </div>
                 @if (auth()->user()->isDirector())
@@ -80,6 +83,9 @@
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-wider">{{ __($periodLabel) }} {{ __('Total') }}</p>
                             <p class="text-2xl font-extrabold mt-0.5">₦{{ number_format($periodTotal, 2) }}</p>
+                            @if ($corporatePeriodTotal > 0)
+                                <p class="text-[11px] font-medium text-black/60 mt-0.5">{{ __('Includes ₦:amount from corporate invoices', ['amount' => number_format($corporatePeriodTotal, 2)]) }}</p>
+                            @endif
                         </div>
                     </div>
                 @endif

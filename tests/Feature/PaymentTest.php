@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\CorporateCompany;
+use App\Models\CorporateInvoice;
 use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Student;
@@ -51,6 +53,53 @@ class PaymentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('800.00');
+    }
+
+    public function test_todays_total_includes_a_corporate_invoice_payment_recorded_today(): void
+    {
+        $user = User::factory()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => CorporateCompany::factory()->create()->id]);
+        $invoice->payments()->create([
+            'amount' => 300,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now(),
+            'recorded_by' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->get('/payments');
+
+        $response->assertOk();
+        $response->assertSee('800.00');
+        $response->assertSee('Includes ₦300.00 from corporate invoices');
+    }
+
+    public function test_this_weeks_total_on_the_payments_page_matches_the_dashboards_figure(): void
+    {
+        // The dashboard's "This Week" card and this page's own "This Week"
+        // tile must agree on the same number for the same period - this
+        // reproduces the exact mismatch a director reported: clicking the
+        // dashboard figure landed on a page showing a different total,
+        // because this page didn't used to count corporate invoice
+        // payments at all.
+        $director = User::factory()->director()->create();
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->startOfWeek()->toDateString()]);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => CorporateCompany::factory()->create()->id]);
+        $invoice->payments()->create([
+            'amount' => 700,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now()->startOfWeek()->toDateString(),
+            'recorded_by' => $director->id,
+        ]);
+
+        $dashboardResponse = $this->actingAs($director)->get('/dashboard');
+        $paymentsResponse = $this->actingAs($director)->get('/payments?period=week');
+
+        $dashboardResponse->assertOk();
+        $paymentsResponse->assertOk();
+        $dashboardResponse->assertSee('1,200.00');
+        $paymentsResponse->assertSee('1,200.00');
+        $paymentsResponse->assertSee('Includes ₦700.00 from corporate invoices');
     }
 
     public function test_a_secretary_does_not_see_the_week_month_or_all_time_totals(): void
