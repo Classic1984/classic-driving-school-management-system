@@ -7,6 +7,7 @@
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #1f2937; }
         table { border-collapse: collapse; width: 100%; }
         .header { text-align: center; padding-bottom: 12px; border-bottom: 2px solid #fbbf24; }
+        .logo { height: 48px; margin-bottom: 6px; }
         .header h1 { font-size: 28px; color: #b45309; margin: 8px 0 0; }
         .header p { color: #000000; font-weight: bold; letter-spacing: 1px; margin: 4px 0 0; font-size: 11px; }
         .rows { margin-top: 16px; border: 1px solid #fde68a; border-radius: 8px; }
@@ -23,6 +24,9 @@
 </head>
 <body>
     <div class="header">
+        @if ($logoDataUri)
+            <img class="logo" src="{{ $logoDataUri }}">
+        @endif
         <p>{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
         <h1>PAYMENT RECEIPT</h1>
     </div>

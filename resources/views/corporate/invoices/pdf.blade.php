@@ -7,6 +7,7 @@
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #1f2937; }
         table { border-collapse: collapse; }
         .header { text-align: center; padding-bottom: 10px; border-bottom: 2px solid #fbbf24; }
+        .logo { height: 48px; margin-bottom: 6px; }
         .company-name { font-size: 15px; font-weight: bold; letter-spacing: 2px; color: #000000; margin: 0; }
         .invoice-title { font-size: 40px; font-weight: bold; color: #b45309; margin: 4px 0 0; }
         .tagline { color: #6b7280; margin: 4px 0 0; font-size: 11px; }
@@ -47,6 +48,9 @@
 </head>
 <body>
     <div class="header">
+        @if ($logoDataUri)
+            <img class="logo" src="{{ $logoDataUri }}">
+        @endif
         <p class="company-name">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
         <p class="invoice-title">INVOICE</p>
         @if ($settings->tagline)

@@ -167,6 +167,24 @@ class CorporatePaymentTest extends TestCase
         $pdfResponse->assertOk();
     }
 
+    public function test_the_receipt_shows_the_school_logo(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 75000, 'sort_order' => 0]);
+        $payment = $invoice->payments()->create([
+            'amount' => 75000,
+            'payment_method' => 'cash',
+            'payment_date' => '2026-09-10',
+            'recorded_by' => $director->id,
+        ]);
+
+        $response = $this->actingAs($director)->get("/corporate-payments/{$payment->id}/receipt");
+
+        $response->assertOk();
+        $response->assertSee('alt="Classic Driving School"', false);
+    }
+
     public function test_a_director_can_download_the_receipt_as_a_pdf(): void
     {
         $director = User::factory()->director()->create();

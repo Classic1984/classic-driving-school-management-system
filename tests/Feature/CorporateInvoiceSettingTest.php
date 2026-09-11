@@ -128,6 +128,14 @@ class CorporateInvoiceSettingTest extends TestCase
         $this->assertNull(CorporateInvoiceSetting::current()->signatureDataUri());
     }
 
+    public function test_logo_data_uri_embeds_the_apps_fixed_logo_asset(): void
+    {
+        $dataUri = CorporateInvoiceSetting::logoDataUri();
+
+        $this->assertNotNull($dataUri);
+        $this->assertStringStartsWith('data:image/', $dataUri);
+    }
+
     public function test_leaving_the_prefixes_blank_defaults_them_automatically(): void
     {
         $director = User::factory()->director()->create();

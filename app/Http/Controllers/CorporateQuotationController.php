@@ -262,6 +262,7 @@ class CorporateQuotationController extends Controller
         return Pdf::loadView('corporate.quotations.pdf', [
             'quotation' => $corporateQuotation,
             'settings' => CorporateInvoiceSetting::current(),
+            'logoDataUri' => CorporateInvoiceSetting::logoDataUri(),
         ]);
     }
 }

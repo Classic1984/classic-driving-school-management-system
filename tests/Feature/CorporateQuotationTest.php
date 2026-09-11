@@ -181,6 +181,18 @@ class CorporateQuotationTest extends TestCase
         $response->assertSee('classicdriving.com.ng');
     }
 
+    public function test_the_quotation_document_shows_the_school_logo(): void
+    {
+        $director = User::factory()->director()->create();
+        $quotation = CorporateQuotation::factory()->create();
+        $quotation->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-quotations/{$quotation->id}");
+
+        $response->assertOk();
+        $response->assertSee('alt="Classic Driving School"', false);
+    }
+
     public function test_a_director_can_download_the_quotation_as_a_pdf(): void
     {
         $director = User::factory()->director()->create();

@@ -148,6 +148,26 @@ class CorporateInvoiceSetting extends Model
         return "data:{$mimeType};base64,{$contents}";
     }
 
+    /**
+     * The school's logo (a fixed app asset at public/images/logo.png, not a
+     * per-installation upload like the signature above) as a data: URI, for
+     * embedding directly in a PDF - same reasoning as signatureDataUri():
+     * dompdf can't reliably fetch it any other way.
+     */
+    public static function logoDataUri(): ?string
+    {
+        $path = public_path('images/logo.png');
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $mimeType = mime_content_type($path) ?: 'image/png';
+        $contents = base64_encode((string) file_get_contents($path));
+
+        return "data:{$mimeType};base64,{$contents}";
+    }
+
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');

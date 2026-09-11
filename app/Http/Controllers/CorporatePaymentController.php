@@ -123,6 +123,10 @@ class CorporatePaymentController extends Controller
     {
         $settings = CorporateInvoiceSetting::current();
 
-        return Pdf::loadView('corporate.payments.receipt-pdf', ['payment' => $corporatePayment, 'settings' => $settings]);
+        return Pdf::loadView('corporate.payments.receipt-pdf', [
+            'payment' => $corporatePayment,
+            'settings' => $settings,
+            'logoDataUri' => CorporateInvoiceSetting::logoDataUri(),
+        ]);
     }
 }
