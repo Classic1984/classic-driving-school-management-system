@@ -246,7 +246,12 @@ class DashboardController extends Controller
         // (both signals at once) is shown before "medium" (either signal
         // alone).
         $atRiskEnrollments = Enrollment::where('status', 'active')
-            ->with(['student', 'course'])
+            // student.corporateCompany.invoices is for
+            // isCorporateSponsorOverdue() (via isAtRisk()/riskLevel() below)
+            // - without it, checking each corporate-sponsored student's
+            // sponsor for an overdue invoice would run one extra query per
+            // student instead of one query total.
+            ->with(['student.corporateCompany.invoices', 'course'])
             ->get()
             ->filter(fn (Enrollment $enrollment) => $enrollment->isAtRisk())
             ->sortByDesc(fn (Enrollment $enrollment) => ($enrollment->riskLevel() === 'high' ? 1000 : 0) + $enrollment->daysSinceLastTraining())
