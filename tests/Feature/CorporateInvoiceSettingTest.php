@@ -44,7 +44,7 @@ class CorporateInvoiceSettingTest extends TestCase
         $response = $this->actingAs($director)->get('/corporate-invoice-settings');
 
         $response->assertOk();
-        $response->assertSee('value="classicdriving.com.ng"', false);
+        $response->assertSee('value="https://classicdriving.com.ng"', false);
     }
 
     public function test_a_director_can_update_the_website(): void
