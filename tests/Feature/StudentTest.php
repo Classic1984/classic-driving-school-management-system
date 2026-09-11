@@ -72,6 +72,32 @@ class StudentTest extends TestCase
         $response->assertDontSee('John Smith');
     }
 
+    public function test_a_full_name_search_finds_a_student_whose_stored_name_has_a_middle_name_between_the_typed_words(): void
+    {
+        // Regression test: searching the exact three-word phrase a
+        // director typed used to require it to appear verbatim in the
+        // stored name - a real middle name sitting between the first and
+        // last name (or any other word-order/spacing difference) made the
+        // search find nothing even though the student was right there.
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Saloo Rhema Chukwuemeka Lessi']);
+        Student::factory()->create(['name' => 'Unrelated Person']);
+
+        $response = $this->actingAs($user)->get('/students?search='.urlencode('Saloo Rhema Lessi'));
+
+        $response->assertRedirect(route('students.show', $student));
+    }
+
+    public function test_a_full_name_search_finds_a_student_whose_name_words_are_stored_in_a_different_order(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['name' => 'Lessi Saloo Rhema']);
+
+        $response = $this->actingAs($user)->get('/students?search='.urlencode('Saloo Rhema Lessi'));
+
+        $response->assertRedirect(route('students.show', $student));
+    }
+
     public function test_searching_the_literal_string_zero_is_still_treated_as_a_real_search(): void
     {
         // PHP treats the string "0" as falsy - a naive `if ($search)`
