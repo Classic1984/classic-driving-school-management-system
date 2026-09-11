@@ -45,7 +45,12 @@ class DashboardController extends Controller
 
         $newStudentTotals = [
             'today' => Student::whereDate('enrollment_date', today())->count(),
-            'week' => Student::whereBetween('enrollment_date', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            // Bounds are cast to plain dates (not left as Carbon datetimes,
+            // which stringify with a time component) - enrollment_date is
+            // a date column, and comparing it against a "00:00:00"-suffixed
+            // lower bound string would silently exclude a Monday
+            // enrollment (its stored value sorts before the bound).
+            'week' => Student::whereBetween('enrollment_date', [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()])->count(),
             'month' => Student::whereYear('enrollment_date', now()->year)
                 ->whereMonth('enrollment_date', now()->month)
                 ->count(),
@@ -64,11 +69,19 @@ class DashboardController extends Controller
         $paymentPeriodRanges = null;
 
         if ($request->user()->isDirector()) {
+            // Bounds are cast to plain dates for the same reason as
+            // $newStudentTotals['week'] above - payment_date is a date
+            // column, and an uncast Carbon lower bound (which stringifies
+            // with a "00:00:00" time component) would silently exclude a
+            // payment recorded on the Monday the week starts.
+            $weekStart = now()->startOfWeek()->toDateString();
+            $weekEnd = now()->endOfWeek()->toDateString();
+
             $paymentTotals = [
                 'week' => Payment::where('status', 'paid')
-                    ->whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])
+                    ->whereBetween('payment_date', [$weekStart, $weekEnd])
                     ->sum('amount')
-                    + CorporatePayment::whereBetween('payment_date', [now()->startOfWeek(), now()->endOfWeek()])->sum('amount'),
+                    + CorporatePayment::whereBetween('payment_date', [$weekStart, $weekEnd])->sum('amount'),
                 'month' => Payment::where('status', 'paid')
                     ->whereYear('payment_date', now()->year)
                     ->whereMonth('payment_date', now()->month)

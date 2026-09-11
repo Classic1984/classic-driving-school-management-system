@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\ActivityLog;
+use App\Models\CorporatePayment;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
@@ -43,14 +44,26 @@ class PaymentController extends Controller
             ->paginate(10)
             ->appends($request->query());
 
+        // The dashboard's Total Payments cards (and this page's own tiles)
+        // fold in CorporatePayment amounts alongside individual student
+        // Payments - see DashboardController - so these totals do too,
+        // otherwise clicking through from the dashboard lands on a page
+        // showing a different number for the same period. The "Payment
+        // Records" table below stays individual-payments-only though:
+        // CorporatePayment rows don't share its student/course-shaped
+        // columns, so they're surfaced separately under Corporate
+        // Invoicing rather than merged into this listing.
+        $corporateTodayTotal = CorporatePayment::whereDate('payment_date', today())->sum('amount');
         $todayTotal = Payment::where('status', 'paid')
             ->whereDate('payment_date', today())
-            ->sum('amount');
+            ->sum('amount')
+            + $corporateTodayTotal;
 
-        $periodTotal = $this->query($period)->where('status', 'paid')->sum('amount');
+        $corporatePeriodTotal = $this->corporateQuery($period)->sum('amount');
+        $periodTotal = $this->query($period)->where('status', 'paid')->sum('amount') + $corporatePeriodTotal;
         $periodLabel = self::LABELS[$period];
 
-        return view('payments.index', compact('payments', 'todayTotal', 'periodTotal', 'periodLabel', 'period'));
+        return view('payments.index', compact('payments', 'todayTotal', 'periodTotal', 'periodLabel', 'period', 'corporateTodayTotal', 'corporatePeriodTotal'));
     }
 
     /**
@@ -216,6 +229,25 @@ class PaymentController extends Controller
     protected function query(string $period): Builder
     {
         $query = Payment::query();
+
+        match ($period) {
+            'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
+                ->whereDate('payment_date', '<=', now()->endOfWeek()->toDateString()),
+            'month' => $query->whereYear('payment_date', now()->year)->whereMonth('payment_date', now()->month),
+            default => null,
+        };
+
+        return $query;
+    }
+
+    /**
+     * CorporatePayments recorded during the given period, unfiltered for
+     * "all_time" - same date-range logic as query(), just against the
+     * corporate_payments table instead of payments.
+     */
+    protected function corporateQuery(string $period): Builder
+    {
+        $query = CorporatePayment::query();
 
         match ($period) {
             'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
