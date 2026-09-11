@@ -54,8 +54,22 @@ class StudentController extends Controller
         $query = Student::with(['courses', 'user', 'corporateCompany.invoices']);
 
         if ($hasSearch) {
-            $query->where(function ($inner) use ($search) {
-                $inner->where('name', 'like', "%{$search}%")
+            // A multi-word search (e.g. "Saloo Rhema Lessi") is almost
+            // always a name lookup - matching each word independently
+            // against the name column, rather than requiring the exact
+            // typed phrase to appear verbatim, still finds the student if
+            // their name is stored in a different word order, with an
+            // extra middle name between the words typed, or with
+            // different spacing. A single-word search behaves exactly as
+            // before.
+            $searchWords = collect(preg_split('/\s+/', trim($search)))->filter()->values();
+
+            $query->where(function ($inner) use ($search, $searchWords) {
+                $inner->where(function ($nameQuery) use ($searchWords) {
+                    foreach ($searchWords as $word) {
+                        $nameQuery->where('name', 'like', "%{$word}%");
+                    }
+                })
                     ->orWhere('email', 'like', "%{$search}%")
                     ->orWhere('phone', 'like', "%{$search}%")
                     ->orWhere('student_id_number', 'like', "%{$search}%");
