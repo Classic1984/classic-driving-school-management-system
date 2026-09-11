@@ -7,6 +7,7 @@
         body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #1f2937; }
         table { border-collapse: collapse; }
         .header { text-align: center; padding-bottom: 10px; border-bottom: 2px solid #fbbf24; }
+        .logo { height: 48px; margin-bottom: 6px; }
         .company-name { font-size: 15px; font-weight: bold; letter-spacing: 2px; color: #000000; margin: 0; }
         .quotation-title { font-size: 40px; font-weight: bold; color: #b45309; margin: 4px 0 0; }
         .slogan { color: #b45309; font-style: italic; margin: 2px 0 0; font-size: 11px; }
@@ -37,6 +38,9 @@
 </head>
 <body>
     <div class="header">
+        @if ($logoDataUri)
+            <img class="logo" src="{{ $logoDataUri }}">
+        @endif
         <p class="company-name">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
         <p class="quotation-title">QUOTATION</p>
         @if ($settings->slogan)

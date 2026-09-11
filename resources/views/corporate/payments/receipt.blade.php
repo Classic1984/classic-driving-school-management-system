@@ -65,6 +65,7 @@
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
                 <div class="text-center pb-6 border-b-2 border-amber-400">
+                    <x-application-logo class="h-14 w-auto mx-auto mb-2" />
                     <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600 mb-2">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $checkCircleIconPath }}" /></svg>
                     </span>

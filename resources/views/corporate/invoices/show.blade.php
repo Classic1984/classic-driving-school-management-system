@@ -164,6 +164,7 @@
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
                 <div class="text-center pb-6 border-b-2 border-amber-400">
+                    <x-application-logo class="h-14 w-auto mx-auto mb-2" />
                     <p class="text-lg sm:text-xl font-extrabold uppercase tracking-[0.2em] text-black">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
                     <h1 class="mt-1 text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-amber-300 via-amber-600 to-black bg-clip-text text-transparent">{{ __('INVOICE') }}</h1>
                     @if ($settings->tagline)

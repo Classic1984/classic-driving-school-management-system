@@ -250,6 +250,7 @@ class CorporateInvoiceController extends Controller
             'invoice' => $corporateInvoice,
             'settings' => $settings,
             'signatureDataUri' => $settings->signatureDataUri(),
+            'logoDataUri' => CorporateInvoiceSetting::logoDataUri(),
         ]);
     }
 }

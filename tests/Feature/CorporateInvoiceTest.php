@@ -159,6 +159,18 @@ class CorporateInvoiceTest extends TestCase
         $response->assertSee('classicdriving.com.ng');
     }
 
+    public function test_the_invoice_document_shows_the_school_logo(): void
+    {
+        $director = User::factory()->director()->create();
+        $invoice = CorporateInvoice::factory()->create();
+        $invoice->items()->create(['description' => 'Training', 'quantity' => 1, 'unit_price' => 1000, 'sort_order' => 0]);
+
+        $response = $this->actingAs($director)->get("/corporate-invoices/{$invoice->id}");
+
+        $response->assertOk();
+        $response->assertSee('alt="Classic Driving School"', false);
+    }
+
     public function test_course_coverage_is_hidden_when_left_blank(): void
     {
         $director = User::factory()->director()->create();
