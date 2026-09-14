@@ -33,16 +33,9 @@ class EnsureServiceCatalogExists extends Command
      */
     public function handle(): int
     {
-        $defaults = [
-            ['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30],
-            ['name' => "Learner's Permit", 'price' => 6000, 'processing_days' => null],
-            ['name' => 'Online Certificate', 'price' => 20000, 'processing_days' => null],
-            ['name' => 'Student Certificate', 'price' => 1000, 'processing_days' => null],
-        ];
-
         $created = 0;
 
-        foreach ($defaults as $default) {
+        foreach (Service::defaultCatalog() as $default) {
             $service = Service::firstOrCreate(
                 ['name' => $default['name']],
                 ['price' => $default['price'], 'is_active' => true, 'processing_days' => $default['processing_days']]

@@ -206,6 +206,7 @@ class ServiceApplicationController extends Controller
         return view('service-applications.missing', [
             'title' => $title,
             'serviceName' => $serviceName,
+            'suggested' => Service::defaultCatalogEntry($serviceName),
         ]);
     }
 }

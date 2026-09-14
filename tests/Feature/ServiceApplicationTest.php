@@ -254,6 +254,20 @@ class ServiceApplicationTest extends TestCase
         $response->assertSee(route('services.create'), false);
     }
 
+    public function test_the_add_link_pre_fills_the_exact_name_and_suggested_price(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/driver-license');
+
+        $response->assertOk();
+        $response->assertSee(route('services.create', [
+            'name' => "Driver's License Processing",
+            'price' => 50000,
+            'processing_days' => 30,
+        ]));
+    }
+
     public function test_a_non_director_is_told_to_ask_a_director_instead_of_a_add_link(): void
     {
         $secretary = User::factory()->secretary()->create();

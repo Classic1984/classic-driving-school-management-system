@@ -23,10 +23,11 @@
                 </p>
 
                 @if (auth()->user()->isDirector())
-                    <a href="{{ route('services.create') }}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-bold text-black transition">
+                    <a href="{{ route('services.create', ['name' => $serviceName, 'price' => $suggested['price'] ?? null, 'processing_days' => $suggested['processing_days'] ?? null]) }}" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-bold text-black transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         {{ __('Add ":name"', ['name' => $serviceName]) }}
                     </a>
+                    <p class="mt-2 text-xs text-gray-400">{{ __('The name, price, and processing days are pre-filled - just double-check and save.') }}</p>
                 @else
                     <p class="mt-4 text-sm text-gray-500">{{ __('Ask a director to add it under Services.') }}</p>
                 @endif

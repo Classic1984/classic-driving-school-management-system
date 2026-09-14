@@ -98,6 +98,25 @@ class ServiceManagementTest extends TestCase
         ]);
     }
 
+    public function test_the_create_form_pre_fills_from_query_string(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/services/create?name=Driver%27s+License+Processing&price=50000&processing_days=30');
+
+        $response->assertOk();
+        $response->assertSee('value="Driver&#039;s License Processing"', false);
+        $response->assertSee('value="50000.00"', false);
+        $response->assertSee('value="30"', false);
+    }
+
+    public function test_the_create_form_works_normally_without_any_query_string(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->actingAs($director)->get('/services/create')->assertOk();
+    }
+
     public function test_omitting_the_active_checkbox_creates_an_inactive_service(): void
     {
         $director = User::factory()->director()->create();
