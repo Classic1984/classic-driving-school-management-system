@@ -219,4 +219,64 @@ class ServiceApplicationTest extends TestCase
         $response->assertSessionHasErrors('email');
         $this->assertDatabaseCount('students', 1);
     }
+
+    public function test_the_index_page_shows_a_friendly_message_when_the_catalog_service_is_missing(): void
+    {
+        // Regression test: production only runs migrations on deploy, not
+        // ServicePriceListSeeder - a missing or renamed catalog row must
+        // never surface as a raw, unexplained 404 (firstOrFail()'s default).
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/driver-license');
+
+        $response->assertOk();
+        $response->assertSee("isn't set up yet");
+        $response->assertSee("Driver's License Processing");
+    }
+
+    public function test_the_register_page_shows_a_friendly_message_when_the_catalog_service_is_missing(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/learners-permit/register');
+
+        $response->assertOk();
+        $response->assertSee("isn't set up yet");
+    }
+
+    public function test_a_director_sees_a_link_to_add_the_missing_catalog_service(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/driver-license');
+
+        $response->assertOk();
+        $response->assertSee(route('services.create'), false);
+    }
+
+    public function test_a_non_director_is_told_to_ask_a_director_instead_of_a_add_link(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+
+        $response = $this->actingAs($secretary)->get('/driver-license');
+
+        $response->assertOk();
+        $response->assertSee('Ask a director to add it');
+        $response->assertDontSee(route('services.create'), false);
+    }
+
+    public function test_registering_a_walk_in_applicant_fails_gracefully_when_the_catalog_service_is_missing(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/driver-license/register', [
+            'name' => 'No Catalog Yet',
+            'email' => 'no.catalog@example.com',
+            'phone' => '08055556666',
+            'date_of_birth' => '1995-01-01',
+        ]);
+
+        $response->assertSessionHasErrors('name');
+        $this->assertDatabaseCount('students', 0);
+    }
 }
