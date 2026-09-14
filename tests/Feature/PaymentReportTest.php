@@ -172,9 +172,11 @@ class PaymentReportTest extends TestCase
         $response->assertOk();
         // The student is fully paid up on training and was never charged
         // for the Driver's License service - it being in the catalog and
-        // "available to bill" doesn't make it a debt.
-        $response->assertDontSee('Fully Paid Student');
-        $response->assertDontSee($service->name);
+        // "available to bill" doesn't make it a debt. Checked against the
+        // report's own data rather than the rendered page text, since the
+        // sidebar's "Driver's License" navigation link now legitimately
+        // puts that same string on every page regardless of this report.
+        $response->assertViewHas('outstanding', fn ($outstanding) => $outstanding->isEmpty());
     }
 
     public function test_an_invalid_date_falls_back_to_today(): void
