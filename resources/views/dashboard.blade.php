@@ -118,35 +118,29 @@
             @php
                 $heroCards = [
                     [
-                        'title' => 'Total Students', 'color' => 'blue', 'value' => number_format($stats['students']),
+                        'title' => 'Total Students', 'value' => number_format($stats['students']),
                         'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
                         'sub' => number_format($stats['students_in_program']).' '.__('In Program').' · '.number_format($stats['students_walkin_only']).' '.__('Walk-in'),
                         'href' => route('students.index'),
                     ],
                     [
-                        'title' => 'Training Today', 'color' => 'green', 'value' => number_format($kpis['training_today']),
+                        'title' => 'Training Today', 'value' => number_format($kpis['training_today']),
                         'icon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
                         'sub' => number_format($kpis['training_today']).' '.__('Students').' · '.number_format($todaysOperations['vehicles_in_use']).' '.__('Vehicles'),
                         'href' => route('training-report.index', ['period' => 'today']),
                     ],
                     [
-                        'title' => 'Paid Today', 'color' => 'orange', 'value' => '₦'.number_format($stats['payments'], 2),
+                        'title' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2),
                         'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
                         'sub' => __('Pending').': ₦'.number_format($kpis['pending_payments'], 2),
                         'modal' => 'todays-payments-modal',
                     ],
                     [
-                        'title' => 'Certificates Issued', 'color' => 'purple', 'value' => number_format($stats['certificates']),
+                        'title' => 'Certificates Issued', 'value' => number_format($stats['certificates']),
                         'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
                         'sub' => __('Due').': '.number_format($kpis['certificates_due']).' · '.__("Learner's Permit").': '.number_format(max(0, $learnersPermitStats['charged'] - $learnersPermitStats['completed'])),
                         'href' => route('certificates.index'),
                     ],
-                ];
-                $heroColors = [
-                    'blue' => 'from-blue-500 to-blue-700',
-                    'green' => 'from-green-500 to-green-700',
-                    'orange' => 'from-orange-400 to-orange-600',
-                    'purple' => 'from-purple-500 to-purple-700',
                 ];
             @endphp
 
@@ -155,57 +149,19 @@
                     @php $heroTag = ! empty($card['modal']) ? 'button' : 'a'; @endphp
                     <{{ $heroTag }}
                         @if ($heroTag === 'a') href="{{ $card['href'] }}" @else type="button" x-data x-on:click="$dispatch('open-modal', '{{ $card['modal'] }}')" @endif
-                        class="relative overflow-hidden rounded-xl bg-gradient-to-br {{ $heroColors[$card['color']] }} text-white p-5 text-left shadow-sm transition hover:brightness-110"
+                        class="relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white p-5 text-left shadow-sm transition hover:brightness-125"
                     >
                         <div class="flex items-start justify-between">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/15">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                             </span>
-                            <svg class="h-5 w-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                            <svg class="h-5 w-5 text-amber-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                         </div>
-                        <p class="mt-4 text-sm font-medium text-white/80">{{ __($card['title']) }}</p>
-                        <p class="text-3xl font-extrabold tabular-nums">{{ $card['value'] }}</p>
-                        <p class="mt-2 text-xs text-white/70">{{ $card['sub'] }}</p>
+                        <p class="mt-4 text-sm font-medium text-gray-300">{{ __($card['title']) }}</p>
+                        <p class="text-3xl font-extrabold tabular-nums text-amber-400">{{ $card['value'] }}</p>
+                        <p class="mt-2 text-xs text-gray-400">{{ $card['sub'] }}</p>
                     </{{ $heroTag }}>
                 @endforeach
-            </div>
-
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-5 mb-6">
-                <div class="flex flex-wrap items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 text-sm font-bold text-gray-700 mr-2">
-                        <svg class="h-4 w-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clip-rule="evenodd" /></svg>
-                        {{ __('Quick Actions') }}
-                    </span>
-                    <a href="{{ route('students.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-                        {{ __('Register New Student') }}
-                    </a>
-                    @if (auth()->user()->canManageCourses())
-                        <a href="{{ route('attendances.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-green-600 hover:bg-green-700 px-4 py-2 text-sm font-semibold text-white transition">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                            {{ __('Schedule Training') }}
-                        </a>
-                    @endif
-                    <a href="{{ route('payments.record.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-orange-500 hover:bg-orange-600 px-4 py-2 text-sm font-semibold text-white transition">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
-                        {{ __('Record Payment') }}
-                    </a>
-                    <a href="{{ route('certificates.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-purple-600 hover:bg-purple-700 px-4 py-2 text-sm font-semibold text-white transition">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
-                        {{ __('Issue Certificate') }}
-                    </a>
-                    <div class="relative ml-auto" x-data="{ open: false }">
-                        <button type="button" @click="open = !open" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white hover:bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700 transition">
-                            {{ __('More Actions') }}
-                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
-                        </button>
-                        <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
-                            <a href="{{ route('vehicles.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Vehicles') }}</a>
-                            <a href="{{ route('instructors.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Instructors') }}</a>
-                            <a href="{{ route('leads.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Leads') }}</a>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
@@ -219,7 +175,7 @@
                     // did before this redesign.
                     $summaryGroups = [
                         [
-                            'title' => 'Students', 'color' => 'purple',
+                            'title' => 'Students',
                             'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
                             'rows' => [
                                 ['label' => 'Active / Registered Students', 'value' => number_format($stats['students']), 'href' => route('students.index'), 'icon' => 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z'],
@@ -232,7 +188,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Training & Operations', 'color' => 'blue',
+                            'title' => 'Training & Operations',
                             'icon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
                             'rows' => [
                                 ['label' => 'Training Today', 'value' => number_format($todaysOperations['training_sessions']), 'href' => route('training-report.index', ['period' => 'today']), 'icon' => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5'],
@@ -253,7 +209,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Finance', 'color' => 'amber',
+                            'title' => 'Finance',
                             'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
                             'rows' => [
                                 ['label' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2), 'modal' => 'todays-payments-modal', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z'],
@@ -262,7 +218,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Certificates & Services', 'color' => 'indigo',
+                            'title' => 'Certificates & Services',
                             'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
                             'rows' => [
                                 ['label' => 'Certificates Issued', 'value' => number_format($stats['certificates']), 'href' => route('certificates.index'), 'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z'],
@@ -275,12 +231,9 @@
 
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
 
-                    $panelColors = [
-                        'purple' => ['icon' => 'bg-purple-100 text-purple-600', 'label' => 'text-purple-700'],
-                        'blue' => ['icon' => 'bg-blue-100 text-blue-600', 'label' => 'text-blue-700'],
-                        'amber' => ['icon' => 'bg-amber-100 text-amber-600', 'label' => 'text-amber-700'],
-                        'indigo' => ['icon' => 'bg-indigo-100 text-indigo-600', 'label' => 'text-indigo-700'],
-                    ];
+                    // One black/gold treatment for every panel, matching the
+                    // brand colors, rather than a different hue per group.
+                    $panelAccent = ['icon' => 'bg-black text-amber-400', 'label' => 'text-gray-900'];
                     $panelViewAll = [
                         'Students' => route('students.index'),
                         'Training & Operations' => route('enrolled-trainees.index'),
@@ -299,14 +252,13 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     @foreach ($summaryGroups as $group)
-                        @php $groupAccent = $panelColors[$group['color']]; @endphp
                         <div class="rounded-xl ring-1 ring-gray-200 p-5">
                             <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-gray-100">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $groupAccent['icon'] }}">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $panelAccent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $group['icon'] }}" /></svg>
                                     </span>
-                                    <h3 class="text-sm font-bold uppercase tracking-widest {{ $groupAccent['label'] }}">{{ __($group['title']) }}</h3>
+                                    <h3 class="text-sm font-bold uppercase tracking-widest {{ $panelAccent['label'] }}">{{ __($group['title']) }}</h3>
                                 </div>
                                 <a href="{{ $panelViewAll[$group['title']] }}" class="text-xs font-semibold text-gray-400 hover:text-amber-600 shrink-0">{{ __('View All') }}</a>
                             </div>
@@ -320,7 +272,7 @@
                                         class="group flex items-start justify-between gap-3 py-2.5 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-gray-50 rounded-lg -mx-2 px-2' : '' }}"
                                     >
                                         <span class="flex flex-1 items-start gap-1.5 min-w-0 text-sm text-gray-600">
-                                            <svg class="h-4 w-4 shrink-0 mt-0.5 {{ $groupAccent['label'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
+                                            <svg class="h-4 w-4 shrink-0 mt-0.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
                                             <span>{{ __($row['label']) }}</span>
                                         </span>
                                         <span class="shrink-0 text-base font-extrabold tabular-nums whitespace-nowrap text-gray-900">{{ $row['value'] }}</span>
