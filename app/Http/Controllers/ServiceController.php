@@ -35,11 +35,18 @@ class ServiceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new resource. Accepts optional
+     * name/price/processing_days query params so a link elsewhere in the
+     * app (e.g. the Driver's License page's "this service isn't set up
+     * yet" prompt) can land here with the right catalog entry already
+     * filled in, rather than making a director retype an exact name by
+     * hand.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('services.create');
+        $service = new Service($request->only(['name', 'price', 'processing_days']));
+
+        return view('services.create', compact('service'));
     }
 
     /**

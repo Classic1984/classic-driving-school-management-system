@@ -49,4 +49,37 @@ class Service extends Model
     {
         return $this->hasMany(StudentService::class);
     }
+
+    /**
+     * The flat catalog services this app assumes exist by exact name -
+     * Driver's License Processing, Learner's Permit, and the two
+     * course-outline certificate services - with sensible starting
+     * price/turnaround defaults. Shared by ServicePriceListSeeder (a
+     * manual, deliberate reset), the app:ensure-service-catalog-exists
+     * command (automatic, create-only, runs on every boot), and the
+     * "this service isn't set up yet" page's suggested defaults, so
+     * there's one list instead of several copies that could drift apart.
+     *
+     * @return list<array{name: string, price: float, processing_days: ?int}>
+     */
+    public static function defaultCatalog(): array
+    {
+        return [
+            ['name' => "Driver's License Processing", 'price' => 50000, 'processing_days' => 30],
+            ['name' => "Learner's Permit", 'price' => 6000, 'processing_days' => null],
+            ['name' => 'Online Certificate', 'price' => 20000, 'processing_days' => null],
+            ['name' => 'Student Certificate', 'price' => 1000, 'processing_days' => null],
+        ];
+    }
+
+    /**
+     * The defaultCatalog() entry for one exact service name, or null if
+     * that name isn't one of the app's known defaults.
+     *
+     * @return array{name: string, price: float, processing_days: ?int}|null
+     */
+    public static function defaultCatalogEntry(string $name): ?array
+    {
+        return collect(static::defaultCatalog())->firstWhere('name', $name);
+    }
 }
