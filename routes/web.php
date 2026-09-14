@@ -41,6 +41,7 @@ use App\Http\Controllers\PublicLeadController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\ReferralSourceReportController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\ServiceApplicationController;
 use App\Http\Controllers\ServiceCompletionReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StudentAccessController;
@@ -240,6 +241,19 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     Route::post('students/{student}/correction-requests', [StudentCorrectionRequestController::class, 'store'])->name('student-correction-requests.store');
     Route::post('students/{student}/services', [StudentServiceController::class, 'store'])->name('students.services.store');
     Route::patch('student-services/{studentService}/processing-status', [StudentServiceController::class, 'updateProcessingStatus'])->name('student-services.processing-status.update');
+
+    // Driver's License and Learner's Permit customers are not necessarily
+    // driving students - these give each its own standalone section
+    // (list + filters + a lightweight registration flow), backed by the
+    // same Service/StudentService records the Dashboard widgets already
+    // use, rather than filing every paying customer under Students.
+    Route::get('driver-license', [ServiceApplicationController::class, 'driversLicenseIndex'])->name('driver-license.index');
+    Route::get('driver-license/register', [ServiceApplicationController::class, 'driversLicenseRegister'])->name('driver-license.register');
+    Route::post('driver-license/register', [ServiceApplicationController::class, 'driversLicenseStore'])->name('driver-license.store');
+    Route::get('learners-permit', [ServiceApplicationController::class, 'learnersPermitIndex'])->name('learners-permit.index');
+    Route::get('learners-permit/register', [ServiceApplicationController::class, 'learnersPermitRegister'])->name('learners-permit.register');
+    Route::post('learners-permit/register', [ServiceApplicationController::class, 'learnersPermitStore'])->name('learners-permit.store');
+
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
     Route::resource('instructors', InstructorController::class)->only(['index', 'show']);

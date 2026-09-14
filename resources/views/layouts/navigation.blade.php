@@ -24,6 +24,12 @@
         <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')">
             {{ __('Students') }}
         </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('driver-license.index')" :active="request()->routeIs('driver-license.*')">
+            {{ __("Driver's License") }}
+        </x-responsive-nav-link>
+        <x-responsive-nav-link :href="route('learners-permit.index')" :active="request()->routeIs('learners-permit.*')">
+            {{ __("Learner's Permit") }}
+        </x-responsive-nav-link>
         <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
             {{ __('Leads') }}
         </x-responsive-nav-link>
