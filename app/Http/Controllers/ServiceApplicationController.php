@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreServiceApplicantRequest;
+use App\Http\Requests\StoreServiceRegistrationRequest;
 use App\Models\ActivityLog;
+use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use App\Models\Service;
 use App\Models\Student;
 use App\Models\StudentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -16,9 +19,10 @@ use Illuminate\View\View;
  * Driver's License Processing and Learner's Permit are flat catalog
  * Services (see Service/StudentService) billed independently of any
  * course enrollment - this controller gives each its own standalone
- * section (list + filters + a lightweight registration flow) instead of
- * only surfacing as Dashboard widgets, so staff stop treating every
- * paying customer as a "driving student."
+ * section (a combined register-and-pay form as the landing page, plus a
+ * separate applicant list) instead of only surfacing as Dashboard
+ * widgets, so staff stop treating every paying customer as a "driving
+ * student."
  */
 class ServiceApplicationController extends Controller
 {
@@ -30,34 +34,58 @@ class ServiceApplicationController extends Controller
 
     protected const PAYMENT_STATUSES = ['paid', 'part_payment', 'unpaid'];
 
-    public function driversLicenseIndex(Request $request): View
+    public function driversLicenseIndex(): View
     {
-        return $this->index($request, "Driver's License Processing", 'driver-license', "Driver's License");
+        return $this->form("Driver's License Processing", 'driver-license', "Driver's License");
     }
 
-    public function learnersPermitIndex(Request $request): View
+    public function learnersPermitIndex(): View
     {
-        return $this->index($request, "Learner's Permit", 'learners-permit', "Learner's Permit");
+        return $this->form("Learner's Permit", 'learners-permit', "Learner's Permit");
     }
 
-    public function driversLicenseRegister(): View
+    public function driversLicenseApplicants(Request $request): View
     {
-        return $this->register("Driver's License Processing", 'driver-license', "Driver's License");
+        return $this->applicants($request, "Driver's License Processing", 'driver-license', "Driver's License");
     }
 
-    public function learnersPermitRegister(): View
+    public function learnersPermitApplicants(Request $request): View
     {
-        return $this->register("Learner's Permit", 'learners-permit', "Learner's Permit");
+        return $this->applicants($request, "Learner's Permit", 'learners-permit', "Learner's Permit");
     }
 
-    public function driversLicenseStore(StoreServiceApplicantRequest $request): RedirectResponse
+    public function driversLicenseStore(StoreServiceRegistrationRequest $request): RedirectResponse
     {
         return $this->store($request, "Driver's License Processing");
     }
 
-    public function learnersPermitStore(StoreServiceApplicantRequest $request): RedirectResponse
+    public function learnersPermitStore(StoreServiceRegistrationRequest $request): RedirectResponse
     {
         return $this->store($request, "Learner's Permit");
+    }
+
+    /**
+     * The landing page for this section: register an applicant (existing
+     * student or new walk-in) and take their payment in one combined
+     * form, so staff never have to jump to a separate payment screen to
+     * finish the job.
+     */
+    protected function form(string $serviceName, string $routePrefix, string $title): View
+    {
+        $service = Service::where('name', $serviceName)->first();
+
+        if (! $service) {
+            return $this->missingServiceView($serviceName, $title);
+        }
+
+        $students = Student::orderBy('name')->get();
+
+        return view('service-applications.index', [
+            'title' => $title,
+            'service' => $service,
+            'routePrefix' => $routePrefix,
+            'students' => $students,
+        ]);
     }
 
     /**
@@ -65,7 +93,7 @@ class ServiceApplicationController extends Controller
      * every charge ever made for it, and a filterable, paginated table of
      * the charges themselves.
      */
-    protected function index(Request $request, string $serviceName, string $routePrefix, string $title): View
+    protected function applicants(Request $request, string $serviceName, string $routePrefix, string $title): View
     {
         $service = Service::where('name', $serviceName)->first();
 
@@ -129,7 +157,7 @@ class ServiceApplicationController extends Controller
             'pending_processing' => (clone $baseline)->where('processing_status', '!=', 'completed')->count(),
         ];
 
-        return view('service-applications.index', [
+        return view('service-applications.applicants', [
             'title' => $title,
             'service' => $service,
             'routePrefix' => $routePrefix,
@@ -142,36 +170,12 @@ class ServiceApplicationController extends Controller
     }
 
     /**
-     * The "Register Applicant" screen: pick an existing student, or
-     * register a new walk-in applicant - either way ends up at the
-     * Record Payment screen with this service preselected, ready to
-     * charge and pay for in one action.
+     * Register an applicant - existing student or new walk-in - charge
+     * them for this service (or add to their existing charge for it if
+     * they were already billed), and record their payment, all in one
+     * action instead of a separate hand-off to a generic payment screen.
      */
-    protected function register(string $serviceName, string $routePrefix, string $title): View
-    {
-        $service = Service::where('name', $serviceName)->first();
-
-        if (! $service) {
-            return $this->missingServiceView($serviceName, $title);
-        }
-
-        $students = Student::orderBy('name')->get();
-
-        return view('service-applications.register', [
-            'title' => $title,
-            'service' => $service,
-            'routePrefix' => $routePrefix,
-            'students' => $students,
-        ]);
-    }
-
-    /**
-     * Register a brand new walk-in applicant - only the fields the
-     * students table actually requires beyond what this flow already
-     * knows. No course, no payment yet: this hands off straight to
-     * Record Payment (preselected on this service) to finish the job.
-     */
-    protected function store(StoreServiceApplicantRequest $request, string $serviceName): RedirectResponse
+    protected function store(StoreServiceRegistrationRequest $request, string $serviceName): RedirectResponse
     {
         $service = Service::where('name', $serviceName)->first();
 
@@ -179,25 +183,56 @@ class ServiceApplicationController extends Controller
             return Redirect::back()->withErrors(['name' => "The \"{$serviceName}\" service hasn't been set up yet - ask a director to add it under Services first."]);
         }
 
-        $student = Student::create([
-            ...$request->validated(),
-            'enrollment_date' => now()->toDateString(),
-        ]);
+        $student = $request->validated('mode') === 'existing'
+            ? Student::findOrFail($request->validated('student_id'))
+            : Student::create([
+                'name' => $request->validated('name'),
+                'email' => $request->validated('email'),
+                'phone' => $request->validated('phone'),
+                'date_of_birth' => $request->validated('date_of_birth'),
+                'enrollment_date' => now()->toDateString(),
+            ]);
 
-        ActivityLog::record("Registered walk-in applicant {$student->name} for {$service->name}");
+        $studentService = StudentService::firstOrCreate(
+            ['student_id' => $student->id, 'service_id' => $service->id],
+            ['price' => $service->price]
+        );
 
-        return Redirect::route('payments.record.create', [
-            'student_id' => $student->id,
-            'charge_type' => 'new_service',
-            'charge_id' => $service->id,
-        ]);
+        $payment = DB::transaction(function () use ($request, $student, $studentService) {
+            $payment = Payment::create([
+                'student_id' => $student->id,
+                'course_id' => null,
+                'amount' => $request->validated('amount'),
+                'payment_date' => $request->validated('payment_date'),
+                'payment_method' => $request->validated('payment_method'),
+                'status' => 'paid',
+                'reference_number' => $request->validated('reference_number'),
+                'notes' => $request->validated('notes'),
+                'recorded_by' => $request->user()->id,
+            ]);
+
+            PaymentAllocation::create([
+                'payment_id' => $payment->id,
+                'allocation_type' => 'service',
+                'enrollment_id' => null,
+                'student_service_id' => $studentService->id,
+                'amount' => $request->validated('amount'),
+            ]);
+
+            return $payment;
+        });
+
+        $studentService->maybeAutoStartProcessing();
+
+        ActivityLog::record("Registered {$student->name} for {$service->name} and recorded a payment of ₦".number_format((float) $payment->amount, 2));
+
+        return Redirect::route('students.show', $student)->with('status', 'payment-created');
     }
 
     /**
      * A friendly stand-in for the raw 404 a missing catalog Service would
      * otherwise cause - production databases aren't guaranteed to have
-     * every catalog row the app's code assumes by exact name (the deploy
-     * process only runs migrations, not ServicePriceListSeeder), so a
+     * every catalog row the app's code assumes by exact name, so a
      * director renaming or never creating "Driver's License Processing"/
      * "Learner's Permit" shouldn't look like this page is broken.
      */
