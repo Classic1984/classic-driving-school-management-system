@@ -17,13 +17,20 @@ cmds = ["npm ci", "npm run build"]
 # is attached, and makes the app resilient to one being added later
 # without needing this start command touched again.
 #
-# Then run pending migrations, ensure the public/storage symlink exists
-# (without it, every uploaded file - expense receipts, student ID/license
-# documents, theory class materials - stores fine but 404s when linked to,
-# since Storage::disk('public')->url() points through that symlink when
-# AWS_BUCKET isn't set; storage:link is a no-op if it's already there, so
-# this is safe on every restart), then serve on the port Railway assigns
-# via $PORT.
+# Then run pending migrations, make sure the flat catalog services
+# (Driver's License Processing, Learner's Permit, Online Certificate,
+# Student Certificate) exist - a migration only adds the services TABLE,
+# not these specific ROWS, and several pages look them up by exact name,
+# so a database that predates one of them would otherwise leave that page
+# looking broken with no indication why; app:ensure-service-catalog-exists
+# only creates what's missing and never touches a director's own pricing
+# changes, unlike re-running the full seeder - ensure the public/storage
+# symlink exists (without it, every uploaded file - expense receipts,
+# student ID/license documents, theory class materials - stores fine but
+# 404s when linked to, since Storage::disk('public')->url() points
+# through that symlink when AWS_BUCKET isn't set; storage:link is a no-op
+# if it's already there, so this is safe on every restart), then serve on
+# the port Railway assigns via $PORT.
 #
 # The scheduler (daily/weekly reminders, the database backup) does NOT run
 # in this container. It previously tried to via a backgrounded
@@ -48,4 +55,4 @@ cmds = ["npm ci", "npm run build"]
 # so a real permissions problem is diagnosable from the deploy log
 # instead of guessed at.
 [start]
-cmd = "mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs storage/app/public; echo '--- storage/framework after mkdir ---'; ls -la storage storage/framework storage/framework/views storage/logs 2>&1; php artisan migrate --force || exit 1; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs storage/app/public; echo '--- storage/framework after mkdir ---'; ls -la storage storage/framework storage/framework/views storage/logs 2>&1; php artisan migrate --force || exit 1; php artisan app:ensure-service-catalog-exists || true; php artisan storage:link || true; php artisan serve --host=0.0.0.0 --port=$PORT"

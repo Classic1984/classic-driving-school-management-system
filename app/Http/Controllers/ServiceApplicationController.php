@@ -67,7 +67,11 @@ class ServiceApplicationController extends Controller
      */
     protected function index(Request $request, string $serviceName, string $routePrefix, string $title): View
     {
-        $service = Service::where('name', $serviceName)->firstOrFail();
+        $service = Service::where('name', $serviceName)->first();
+
+        if (! $service) {
+            return $this->missingServiceView($serviceName, $title);
+        }
 
         $query = StudentService::where('service_id', $service->id)->with('student.courses');
 
@@ -145,7 +149,12 @@ class ServiceApplicationController extends Controller
      */
     protected function register(string $serviceName, string $routePrefix, string $title): View
     {
-        $service = Service::where('name', $serviceName)->firstOrFail();
+        $service = Service::where('name', $serviceName)->first();
+
+        if (! $service) {
+            return $this->missingServiceView($serviceName, $title);
+        }
+
         $students = Student::orderBy('name')->get();
 
         return view('service-applications.register', [
@@ -164,7 +173,11 @@ class ServiceApplicationController extends Controller
      */
     protected function store(StoreServiceApplicantRequest $request, string $serviceName): RedirectResponse
     {
-        $service = Service::where('name', $serviceName)->firstOrFail();
+        $service = Service::where('name', $serviceName)->first();
+
+        if (! $service) {
+            return Redirect::back()->withErrors(['name' => "The \"{$serviceName}\" service hasn't been set up yet - ask a director to add it under Services first."]);
+        }
 
         $student = Student::create([
             ...$request->validated(),
@@ -177,6 +190,22 @@ class ServiceApplicationController extends Controller
             'student_id' => $student->id,
             'charge_type' => 'new_service',
             'charge_id' => $service->id,
+        ]);
+    }
+
+    /**
+     * A friendly stand-in for the raw 404 a missing catalog Service would
+     * otherwise cause - production databases aren't guaranteed to have
+     * every catalog row the app's code assumes by exact name (the deploy
+     * process only runs migrations, not ServicePriceListSeeder), so a
+     * director renaming or never creating "Driver's License Processing"/
+     * "Learner's Permit" shouldn't look like this page is broken.
+     */
+    protected function missingServiceView(string $serviceName, string $title): View
+    {
+        return view('service-applications.missing', [
+            'title' => $title,
+            'serviceName' => $serviceName,
         ]);
     }
 }
