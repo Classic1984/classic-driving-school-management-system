@@ -17,6 +17,65 @@
                 </div>
             </div>
 
+            @php
+                $tileHref = fn (?string $categoryKey) => route('activity-log.index', array_filter([
+                    'period' => $period !== 'all_time' ? $period : null,
+                    'date' => $date,
+                    'category' => $categoryKey,
+                ]));
+                $tileAccent = [
+                    'blue' => 'bg-blue-100 text-blue-600', 'teal' => 'bg-teal-100 text-teal-600', 'indigo' => 'bg-indigo-100 text-indigo-600',
+                    'purple' => 'bg-purple-100 text-purple-600', 'cyan' => 'bg-cyan-100 text-cyan-600', 'green' => 'bg-green-100 text-green-600',
+                    'emerald' => 'bg-emerald-100 text-emerald-600', 'amber' => 'bg-amber-100 text-amber-600', 'orange' => 'bg-orange-100 text-orange-600',
+                    'red' => 'bg-red-100 text-red-600', 'sky' => 'bg-sky-100 text-sky-600', 'violet' => 'bg-violet-100 text-violet-600',
+                    'fuchsia' => 'bg-fuchsia-100 text-fuchsia-600', 'lime' => 'bg-lime-100 text-lime-600', 'rose' => 'bg-rose-100 text-rose-600',
+                    'pink' => 'bg-pink-100 text-pink-600', 'gray' => 'bg-gray-100 text-gray-500',
+                ];
+            @endphp
+
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <h3 class="text-lg font-bold text-gray-900">{{ __('Browse by Category') }}</h3>
+                    @if ($category)
+                        <a href="{{ $tileHref(null) }}" class="text-sm font-semibold text-amber-600 hover:underline">{{ __('Clear category filter') }}</a>
+                    @endif
+                </div>
+
+                <a
+                    href="{{ route('activity-log.index', ['period' => 'today']) }}"
+                    class="flex items-center justify-between gap-4 rounded-xl bg-amber-50 ring-1 hover:ring-amber-400 px-5 py-4 mb-4 transition {{ $period === 'today' && ! $date && ! $category ? 'ring-2 ring-amber-500' : 'ring-amber-200' }}"
+                >
+                    <div class="flex items-center gap-3">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                        </span>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">{{ __('Today Activities') }}</p>
+                            <p class="text-xs text-gray-500">{{ __('Everything logged so far today, across every category') }}</p>
+                        </div>
+                    </div>
+                    <span class="text-2xl font-extrabold text-amber-600">{{ $todayCount }}</span>
+                </a>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    @foreach ($categoryTiles as $tile)
+                        @php
+                            $isActive = $category === $tile['key'];
+                        @endphp
+                        <a
+                            href="{{ $tileHref($tile['key']) }}"
+                            class="flex flex-col gap-2 rounded-xl ring-1 {{ $isActive ? 'ring-2 ring-amber-500 bg-amber-50/40' : 'ring-gray-200 hover:ring-gray-300' }} p-4 transition"
+                        >
+                            <span class="flex h-9 w-9 items-center justify-center rounded-lg {{ $tileAccent[$tile['color']] ?? 'bg-gray-100 text-gray-500' }}">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tile['icon'] }}" /></svg>
+                            </span>
+                            <p class="text-xl font-extrabold text-gray-900">{{ $tile['count'] }}</p>
+                            <p class="text-xs font-medium text-gray-600 leading-tight">{{ __($tile['label']) }}</p>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
                     <h3 class="text-xl font-bold text-gray-900">{{ __('Activity Log') }}</h3>
@@ -119,13 +178,14 @@
                         <span class="text-xl font-extrabold text-amber-600">{{ $activityLogs->total() }}</span>
                     </div>
                     <form method="get" action="{{ route('activity-log.index') }}" class="flex flex-wrap items-center gap-2">
+                        <input type="hidden" name="category" value="{{ $category }}">
                         <select name="period" class="rounded-lg ring-1 ring-gray-300 border-0 focus:border-amber-500 focus:ring-amber-500 text-sm font-semibold" onchange="this.form.submit()">
                             @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year', 'all_time' => 'All Time'] as $value => $optionLabel)
                                 <option value="{{ $value }}" @selected($period === $value)>{{ __($optionLabel) }}</option>
                             @endforeach
                         </select>
                         <input type="date" name="date" value="{{ $date }}" max="{{ now()->format('Y-m-d') }}" class="rounded-lg ring-1 ring-gray-300 border-0 focus:border-amber-500 focus:ring-amber-500 text-sm font-semibold" onchange="this.form.submit()">
-                        @if ($date)
+                        @if ($date || $category)
                             <a href="{{ route('activity-log.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Clear') }}</a>
                         @endif
                     </form>

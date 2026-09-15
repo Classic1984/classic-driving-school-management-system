@@ -313,6 +313,75 @@ class ActivityLogTest extends TestCase
         $response->assertSee('Jane Doe');
     }
 
+    public function test_filtering_by_category_shows_only_that_categorys_entries(): void
+    {
+        $director = User::factory()->director()->create();
+        ActivityLog::record("Registered Okoro Emeka for Driver's License Processing and recorded a payment of ₦50,000.00", $director);
+        ActivityLog::record('Recorded a payment of ₦500.00 for Jane Doe (Beginner Program)', $director);
+
+        $response = $this->actingAs($director)->get('/activity-log?category=drivers_license');
+
+        $response->assertOk();
+        $response->assertSee('Okoro Emeka');
+        $response->assertDontSee('Jane Doe');
+    }
+
+    public function test_a_combined_service_registration_is_categorized_by_service_not_payments(): void
+    {
+        // Regression: "Registered X for Driver's License Processing and
+        // recorded a payment..." contains both a service name and the
+        // word "payment" - the service-specific category must win, since
+        // it's checked first, or every service registration would show up
+        // under the generic Payments tile instead.
+        $director = User::factory()->director()->create();
+        ActivityLog::record("Registered Okoro Emeka for Driver's License Processing and recorded a payment of ₦50,000.00", $director);
+
+        $response = $this->actingAs($director)->get('/activity-log?category=payments');
+
+        $response->assertOk();
+        $response->assertDontSee('Okoro Emeka');
+    }
+
+    public function test_an_unknown_category_is_ignored(): void
+    {
+        $director = User::factory()->director()->create();
+        ActivityLog::record('Registered student Jane Doe', $director);
+
+        $response = $this->actingAs($director)->get('/activity-log?category=not-a-real-category');
+
+        $response->assertOk();
+        $response->assertSee('Jane Doe');
+    }
+
+    public function test_an_uncategorized_entry_is_only_counted_under_other(): void
+    {
+        $director = User::factory()->director()->create();
+        ActivityLog::record('Something entirely unclassifiable happened', $director);
+
+        $response = $this->actingAs($director)->get('/activity-log?category=other');
+
+        $response->assertOk();
+        $response->assertSee('Something entirely unclassifiable happened');
+    }
+
+    public function test_the_today_tile_counts_todays_activity_regardless_of_the_selected_filters(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->travelTo(now()->subDay());
+        ActivityLog::record('Registered student Yesterday Entry', $director);
+
+        $this->travelBack();
+        ActivityLog::record('Registered student Today Entry', $director);
+
+        // Even while viewing "This Year" filtered to a category, the Today
+        // tile itself always reflects today's total.
+        $response = $this->actingAs($director)->get('/activity-log?period=year&category=enrollment');
+
+        $response->assertOk();
+        $response->assertSee('Today Activities');
+    }
+
     public function test_recording_an_expense_is_logged(): void
     {
         $director = User::factory()->director()->create();
