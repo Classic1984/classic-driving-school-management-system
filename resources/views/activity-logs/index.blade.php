@@ -118,12 +118,16 @@
                         <span class="text-sm text-gray-600">{{ __('Total Activities') }}</span>
                         <span class="text-xl font-extrabold text-amber-600">{{ $activityLogs->total() }}</span>
                     </div>
-                    <form method="get" action="{{ route('activity-log.index') }}">
+                    <form method="get" action="{{ route('activity-log.index') }}" class="flex flex-wrap items-center gap-2">
                         <select name="period" class="rounded-lg ring-1 ring-gray-300 border-0 focus:border-amber-500 focus:ring-amber-500 text-sm font-semibold" onchange="this.form.submit()">
                             @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year', 'all_time' => 'All Time'] as $value => $optionLabel)
                                 <option value="{{ $value }}" @selected($period === $value)>{{ __($optionLabel) }}</option>
                             @endforeach
                         </select>
+                        <input type="date" name="date" value="{{ $date }}" max="{{ now()->format('Y-m-d') }}" class="rounded-lg ring-1 ring-gray-300 border-0 focus:border-amber-500 focus:ring-amber-500 text-sm font-semibold" onchange="this.form.submit()">
+                        @if ($date)
+                            <a href="{{ route('activity-log.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Clear') }}</a>
+                        @endif
                     </form>
                 </div>
 

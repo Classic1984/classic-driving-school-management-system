@@ -103,8 +103,16 @@ class ServiceApplicationController extends Controller
 
         $query = StudentService::where('service_id', $service->id)->with('student.courses');
 
+        // An exact date takes priority over the relative Period filter -
+        // it's how a director looks up "who registered/paid on the 1st of
+        // Jan" instead of only ever being able to browse in today/week/
+        // month/year buckets.
+        $date = $this->exactDate($request);
         $period = $request->query('period', 'all_time');
-        if (in_array($period, self::PERIODS, true)) {
+
+        if ($date !== null) {
+            $query->whereDate('created_at', $date);
+        } elseif (in_array($period, self::PERIODS, true)) {
             // Bounds are cast to plain dates rather than left as Carbon
             // datetimes, which stringify with a "00:00:00" time component
             // that would silently exclude a charge made exactly on the
@@ -164,9 +172,21 @@ class ServiceApplicationController extends Controller
             'applications' => $applications,
             'stats' => $stats,
             'period' => $period,
+            'date' => $date,
             'source' => $source,
             'status' => $status,
         ]);
+    }
+
+    /**
+     * A specific calendar date to filter by, if the request named a valid
+     * one - takes priority over the relative Period filter when present.
+     */
+    protected function exactDate(Request $request): ?string
+    {
+        $date = $request->query('date');
+
+        return ($date && \DateTime::createFromFormat('Y-m-d', $date) !== false) ? $date : null;
     }
 
     /**

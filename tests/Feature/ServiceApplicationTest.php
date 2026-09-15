@@ -324,6 +324,43 @@ class ServiceApplicationTest extends TestCase
         $response->assertSee('Monday Applicant');
     }
 
+    public function test_a_specific_date_filters_to_only_that_days_applicants(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing"]);
+
+        $this->travelTo(Carbon::parse('2026-01-01')->setTime(10, 0));
+        $oldApplicant = Student::factory()->create(['name' => 'New Year Applicant']);
+        $this->chargeFor($oldApplicant, $service);
+
+        $this->travelTo(Carbon::parse('2026-01-05')->setTime(10, 0));
+        $recentApplicant = Student::factory()->create(['name' => 'Later Applicant']);
+        $this->chargeFor($recentApplicant, $service);
+
+        $response = $this->actingAs($user)->get('/driver-license/applicants?date=2026-01-01');
+
+        $response->assertOk();
+        $response->assertSee('New Year Applicant');
+        $response->assertDontSee('Later Applicant');
+    }
+
+    public function test_a_specific_date_takes_priority_over_the_period_filter(): void
+    {
+        $user = User::factory()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing"]);
+
+        $this->travelTo(Carbon::parse('2026-01-01')->setTime(10, 0));
+        $oldApplicant = Student::factory()->create(['name' => 'New Year Applicant']);
+        $this->chargeFor($oldApplicant, $service);
+
+        $this->travelTo(Carbon::parse('2026-01-05')->setTime(10, 0));
+
+        $response = $this->actingAs($user)->get('/driver-license/applicants?period=today&date=2026-01-01');
+
+        $response->assertOk();
+        $response->assertSee('New Year Applicant');
+    }
+
     public function test_the_form_page_shows_a_friendly_message_when_the_catalog_service_is_missing(): void
     {
         // Regression test: production only runs migrations on deploy, not
