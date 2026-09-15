@@ -54,6 +54,26 @@ class ServiceApplicationController extends Controller
         return $this->applicants($request, "Learner's Permit", 'learners-permit', "Learner's Permit");
     }
 
+    public function onlineCertificateIndex(): View
+    {
+        return $this->form('Online Certificate', 'online-certificate', 'Online Certificate');
+    }
+
+    public function studentCertificateIndex(): View
+    {
+        return $this->form('Student Certificate', 'student-certificate', 'Student Certificate');
+    }
+
+    public function onlineCertificateApplicants(Request $request): View
+    {
+        return $this->applicants($request, 'Online Certificate', 'online-certificate', 'Online Certificate');
+    }
+
+    public function studentCertificateApplicants(Request $request): View
+    {
+        return $this->applicants($request, 'Student Certificate', 'student-certificate', 'Student Certificate');
+    }
+
     public function driversLicenseStore(StoreServiceRegistrationRequest $request): RedirectResponse
     {
         return $this->store($request, "Driver's License Processing");
@@ -62,6 +82,16 @@ class ServiceApplicationController extends Controller
     public function learnersPermitStore(StoreServiceRegistrationRequest $request): RedirectResponse
     {
         return $this->store($request, "Learner's Permit");
+    }
+
+    public function onlineCertificateStore(StoreServiceRegistrationRequest $request): RedirectResponse
+    {
+        return $this->store($request, 'Online Certificate');
+    }
+
+    public function studentCertificateStore(StoreServiceRegistrationRequest $request): RedirectResponse
+    {
+        return $this->store($request, 'Student Certificate');
     }
 
     /**

@@ -242,20 +242,27 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     Route::post('students/{student}/services', [StudentServiceController::class, 'store'])->name('students.services.store');
     Route::patch('student-services/{studentService}/processing-status', [StudentServiceController::class, 'updateProcessingStatus'])->name('student-services.processing-status.update');
 
-    // Driver's License and Learner's Permit customers are not necessarily
-    // driving students - these give each its own standalone section
-    // (a combined register-and-pay form as the landing page, plus a
-    // separate applicant list), backed by the same Service/StudentService
-    // records the Dashboard widgets already use, rather than filing every
-    // paying customer under Students. The landing route is the form (not
-    // the list) so staff can register and charge someone in one action
-    // the moment they click into the section.
+    // Driver's License, Learner's Permit, Online Certificate, and Student
+    // Certificate customers are not necessarily driving students - these
+    // give each its own standalone section (a combined register-and-pay
+    // form as the landing page, plus a separate applicant list), backed
+    // by the same Service/StudentService records the Dashboard widgets
+    // already use, rather than filing every paying customer under
+    // Students. The landing route is the form (not the list) so staff can
+    // register and charge someone in one action the moment they click
+    // into the section.
     Route::get('driver-license', [ServiceApplicationController::class, 'driversLicenseIndex'])->name('driver-license.index');
     Route::post('driver-license', [ServiceApplicationController::class, 'driversLicenseStore'])->name('driver-license.store');
     Route::get('driver-license/applicants', [ServiceApplicationController::class, 'driversLicenseApplicants'])->name('driver-license.applicants');
     Route::get('learners-permit', [ServiceApplicationController::class, 'learnersPermitIndex'])->name('learners-permit.index');
     Route::post('learners-permit', [ServiceApplicationController::class, 'learnersPermitStore'])->name('learners-permit.store');
     Route::get('learners-permit/applicants', [ServiceApplicationController::class, 'learnersPermitApplicants'])->name('learners-permit.applicants');
+    Route::get('online-certificate', [ServiceApplicationController::class, 'onlineCertificateIndex'])->name('online-certificate.index');
+    Route::post('online-certificate', [ServiceApplicationController::class, 'onlineCertificateStore'])->name('online-certificate.store');
+    Route::get('online-certificate/applicants', [ServiceApplicationController::class, 'onlineCertificateApplicants'])->name('online-certificate.applicants');
+    Route::get('student-certificate', [ServiceApplicationController::class, 'studentCertificateIndex'])->name('student-certificate.index');
+    Route::post('student-certificate', [ServiceApplicationController::class, 'studentCertificateStore'])->name('student-certificate.store');
+    Route::get('student-certificate/applicants', [ServiceApplicationController::class, 'studentCertificateApplicants'])->name('student-certificate.applicants');
 
     Route::resource('students', StudentController::class)->except(['destroy']);
     Route::resource('courses', CourseController::class)->only(['index', 'show']);
