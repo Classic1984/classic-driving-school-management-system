@@ -89,6 +89,26 @@ class PaymentAllocation extends Model
     }
 
     /**
+     * A coarser, course-independent label for this allocation's charge
+     * type, e.g. "Training" or "Driver's License Processing" - unlike
+     * label(), which names the specific course/service instance ("Training
+     * — Beginner Course"), this is the bucket a revenue-by-category report
+     * groups by, so every training payment lands under one "Training"
+     * total regardless of which course it was for.
+     */
+    public function categoryLabel(): string
+    {
+        return match ($this->allocation_type) {
+            'training' => 'Training',
+            'online_certificate' => 'Online Certificate',
+            'student_certificate' => 'Student Certificate',
+            'service' => $this->studentService->service->name,
+            'reactivation_fee' => 'Reactivation Fee',
+            default => 'Other',
+        };
+    }
+
+    /**
      * The current remaining balance on the underlying charge this
      * allocation applies to (i.e. after this and every other allocation
      * against it), not the amount of this allocation itself.

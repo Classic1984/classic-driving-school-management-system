@@ -115,14 +115,7 @@ class PaymentReportController extends Controller
         return PaymentAllocation::whereHas('payment', fn ($query) => $query->where('status', 'paid'))
             ->with(['studentService.service'])
             ->get()
-            ->groupBy(fn (PaymentAllocation $allocation) => match ($allocation->allocation_type) {
-                'training' => 'Training',
-                'online_certificate' => 'Online Certificate',
-                'student_certificate' => 'Student Certificate',
-                'service' => $allocation->studentService->service->name,
-                'reactivation_fee' => 'Reactivation Fee',
-                default => 'Other',
-            })
+            ->groupBy(fn (PaymentAllocation $allocation) => $allocation->categoryLabel())
             ->map(fn (Collection $group) => (float) $group->sum('amount'))
             ->sortDesc();
     }

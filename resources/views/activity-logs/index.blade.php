@@ -76,6 +76,33 @@
                 </div>
             </div>
 
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">{{ __('Daily Breakdown') }}</h3>
+                        <p class="text-sm text-gray-500">{{ \Illuminate\Support\Carbon::parse($breakdownDate)->format('l, M j, Y') }}</p>
+                    </div>
+                    <a href="{{ route('payment-reports.index', ['date' => $breakdownDate]) }}" class="text-sm font-semibold text-amber-600 hover:underline">{{ __('View Financial Reports') }}</a>
+                </div>
+
+                @if ($dailyBreakdown->isEmpty())
+                    <p class="text-sm text-gray-500">{{ __('No payments recorded for this day.') }}</p>
+                @else
+                    <div class="divide-y divide-gray-100">
+                        @foreach ($dailyBreakdown as $categoryLabel => $amount)
+                            <div class="flex items-center justify-between py-2.5 text-sm">
+                                <span class="text-gray-700">{{ __($categoryLabel) }}</span>
+                                <span class="font-semibold text-gray-900 tabular-nums">₦{{ number_format($amount, 2) }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="flex items-center justify-between pt-4 mt-2 border-t-2 border-gray-200">
+                        <span class="text-base font-bold text-gray-900">{{ __('Total') }}</span>
+                        <span class="text-lg font-extrabold text-amber-600 tabular-nums">₦{{ number_format($dailyBreakdownTotal, 2) }}</span>
+                    </div>
+                @endif
+            </div>
+
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
                     <h3 class="text-xl font-bold text-gray-900">{{ __('Activity Log') }}</h3>

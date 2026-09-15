@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Console\Commands\RecordSchedulerHeartbeat;
 use App\Models\ActivityLog;
+use App\Models\Payment;
+use App\Models\PaymentAllocation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -70,9 +73,42 @@ class ActivityLogController extends Controller
         // fastest way back to the most common thing a director checks.
         $todayCount = $this->query('today', null)->count();
 
+        // The breakdown always covers exactly one calendar day - the
+        // Specific Date filter when one is picked, otherwise today - since
+        // "how much came in, by category" only reads cleanly for a single
+        // day; a director wanting a different day already has the date
+        // picker right above this for it.
+        $breakdownDate = $date ?? today()->toDateString();
+        $dailyBreakdown = $this->revenueByCategory($breakdownDate);
+        $dailyBreakdownTotal = $dailyBreakdown->sum();
+
         return view('activity-logs.index', compact(
-            'activityLogs', 'schedulerStatus', 'period', 'date', 'label', 'category', 'categoryTiles', 'todayCount'
+            'activityLogs', 'schedulerStatus', 'period', 'date', 'label', 'category', 'categoryTiles', 'todayCount',
+            'breakdownDate', 'dailyBreakdown', 'dailyBreakdownTotal'
         ));
+    }
+
+    /**
+     * Money actually collected on one calendar day, grouped by the same
+     * category buckets as the Financial Reports "Revenue by Service"
+     * table (Training, Driver's License Processing, Learner's Permit,
+     * Online Certificate, Student Certificate, Reactivation Fee, etc.) -
+     * fully automatic from the underlying Payment/PaymentAllocation
+     * records, never a manually maintained figure, and reversed payments
+     * are excluded the same way they already are there.
+     *
+     * @return Collection<string, float>
+     */
+    protected function revenueByCategory(string $date): Collection
+    {
+        return Payment::where('status', 'paid')
+            ->whereDate('payment_date', $date)
+            ->with(['allocations.studentService.service'])
+            ->get()
+            ->flatMap(fn (Payment $payment) => $payment->allocations)
+            ->groupBy(fn (PaymentAllocation $allocation) => $allocation->categoryLabel())
+            ->map(fn (Collection $group) => (float) $group->sum('amount'))
+            ->sortDesc();
     }
 
     protected function period(Request $request): string
