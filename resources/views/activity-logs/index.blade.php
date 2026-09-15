@@ -57,20 +57,22 @@
                     <span class="text-2xl font-extrabold text-amber-600">{{ $todayCount }}</span>
                 </a>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-1">
                     @foreach ($categoryTiles as $tile)
                         @php
                             $isActive = $category === $tile['key'];
                         @endphp
                         <a
                             href="{{ $tileHref($tile['key']) }}"
-                            class="flex flex-col gap-2 rounded-xl ring-1 {{ $isActive ? 'ring-2 ring-amber-500 bg-amber-50/40' : 'ring-gray-200 hover:ring-gray-300' }} p-4 transition"
+                            class="flex items-center justify-between gap-2 rounded-lg {{ $isActive ? 'ring-1 ring-amber-400 bg-amber-50/60' : 'hover:bg-gray-50' }} px-2 py-1.5 transition"
                         >
-                            <span class="flex h-9 w-9 items-center justify-center rounded-lg {{ $tileAccent[$tile['color']] ?? 'bg-gray-100 text-gray-500' }}">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tile['icon'] }}" /></svg>
+                            <span class="flex items-center gap-2 min-w-0">
+                                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md {{ $tileAccent[$tile['color']] ?? 'bg-gray-100 text-gray-500' }}">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tile['icon'] }}" /></svg>
+                                </span>
+                                <span class="text-sm font-medium text-gray-700 truncate">{{ __($tile['label']) }}</span>
                             </span>
-                            <p class="text-xl font-extrabold text-gray-900">{{ $tile['count'] }}</p>
-                            <p class="text-xs font-medium text-gray-600 leading-tight">{{ __($tile['label']) }}</p>
+                            <span class="text-sm font-bold text-gray-900 shrink-0">{{ $tile['count'] }}</span>
                         </a>
                     @endforeach
                 </div>
