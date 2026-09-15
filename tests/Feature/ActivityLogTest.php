@@ -9,6 +9,8 @@ use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Payment;
+use App\Models\Service;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -380,6 +382,87 @@ class ActivityLogTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Today Activities');
+    }
+
+    public function test_the_daily_breakdown_groups_todays_revenue_by_category_with_a_total(): void
+    {
+        $director = User::factory()->director()->create();
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 40000]);
+        $enrollment = $student->courses()->first()->pivot;
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $studentService = $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+
+        $this->actingAs($director)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 46000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'training', 'id' => $enrollment->id, 'amount' => 40000],
+                ['type' => 'service', 'id' => $studentService->id, 'amount' => 6000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        $response->assertOk();
+        $response->assertSee('Daily Breakdown');
+        $response->assertSee('Training');
+        $response->assertSee("Learner's Permit");
+        $response->assertSee('40,000.00');
+        $response->assertSee('6,000.00');
+        $response->assertSee('46,000.00');
+    }
+
+    public function test_the_daily_breakdown_follows_the_specific_date_filter_instead_of_defaulting_to_today(): void
+    {
+        $director = User::factory()->director()->create();
+        $pastDate = now()->subDays(3)->toDateString();
+        Payment::factory()->create(['status' => 'paid', 'payment_date' => $pastDate])
+            ->allocations()->create(['allocation_type' => 'training', 'amount' => 12345]);
+
+        // Not shown by default - the breakdown covers today, not this
+        // 3-day-old payment.
+        $defaultResponse = $this->actingAs($director)->get('/activity-log');
+        $defaultResponse->assertOk();
+        $defaultResponse->assertDontSee('12,345.00');
+
+        // Shown once the Specific Date filter is pointed at that day.
+        $response = $this->actingAs($director)->get("/activity-log?date={$pastDate}");
+        $response->assertOk();
+        $response->assertSee('12,345.00');
+    }
+
+    public function test_the_daily_breakdown_shows_a_message_when_nothing_was_paid_that_day(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        $response->assertOk();
+        $response->assertSee('No payments recorded for this day.');
+    }
+
+    public function test_the_daily_breakdown_excludes_a_reversed_payment(): void
+    {
+        $director = User::factory()->director()->create();
+        $payment = Payment::factory()->create(['amount' => 15000, 'status' => 'paid']);
+        $payment->allocations()->create(['allocation_type' => 'training', 'amount' => 15000]);
+
+        $this->actingAs($director)->post("/payments/{$payment->id}/reverse", [
+            'reason' => 'Payment duplicated.',
+        ])->assertSessionHasNoErrors();
+
+        $response = $this->actingAs($director)->get('/activity-log');
+
+        // The reversed payment's amount still legitimately appears in the
+        // timeline's own "Reversed a payment of ₦15,000.00..." entry below -
+        // it's specifically the Daily Breakdown that must exclude it, shown
+        // here by the breakdown falling back to its empty-state message.
+        $response->assertOk();
+        $response->assertSee('No payments recorded for this day.');
     }
 
     public function test_recording_an_expense_is_logged(): void
