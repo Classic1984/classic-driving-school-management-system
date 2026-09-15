@@ -43,11 +43,12 @@ class ActivityLogController extends Controller
     public function index(Request $request): View
     {
         $period = $this->period($request);
-        $activityLogs = $this->query($period)->with('user')->latest()->paginate(20)->withQueryString();
+        $date = $this->exactDate($request);
+        $activityLogs = $this->query($period, $date)->with('user')->latest()->paginate(20)->withQueryString();
         $label = self::LABELS[$period];
         $schedulerStatus = $this->schedulerStatus();
 
-        return view('activity-logs.index', compact('activityLogs', 'schedulerStatus', 'period', 'label'));
+        return view('activity-logs.index', compact('activityLogs', 'schedulerStatus', 'period', 'date', 'label'));
     }
 
     protected function period(Request $request): string
@@ -57,9 +58,28 @@ class ActivityLogController extends Controller
         return in_array($period, self::PERIODS, true) ? $period : 'all_time';
     }
 
-    protected function query(string $period)
+    /**
+     * A specific calendar date to filter by, if the request named a valid
+     * one - takes priority over the relative Period filter when present,
+     * so a director can look up exactly what happened on, say, Jan 1st
+     * instead of only ever browsing in today/week/month/year buckets.
+     */
+    protected function exactDate(Request $request): ?string
+    {
+        $date = $request->query('date');
+
+        return ($date && \DateTime::createFromFormat('Y-m-d', $date) !== false) ? $date : null;
+    }
+
+    protected function query(string $period, ?string $date = null)
     {
         $query = ActivityLog::query();
+
+        if ($date !== null) {
+            $query->whereDate('created_at', $date);
+
+            return $query;
+        }
 
         [$from, $to] = match ($period) {
             'week' => [now()->startOfWeek(), now()->endOfWeek()],

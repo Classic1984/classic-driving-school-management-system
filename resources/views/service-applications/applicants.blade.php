@@ -80,7 +80,7 @@
             <div class="bg-amber-50/40 ring-1 ring-amber-200 border-l-4 border-amber-500 rounded-xl p-6 mb-6">
                 <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Filter Applicants') }}</h3>
 
-                <form method="get" action="{{ route("{$routePrefix}.applicants") }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <form method="get" action="{{ route("{$routePrefix}.applicants") }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <x-input-label for="period" :value="__('Period')" />
                         <select id="period" name="period" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
@@ -88,6 +88,12 @@
                                 <option value="{{ $value }}" @selected($period === $value)>{{ __($label) }}</option>
                             @endforeach
                         </select>
+                    </div>
+
+                    <div>
+                        <x-input-label for="date" :value="__('Specific Date')" />
+                        <input type="date" id="date" name="date" value="{{ $date }}" max="{{ now()->format('Y-m-d') }}" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                        <p class="mt-1 text-xs text-gray-500">{{ __('Overrides Period when set.') }}</p>
                     </div>
 
                     <div>

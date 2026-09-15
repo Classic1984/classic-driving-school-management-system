@@ -284,6 +284,35 @@ class ActivityLogTest extends TestCase
         $response->assertSee('Never Detected');
     }
 
+    public function test_a_specific_date_filters_to_only_that_days_entries(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $this->travelTo(now()->subDays(2));
+        ActivityLog::record('Registered student Old Entry', $director);
+
+        $this->travelBack();
+        ActivityLog::record('Registered student Today Entry', $director);
+
+        $targetDate = now()->subDays(2)->toDateString();
+        $response = $this->actingAs($director)->get("/activity-log?date={$targetDate}");
+
+        $response->assertOk();
+        $response->assertSee('Old Entry');
+        $response->assertDontSee('Today Entry');
+    }
+
+    public function test_an_invalid_date_is_ignored_in_favor_of_the_period_filter(): void
+    {
+        $director = User::factory()->director()->create();
+        ActivityLog::record('Registered student Jane Doe', $director);
+
+        $response = $this->actingAs($director)->get('/activity-log?date=not-a-date');
+
+        $response->assertOk();
+        $response->assertSee('Jane Doe');
+    }
+
     public function test_recording_an_expense_is_logged(): void
     {
         $director = User::factory()->director()->create();
