@@ -255,9 +255,9 @@
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $group['icon'] }}" /></svg>
                                     </span>
-                                    <h3 class="text-sm font-bold uppercase tracking-widest text-amber-400">{{ __($group['title']) }}</h3>
+                                    <h3 class="text-base font-bold uppercase tracking-widest text-amber-400">{{ __($group['title']) }}</h3>
                                 </div>
-                                <a href="{{ $panelViewAll[$group['title']] }}" class="text-xs font-semibold text-gray-400 hover:text-amber-400 shrink-0">{{ __('View All') }}</a>
+                                <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-gray-300 hover:text-amber-400 shrink-0">{{ __('View All') }}</a>
                             </div>
 
                             <div class="divide-y divide-white/10">
@@ -266,13 +266,13 @@
                                     <{{ $tag }}
                                         @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                                         @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                                        class="group flex items-start justify-between gap-3 py-2.5 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-white/5 rounded-lg -mx-2 px-2' : '' }}"
+                                        class="group flex items-start justify-between gap-3 py-3 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-white/5 rounded-lg -mx-2 px-2' : '' }}"
                                     >
-                                        <span class="flex flex-1 items-start gap-1.5 min-w-0 text-sm text-gray-300">
-                                            <svg class="h-4 w-4 shrink-0 mt-0.5 text-amber-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
+                                        <span class="flex flex-1 items-start gap-2 min-w-0 text-base text-gray-200">
+                                            <svg class="h-5 w-5 shrink-0 mt-0.5 text-amber-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
                                             <span>{{ __($row['label']) }}</span>
                                         </span>
-                                        <span class="shrink-0 text-base font-extrabold tabular-nums whitespace-nowrap text-amber-400">{{ $row['value'] }}</span>
+                                        <span class="shrink-0 text-xl font-extrabold tabular-nums whitespace-nowrap text-amber-400">{{ $row['value'] }}</span>
                                     </{{ $tag }}>
                                 @endforeach
                             </div>
