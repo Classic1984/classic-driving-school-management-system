@@ -231,28 +231,6 @@
 
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
 
-                    $panelColors = [
-                        'purple' => ['icon' => 'bg-purple-100 text-purple-600', 'label' => 'text-purple-700'],
-                        'blue' => ['icon' => 'bg-blue-100 text-blue-600', 'label' => 'text-blue-700'],
-                        'green' => ['icon' => 'bg-green-100 text-green-600', 'label' => 'text-green-700'],
-                        'pink' => ['icon' => 'bg-pink-100 text-pink-600', 'label' => 'text-pink-700'],
-                    ];
-
-                    // Each row picks its own color (set per row above) so
-                    // every icon and number in a panel is colorful, not
-                    // just a single hue per panel.
-                    $rowColors = [
-                        'blue' => 'text-blue-600',
-                        'green' => 'text-green-600',
-                        'teal' => 'text-teal-600',
-                        'purple' => 'text-purple-600',
-                        'pink' => 'text-pink-600',
-                        'red' => 'text-red-600',
-                        'amber' => 'text-amber-600',
-                        'orange' => 'text-orange-600',
-                        'indigo' => 'text-indigo-600',
-                        'gray' => 'text-gray-500',
-                    ];
                     $panelViewAll = [
                         'Students' => route('students.index'),
                         'Training & Operations' => route('enrolled-trainees.index'),
@@ -271,34 +249,30 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     @foreach ($summaryGroups as $group)
-                        @php $groupAccent = $panelColors[$group['color']]; @endphp
-                        <div class="rounded-xl ring-1 ring-gray-200 p-5">
-                            <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-gray-100">
+                        <div class="rounded-xl bg-black ring-1 ring-white/10 p-5">
+                            <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-white/10">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $groupAccent['icon'] }}">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $group['icon'] }}" /></svg>
                                     </span>
-                                    <h3 class="text-sm font-bold uppercase tracking-widest {{ $groupAccent['label'] }}">{{ __($group['title']) }}</h3>
+                                    <h3 class="text-sm font-bold uppercase tracking-widest text-amber-400">{{ __($group['title']) }}</h3>
                                 </div>
-                                <a href="{{ $panelViewAll[$group['title']] }}" class="text-xs font-semibold text-gray-400 hover:text-amber-600 shrink-0">{{ __('View All') }}</a>
+                                <a href="{{ $panelViewAll[$group['title']] }}" class="text-xs font-semibold text-gray-400 hover:text-amber-400 shrink-0">{{ __('View All') }}</a>
                             </div>
 
-                            <div class="divide-y divide-gray-100">
+                            <div class="divide-y divide-white/10">
                                 @foreach ($group['rows'] as $row)
-                                    @php
-                                        $tag = $rowTag($row);
-                                        $rowColor = $rowColors[$row['color']] ?? 'text-gray-500';
-                                    @endphp
+                                    @php $tag = $rowTag($row); @endphp
                                     <{{ $tag }}
                                         @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                                         @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                                        class="group flex items-start justify-between gap-3 py-2.5 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-gray-50 rounded-lg -mx-2 px-2' : '' }}"
+                                        class="group flex items-start justify-between gap-3 py-2.5 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-white/5 rounded-lg -mx-2 px-2' : '' }}"
                                     >
-                                        <span class="flex flex-1 items-start gap-1.5 min-w-0 text-sm text-gray-600">
-                                            <svg class="h-4 w-4 shrink-0 mt-0.5 {{ $rowColor }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
+                                        <span class="flex flex-1 items-start gap-1.5 min-w-0 text-sm text-gray-300">
+                                            <svg class="h-4 w-4 shrink-0 mt-0.5 text-amber-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
                                             <span>{{ __($row['label']) }}</span>
                                         </span>
-                                        <span class="shrink-0 text-base font-extrabold tabular-nums whitespace-nowrap {{ $rowColor }}">{{ $row['value'] }}</span>
+                                        <span class="shrink-0 text-base font-extrabold tabular-nums whitespace-nowrap text-amber-400">{{ $row['value'] }}</span>
                                     </{{ $tag }}>
                                 @endforeach
                             </div>
