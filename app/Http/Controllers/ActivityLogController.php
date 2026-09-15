@@ -44,11 +44,35 @@ class ActivityLogController extends Controller
     {
         $period = $this->period($request);
         $date = $this->exactDate($request);
-        $activityLogs = $this->query($period, $date)->with('user')->latest()->paginate(20)->withQueryString();
+        $category = $this->category($request);
+
+        $activityLogs = $this->applyCategory($this->query($period, $date), $category)
+            ->with('user')->latest()->paginate(20)->withQueryString();
+
         $label = self::LABELS[$period];
         $schedulerStatus = $this->schedulerStatus();
 
-        return view('activity-logs.index', compact('activityLogs', 'schedulerStatus', 'period', 'date', 'label'));
+        // Every tile's count is scoped to the currently selected Period/
+        // Date (so picking "This Month" re-counts every category for that
+        // month), but never to the currently selected category itself -
+        // otherwise every other tile would show 0 the moment one was
+        // active, instead of letting a director switch straight from one
+        // category to another.
+        $categoryTiles = collect(ActivityLog::categories())
+            ->push(ActivityLog::otherCategory())
+            ->map(fn (array $category) => [
+                ...$category,
+                'count' => $this->applyCategory($this->query($period, $date), $category['key'])->count(),
+            ]);
+
+        // A standalone shortcut to "everything from today" regardless of
+        // whatever Period/Date/Category is currently selected - the
+        // fastest way back to the most common thing a director checks.
+        $todayCount = $this->query('today', null)->count();
+
+        return view('activity-logs.index', compact(
+            'activityLogs', 'schedulerStatus', 'period', 'date', 'label', 'category', 'categoryTiles', 'todayCount'
+        ));
     }
 
     protected function period(Request $request): string
@@ -69,6 +93,65 @@ class ActivityLogController extends Controller
         $date = $request->query('date');
 
         return ($date && \DateTime::createFromFormat('Y-m-d', $date) !== false) ? $date : null;
+    }
+
+    /**
+     * The category tile to filter by, if the request named a known one -
+     * combines with Period/Date rather than overriding them, so a director
+     * can view e.g. "Driver's License, this month" together.
+     */
+    protected function category(Request $request): ?string
+    {
+        $category = $request->query('category');
+        $knownKeys = collect(ActivityLog::categories())->push(ActivityLog::otherCategory())->pluck('key');
+
+        return $knownKeys->contains($category) ? $category : null;
+    }
+
+    /**
+     * Narrow a query to one category, rebuilding ActivityLog::category()'s
+     * keyword-matching order as SQL: match this category's own keywords,
+     * excluding every keyword belonging to a category checked earlier (the
+     * "other" category, checked last of all, excludes every keyword there
+     * is) - so a tile's count and its filtered list always agree with
+     * what ActivityLog::category() would report for the same row, and an
+     * entry is never double-counted across two tiles.
+     */
+    protected function applyCategory($query, ?string $categoryKey)
+    {
+        if ($categoryKey === null) {
+            return $query;
+        }
+
+        $matchKeywords = null;
+        $priorKeywords = [];
+
+        foreach (ActivityLog::categories() as $category) {
+            if ($category['key'] === $categoryKey) {
+                $matchKeywords = $category['keywords'];
+                break;
+            }
+
+            $priorKeywords = [...$priorKeywords, ...$category['keywords']];
+        }
+
+        if ($categoryKey === 'other') {
+            $priorKeywords = collect(ActivityLog::categories())->flatMap(fn (array $category) => $category['keywords'])->all();
+        }
+
+        if ($matchKeywords !== null) {
+            $query->where(function ($inner) use ($matchKeywords) {
+                foreach ($matchKeywords as $keyword) {
+                    $inner->orWhere('description', 'like', "%{$keyword}%");
+                }
+            });
+        }
+
+        foreach ($priorKeywords as $keyword) {
+            $query->where('description', 'not like', "%{$keyword}%");
+        }
+
+        return $query;
     }
 
     protected function query(string $period, ?string $date = null)
