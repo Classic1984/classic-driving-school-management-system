@@ -940,8 +940,12 @@
                                                         }" class="capitalize">{{ $payment->status }}</x-badge>
                                                     </td>
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->recordedBy?->name ?? '—' }}</td>
-                                                    <td class="px-3 py-3 text-sm">
+                                                    <td class="px-3 py-3 text-sm whitespace-nowrap">
                                                         <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
+                                                        @if (auth()->user()->isDirector())
+                                                            <span class="text-gray-300">|</span>
+                                                            <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @empty
