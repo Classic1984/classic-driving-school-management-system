@@ -9,6 +9,8 @@ use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CertificateTest extends TestCase
@@ -182,5 +184,59 @@ class CertificateTest extends TestCase
 
         $this->actingAs($director)->delete("/certificates/{$certificate->id}")->assertRedirect('/certificates');
         $this->assertDatabaseMissing('certificates', ['id' => $certificate->id]);
+    }
+
+    public function test_a_user_can_send_the_certificate_via_whatsapp(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake(['api.twilio.com/*' => Http::response(['sid' => 'SM123'], 201)]);
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $certificate = Certificate::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($user)->post("/certificates/{$certificate->id}/whatsapp");
+
+        $response->assertRedirect(route('certificates.show', $certificate));
+        $this->assertSame('certificate-whatsapp-sent', session('status'));
+        Http::assertSent(fn ($request) => $request['To'] === 'whatsapp:+2348031234567');
+    }
+
+    public function test_sending_the_certificate_via_whatsapp_fails_gracefully_when_twilio_is_not_configured(): void
+    {
+        Storage::fake('public');
+        Http::fake();
+        $user = User::factory()->create();
+        $certificate = Certificate::factory()->create();
+
+        $response = $this->actingAs($user)->post("/certificates/{$certificate->id}/whatsapp");
+
+        $response->assertRedirect(route('certificates.show', $certificate));
+        $this->assertSame('certificate-whatsapp-not-configured', session('status'));
+        Http::assertNothingSent();
+    }
+
+    public function test_sending_the_certificate_via_whatsapp_fails_gracefully_when_the_student_has_no_phone(): void
+    {
+        Storage::fake('public');
+        config([
+            'services.twilio.account_sid' => 'AC-fake-sid',
+            'services.twilio.auth_token' => 'fake-token',
+            'services.twilio.whatsapp_from' => '+15550001111',
+        ]);
+        Http::fake();
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['phone' => '']);
+        $certificate = Certificate::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($user)->post("/certificates/{$certificate->id}/whatsapp");
+
+        $response->assertRedirect(route('certificates.show', $certificate));
+        $this->assertSame('certificate-whatsapp-no-phone', session('status'));
+        Http::assertNothingSent();
     }
 }

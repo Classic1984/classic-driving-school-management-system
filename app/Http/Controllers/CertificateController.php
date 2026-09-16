@@ -9,8 +9,13 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Instructor;
 use App\Models\Student;
+use App\Services\WhatsAppService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\PDF as PdfDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CertificateController extends Controller
@@ -75,6 +80,48 @@ class CertificateController extends Controller
         ActivityLog::record("Updated certificate {$certificate->certificate_number} for {$certificate->student->name}");
 
         return Redirect::route('certificates.index')->with('status', 'certificate-updated');
+    }
+
+    /**
+     * Send the certificate as a PDF to the student's WhatsApp number - the
+     * PDF is generated fresh and stored on the public disk at an
+     * unguessable path so Twilio can fetch it by URL, the same pattern
+     * already used for corporate quotations/invoices/receipts.
+     */
+    public function whatsapp(WhatsAppService $whatsapp, Certificate $certificate): RedirectResponse
+    {
+        $certificate->load(['student', 'course', 'instructor']);
+
+        if (! $whatsapp->isConfigured()) {
+            return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-not-configured');
+        }
+
+        if (! $certificate->student->phone) {
+            return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-no-phone');
+        }
+
+        $path = "certificates/{$certificate->certificate_number}-".Str::random(40).'.pdf';
+        Storage::disk('public')->put($path, $this->buildPdf($certificate)->output());
+        $url = Storage::disk('public')->url($path);
+
+        $sent = $whatsapp->sendDocument(
+            $certificate->student->phone,
+            $url,
+            "Congratulations {$certificate->student->name}! Here's your certificate ({$certificate->certificate_number}) for {$certificate->course->name} from Classic Driving School."
+        );
+
+        if (! $sent) {
+            return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-failed');
+        }
+
+        ActivityLog::record("Sent certificate {$certificate->certificate_number} to {$certificate->student->name} via WhatsApp");
+
+        return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-sent');
+    }
+
+    private function buildPdf(Certificate $certificate): PdfDocument
+    {
+        return Pdf::loadView('certificates.pdf', compact('certificate'));
     }
 
     /**
