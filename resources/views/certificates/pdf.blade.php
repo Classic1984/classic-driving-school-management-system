@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <title>Certificate {{ $certificate->certificate_number }}</title>
     <style>
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #ffffff; background: #000000; margin: 0; }
-        .card { border: 2px solid #d97706; border-radius: 10px; padding: 30px 40px; text-align: center; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #ffffff; margin: 0; }
+        .card { background: #000000; border: 2px solid #d97706; border-radius: 10px; padding: 30px 40px; text-align: center; }
         .top-row { width: 100%; }
         .top-row td { font-size: 10px; vertical-align: top; }
         .cert-no-label { text-align: right; color: #fbbf24; text-transform: uppercase; letter-spacing: 1px; }
