@@ -301,6 +301,7 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::post('certificates/{certificate}/whatsapp', [CertificateController::class, 'whatsapp'])->name('certificates.whatsapp');
+    Route::post('certificates/{certificate}/whatsapp-link', [CertificateController::class, 'whatsappLink'])->name('certificates.whatsapp-link');
     Route::patch('enrollments/{enrollment}/complete', [EnrollmentController::class, 'complete'])->name('enrollments.complete');
 });
 require __DIR__.'/auth.php';
