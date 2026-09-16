@@ -180,6 +180,30 @@ class StudentTest extends TestCase
         $response->assertRedirect(route('payments.receipt', $payment));
     }
 
+    public function test_a_director_sees_a_direct_edit_link_on_each_payment_row(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create();
+        $payment = Payment::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($director)->get(route('students.show', $student));
+
+        $response->assertOk();
+        $response->assertSee(route('payments.edit', $payment), false);
+    }
+
+    public function test_a_non_director_does_not_see_a_direct_edit_link_on_payment_rows(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+        $payment = Payment::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($secretary)->get(route('students.show', $student));
+
+        $response->assertOk();
+        $response->assertDontSee(route('payments.edit', $payment), false);
+    }
+
     public function test_student_index_can_be_filtered_by_status(): void
     {
         $user = User::factory()->create();
