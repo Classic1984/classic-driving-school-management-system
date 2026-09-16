@@ -135,4 +135,17 @@ class WhatsAppServiceTest extends TestCase
         config(['services.twilio.whatsapp_from' => null]);
         $this->assertFalse((new WhatsAppService)->isConfigured());
     }
+
+    public function test_wa_link_builds_a_click_to_chat_url_with_the_normalized_number_and_encoded_message(): void
+    {
+        $link = (new WhatsAppService)->waLink('08031234567', 'Hello there!');
+
+        $this->assertSame('https://wa.me/2348031234567?text=Hello%20there%21', $link);
+    }
+
+    public function test_wa_link_returns_null_for_a_blank_phone_number(): void
+    {
+        $this->assertNull((new WhatsAppService)->waLink('', 'Hello there!'));
+        $this->assertNull((new WhatsAppService)->waLink(null, 'Hello there!'));
+    }
 }

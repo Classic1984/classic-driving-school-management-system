@@ -119,6 +119,38 @@ class CertificateController extends Controller
         return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-sent');
     }
 
+    /**
+     * Open a WhatsApp chat with the student, pre-filled with a link to
+     * the certificate - a fallback for when Twilio isn't set up or a
+     * send through it fails. No Twilio account is needed, but the
+     * director has to press Send themselves once the chat opens.
+     */
+    public function whatsappLink(WhatsAppService $whatsapp, Certificate $certificate): RedirectResponse
+    {
+        $certificate->load(['student', 'course', 'instructor']);
+
+        if (! $certificate->student->phone) {
+            return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-no-phone');
+        }
+
+        $path = "certificates/{$certificate->certificate_number}-".Str::random(40).'.pdf';
+        Storage::disk('public')->put($path, $this->buildPdf($certificate)->output());
+        $url = Storage::disk('public')->url($path);
+
+        $link = $whatsapp->waLink(
+            $certificate->student->phone,
+            "Congratulations {$certificate->student->name}! Here's your certificate ({$certificate->certificate_number}) for {$certificate->course->name} from Classic Driving School: {$url}"
+        );
+
+        if (! $link) {
+            return Redirect::route('certificates.show', $certificate)->with('status', 'certificate-whatsapp-no-phone');
+        }
+
+        ActivityLog::record("Opened a WhatsApp chat to send certificate {$certificate->certificate_number} to {$certificate->student->name}");
+
+        return Redirect::away($link);
+    }
+
     private function buildPdf(Certificate $certificate): PdfDocument
     {
         return Pdf::loadView('certificates.pdf', compact('certificate'));

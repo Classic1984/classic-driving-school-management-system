@@ -239,4 +239,30 @@ class CertificateTest extends TestCase
         $this->assertSame('certificate-whatsapp-no-phone', session('status'));
         Http::assertNothingSent();
     }
+
+    public function test_a_user_can_open_a_whatsapp_chat_link_for_the_certificate_without_twilio(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['phone' => '08031234567']);
+        $certificate = Certificate::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($user)->post("/certificates/{$certificate->id}/whatsapp-link");
+
+        $response->assertRedirect();
+        $this->assertStringStartsWith('https://wa.me/2348031234567?text=', $response->headers->get('Location'));
+    }
+
+    public function test_the_whatsapp_chat_link_fails_gracefully_when_the_student_has_no_phone(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['phone' => '']);
+        $certificate = Certificate::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($user)->post("/certificates/{$certificate->id}/whatsapp-link");
+
+        $response->assertRedirect(route('certificates.show', $certificate));
+        $this->assertSame('certificate-whatsapp-no-phone', session('status'));
+    }
 }

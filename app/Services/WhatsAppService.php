@@ -90,6 +90,25 @@ class WhatsAppService
     }
 
     /**
+     * Build a WhatsApp "click to chat" link (wa.me) with the given
+     * message pre-filled. Needs no Twilio account and works even when
+     * Twilio isn't configured or a send through it failed - the
+     * trade-off is that whoever opens the link has to press Send
+     * themselves, and it can't carry a file attachment, only a link.
+     * Returns null if the phone number can't be normalized.
+     */
+    public function waLink(?string $to, string $message): ?string
+    {
+        $phone = $this->normalize($to);
+
+        if (! $phone) {
+            return null;
+        }
+
+        return 'https://wa.me/'.$phone.'?text='.rawurlencode($message);
+    }
+
+    /**
      * Whether Twilio's WhatsApp credentials are present, so callers can
      * tell an unconfigured integration apart from a send that failed for
      * some other reason (bad number, Twilio rejection) and give the
