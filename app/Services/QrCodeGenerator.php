@@ -32,4 +32,22 @@ class QrCodeGenerator
         // directly inline in an HTML document.
         return trim(substr($svg, strpos($svg, "\n") + 1));
     }
+
+    /**
+     * Render the given text as a QR code and return it as a base64 SVG
+     * data URI, suitable for an <img> tag. DomPDF has no frame reflower
+     * for inline <svg> elements, so PDF templates must embed the QR code
+     * this way instead of via svg().
+     */
+    public function dataUri(string $text, int $size = 160): string
+    {
+        $renderer = new ImageRenderer(
+            new RendererStyle($size),
+            new SvgImageBackEnd,
+        );
+
+        $svg = (new Writer($renderer))->writeString($text);
+
+        return 'data:image/svg+xml;base64,'.base64_encode($svg);
+    }
 }

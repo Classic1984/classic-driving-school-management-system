@@ -20,6 +20,19 @@
 
     <div class="py-12 print:py-0">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 print:max-w-full print:px-0">
+            @if (session('status') === 'certificate-whatsapp-sent')
+                <p class="print:hidden mb-4 text-sm font-medium text-green-600">{{ __('Certificate sent via WhatsApp.') }}</p>
+            @elseif (session('status') === 'certificate-whatsapp-not-configured')
+                <p class="print:hidden mb-4 text-sm font-medium text-red-600">{{ __('WhatsApp sending isn\'t set up yet. Ask your developer to add the Twilio WhatsApp credentials.') }}</p>
+            @elseif (session('status') === 'certificate-whatsapp-no-phone')
+                <p class="print:hidden mb-4 text-sm font-medium text-red-600">
+                    {{ __('This student has no phone number on file.') }}
+                    <a href="{{ route('students.edit', $certificate->student) }}" class="underline hover:no-underline">{{ __('Add one') }}</a>
+                    {{ __('and try again.') }}
+                </p>
+            @elseif (session('status') === 'certificate-whatsapp-failed')
+                <p class="print:hidden mb-4 text-sm font-medium text-red-600">{{ __('WhatsApp could not deliver this message. Double-check the phone number is correct and on WhatsApp.') }}</p>
+            @endif
             <div class="certificate-card relative bg-gray-900 text-white p-1.5 sm:p-2 rounded-2xl print:rounded-none overflow-hidden">
                 <div class="relative border-2 border-amber-500/70 rounded-xl p-8 sm:p-14 text-center">
                     <div class="pointer-events-none absolute inset-3 rounded-lg border border-amber-500/25"></div>
@@ -145,6 +158,13 @@
                 <a href="{{ route('certificates.edit', $certificate) }}">
                     <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
                 </a>
+                <form method="post" action="{{ route('certificates.whatsapp', $certificate) }}">
+                    @csrf
+                    <x-secondary-button type="submit">
+                        <svg class="h-4 w-4 -ml-1 mr-1.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg>
+                        {{ __('Send WhatsApp') }}
+                    </x-secondary-button>
+                </form>
                 <a href="{{ route('certificates.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Back to list') }}</a>
             </div>
         </div>
