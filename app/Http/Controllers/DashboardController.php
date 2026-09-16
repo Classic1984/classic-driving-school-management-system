@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssessmentRequest;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\CorporatePayment;
@@ -438,7 +439,8 @@ class DashboardController extends Controller
             'approaching_completion' => $approachingCompletionEnrollments->count(),
             'locked_students' => Enrollment::where('status', 'locked')->count(),
             'pending_approvals' => DiscountRequest::where('status', 'pending')->count()
-                + StudentCorrectionRequest::where('status', 'pending')->count(),
+                + StudentCorrectionRequest::where('status', 'pending')->count()
+                + AssessmentRequest::where('status', 'pending')->count(),
         ];
 
         return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressTotalEnrollments', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
