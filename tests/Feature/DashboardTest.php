@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AssessmentRequest;
 use App\Models\Attendance;
 use App\Models\Certificate;
 use App\Models\CorporateCompany;
@@ -1110,11 +1111,12 @@ class DashboardTest extends TestCase
         $director = User::factory()->director()->create();
         DiscountRequest::factory()->create();
         StudentCorrectionRequest::factory()->create();
+        AssessmentRequest::factory()->create();
 
         $response = $this->actingAs($director)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertSeeInOrder(['2', 'Approval(s) Pending']);
+        $response->assertSeeInOrder(['3', 'Approval(s) Pending']);
     }
 
     public function test_a_secretary_does_not_see_the_pending_approvals_link(): void
@@ -1126,6 +1128,29 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertDontSee('Approval(s) Pending');
+    }
+
+    public function test_a_director_sees_pending_approvals_in_the_at_a_glance_students_panel(): void
+    {
+        $director = User::factory()->director()->create();
+        DiscountRequest::factory()->create();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Pending Approvals');
+        $response->assertSee(route('approvals.index'), false);
+    }
+
+    public function test_a_secretary_does_not_see_pending_approvals_in_at_a_glance(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        DiscountRequest::factory()->create();
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Pending Approvals');
     }
 
     public function test_dashboard_lists_a_pending_learners_permit_request(): void
