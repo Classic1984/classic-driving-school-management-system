@@ -365,8 +365,6 @@ class ServiceApplicationTest extends TestCase
     {
         $this->get('/online-certificate')->assertRedirect('/login');
         $this->get('/online-certificate/applicants')->assertRedirect('/login');
-        $this->get('/student-certificate')->assertRedirect('/login');
-        $this->get('/student-certificate/applicants')->assertRedirect('/login');
     }
 
     public function test_registering_a_walk_in_applicant_for_an_online_certificate_charges_and_pays_in_one_step(): void
@@ -382,22 +380,6 @@ class ServiceApplicationTest extends TestCase
 
         $studentService = StudentService::where('student_id', $student->id)->where('service_id', $service->id)->firstOrFail();
         $this->assertSame(20000.0, $studentService->amountPaid());
-        $this->assertSame('paid', $studentService->status());
-    }
-
-    public function test_registering_a_walk_in_applicant_for_a_student_certificate_charges_and_pays_in_one_step(): void
-    {
-        $user = User::factory()->create();
-        $service = Service::factory()->create(['name' => 'Student Certificate', 'price' => 1000]);
-
-        $response = $this->actingAs($user)->post('/student-certificate', $this->walkInPayload(['amount' => '1000']));
-
-        $response->assertSessionHasNoErrors();
-        $student = Student::where('email', 'okoro.emeka@example.com')->firstOrFail();
-        $response->assertRedirect(route('students.show', $student));
-
-        $studentService = StudentService::where('student_id', $student->id)->where('service_id', $service->id)->firstOrFail();
-        $this->assertSame(1000.0, $studentService->amountPaid());
         $this->assertSame('paid', $studentService->status());
     }
 
@@ -423,17 +405,6 @@ class ServiceApplicationTest extends TestCase
         $response->assertOk();
         $response->assertSee("isn't set up yet");
         $response->assertSee('Online Certificate');
-    }
-
-    public function test_the_student_certificate_form_shows_a_friendly_message_when_the_catalog_service_is_missing(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->get('/student-certificate');
-
-        $response->assertOk();
-        $response->assertSee("isn't set up yet");
-        $response->assertSee('Student Certificate');
     }
 
     public function test_the_form_page_shows_a_friendly_message_when_the_catalog_service_is_missing(): void

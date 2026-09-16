@@ -19,7 +19,7 @@ class EnsureServiceCatalogExists extends Command
      *
      * @var string
      */
-    protected $description = 'Create any of the four flat catalog services (Driver\'s License Processing, Learner\'s Permit, Online Certificate, Student Certificate) that are missing, without touching ones that already exist';
+    protected $description = 'Create any of the three flat catalog services (Driver\'s License Processing, Learner\'s Permit, Online Certificate) that are missing, without touching ones that already exist';
 
     /**
      * Several pages (Driver's License, Learner's Permit, the Services

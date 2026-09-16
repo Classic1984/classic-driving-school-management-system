@@ -33,9 +33,6 @@
         <x-responsive-nav-link :href="route('online-certificate.index')" :active="request()->routeIs('online-certificate.*')">
             {{ __('Online Certificate') }}
         </x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('student-certificate.index')" :active="request()->routeIs('student-certificate.*')">
-            {{ __('Student Certificate') }}
-        </x-responsive-nav-link>
         <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
             {{ __('Leads') }}
         </x-responsive-nav-link>
