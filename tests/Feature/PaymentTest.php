@@ -102,18 +102,13 @@ class PaymentTest extends TestCase
         $paymentsResponse->assertSee('Includes ₦700.00 from corporate invoices');
     }
 
-    public function test_a_secretary_does_not_see_the_week_month_or_all_time_totals(): void
+    public function test_a_secretary_cannot_view_the_payments_list_or_its_totals(): void
     {
         $secretary = User::factory()->secretary()->create();
         Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
 
-        $response = $this->actingAs($secretary)->get('/payments');
-
-        $response->assertOk();
-        $response->assertSee("Today's Total");
-        $response->assertDontSee('This Week');
-        $response->assertDontSee('This Month');
-        $response->assertDontSee('All Time');
+        $this->actingAs($secretary)->get('/payments')->assertForbidden();
+        $this->actingAs($secretary)->get('/payments/export')->assertForbidden();
     }
 
     public function test_a_director_sees_the_week_month_and_all_time_totals(): void
@@ -372,6 +367,32 @@ class PaymentTest extends TestCase
 
         $response->assertOk();
         $response->assertSee($payment->student->name);
+    }
+
+    public function test_a_secretary_can_view_a_payment_but_not_its_amount_or_allocation_breakdown(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $payment = Payment::factory()->create(['amount' => 543.21]);
+
+        $response = $this->actingAs($secretary)->get("/payments/{$payment->id}");
+
+        $response->assertOk();
+        $response->assertSee($payment->student->name);
+        $response->assertDontSee('543.21');
+        $response->assertDontSee('Allocation Breakdown');
+    }
+
+    public function test_a_secretary_can_still_reach_the_recording_flow_and_a_single_receipt(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        $payment = Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id]);
+
+        $this->actingAs($secretary)->get('/payments/create')->assertOk();
+        $this->actingAs($secretary)->get('/payments/record')->assertOk();
+        $this->actingAs($secretary)->get("/payments/{$payment->id}/receipt")->assertOk();
     }
 
     public function test_authenticated_user_can_update_a_payment(): void

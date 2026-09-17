@@ -11,6 +11,7 @@ use App\Models\Course;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Student;
+use App\Models\StudentService;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -202,6 +203,77 @@ class StudentTest extends TestCase
 
         $response->assertOk();
         $response->assertDontSee(route('payments.edit', $payment), false);
+    }
+
+    public function test_a_secretary_does_not_see_financial_figures_on_the_student_page(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 5000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(30),
+            'status' => 'active',
+        ]);
+        $payment = Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 1234.56]);
+        $service = Service::factory()->create(['price' => 750]);
+        StudentService::factory()->create(['student_id' => $student->id, 'service_id' => $service->id, 'price' => 750]);
+
+        $response = $this->actingAs($secretary)->get(route('students.show', $student));
+
+        $response->assertOk();
+        $response->assertDontSee('1,234.56');
+        $response->assertDontSee('5,000.00');
+        $response->assertDontSee('750.00');
+        // The receipt is still reachable, and recording a new payment stays
+        // available - only the browsable history/balances are hidden.
+        $response->assertSee(route('payments.receipt', $payment), false);
+        $response->assertSee(route('payments.record.create', ['student_id' => $student->id]), false);
+    }
+
+    public function test_a_director_sees_financial_figures_on_the_student_page(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 5000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(30),
+            'status' => 'active',
+        ]);
+        Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 1234.56]);
+
+        $response = $this->actingAs($director)->get(route('students.show', $student));
+
+        $response->assertOk();
+        $response->assertSee('Financial Overview');
+        $response->assertSee('1,234.56');
+    }
+
+    public function test_a_secretary_does_not_see_the_amount_column_on_the_walkin_students_list(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['price' => 9999]);
+        StudentService::factory()->create(['student_id' => $student->id, 'service_id' => $service->id, 'price' => 9999]);
+
+        $response = $this->actingAs($secretary)->get('/students?enrollment=walkin');
+
+        $response->assertOk();
+        $response->assertDontSee('9,999.00');
+    }
+
+    public function test_a_director_sees_the_amount_column_on_the_walkin_students_list(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['price' => 9999]);
+        StudentService::factory()->create(['student_id' => $student->id, 'service_id' => $service->id, 'price' => 9999]);
+
+        $response = $this->actingAs($director)->get('/students?enrollment=walkin');
+
+        $response->assertOk();
+        $response->assertSee('9,999.00');
     }
 
     public function test_student_index_can_be_filtered_by_status(): void

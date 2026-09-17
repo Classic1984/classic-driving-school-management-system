@@ -152,7 +152,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                <div class="grid grid-cols-1 {{ auth()->user()->isDirector() ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }} gap-3 mt-4">
                     <div class="flex items-start gap-2 rounded-lg bg-blue-50 p-3">
                         <svg class="h-4 w-4 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                         <div>
@@ -161,13 +161,15 @@
                             <p class="text-xs text-blue-500">{{ $studentService->created_at->format('g:i A') }}</p>
                         </div>
                     </div>
-                    <div class="flex items-start gap-2 rounded-lg bg-amber-50 p-3">
-                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
-                        <div>
-                            <p class="text-xs text-amber-700/70">{{ __('Amount Paid') }}</p>
-                            <p class="text-sm font-bold text-amber-900">₦{{ number_format($amountPaid, 0) }}</p>
+                    @if (auth()->user()->isDirector())
+                        <div class="flex items-start gap-2 rounded-lg bg-amber-50 p-3">
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                            <div>
+                                <p class="text-xs text-amber-700/70">{{ __('Amount Paid') }}</p>
+                                <p class="text-sm font-bold text-amber-900">₦{{ number_format($amountPaid, 0) }}</p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                     <div class="flex items-start gap-2 rounded-lg {{ $statusMeta['classes'] }} p-3">
                         <svg class="h-4 w-4 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                         <div>

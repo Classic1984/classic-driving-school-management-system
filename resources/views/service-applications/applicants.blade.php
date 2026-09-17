@@ -140,7 +140,9 @@
                                 <th class="px-3 py-3">{{ __('Applicant') }}</th>
                                 <th class="px-3 py-3">{{ __('Source') }}</th>
                                 <th class="px-3 py-3">{{ __('Date') }}</th>
-                                <th class="px-3 py-3">{{ __('Price') }}</th>
+                                @if (auth()->user()->isDirector())
+                                    <th class="px-3 py-3">{{ __('Price') }}</th>
+                                @endif
                                 <th class="px-3 py-3">{{ __('Payment') }}</th>
                                 <th class="px-3 py-3">{{ __('Processing') }}</th>
                                 <th class="px-3 py-3"></th>
@@ -168,7 +170,9 @@
                                         <x-badge :color="$isWalkIn ? 'gray' : 'blue'">{{ $isWalkIn ? __('Walk-in') : __('Existing Student') }}</x-badge>
                                     </td>
                                     <td class="px-3 py-3 text-sm align-top text-gray-600">{{ $application->created_at->format('M j, Y') }}</td>
-                                    <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800">₦{{ number_format($application->price, 2) }}</td>
+                                    @if (auth()->user()->isDirector())
+                                        <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800">₦{{ number_format($application->price, 2) }}</td>
+                                    @endif
                                     <td class="px-3 py-3 text-sm align-top">
                                         <x-badge :color="$paymentAccent['color']">{{ __(ucwords(str_replace('_', ' ', $paymentStatus))) }}</x-badge>
                                     </td>

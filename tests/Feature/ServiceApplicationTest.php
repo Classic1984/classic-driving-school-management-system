@@ -230,6 +230,30 @@ class ServiceApplicationTest extends TestCase
             && $stats['existing_student'] === 1);
     }
 
+    public function test_a_secretary_does_not_see_the_price_column_on_the_applicants_page(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 8888]);
+        $this->chargeFor(Student::factory()->create(['name' => 'Amaka Walk-in']), $service, ['price' => 8888]);
+
+        $response = $this->actingAs($secretary)->get('/driver-license/applicants');
+
+        $response->assertOk();
+        $response->assertDontSee('8,888.00');
+    }
+
+    public function test_a_director_sees_the_price_column_on_the_applicants_page(): void
+    {
+        $director = User::factory()->director()->create();
+        $service = Service::factory()->create(['name' => "Driver's License Processing", 'price' => 8888]);
+        $this->chargeFor(Student::factory()->create(['name' => 'Amaka Walk-in']), $service, ['price' => 8888]);
+
+        $response = $this->actingAs($director)->get('/driver-license/applicants');
+
+        $response->assertOk();
+        $response->assertSee('8,888.00');
+    }
+
     public function test_a_service_with_no_charges_yet_shows_an_empty_applicants_page(): void
     {
         $user = User::factory()->create();

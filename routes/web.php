@@ -154,6 +154,17 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('payment-reports', [PaymentReportController::class, 'index'])->name('payment-reports.index');
         Route::get('payment-reports/export', [PaymentReportController::class, 'export'])->name('payment-reports.export');
         Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
+        // The full payment history/totals list (and its CSV export) is
+        // Director-only; recording a new payment and viewing/printing one
+        // specific receipt stay open to any staff role (see the general
+        // routes below).
+        Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
+        // Aggregate revenue by marketing/referral channel - Director-only,
+        // same as Payment Reports/Finance above.
+        Route::get('referral-source-report', [ReferralSourceReportController::class, 'index'])->name('referral-source-report.index');
+        Route::get('referral-source-report/export', [ReferralSourceReportController::class, 'export'])->name('referral-source-report.export');
+        Route::get('referral-source-report/export-pdf', [ReferralSourceReportController::class, 'exportPdf'])->name('referral-source-report.export-pdf');
         Route::get('payments/{payment}/correct', [PaymentCorrectionController::class, 'edit'])->name('payments.correct.edit');
         Route::put('payments/{payment}/correct', [PaymentCorrectionController::class, 'update'])->name('payments.correct.update');
         // Rewriting an existing payment's amount/status/student/course
@@ -285,19 +296,20 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     Route::get('lead-conversion-report', [LeadConversionReportController::class, 'index'])->name('lead-conversion-report.index');
     Route::get('lead-conversion-report/export', [LeadConversionReportController::class, 'export'])->name('lead-conversion-report.export');
     Route::get('lead-conversion-report/export-pdf', [LeadConversionReportController::class, 'exportPdf'])->name('lead-conversion-report.export-pdf');
-    Route::get('referral-source-report', [ReferralSourceReportController::class, 'index'])->name('referral-source-report.index');
-    Route::get('referral-source-report/export', [ReferralSourceReportController::class, 'export'])->name('referral-source-report.export');
-    Route::get('referral-source-report/export-pdf', [ReferralSourceReportController::class, 'exportPdf'])->name('referral-source-report.export-pdf');
     Route::get('service-reports/{service}', [ServiceCompletionReportController::class, 'index'])->name('service-reports.index');
     Route::get('service-reports/{service}/export', [ServiceCompletionReportController::class, 'export'])->name('service-reports.export');
     Route::get('service-reports/{service}/export-pdf', [ServiceCompletionReportController::class, 'exportPdf'])->name('service-reports.export-pdf');
-    // Registered before the resource below for the same reason as the admin-only group
-    // above: "payments/export" and "payments/record" would otherwise be swallowed by
-    // "payments/{payment}".
-    Route::get('payments/export', [PaymentController::class, 'export'])->name('payments.export');
+    // Registered before "payments/{payment}" below for the same reason as
+    // the admin-only group above: "payments/create" and "payments/record"
+    // would otherwise be swallowed by that wildcard route.
+    Route::get('payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('payments', [PaymentController::class, 'store'])->name('payments.store');
     Route::get('payments/record', [PaymentAllocationController::class, 'create'])->name('payments.record.create');
     Route::post('payments/record', [PaymentAllocationController::class, 'store'])->name('payments.record.store');
-    Route::resource('payments', PaymentController::class)->except(['destroy', 'edit', 'update']);
+    // Viewing one specific payment (and printing its receipt) stays open to
+    // any staff role - the full "payments.index" list/history and its CSV
+    // export are Director-only, registered in that group above.
+    Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
     Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::post('certificates/{certificate}/whatsapp', [CertificateController::class, 'whatsapp'])->name('certificates.whatsapp');

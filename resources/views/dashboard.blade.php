@@ -86,6 +86,13 @@
                         'subtext' => $kpis['at_risk_students'] > 0 ? trans_choice('{1} :count student flagged for follow-up|[2,*] :count students flagged for follow-up', $kpis['at_risk_students'], ['count' => $kpis['at_risk_students']]) : __('No at-risk students'),
                     ],
                 ];
+
+                // Aggregate money figures (and the modals they open, generated
+                // from this same array below) are Director-only - a secretary
+                // sees no revenue/outstanding-balance totals anywhere.
+                if (! auth()->user()->isDirector()) {
+                    $kpiCards = array_values(array_filter($kpiCards, fn (array $card) => empty($card['currency'])));
+                }
             @endphp
 
             @if (session('status') === 'service-status-updated')
@@ -142,6 +149,12 @@
                         'href' => route('certificates.index'),
                     ],
                 ];
+
+                // "Paid Today" is a revenue figure - Director-only, same as
+                // every other aggregate money total on this page.
+                if (! auth()->user()->isDirector()) {
+                    $heroCards = array_values(array_filter($heroCards, fn (array $card) => $card['title'] !== 'Paid Today'));
+                }
             @endphp
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -235,6 +248,13 @@
                             ],
                         ],
                     ];
+
+                    // The entire "Finance" panel is a revenue summary -
+                    // Director-only, same as the aggregate hero card and KPI
+                    // modals above.
+                    if (! auth()->user()->isDirector()) {
+                        $summaryGroups = array_values(array_filter($summaryGroups, fn (array $group) => $group['title'] !== 'Finance'));
+                    }
 
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
 
@@ -421,7 +441,7 @@
                         'href' => route('instructor-activity-report.index', ['period' => 'today']),
                     ],
                     [
-                        'key' => 'payments_pending_count', 'show' => true,
+                        'key' => 'payments_pending_count', 'show' => auth()->user()->isDirector(),
                         'label' => 'Payment(s) Pending', 'description' => 'Enrollments with an outstanding balance',
                         'value' => number_format($todaysOperations['payments_pending_count']),
                         'state' => $todaysOperations['payments_pending_count'] > 0 ? 'alert' : 'ok', 'color' => 'red',
@@ -442,7 +462,7 @@
                         'href' => '#locked-students',
                     ],
                     [
-                        'key' => 'payments_received_today', 'show' => true, 'highlight' => true,
+                        'key' => 'payments_received_today', 'show' => auth()->user()->isDirector(), 'highlight' => true,
                         'label' => 'Revenue Today', 'description' => 'Total revenue generated today',
                         'value' => '₦'.number_format($todaysOperations['payments_received_today'], 2),
                         'state' => 'ok', 'color' => 'emerald',
@@ -452,12 +472,17 @@
 
                 // The bento layout below gives Revenue Today a large hero cell,
                 // puts the two attention-needing metrics in medium cards, and
-                // keeps the rest as a quiet supporting strip.
-                $heroRow = $operationRows->firstWhere('key', 'payments_received_today');
-                $midKeys = ['payments_pending_count', 'approaching_completion'];
+                // keeps the rest as a quiet supporting strip. A secretary
+                // never sees the Revenue Today row at all (filtered out
+                // above), so a non-financial row takes the hero slot instead.
+                $heroKey = auth()->user()->isDirector() ? 'payments_received_today' : 'students_trained';
+                $heroRow = $operationRows->firstWhere('key', $heroKey);
+                $midKeys = auth()->user()->isDirector()
+                    ? ['payments_pending_count', 'approaching_completion']
+                    : ['approaching_completion', 'locked_students'];
                 $midRows = $operationRows->whereIn('key', $midKeys)->values();
                 $smallRows = $operationRows->reject(
-                    fn (array $row) => $row['key'] === 'payments_received_today' || in_array($row['key'], $midKeys, true)
+                    fn (array $row) => $row['key'] === $heroKey || in_array($row['key'], $midKeys, true)
                 )->values();
 
                 $operationAccent = fn (array $row) => $operationColors[$row['state'] === 'alert' ? 'red' : ($row['state'] === 'warn' ? 'amber' : $row['color'])];
@@ -662,7 +687,15 @@
                 </div>
             </x-modal>
 
-            @if ($upcomingPayments->isNotEmpty() || $lockedEnrollments->isNotEmpty())
+            @php
+                // The "Upcoming" card below is a per-student balance/due-date
+                // list - Director-only, same as every other individual
+                // student balance on this page. "Locked" stays visible to a
+                // secretary (they need to know who to redirect to the
+                // Director), just without the ₦ figure in its modal.
+                $showUpcomingPaymentsCard = auth()->user()->isDirector() && $upcomingPayments->isNotEmpty();
+            @endphp
+            @if ($showUpcomingPaymentsCard || $lockedEnrollments->isNotEmpty())
                 @php
                     $walletIconPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z';
                     $arrowRightIconPath = 'M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3';
@@ -680,8 +713,8 @@
                         </div>
                     </div>
 
-                    <div class="relative grid grid-cols-1 {{ $upcomingPayments->isNotEmpty() && $lockedEnrollments->isNotEmpty() ? 'sm:grid-cols-2' : '' }} gap-4 mt-6">
-                        @if ($upcomingPayments->isNotEmpty())
+                    <div class="relative grid grid-cols-1 {{ $showUpcomingPaymentsCard && $lockedEnrollments->isNotEmpty() ? 'sm:grid-cols-2' : '' }} gap-4 mt-6">
+                        @if ($showUpcomingPaymentsCard)
                             <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-gray-900 to-gray-900 ring-1 ring-amber-400/30 p-6">
                                 <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
                                 <div class="relative">
@@ -713,7 +746,7 @@
                     </div>
                 </div>
 
-                @if ($upcomingPayments->isNotEmpty())
+                @if ($showUpcomingPaymentsCard)
                     <x-modal name="upcoming-payments-modal">
                         <div class="p-6">
                             <h3 class="text-lg font-bold text-gray-800 mb-4">🟠 {{ __('Upcoming Payments') }}</h3>
@@ -744,7 +777,7 @@
                                     <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                         <div>
                                             <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }} · ₦{{ number_format($enrollment->balance(), 2) }}</span>
+                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}@if (auth()->user()->isDirector()) · ₦{{ number_format($enrollment->balance(), 2) }}@endif</span>
                                         </div>
                                         <div class="flex items-center gap-2 whitespace-nowrap">
                                             <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
@@ -763,30 +796,32 @@
                 @endif
             @endif
 
-            <x-modal name="todays-payments-modal">
-                <div class="p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">💰 {{ __('Revenue Today') }}</h3>
-                    @if ($todaysPayments->isEmpty())
-                        <p class="text-sm text-gray-500">{{ __('No payments have been recorded today yet.') }}</p>
-                    @else
-                        <p class="text-xs text-gray-500 mb-3">{{ __(':count payment(s) recorded today', ['count' => $todaysPayments->count()]) }}</p>
-                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                            @foreach ($todaysPayments as $payment)
-                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                    <div class="min-w-0">
-                                        <a href="{{ $payment['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $payment['name'] }}</a>
-                                        <p class="text-xs text-gray-500 truncate">{{ $payment['detail'] }}</p>
+            @if (auth()->user()->isDirector())
+                <x-modal name="todays-payments-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">💰 {{ __('Revenue Today') }}</h3>
+                        @if ($todaysPayments->isEmpty())
+                            <p class="text-sm text-gray-500">{{ __('No payments have been recorded today yet.') }}</p>
+                        @else
+                            <p class="text-xs text-gray-500 mb-3">{{ __(':count payment(s) recorded today', ['count' => $todaysPayments->count()]) }}</p>
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @foreach ($todaysPayments as $payment)
+                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                        <div class="min-w-0">
+                                            <a href="{{ $payment['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $payment['name'] }}</a>
+                                            <p class="text-xs text-gray-500 truncate">{{ $payment['detail'] }}</p>
+                                        </div>
+                                        <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment['amount'], 2) }}</div>
                                     </div>
-                                    <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment['amount'], 2) }}</div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            </div>
+                        @endif
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'todays-payments-modal')">{{ __('Close') }}</x-secondary-button>
                         </div>
-                    @endif
-                    <div class="mt-4 text-right">
-                        <x-secondary-button x-on:click="$dispatch('close-modal', 'todays-payments-modal')">{{ __('Close') }}</x-secondary-button>
                     </div>
-                </div>
-            </x-modal>
+                </x-modal>
+            @endif
 
             @if ($approachingCompletionEnrollments->isNotEmpty())
                 <x-modal name="approaching-completion-modal">
@@ -910,7 +945,7 @@
                 </div>
             @endif
 
-            @if ($revenueLeakage->isNotEmpty())
+            @if (auth()->user()->isDirector() && $revenueLeakage->isNotEmpty())
                 @php
                     $leakageIconPath = 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941';
                 @endphp
@@ -1359,7 +1394,7 @@
                                                 <span class="text-gray-500"> — {{ $studentService->service->name }}</span>
                                             </div>
                                             <div class="flex items-center gap-2 whitespace-nowrap">
-                                                @if ($studentService->balance() > 0)
+                                                @if ($studentService->balance() > 0 && auth()->user()->isDirector())
                                                     <span class="text-xs font-semibold text-gray-700">₦{{ number_format($studentService->balance(), 2) }}</span>
                                                 @endif
                                                 @if ($studentService->isOverdueProcessing())
