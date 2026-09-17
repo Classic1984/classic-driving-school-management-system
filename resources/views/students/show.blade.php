@@ -463,9 +463,11 @@
                                                         {{ __('Course') }}
                                                     </span>
                                                 </th>
-                                                <th class="px-3 py-3">{{ __('Fee') }}</th>
-                                                <th class="px-3 py-3">{{ __('Discount') }}</th>
-                                                <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                                @if (auth()->user()->isDirector())
+                                                    <th class="px-3 py-3">{{ __('Fee') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Discount') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                                @endif
                                                 <th class="px-3 py-3">{{ __('Due Date') }}</th>
                                                 <th class="px-3 py-3">{{ __('Status') }}</th>
                                                 <th class="px-3 py-3"></th>
@@ -475,22 +477,24 @@
                                             @forelse ($student->courses as $enrolledCourse)
                                                 <tr>
                                                     <td class="px-3 py-3 text-sm font-semibold text-gray-900">{{ $enrolledCourse->name }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">
-                                                        @if ($enrolledCourse->pivot->hasDiscount())
-                                                            <span class="line-through text-gray-400">₦{{ number_format($enrolledCourse->pivot->originalFee(), 2) }}</span>
-                                                            <span class="font-medium">₦{{ number_format($enrolledCourse->pivot->fee(), 2) }}</span>
-                                                        @else
-                                                            ₦{{ number_format($enrolledCourse->pivot->fee(), 2) }}
-                                                        @endif
-                                                    </td>
-                                                    <td class="px-3 py-3 text-sm">
-                                                        @if ($enrolledCourse->pivot->hasDiscount())
-                                                            <span class="text-green-600">{{ rtrim(rtrim(number_format((float) $enrolledCourse->pivot->discount_percentage, 2), '0'), '.') }}% (₦{{ number_format($enrolledCourse->pivot->discount_amount, 2) }})</span>
-                                                        @else
-                                                            —
-                                                        @endif
-                                                    </td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
+                                                    @if (auth()->user()->isDirector())
+                                                        <td class="px-3 py-3 text-sm text-gray-600">
+                                                            @if ($enrolledCourse->pivot->hasDiscount())
+                                                                <span class="line-through text-gray-400">₦{{ number_format($enrolledCourse->pivot->originalFee(), 2) }}</span>
+                                                                <span class="font-medium">₦{{ number_format($enrolledCourse->pivot->fee(), 2) }}</span>
+                                                            @else
+                                                                ₦{{ number_format($enrolledCourse->pivot->fee(), 2) }}
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-3 py-3 text-sm">
+                                                            @if ($enrolledCourse->pivot->hasDiscount())
+                                                                <span class="text-green-600">{{ rtrim(rtrim(number_format((float) $enrolledCourse->pivot->discount_percentage, 2), '0'), '.') }}% (₦{{ number_format($enrolledCourse->pivot->discount_amount, 2) }})</span>
+                                                            @else
+                                                                —
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($enrolledCourse->pivot->balance(), 2) }}</td>
+                                                    @endif
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrolledCourse->pivot->due_date)->format('l, M j, Y') ?? '—' }}</td>
                                                     <td class="px-3 py-3 text-sm">
                                                         <x-badge :color="match ($enrolledCourse->pivot->statusLabel()) {
@@ -812,159 +816,206 @@
                     </div>
 
                     <div x-show="tab === 'payments'" class="space-y-4">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Financial Overview') }}</h3>
-                                @if ($totalOutstanding > 0)
+                        @if (auth()->user()->isDirector())
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Financial Overview') }}</h3>
+                                    @if ($totalOutstanding > 0)
+                                        <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}">
+                                            <x-primary-button type="button">{{ __('Balance Payment') }}</x-primary-button>
+                                        </a>
+                                    @endif
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                                    <div class="relative overflow-hidden rounded-xl bg-black p-4">
+                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                                        <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Total Charges') }}</p>
+                                        <p class="relative text-2xl font-bold text-amber-400 mt-1">₦{{ number_format($totalCharges, 2) }}</p>
+                                    </div>
+                                    <div class="relative overflow-hidden rounded-xl bg-black p-4">
+                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                                        <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Total Paid') }}</p>
+                                        <p class="relative text-2xl font-bold text-amber-400 mt-1">₦{{ number_format($totalOverviewPaid, 2) }}</p>
+                                    </div>
+                                    <div class="relative overflow-hidden rounded-xl bg-amber-400 p-4">
+                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-black opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
+                                        <p class="relative text-xs uppercase tracking-wider text-black/70">{{ __('Total Outstanding') }}</p>
+                                        <p class="relative text-2xl font-bold text-black mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
+                                    </div>
+                                </div>
+
+                                @if ($financialOverview->isNotEmpty())
+                                    <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead>
+                                                    <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                                        <th class="px-3 py-3">{{ __('Item') }}</th>
+                                                        <th class="px-3 py-3">{{ __('Price') }}</th>
+                                                        <th class="px-3 py-3">{{ __('Paid') }}</th>
+                                                        <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                                        <th class="px-3 py-3">{{ __('Status') }}</th>
+                                                        <th class="px-3 py-3"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-100 bg-white">
+                                                    @foreach ($financialOverview as $charge)
+                                                        <tr>
+                                                            <td class="px-3 py-3 text-sm text-gray-900">{{ $charge['label'] }}</td>
+                                                            <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($charge['price'], 2) }}</td>
+                                                            <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($charge['paid'], 2) }}</td>
+                                                            <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($charge['balance'], 2) }}</td>
+                                                            <td class="px-3 py-3 text-sm">
+                                                                <x-badge :color="match ($charge['status']) {
+                                                                    'paid' => 'green',
+                                                                    'part_payment' => 'amber',
+                                                                    default => 'red',
+                                                                }">{{ __(ucwords(str_replace('_', ' ', $charge['status']))) }}</x-badge>
+                                                            </td>
+                                                            <td class="px-3 py-3 text-sm whitespace-nowrap">
+                                                                @if ($charge['balance'] > 0)
+                                                                    <a href="{{ route('payments.record.create', ['student_id' => $student->id, 'charge_type' => $charge['type'], 'charge_id' => $charge['id']]) }}" class="text-sm text-amber-600 hover:underline">
+                                                                        {{ __('Balance Payment') }}
+                                                                    </a>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr class="bg-amber-50">
+                                                        <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ __('TOTAL') }}</td>
+                                                        <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalCharges, 2) }}</td>
+                                                        <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalOverviewPaid, 2) }}</td>
+                                                        <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalOutstanding, 2) }}</td>
+                                                        <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ $totalOutstanding > 0 ? __('Outstanding') : __('Paid') }}</td>
+                                                        <td class="px-3 py-3 text-sm"></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @else
+                                    <p class="text-sm text-gray-500">{{ __('No charges yet.') }}</p>
+                                @endif
+                            </div>
+                        @else
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Financial Overview') }}</h3>
                                     <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}">
                                         <x-primary-button type="button">{{ __('Balance Payment') }}</x-primary-button>
                                     </a>
-                                @endif
+                                </div>
+                                <p class="text-sm text-gray-500">{{ __('Charges and balances are only visible to a Director. Use "Balance Payment" to charge whatever this student currently owes.') }}</p>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                                <div class="relative overflow-hidden rounded-xl bg-black p-4">
-                                    <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
-                                    <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Total Charges') }}</p>
-                                    <p class="relative text-2xl font-bold text-amber-400 mt-1">₦{{ number_format($totalCharges, 2) }}</p>
-                                </div>
-                                <div class="relative overflow-hidden rounded-xl bg-black p-4">
-                                    <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
-                                    <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Total Paid') }}</p>
-                                    <p class="relative text-2xl font-bold text-amber-400 mt-1">₦{{ number_format($totalOverviewPaid, 2) }}</p>
-                                </div>
-                                <div class="relative overflow-hidden rounded-xl bg-amber-400 p-4">
-                                    <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-black opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
-                                    <p class="relative text-xs uppercase tracking-wider text-black/70">{{ __('Total Outstanding') }}</p>
-                                    <p class="relative text-2xl font-bold text-black mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
-                                </div>
-                            </div>
-
-                            @if ($financialOverview->isNotEmpty())
-                                <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
-                                    <div class="overflow-x-auto">
-                                        <table class="min-w-full divide-y divide-gray-200">
-                                            <thead>
-                                                <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
-                                                    <th class="px-3 py-3">{{ __('Item') }}</th>
-                                                    <th class="px-3 py-3">{{ __('Price') }}</th>
-                                                    <th class="px-3 py-3">{{ __('Paid') }}</th>
-                                                    <th class="px-3 py-3">{{ __('Balance') }}</th>
-                                                    <th class="px-3 py-3">{{ __('Status') }}</th>
-                                                    <th class="px-3 py-3"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="divide-y divide-gray-100 bg-white">
-                                                @foreach ($financialOverview as $charge)
-                                                    <tr>
-                                                        <td class="px-3 py-3 text-sm text-gray-900">{{ $charge['label'] }}</td>
-                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($charge['price'], 2) }}</td>
-                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($charge['paid'], 2) }}</td>
-                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($charge['balance'], 2) }}</td>
-                                                        <td class="px-3 py-3 text-sm">
-                                                            <x-badge :color="match ($charge['status']) {
-                                                                'paid' => 'green',
-                                                                'part_payment' => 'amber',
-                                                                default => 'red',
-                                                            }">{{ __(ucwords(str_replace('_', ' ', $charge['status']))) }}</x-badge>
-                                                        </td>
-                                                        <td class="px-3 py-3 text-sm whitespace-nowrap">
-                                                            @if ($charge['balance'] > 0)
-                                                                <a href="{{ route('payments.record.create', ['student_id' => $student->id, 'charge_type' => $charge['type'], 'charge_id' => $charge['id']]) }}" class="text-sm text-amber-600 hover:underline">
-                                                                    {{ __('Balance Payment') }}
-                                                                </a>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                            <tfoot>
-                                                <tr class="bg-amber-50">
-                                                    <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ __('TOTAL') }}</td>
-                                                    <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalCharges, 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalOverviewPaid, 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalOutstanding, 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ $totalOutstanding > 0 ? __('Outstanding') : __('Paid') }}</td>
-                                                    <td class="px-3 py-3 text-sm"></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-                            @else
-                                <p class="text-sm text-gray-500">{{ __('No charges yet.') }}</p>
-                            @endif
-                        </div>
+                        @endif
 
                         <div>
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Payments') }}</h3>
                                 <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}" class="text-sm text-amber-600 hover:underline">{{ __('Record a Payment') }}</a>
                             </div>
-                            <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead>
-                                            <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
-                                                <th class="px-3 py-3">
-                                                    <span class="inline-flex items-center gap-1.5">
-                                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                                        {{ __('Date') }}
-                                                    </span>
-                                                </th>
-                                                <th class="px-3 py-3">{{ __('Receipt') }}</th>
-                                                <th class="px-3 py-3">{{ __('Description') }}</th>
-                                                <th class="px-3 py-3">{{ __('Amount') }}</th>
-                                                <th class="px-3 py-3">{{ __('Method') }}</th>
-                                                <th class="px-3 py-3">{{ __('Status') }}</th>
-                                                <th class="px-3 py-3">{{ __('Recorded By') }}</th>
-                                                <th class="px-3 py-3"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-100 bg-white">
-                                            @forelse ($student->payments as $payment)
-                                                <tr>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->payment_date->format('l, M j, Y') }}</td>
-                                                    <td class="px-3 py-3 text-sm font-mono text-xs">
-                                                        <a href="{{ route('payments.show', $payment) }}" class="text-amber-600 hover:underline">{{ $payment->receipt_number }}</a>
-                                                    </td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->description() }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($payment->amount, 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm capitalize text-gray-600">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
-                                                    <td class="px-3 py-3 text-sm">
-                                                        <x-badge :color="match ($payment->status) {
-                                                            'paid' => 'green',
-                                                            'pending' => 'amber',
-                                                            'failed' => 'red',
-                                                            'refunded' => 'blue',
-                                                            default => 'gray',
-                                                        }" class="capitalize">{{ $payment->status }}</x-badge>
-                                                    </td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->recordedBy?->name ?? '—' }}</td>
-                                                    <td class="px-3 py-3 text-sm whitespace-nowrap">
-                                                        <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
-                                                        @if (auth()->user()->isDirector())
+                            @if (auth()->user()->isDirector())
+                                <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead>
+                                                <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                                    <th class="px-3 py-3">
+                                                        <span class="inline-flex items-center gap-1.5">
+                                                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                                            {{ __('Date') }}
+                                                        </span>
+                                                    </th>
+                                                    <th class="px-3 py-3">{{ __('Receipt') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Description') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Amount') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Method') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Status') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Recorded By') }}</th>
+                                                    <th class="px-3 py-3"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100 bg-white">
+                                                @forelse ($student->payments as $payment)
+                                                    <tr>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->payment_date->format('l, M j, Y') }}</td>
+                                                        <td class="px-3 py-3 text-sm font-mono text-xs">
+                                                            <a href="{{ route('payments.show', $payment) }}" class="text-amber-600 hover:underline">{{ $payment->receipt_number }}</a>
+                                                        </td>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->description() }}</td>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($payment->amount, 2) }}</td>
+                                                        <td class="px-3 py-3 text-sm capitalize text-gray-600">{{ str_replace('_', ' ', $payment->payment_method) }}</td>
+                                                        <td class="px-3 py-3 text-sm">
+                                                            <x-badge :color="match ($payment->status) {
+                                                                'paid' => 'green',
+                                                                'pending' => 'amber',
+                                                                'failed' => 'red',
+                                                                'refunded' => 'blue',
+                                                                default => 'gray',
+                                                            }" class="capitalize">{{ $payment->status }}</x-badge>
+                                                        </td>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->recordedBy?->name ?? '—' }}</td>
+                                                        <td class="px-3 py-3 text-sm whitespace-nowrap">
+                                                            <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
                                                             <span class="text-gray-300">|</span>
                                                             <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="8" class="px-3 py-6 text-center text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                        @if ($student->payments->where('status', 'paid')->isNotEmpty())
-                                            <tfoot>
-                                                <tr class="bg-amber-50">
-                                                    <td colspan="3" class="px-3 py-3 text-sm font-bold text-gray-900 text-right">{{ __('Total paid') }}</td>
-                                                    <td colspan="5" class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
-                                                </tr>
-                                            </tfoot>
-                                        @endif
-                                    </table>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="8" class="px-3 py-6 text-center text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                            @if ($student->payments->where('status', 'paid')->isNotEmpty())
+                                                <tfoot>
+                                                    <tr class="bg-amber-50">
+                                                        <td colspan="3" class="px-3 py-3 text-sm font-bold text-gray-900 text-right">{{ __('Total paid') }}</td>
+                                                        <td colspan="5" class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
+                                                    </tr>
+                                                </tfoot>
+                                            @endif
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
+                            @else
+                                {{-- No amounts, description, method, status, or recorded-by - a
+                                     secretary only gets a way to open/print a receipt already
+                                     issued, not the student's full payment history. --}}
+                                <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead>
+                                                <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                                    <th class="px-3 py-3">
+                                                        <span class="inline-flex items-center gap-1.5">
+                                                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                                            {{ __('Date') }}
+                                                        </span>
+                                                    </th>
+                                                    <th class="px-3 py-3"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100 bg-white">
+                                                @forelse ($student->payments as $payment)
+                                                    <tr>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->payment_date->format('l, M j, Y') }}</td>
+                                                        <td class="px-3 py-3 text-sm whitespace-nowrap">
+                                                            <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="2" class="px-3 py-6 text-center text-sm text-gray-500">{{ __('No payments recorded yet.') }}</td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <div>
@@ -978,9 +1029,11 @@
                                         <thead>
                                             <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                                 <th class="px-3 py-3">{{ __('Service') }}</th>
-                                                <th class="px-3 py-3">{{ __('Price') }}</th>
-                                                <th class="px-3 py-3">{{ __('Paid') }}</th>
-                                                <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                                @if (auth()->user()->isDirector())
+                                                    <th class="px-3 py-3">{{ __('Price') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Paid') }}</th>
+                                                    <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                                @endif
                                                 <th class="px-3 py-3">{{ __('Payment Status') }}</th>
                                                 <th class="px-3 py-3">{{ __('Processing Status') }}</th>
                                                 <th class="px-3 py-3"></th>
@@ -990,9 +1043,11 @@
                                             @forelse ($student->studentServices as $studentService)
                                                 <tr>
                                                     <td class="px-3 py-3 text-sm text-gray-900">{{ $studentService->service->name }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($studentService->price, 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($studentService->amountPaid(), 2) }}</td>
-                                                    <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($studentService->balance(), 2) }}</td>
+                                                    @if (auth()->user()->isDirector())
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($studentService->price, 2) }}</td>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($studentService->amountPaid(), 2) }}</td>
+                                                        <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($studentService->balance(), 2) }}</td>
+                                                    @endif
                                                     <td class="px-3 py-3 text-sm">
                                                         <x-badge :color="match ($studentService->status()) {
                                                             'paid' => 'green',

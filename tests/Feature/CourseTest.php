@@ -149,6 +149,48 @@ class CourseTest extends TestCase
         $response->assertSee('Overdue Balance');
     }
 
+    public function test_a_secretary_does_not_see_a_students_balance_on_the_course_roster(): void
+    {
+        // The enrollment's own locked-in fee (7,777) is deliberately
+        // different from the course's own catalog fee (10,000) - the
+        // course's own fee is legitimately shown to everyone elsewhere on
+        // this page, so asserting on a distinct value proves the *balance
+        // column* itself (not just any occurrence of a number) is hidden.
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 10000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(30),
+            'status' => 'active',
+            'fee' => 7777,
+        ]);
+
+        $response = $this->actingAs($secretary)->get("/courses/{$course->id}");
+
+        $response->assertOk();
+        $response->assertSee('10,000.00');
+        $response->assertDontSee('7,777.00');
+    }
+
+    public function test_a_director_sees_a_students_balance_on_the_course_roster(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 10000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(30),
+            'status' => 'active',
+            'fee' => 7777,
+        ]);
+
+        $response = $this->actingAs($director)->get("/courses/{$course->id}");
+
+        $response->assertOk();
+        $response->assertSee('7,777.00');
+    }
+
     public function test_authenticated_user_can_update_a_course_and_its_instructors(): void
     {
         $user = User::factory()->create();

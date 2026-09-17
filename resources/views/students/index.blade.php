@@ -33,10 +33,12 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
-                    <a href="{{ route('referral-source-report.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
-                        {{ __('View Referral Source Report') }}
-                    </a>
+                    @if (auth()->user()->isDirector())
+                        <a href="{{ route('referral-source-report.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+                            {{ __('View Referral Source Report') }}
+                        </a>
+                    @endif
                     <a href="{{ route('students.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-bold text-black transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         {{ __('Add Student') }}
@@ -138,12 +140,14 @@
                                                 {{ __('Service(s) Taken') }}
                                             </span>
                                         </th>
-                                        <th class="px-3 py-3">
-                                            <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
-                                                {{ __('Amount') }}
-                                            </span>
-                                        </th>
+                                        @if (auth()->user()->isDirector())
+                                            <th class="px-3 py-3">
+                                                <span class="inline-flex items-center gap-1.5">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                                                    {{ __('Amount') }}
+                                                </span>
+                                            </th>
+                                        @endif
                                         <th class="px-3 py-3">{{ __('Payment Status') }}</th>
                                         <th class="px-3 py-3"></th>
                                     </tr>
@@ -178,7 +182,9 @@
                                                     @endforelse
                                                 </div>
                                             </td>
-                                            <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800">₦{{ number_format($totalCharged, 2) }}</td>
+                                            @if (auth()->user()->isDirector())
+                                                <td class="px-3 py-3 text-sm align-top font-semibold text-gray-800">₦{{ number_format($totalCharged, 2) }}</td>
+                                            @endif
                                             <td class="px-3 py-3 text-sm align-top">
                                                 <x-badge :color="$serviceAccent['color']">{{ __(match ($overallStatus) {
                                                     'paid' => 'Paid',

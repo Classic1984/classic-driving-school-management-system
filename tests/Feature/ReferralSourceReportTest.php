@@ -20,6 +20,15 @@ class ReferralSourceReportTest extends TestCase
         $this->get('/referral-source-report/export-pdf')->assertRedirect('/login');
     }
 
+    public function test_a_secretary_cannot_view_the_referral_source_report(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+
+        $this->actingAs($secretary)->get('/referral-source-report')->assertForbidden();
+        $this->actingAs($secretary)->get('/referral-source-report/export')->assertForbidden();
+        $this->actingAs($secretary)->get('/referral-source-report/export-pdf')->assertForbidden();
+    }
+
     public function test_it_breaks_students_down_by_referral_source(): void
     {
         $user = User::factory()->create();

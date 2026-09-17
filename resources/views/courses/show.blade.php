@@ -130,7 +130,9 @@
                                                 {{ __('Name') }}
                                             </span>
                                         </th>
-                                        <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                        @if (auth()->user()->isDirector())
+                                            <th class="px-3 py-3">{{ __('Balance') }}</th>
+                                        @endif
                                         <th class="px-3 py-3">{{ __('Due Date') }}</th>
                                         <th class="px-3 py-3">{{ __('Status') }}</th>
                                         <th class="px-3 py-3"></th>
@@ -147,7 +149,9 @@
                                                     <a href="{{ route('students.show', $enrolledStudent) }}" class="font-semibold text-gray-800 hover:text-amber-600">{{ $enrolledStudent->name }}</a>
                                                 </div>
                                             </td>
-                                            <td class="px-3 py-3 text-sm text-gray-600">₦{{ number_format($enrolledStudent->pivot->balance(), 2) }}</td>
+                                            @if (auth()->user()->isDirector())
+                                                <td class="px-3 py-3 text-sm text-gray-600">₦{{ number_format($enrolledStudent->pivot->balance(), 2) }}</td>
+                                            @endif
                                             <td class="px-3 py-3 text-sm text-gray-600">{{ optional($enrolledStudent->pivot->due_date)->format('l, M j, Y') ?? '—' }}</td>
                                             <td class="px-3 py-3 text-sm">
                                                 <x-badge :color="match ($enrolledStudent->pivot->statusLabel()) {

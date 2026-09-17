@@ -36,7 +36,7 @@
         <x-responsive-nav-link :href="route('leads.index')" :active="request()->routeIs('leads.*')">
             {{ __('Leads') }}
         </x-responsive-nav-link>
-        <x-responsive-nav-link :href="route('payments.index')" :active="request()->routeIs('payments.*')">
+        <x-responsive-nav-link :href="auth()->user()->isDirector() ? route('payments.index') : route('payments.record.create')" :active="request()->routeIs('payments.*')">
             {{ __('Payments') }}
         </x-responsive-nav-link>
         <x-responsive-nav-link :href="route('certificates.index')" :active="request()->routeIs('certificates.*')">

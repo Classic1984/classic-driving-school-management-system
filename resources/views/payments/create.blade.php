@@ -29,7 +29,7 @@
 
                     <div class="flex items-center gap-4">
                         <x-primary-button>{{ __('Save') }}</x-primary-button>
-                        <a href="{{ route('payments.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
+                        <a href="{{ auth()->user()->isDirector() ? route('payments.index') : route('students.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
                     </div>
                 </form>
             </div>

@@ -66,13 +66,15 @@
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->course->name ?? __('Multiple Services') }}</p>
                             </div>
                         </div>
-                        <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
-                            <div>
-                                <p class="text-xs text-gray-500">{{ __('Amount') }}</p>
-                                <p class="text-sm font-bold text-gray-900">₦{{ number_format($payment->amount, 2) }}</p>
+                        @if (auth()->user()->isDirector())
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Amount') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">₦{{ number_format($payment->amount, 2) }}</p>
+                                </div>
                             </div>
-                        </div>
+                        @endif
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
                             <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
                             <div>
@@ -103,78 +105,80 @@
                         </div>
                     </div>
 
-                    <div class="mt-6">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Allocation Breakdown') }}</h3>
-                        <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead>
-                                        <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
-                                            <th class="px-3 py-3">{{ __('Charge') }}</th>
-                                            <th class="px-3 py-3 text-right">{{ __('Amount') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-100 bg-white">
-                                        @forelse ($payment->allocations as $allocation)
-                                            <tr>
-                                                <td class="px-3 py-3 text-sm text-gray-700">{{ $allocation->label() }}</td>
-                                                <td class="px-3 py-3 text-sm text-right font-semibold text-gray-900">₦{{ number_format($allocation->amount, 2) }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="2" class="px-3 py-4 text-sm text-gray-500">{{ __('No allocation detail recorded for this payment.') }}</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if ($payment->reversal)
-                        <div class="mt-6 flex items-start gap-3 rounded-lg bg-blue-50 ring-1 ring-blue-100 p-4">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
-                            </span>
-                            <div class="text-sm">
-                                <p class="font-bold text-blue-900">{{ __('This payment was reversed.') }}</p>
-                                <p class="text-blue-800 mt-1">
-                                    {{ $payment->reversal->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $payment->reversal->reversedBy->name }}
-                                </p>
-                                <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $payment->reversal->reason }}</p>
-                                <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Amount Reversed') }}:</span> ₦{{ number_format($payment->reversal->amount, 2) }}</p>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if ($payment->corrections->isNotEmpty())
+                    @if (auth()->user()->isDirector())
                         <div class="mt-6">
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Correction History') }}</h3>
-                            <div class="space-y-3">
-                                @foreach ($payment->corrections as $correction)
-                                    <div class="text-sm rounded-lg bg-gray-50 ring-1 ring-gray-200 p-4">
-                                        <p class="text-gray-500">
-                                            {{ $correction->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $correction->correctedBy->name }}
-                                        </p>
-                                        <p class="mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $correction->reason }}</p>
-                                        <div class="mt-2 grid grid-cols-2 gap-4 text-xs">
-                                            <div>
-                                                <p class="font-semibold text-gray-500 uppercase tracking-wider">{{ __('Original') }}</p>
-                                                @foreach ($correction->original_allocations as $row)
-                                                    <p>{{ $row['label'] }}: ₦{{ number_format($row['amount'], 2) }}</p>
-                                                @endforeach
-                                            </div>
-                                            <div>
-                                                <p class="font-semibold text-gray-500 uppercase tracking-wider">{{ __('Corrected') }}</p>
-                                                @foreach ($correction->new_allocations as $row)
-                                                    <p>{{ $row['label'] }}: ₦{{ number_format($row['amount'], 2) }}</p>
-                                                @endforeach
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Allocation Breakdown') }}</h3>
+                            <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead>
+                                            <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                                <th class="px-3 py-3">{{ __('Charge') }}</th>
+                                                <th class="px-3 py-3 text-right">{{ __('Amount') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100 bg-white">
+                                            @forelse ($payment->allocations as $allocation)
+                                                <tr>
+                                                    <td class="px-3 py-3 text-sm text-gray-700">{{ $allocation->label() }}</td>
+                                                    <td class="px-3 py-3 text-sm text-right font-semibold text-gray-900">₦{{ number_format($allocation->amount, 2) }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="2" class="px-3 py-4 text-sm text-gray-500">{{ __('No allocation detail recorded for this payment.') }}</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if ($payment->reversal)
+                            <div class="mt-6 flex items-start gap-3 rounded-lg bg-blue-50 ring-1 ring-blue-100 p-4">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
+                                </span>
+                                <div class="text-sm">
+                                    <p class="font-bold text-blue-900">{{ __('This payment was reversed.') }}</p>
+                                    <p class="text-blue-800 mt-1">
+                                        {{ $payment->reversal->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $payment->reversal->reversedBy->name }}
+                                    </p>
+                                    <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $payment->reversal->reason }}</p>
+                                    <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Amount Reversed') }}:</span> ₦{{ number_format($payment->reversal->amount, 2) }}</p>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($payment->corrections->isNotEmpty())
+                            <div class="mt-6">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Correction History') }}</h3>
+                                <div class="space-y-3">
+                                    @foreach ($payment->corrections as $correction)
+                                        <div class="text-sm rounded-lg bg-gray-50 ring-1 ring-gray-200 p-4">
+                                            <p class="text-gray-500">
+                                                {{ $correction->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $correction->correctedBy->name }}
+                                            </p>
+                                            <p class="mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $correction->reason }}</p>
+                                            <div class="mt-2 grid grid-cols-2 gap-4 text-xs">
+                                                <div>
+                                                    <p class="font-semibold text-gray-500 uppercase tracking-wider">{{ __('Original') }}</p>
+                                                    @foreach ($correction->original_allocations as $row)
+                                                        <p>{{ $row['label'] }}: ₦{{ number_format($row['amount'], 2) }}</p>
+                                                    @endforeach
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-gray-500 uppercase tracking-wider">{{ __('Corrected') }}</p>
+                                                    @foreach ($correction->new_allocations as $row)
+                                                        <p>{{ $row['label'] }}: ₦{{ number_format($row['amount'], 2) }}</p>
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @endforeach
+                                    @endforeach
+                                </div>
                             </div>
-                        </div>
+                        @endif
                     @endif
 
                     <div class="flex flex-wrap items-center gap-4 mt-6">
@@ -194,9 +198,9 @@
                                 <x-secondary-button type="button" class="!text-red-700">{{ __('Reverse Payment') }}</x-secondary-button>
                             </a>
                         @endif
-                        <a href="{{ route('payments.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:underline">
+                        <a href="{{ auth()->user()->isDirector() ? route('payments.index') : route('students.show', $payment->student) }}" class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:underline">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowLeftIconPath }}" /></svg>
-                            {{ __('Back to list') }}
+                            {{ __(auth()->user()->isDirector() ? 'Back to list' : 'Back to Student') }}
                         </a>
                     </div>
                 </div>
