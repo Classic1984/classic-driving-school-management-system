@@ -21,6 +21,12 @@
                     {{ __('Weekend, Executive, and VIP programmes can be upgraded into at any time, not just within the first five training days. The student pays only the difference between their current programme fee and the new one, and their training progress is not reset - days already attended carry over toward the new programme.') }}
                 </p>
 
+                @unless (auth()->user()->isDirector())
+                    <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                        {{ __('You are not a Director, so submitting this will raise a pending request - the programme only changes once a Director approves it.') }}
+                    </p>
+                @endunless
+
                 <x-input-error :messages="$errors->get('enrollment')" />
 
                 <form method="post" action="{{ route('enrollments.upgrade-tier.store', $enrollment) }}" class="space-y-4">
@@ -61,7 +67,7 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <x-primary-button type="submit">{{ __('Upgrade Programme') }}</x-primary-button>
+                        <x-primary-button type="submit">{{ auth()->user()->isDirector() ? __('Upgrade Programme') : __('Request Upgrade') }}</x-primary-button>
                         <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
                     </div>
                 </form>
