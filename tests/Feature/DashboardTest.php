@@ -145,6 +145,25 @@ class DashboardTest extends TestCase
         $response->assertSeeInOrder(['Arco Worldwide', "Invoice {$invoice->invoice_number}"]);
     }
 
+    public function test_a_secretary_sees_the_corporate_payer_name_without_a_link_they_cannot_follow(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $company = CorporateCompany::factory()->create(['name' => 'Arco Worldwide']);
+        $invoice = CorporateInvoice::factory()->create(['corporate_company_id' => $company->id]);
+        $invoice->payments()->create([
+            'amount' => 300,
+            'payment_method' => 'bank_transfer',
+            'payment_date' => now(),
+            'recorded_by' => $secretary->id,
+        ]);
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Arco Worldwide');
+        $response->assertDontSee(route('corporate-invoices.show', $invoice), false);
+    }
+
     public function test_dashboard_shows_a_new_leads_count_linking_to_the_filtered_lead_list(): void
     {
         $user = User::factory()->create();
@@ -282,7 +301,7 @@ class DashboardTest extends TestCase
         $response->assertDontSee('All Time');
     }
 
-    public function test_a_secretary_does_not_see_any_revenue_figures_on_the_dashboard(): void
+    public function test_a_secretary_sees_todays_revenue_but_no_other_money_figures(): void
     {
         $secretary = User::factory()->secretary()->create();
         Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => now()]);
@@ -290,10 +309,12 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($secretary)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Paid Today');
-        $response->assertDontSee('Revenue Today');
+        $response->assertSee('Paid Today');
+        $response->assertSee('Revenue Today');
+        $response->assertSee('500.00', false);
         $response->assertDontSee('Revenue Leakage');
-        $response->assertDontSee('500.00', false);
+        $response->assertDontSee('Total Payments');
+        $response->assertDontSee('All Time');
     }
 
     public function test_a_director_still_sees_revenue_figures_on_the_dashboard(): void

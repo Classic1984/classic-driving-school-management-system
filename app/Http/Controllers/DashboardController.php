@@ -405,6 +405,7 @@ class DashboardController extends Controller
             ->with(['student', 'allocations.enrollment.course', 'allocations.studentService.service'])
             ->get()
             ->map(fn (Payment $payment) => [
+                'type' => 'student',
                 'name' => $payment->student->name,
                 'href' => route('students.show', $payment->student_id),
                 'detail' => $payment->description(),
@@ -416,6 +417,7 @@ class DashboardController extends Controller
             ->with('invoice.company')
             ->get()
             ->map(fn (CorporatePayment $payment) => [
+                'type' => 'corporate',
                 'name' => $payment->invoice->company->name,
                 'href' => route('corporate-invoices.show', $payment->corporate_invoice_id),
                 'detail' => __('Invoice :number', ['number' => $payment->invoice->invoice_number]),

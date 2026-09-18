@@ -139,7 +139,13 @@
                     [
                         'title' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2),
                         'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
-                        'sub' => __('Pending').': ₦'.number_format($kpis['pending_payments'], 2),
+                        // "Pending" here is the outstanding-balance total across
+                        // every enrollment, not a today-scoped figure - it stays
+                        // Director-only like every other non-today money total,
+                        // even though the card itself is now open to anyone.
+                        'sub' => auth()->user()->isDirector()
+                            ? __('Pending').': ₦'.number_format($kpis['pending_payments'], 2)
+                            : trans_choice('{1} :count payment recorded today|[2,*] :count payments recorded today', $todaysPayments->count(), ['count' => $todaysPayments->count()]),
                         'modal' => 'todays-payments-modal',
                     ],
                     [
@@ -150,11 +156,6 @@
                     ],
                 ];
 
-                // "Paid Today" is a revenue figure - Director-only, same as
-                // every other aggregate money total on this page.
-                if (! auth()->user()->isDirector()) {
-                    $heroCards = array_values(array_filter($heroCards, fn (array $card) => $card['title'] !== 'Paid Today'));
-                }
             @endphp
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -462,7 +463,7 @@
                         'href' => '#locked-students',
                     ],
                     [
-                        'key' => 'payments_received_today', 'show' => auth()->user()->isDirector(), 'highlight' => true,
+                        'key' => 'payments_received_today', 'show' => true, 'highlight' => true,
                         'label' => 'Revenue Today', 'description' => 'Total revenue generated today',
                         'value' => '₦'.number_format($todaysOperations['payments_received_today'], 2),
                         'state' => 'ok', 'color' => 'emerald',
@@ -470,11 +471,13 @@
                     ],
                 ])->filter(fn (array $row) => $row['show'])->values();
 
-                // The bento layout below gives Revenue Today a large hero cell,
-                // puts the two attention-needing metrics in medium cards, and
-                // keeps the rest as a quiet supporting strip. A secretary
-                // never sees the Revenue Today row at all (filtered out
-                // above), so a non-financial row takes the hero slot instead.
+                // The bento layout below gives Revenue Today a large hero cell
+                // for a Director, and puts the two attention-needing metrics
+                // in medium cards - a secretary still sees Revenue Today (it's
+                // just today's figure, not a week/month/all-time total), but
+                // as a small supporting tile rather than the hero, since the
+                // pending-payments count it'd otherwise pair with stays
+                // Director-only.
                 $heroKey = auth()->user()->isDirector() ? 'payments_received_today' : 'students_trained';
                 $heroRow = $operationRows->firstWhere('key', $heroKey);
                 $midKeys = auth()->user()->isDirector()
@@ -796,32 +799,37 @@
                 @endif
             @endif
 
-            @if (auth()->user()->isDirector())
-                <x-modal name="todays-payments-modal">
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">💰 {{ __('Revenue Today') }}</h3>
-                        @if ($todaysPayments->isEmpty())
-                            <p class="text-sm text-gray-500">{{ __('No payments have been recorded today yet.') }}</p>
-                        @else
-                            <p class="text-xs text-gray-500 mb-3">{{ __(':count payment(s) recorded today', ['count' => $todaysPayments->count()]) }}</p>
-                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($todaysPayments as $payment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div class="min-w-0">
+            <x-modal name="todays-payments-modal">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">💰 {{ __('Revenue Today') }}</h3>
+                    @if ($todaysPayments->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('No payments have been recorded today yet.') }}</p>
+                    @else
+                        <p class="text-xs text-gray-500 mb-3">{{ __(':count payment(s) recorded today', ['count' => $todaysPayments->count()]) }}</p>
+                        <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                            @foreach ($todaysPayments as $payment)
+                                <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
+                                    <div class="min-w-0">
+                                        {{-- Corporate Invoicing is Director-only, so a
+                                        secretary can't follow that link - show the
+                                        company name as plain text for them instead. --}}
+                                        @if ($payment['type'] === 'corporate' && ! auth()->user()->isDirector())
+                                            <span class="font-medium text-gray-800">{{ $payment['name'] }}</span>
+                                        @else
                                             <a href="{{ $payment['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $payment['name'] }}</a>
-                                            <p class="text-xs text-gray-500 truncate">{{ $payment['detail'] }}</p>
-                                        </div>
-                                        <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment['amount'], 2) }}</div>
+                                        @endif
+                                        <p class="text-xs text-gray-500 truncate">{{ $payment['detail'] }}</p>
                                     </div>
-                                @endforeach
-                            </div>
-                        @endif
-                        <div class="mt-4 text-right">
-                            <x-secondary-button x-on:click="$dispatch('close-modal', 'todays-payments-modal')">{{ __('Close') }}</x-secondary-button>
+                                    <div class="whitespace-nowrap font-bold text-gray-800">₦{{ number_format($payment['amount'], 2) }}</div>
+                                </div>
+                            @endforeach
                         </div>
+                    @endif
+                    <div class="mt-4 text-right">
+                        <x-secondary-button x-on:click="$dispatch('close-modal', 'todays-payments-modal')">{{ __('Close') }}</x-secondary-button>
                     </div>
-                </x-modal>
-            @endif
+                </div>
+            </x-modal>
 
             @if ($approachingCompletionEnrollments->isNotEmpty())
                 <x-modal name="approaching-completion-modal">
