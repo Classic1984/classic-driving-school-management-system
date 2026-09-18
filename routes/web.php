@@ -22,6 +22,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DiscountRequestController;
 use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\EnrollmentUpgradeRequestController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InstructorAccessController;
@@ -177,10 +178,6 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('students/{student}/enroll', [EnrollmentController::class, 'create'])->name('students.enroll.create');
         Route::post('students/{student}/enroll', [EnrollmentController::class, 'store'])->name('students.enroll.store');
         Route::delete('enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
-        Route::get('enrollments/{enrollment}/upgrade', [EnrollmentController::class, 'showUpgradeForm'])->name('enrollments.upgrade.create');
-        Route::post('enrollments/{enrollment}/upgrade', [EnrollmentController::class, 'upgrade'])->name('enrollments.upgrade.store');
-        Route::get('enrollments/{enrollment}/upgrade-tier', [EnrollmentController::class, 'showTierUpgradeForm'])->name('enrollments.upgrade-tier.create');
-        Route::post('enrollments/{enrollment}/upgrade-tier', [EnrollmentController::class, 'upgradeTier'])->name('enrollments.upgrade-tier.store');
         Route::delete('student-services/{studentService}', [StudentServiceController::class, 'destroy'])->name('student-services.destroy');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::post('backups/send', [BackupController::class, 'send'])->name('backups.send');
@@ -218,6 +215,13 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::patch('assessment-requests/{assessmentRequest}/approve', [AssessmentRequestController::class, 'approve'])->name('assessment-requests.approve');
         Route::patch('assessment-requests/{assessmentRequest}/reject', [AssessmentRequestController::class, 'reject'])->name('assessment-requests.reject');
 
+        // Approving/rejecting a pending enrollment upgrade request is
+        // Director-only, same as the request types above; requesting one
+        // (or a Director's own direct upgrade) lives outside this group -
+        // see enrollments.upgrade.*/enrollments.upgrade-tier.* below.
+        Route::patch('enrollment-upgrade-requests/{enrollmentUpgradeRequest}/approve', [EnrollmentUpgradeRequestController::class, 'approve'])->name('enrollment-upgrade-requests.approve');
+        Route::patch('enrollment-upgrade-requests/{enrollmentUpgradeRequest}/reject', [EnrollmentUpgradeRequestController::class, 'reject'])->name('enrollment-upgrade-requests.reject');
+
         // Corporate Invoicing - companies that pay to train their own
         // staff/drivers in bulk, billed separately from individual
         // students. Director-only, same as the rest of this group.
@@ -252,6 +256,15 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     Route::get('students/{student}/training-record', [StudentController::class, 'trainingRecord'])->name('students.training-record');
     Route::get('students/{student}/correction-requests/create', [StudentCorrectionRequestController::class, 'create'])->name('student-correction-requests.create');
     Route::post('students/{student}/correction-requests', [StudentCorrectionRequestController::class, 'store'])->name('student-correction-requests.store');
+
+    // Open to any staff role, same as raising a discount or correction
+    // request above - a Director's submission executes immediately, and
+    // anyone else's is raised as a pending EnrollmentUpgradeRequest for a
+    // Director to approve. See EnrollmentController::requestOrExecuteUpgrade().
+    Route::get('enrollments/{enrollment}/upgrade', [EnrollmentController::class, 'showUpgradeForm'])->name('enrollments.upgrade.create');
+    Route::post('enrollments/{enrollment}/upgrade', [EnrollmentController::class, 'upgrade'])->name('enrollments.upgrade.store');
+    Route::get('enrollments/{enrollment}/upgrade-tier', [EnrollmentController::class, 'showTierUpgradeForm'])->name('enrollments.upgrade-tier.create');
+    Route::post('enrollments/{enrollment}/upgrade-tier', [EnrollmentController::class, 'upgradeTier'])->name('enrollments.upgrade-tier.store');
     Route::post('students/{student}/services', [StudentServiceController::class, 'store'])->name('students.services.store');
     Route::patch('student-services/{studentService}/processing-status', [StudentServiceController::class, 'updateProcessingStatus'])->name('student-services.processing-status.update');
 

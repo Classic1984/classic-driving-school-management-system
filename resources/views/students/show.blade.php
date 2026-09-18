@@ -447,6 +447,8 @@
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Enrollment removed.') }}</p>
                             @elseif (session('status') === 'enrollment-upgraded')
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Programme upgraded successfully.') }}</p>
+                            @elseif (session('status') === 'enrollment-upgrade-requested')
+                                <p class="mb-2 text-sm font-medium text-green-600">{{ __('Upgrade request submitted - a Director will need to approve it before it takes effect.') }}</p>
                             @elseif (session('status') === 'assessment-saved')
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Assessment saved.') }}</p>
                             @endif
@@ -519,11 +521,16 @@
                                                         @if ($enrolledCourse->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
                                                             <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
                                                         @endif
-                                                        @if ($enrolledCourse->pivot->canUpgrade() && auth()->user()->isDirector())
-                                                            <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade') }}</a>
-                                                        @endif
-                                                        @if ($enrolledCourse->pivot->canUpgradeTier() && auth()->user()->isDirector())
-                                                            <a href="{{ route('enrollments.upgrade-tier.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade Tier') }}</a>
+                                                        @php $pendingUpgradeRequest = $enrolledCourse->pivot->pendingUpgradeRequest(); @endphp
+                                                        @if ($pendingUpgradeRequest)
+                                                            <span class="text-sm text-amber-600" title="{{ __('Requested by :name', ['name' => $pendingUpgradeRequest->requestedBy->name]) }}">{{ __('Upgrade Pending Approval') }}</span>
+                                                        @else
+                                                            @if ($enrolledCourse->pivot->canUpgrade())
+                                                                <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade') }}</a>
+                                                            @endif
+                                                            @if ($enrolledCourse->pivot->canUpgradeTier())
+                                                                <a href="{{ route('enrollments.upgrade-tier.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade Tier') }}</a>
+                                                            @endif
                                                         @endif
                                                         @if (auth()->user()->isDirector() && $enrolledCourse->pivot->amountPaid() <= 0)
                                                             <form method="post" action="{{ route('enrollments.destroy', $enrolledCourse->pivot->id) }}" class="inline" onsubmit="return confirm('{{ __('Remove this enrollment? This cannot be undone.') }}');">

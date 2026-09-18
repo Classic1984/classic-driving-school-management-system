@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AssessmentRequest;
 use App\Models\DiscountRequest;
+use App\Models\EnrollmentUpgradeRequest;
 use App\Models\StudentCorrectionRequest;
 use Illuminate\View\View;
 
@@ -11,11 +12,11 @@ class ApprovalCentreController extends Controller
 {
     /**
      * Director-only unified inbox of every pending approval across the
-     * app - discount requests, correction requests, and instructor
-     * assessment recommendations today, with more request types expected
-     * to join this same feed over time. Approving or rejecting an item
-     * still goes through its own existing route; this page only
-     * aggregates what's pending into one place.
+     * app - discount requests, correction requests, instructor assessment
+     * recommendations, and enrollment upgrade requests today, with more
+     * request types expected to join this same feed over time. Approving
+     * or rejecting an item still goes through its own existing route;
+     * this page only aggregates what's pending into one place.
      */
     public function index(): View
     {
@@ -46,8 +47,18 @@ class ApprovalCentreController extends Controller
                 'created_at' => $request->created_at,
             ]);
 
+        $enrollmentUpgradeRequests = EnrollmentUpgradeRequest::with(['student', 'fromCourse', 'toCourse', 'requestedBy'])
+            ->where('status', 'pending')
+            ->get()
+            ->map(fn (EnrollmentUpgradeRequest $request) => [
+                'type' => 'enrollment_upgrade',
+                'model' => $request,
+                'created_at' => $request->created_at,
+            ]);
+
         $approvals = $discountRequests->concat($correctionRequests)
             ->concat($assessmentRequests)
+            ->concat($enrollmentUpgradeRequests)
             ->sortByDesc('created_at')
             ->values();
 

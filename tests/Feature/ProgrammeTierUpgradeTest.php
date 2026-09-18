@@ -51,14 +51,17 @@ class ProgrammeTierUpgradeTest extends TestCase
         $this->post("/enrollments/{$enrollment->id}/upgrade-tier", [])->assertRedirect('/login');
     }
 
-    public function test_a_secretary_cannot_upgrade_a_programme_tier(): void
+    public function test_a_secretary_can_view_the_tier_upgrade_form_but_cannot_execute_it_directly(): void
     {
+        // A Secretary can now reach this form and submit it - see
+        // EnrollmentUpgradeRequestTest for what actually happens when they
+        // do (a pending request, not an immediate upgrade).
         $secretary = User::factory()->secretary()->create();
         $standard = Course::factory()->create(['duration_weeks' => 4, 'fee' => 95000, 'status' => 'active']);
         Course::factory()->create(['tier' => 'vip', 'fee' => 125000, 'status' => 'active']);
         [, $enrollment] = $this->enrollStudent($standard);
 
-        $this->actingAs($secretary)->get("/enrollments/{$enrollment->id}/upgrade-tier")->assertForbidden();
+        $this->actingAs($secretary)->get("/enrollments/{$enrollment->id}/upgrade-tier")->assertOk();
     }
 
     public function test_a_director_can_view_the_tier_upgrade_form_regardless_of_schedule_or_type(): void
@@ -209,7 +212,7 @@ class ProgrammeTierUpgradeTest extends TestCase
         $this->assertSame($standard->id, $enrollment->fresh()->course_id);
     }
 
-    public function test_the_student_page_shows_an_upgrade_tier_link_only_to_a_director(): void
+    public function test_the_student_page_shows_an_upgrade_tier_link_to_any_staff_role(): void
     {
         $director = User::factory()->director()->create();
         $secretary = User::factory()->secretary()->create();
@@ -223,6 +226,6 @@ class ProgrammeTierUpgradeTest extends TestCase
 
         $secretaryResponse = $this->actingAs($secretary)->get("/students/{$student->id}");
         $secretaryResponse->assertOk();
-        $secretaryResponse->assertDontSee(route('enrollments.upgrade-tier.create', $enrollment->id), false);
+        $secretaryResponse->assertSee(route('enrollments.upgrade-tier.create', $enrollment->id), false);
     }
 }

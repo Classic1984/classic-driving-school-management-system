@@ -477,6 +477,18 @@ class Enrollment extends Pivot
     }
 
     /**
+     * This enrollment's pending upgrade request (either type - duration or
+     * tier), if any is currently awaiting Director approval. Null once
+     * it's been approved or rejected, or if none was ever raised.
+     */
+    public function pendingUpgradeRequest(): ?EnrollmentUpgradeRequest
+    {
+        return EnrollmentUpgradeRequest::where('enrollment_id', $this->id)
+            ->where('status', 'pending')
+            ->first();
+    }
+
+    /**
      * The Director/staff-facing label for this enrollment's upgrade
      * eligibility, per the Programme Upgrade Policy's staff view.
      */

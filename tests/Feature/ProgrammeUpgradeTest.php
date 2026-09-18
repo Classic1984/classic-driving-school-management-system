@@ -51,13 +51,17 @@ class ProgrammeUpgradeTest extends TestCase
         $this->post("/enrollments/{$enrollment->id}/upgrade", [])->assertRedirect('/login');
     }
 
-    public function test_a_secretary_cannot_upgrade_a_programme(): void
+    public function test_a_secretary_can_view_the_upgrade_form_but_cannot_execute_it_directly(): void
     {
+        // A Secretary can now reach this form and submit it - see
+        // EnrollmentUpgradeRequestTest for what actually happens when they
+        // do (a pending request, not an immediate upgrade).
         $secretary = User::factory()->secretary()->create();
         $course = Course::factory()->create(['duration_weeks' => 2]);
         [, $enrollment] = $this->enrollStudent($course);
+        Course::factory()->create(['duration_weeks' => 4, 'course_type' => $course->course_type, 'schedule' => $course->schedule, 'status' => 'active']);
 
-        $this->actingAs($secretary)->get("/enrollments/{$enrollment->id}/upgrade")->assertForbidden();
+        $this->actingAs($secretary)->get("/enrollments/{$enrollment->id}/upgrade")->assertOk();
     }
 
     public function test_a_director_can_view_the_upgrade_form_within_the_window(): void
@@ -313,7 +317,7 @@ class ProgrammeUpgradeTest extends TestCase
         $this->assertDatabaseMissing('message_logs', ['purpose' => 'programme_upgrade_window']);
     }
 
-    public function test_the_student_page_shows_eligible_upgrade_status_and_a_director_only_upgrade_link(): void
+    public function test_the_student_page_shows_eligible_upgrade_status_and_an_upgrade_link_to_any_staff_role(): void
     {
         $director = User::factory()->director()->create();
         $secretary = User::factory()->secretary()->create();
@@ -330,7 +334,7 @@ class ProgrammeUpgradeTest extends TestCase
         $secretaryResponse = $this->actingAs($secretary)->get("/students/{$student->id}");
         $secretaryResponse->assertOk();
         $secretaryResponse->assertSee('Eligible');
-        $secretaryResponse->assertDontSee(route('enrollments.upgrade.create', $enrollment->id), false);
+        $secretaryResponse->assertSee(route('enrollments.upgrade.create', $enrollment->id), false);
     }
 
     public function test_the_student_page_shows_closed_status_and_reason_once_the_window_ends(): void

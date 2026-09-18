@@ -10,6 +10,7 @@
             'discount' => ['border' => 'border-amber-500', 'badge' => 'bg-amber-100 text-amber-800'],
             'assessment' => ['border' => 'border-blue-500', 'badge' => 'bg-blue-100 text-blue-800'],
             'correction' => ['border' => 'border-purple-500', 'badge' => 'bg-purple-100 text-purple-800'],
+            'enrollment_upgrade' => ['border' => 'border-green-500', 'badge' => 'bg-green-100 text-green-800'],
         ];
     @endphp
 
@@ -37,6 +38,14 @@
                 <p class="mb-4 text-sm font-medium text-green-600">{{ __('Assessment confirmed.') }}</p>
             @elseif (session('status') === 'assessment-request-rejected')
                 <p class="mb-4 text-sm font-medium text-green-600">{{ __('Assessment recommendation rejected.') }}</p>
+            @elseif (session('status') === 'enrollment-upgrade-request-approved')
+                <p class="mb-4 text-sm font-medium text-green-600">{{ __('Upgrade approved and applied.') }}</p>
+            @elseif (session('status') === 'enrollment-upgrade-request-rejected')
+                <p class="mb-4 text-sm font-medium text-green-600">{{ __('Upgrade request rejected.') }}</p>
+            @endif
+
+            @if ($errors->any())
+                <p class="mb-4 text-sm font-medium text-red-600">{{ $errors->first() }}</p>
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mb-6">
@@ -65,6 +74,8 @@
                                         {{ __('Discount Request') }}
                                     @elseif ($approval['type'] === 'assessment')
                                         {{ __('Assessment Recommendation') }}
+                                    @elseif ($approval['type'] === 'enrollment_upgrade')
+                                        {{ __(':type Upgrade Request', ['type' => $item->upgrade_type === 'tier' ? 'Tier' : 'Programme']) }}
                                     @else
                                         {{ __('Student Information Change') }}
                                     @endif
@@ -79,6 +90,8 @@
                                             — {{ __('Discount on :course', ['course' => $item->course->name]) }}
                                         @elseif ($approval['type'] === 'assessment')
                                             — {{ __(':result on :course', ['result' => ucfirst($item->result), 'course' => $item->course->name]) }}
+                                        @elseif ($approval['type'] === 'enrollment_upgrade')
+                                            — {{ __(':from → :to', ['from' => $item->fromCourse->name, 'to' => $item->toCourse->name]) }}
                                         @else
                                             — {{ __('Change :field', ['field' => $item->fieldLabel()]) }}
                                         @endif
@@ -107,6 +120,17 @@
                                     </p>
                                     @if ($item->remarks)
                                         <p class="mt-1 text-sm text-gray-500">{{ __('Remarks') }}: {{ $item->remarks }}</p>
+                                    @endif
+                                @elseif ($approval['type'] === 'enrollment_upgrade')
+                                    <p class="mt-2 text-sm text-gray-600">
+                                        {{ __('Current Fee') }}: ₦{{ number_format($item->previous_fee, 2) }}
+                                        &middot;
+                                        {{ __('New Fee') }}: ₦{{ number_format($item->new_fee, 2) }}
+                                        &middot;
+                                        {{ __('Balance to Collect') }}: ₦{{ number_format($item->upgrade_cost, 2) }}
+                                    </p>
+                                    @if ($item->amount_paid !== null)
+                                        <p class="mt-1 text-sm text-gray-500">{{ __('Requested to collect now') }}: ₦{{ number_format($item->amount_paid, 2) }} ({{ __(ucfirst(str_replace('_', ' ', $item->payment_method))) }})</p>
                                     @endif
                                 @else
                                     <p class="mt-2 text-sm text-gray-600">
@@ -141,6 +165,17 @@
                                         <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-green-50 hover:bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-700 transition">{{ __('Confirm') }}</button>
                                     </form>
                                     <form method="post" action="{{ route('assessment-requests.reject', $item) }}">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-600 transition">{{ __('Reject') }}</button>
+                                    </form>
+                                @elseif ($approval['type'] === 'enrollment_upgrade')
+                                    <form method="post" action="{{ route('enrollment-upgrade-requests.approve', $item) }}">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-green-50 hover:bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-700 transition">{{ __('Approve') }}</button>
+                                    </form>
+                                    <form method="post" action="{{ route('enrollment-upgrade-requests.reject', $item) }}">
                                         @csrf
                                         @method('patch')
                                         <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-600 transition">{{ __('Reject') }}</button>

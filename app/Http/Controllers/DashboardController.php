@@ -8,6 +8,7 @@ use App\Models\Certificate;
 use App\Models\CorporatePayment;
 use App\Models\DiscountRequest;
 use App\Models\Enrollment;
+use App\Models\EnrollmentUpgradeRequest;
 use App\Models\Instructor;
 use App\Models\Lead;
 use App\Models\Payment;
@@ -440,7 +441,8 @@ class DashboardController extends Controller
             'locked_students' => Enrollment::where('status', 'locked')->count(),
             'pending_approvals' => DiscountRequest::where('status', 'pending')->count()
                 + StudentCorrectionRequest::where('status', 'pending')->count()
-                + AssessmentRequest::where('status', 'pending')->count(),
+                + AssessmentRequest::where('status', 'pending')->count()
+                + EnrollmentUpgradeRequest::where('status', 'pending')->count(),
         ];
 
         return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressTotalEnrollments', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));

@@ -10,12 +10,18 @@ use App\Models\ActivityLog;
 use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\EnrollmentUpgradeRequest;
 use App\Models\Payment;
 use App\Models\PaymentAllocation;
 use App\Models\ReactivationAuditLog;
 use App\Models\Student;
+use App\Models\User;
+use App\Notifications\EnrollmentUpgradeRequestedNotification;
 use App\Services\EnrollmentService;
+use App\Services\WebPushService;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -216,9 +222,11 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Show the Director-only form for upgrading an enrollment to a longer
-     * programme, per the Programme Upgrade Policy - available only within
-     * the student's first five completed training days.
+     * Show the form for upgrading an enrollment to a longer programme, per
+     * the Programme Upgrade Policy - available only within the student's
+     * first five completed training days. Open to any staff role - see
+     * upgrade() for who can execute it directly versus who only requests
+     * it.
      */
     public function showUpgradeForm(Enrollment $enrollment): View
     {
@@ -231,7 +239,9 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Upgrade the enrollment to the selected longer programme. The
+     * Upgrade the enrollment to the selected longer programme - executed
+     * immediately by a Director, or raised as a pending
+     * EnrollmentUpgradeRequest for a Director to approve otherwise. The
      * student is charged only the difference between the new programme's
      * fee and what they've already been charged, and their training
      * progress carries over rather than resetting.
@@ -245,27 +255,17 @@ class EnrollmentController extends Controller
         }
 
         $newCourse = Course::findOrFail($request->validated('course_id'));
-        $fromCourseName = $enrollment->course->name;
 
-        $enrollmentService->upgrade(
-            $enrollment,
-            $newCourse,
-            $request->user(),
-            (float) $request->validated('amount_paid', 0),
-            $request->validated('payment_method'),
-            now(),
-        );
-
-        ActivityLog::record("Upgraded {$enrollment->student->name}'s programme from {$fromCourseName} to {$newCourse->name}");
-
-        return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgraded');
+        return $this->requestOrExecuteUpgrade($request, $enrollment, $enrollmentService, $newCourse, 'duration');
     }
 
     /**
-     * Show the Director-only form for upgrading an enrollment to a tiered
-     * programme (Weekend, Executive, or VIP) - a switch to a different
-     * kind of programme entirely, unlike the longer-programme upgrade
-     * above, and not limited to the first five training days.
+     * Show the form for upgrading an enrollment to a tiered programme
+     * (Weekend, Executive, or VIP) - a switch to a different kind of
+     * programme entirely, unlike the longer-programme upgrade above, and
+     * not limited to the first five training days. Open to any staff
+     * role - see upgradeTier() for who can execute it directly versus who
+     * only requests it.
      */
     public function showTierUpgradeForm(Enrollment $enrollment): View
     {
@@ -278,9 +278,10 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Upgrade the enrollment to the selected tiered programme. Same
-     * fee-difference and training-progress-carries-over mechanics as the
-     * longer-programme upgrade above - see EnrollmentService::upgrade().
+     * Upgrade the enrollment to the selected tiered programme - same
+     * Director-executes/otherwise-requested split, and the same
+     * fee-difference and training-progress-carries-over mechanics, as the
+     * longer-programme upgrade above.
      */
     public function upgradeTier(StoreEnrollmentTierUpgradeRequest $request, Enrollment $enrollment, EnrollmentService $enrollmentService): RedirectResponse
     {
@@ -291,19 +292,70 @@ class EnrollmentController extends Controller
         }
 
         $newCourse = Course::findOrFail($request->validated('course_id'));
+
+        return $this->requestOrExecuteUpgrade($request, $enrollment, $enrollmentService, $newCourse, 'tier');
+    }
+
+    /**
+     * Shared by upgrade() and upgradeTier(): a Director's submission
+     * executes the upgrade immediately, exactly as before. Anyone else's
+     * submission never touches the enrollment or collects any payment -
+     * it's stored as a pending EnrollmentUpgradeRequest (updating, not
+     * duplicating, any request already pending for this enrollment) for a
+     * Director to approve or reject from the Approval Centre.
+     */
+    protected function requestOrExecuteUpgrade(FormRequest $request, Enrollment $enrollment, EnrollmentService $enrollmentService, Course $newCourse, string $upgradeType): RedirectResponse
+    {
         $fromCourseName = $enrollment->course->name;
 
-        $enrollmentService->upgrade(
-            $enrollment,
-            $newCourse,
-            $request->user(),
-            (float) $request->validated('amount_paid', 0),
-            $request->validated('payment_method'),
-            now(),
+        if ($request->user()->isDirector()) {
+            $enrollmentService->upgrade(
+                $enrollment,
+                $newCourse,
+                $request->user(),
+                (float) $request->validated('amount_paid', 0),
+                $request->validated('payment_method'),
+                now(),
+            );
+
+            // A pending request raised by someone else for this same
+            // enrollment is now moot - the Director just did the
+            // equivalent (or a different) upgrade directly.
+            EnrollmentUpgradeRequest::where('enrollment_id', $enrollment->id)
+                ->where('status', 'pending')
+                ->update(['status' => 'approved', 'resolved_by' => $request->user()->id, 'resolved_at' => now()]);
+
+            ActivityLog::record("Upgraded {$enrollment->student->name}'s programme from {$fromCourseName} to {$newCourse->name}");
+
+            return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgraded');
+        }
+
+        $upgradeRequest = EnrollmentUpgradeRequest::updateOrCreate(
+            ['enrollment_id' => $enrollment->id, 'status' => 'pending'],
+            [
+                'student_id' => $enrollment->student_id,
+                'from_course_id' => $enrollment->course_id,
+                'to_course_id' => $newCourse->id,
+                'requested_by' => $request->user()->id,
+                'upgrade_type' => $upgradeType,
+                'previous_fee' => $enrollment->fee(),
+                'new_fee' => $enrollmentService->upgradedFee($enrollment, $newCourse),
+                'upgrade_cost' => $enrollmentService->upgradeCost($enrollment, $newCourse),
+                'amount_paid' => $request->validated('amount_paid') !== null ? (float) $request->validated('amount_paid') : null,
+                'payment_method' => $request->validated('payment_method'),
+            ]
+        );
+        $upgradeRequest->load(['student', 'fromCourse', 'toCourse', 'requestedBy']);
+
+        Notification::send(User::where('role', 'director')->get(), new EnrollmentUpgradeRequestedNotification($upgradeRequest));
+        app(WebPushService::class)->sendToDirectors(
+            'Upgrade Request',
+            "{$upgradeRequest->requestedBy->name} requested an upgrade for {$upgradeRequest->student->name}, from {$fromCourseName} to {$newCourse->name}.",
+            route('approvals.index')
         );
 
-        ActivityLog::record("Upgraded {$enrollment->student->name}'s programme from {$fromCourseName} to {$newCourse->name} (tier upgrade)");
+        ActivityLog::record("Requested a programme upgrade for {$enrollment->student->name} from {$fromCourseName} to {$newCourse->name}");
 
-        return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgraded');
+        return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgrade-requested');
     }
 }
