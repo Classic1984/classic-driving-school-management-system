@@ -522,6 +522,9 @@
                                                         @if ($enrolledCourse->pivot->canUpgrade() && auth()->user()->isDirector())
                                                             <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade') }}</a>
                                                         @endif
+                                                        @if ($enrolledCourse->pivot->canUpgradeTier() && auth()->user()->isDirector())
+                                                            <a href="{{ route('enrollments.upgrade-tier.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade Tier') }}</a>
+                                                        @endif
                                                         @if (auth()->user()->isDirector() && $enrolledCourse->pivot->amountPaid() <= 0)
                                                             <form method="post" action="{{ route('enrollments.destroy', $enrolledCourse->pivot->id) }}" class="inline" onsubmit="return confirm('{{ __('Remove this enrollment? This cannot be undone.') }}');">
                                                                 @csrf

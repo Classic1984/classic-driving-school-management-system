@@ -27,6 +27,7 @@ class StoreCourseRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'course_type' => ['required', 'in:manual,automatic,both'],
             'level' => ['nullable', 'in:beginner,intermediate,advanced'],
+            'tier' => ['nullable', 'in:weekend,executive,vip'],
             'schedule' => ['required', 'in:weekday,weekend'],
             'duration_hours' => ['required', 'integer', 'min:1'],
             'duration_weeks' => ['required', 'integer', 'min:1'],

@@ -23,6 +23,7 @@ class Course extends Model
         'description',
         'course_type',
         'level',
+        'tier',
         'schedule',
         'duration_hours',
         'duration_weeks',
@@ -51,6 +52,26 @@ class Course extends Model
     public function isWeekend(): bool
     {
         return $this->schedule === 'weekend';
+    }
+
+    /**
+     * Whether this is a tiered programme (weekend, executive, or VIP) that
+     * a student in a standard programme can upgrade into, as opposed to a
+     * standard programme itself.
+     */
+    public function isTieredProgramme(): bool
+    {
+        return $this->tier !== null;
+    }
+
+    public function tierLabel(): ?string
+    {
+        return match ($this->tier) {
+            'weekend' => 'Weekend',
+            'executive' => 'Executive',
+            'vip' => 'VIP',
+            default => null,
+        };
     }
 
     /**

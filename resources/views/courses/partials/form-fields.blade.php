@@ -37,6 +37,18 @@
     </div>
 
     <div>
+        <x-input-label for="tier" :value="__('Programme Tier')" />
+        <select id="tier" name="tier" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+            <option value="">{{ __('Standard (none)') }}</option>
+            @foreach (['weekend' => 'Weekend', 'executive' => 'Executive', 'vip' => 'VIP'] as $value => $label)
+                <option value="{{ $value }}" @selected(old('tier', $course?->tier) === $value)>{{ __($label) }}</option>
+            @endforeach
+        </select>
+        <p class="mt-1 text-xs text-gray-500">{{ __('A tiered programme is what a student in any standard programme can upgrade into at any time, regardless of schedule or duration.') }}</p>
+        <x-input-error class="mt-2" :messages="$errors->get('tier')" />
+    </div>
+
+    <div>
         <x-input-label for="schedule" :value="__('Schedule')" />
         <select id="schedule" name="schedule" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
             @foreach (['weekday' => 'Weekday', 'weekend' => 'Weekend'] as $value => $label)

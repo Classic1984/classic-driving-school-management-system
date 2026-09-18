@@ -98,6 +98,46 @@ class CourseTest extends TestCase
         $this->assertDatabaseHas('courses', ['name' => 'Beginner Driving', 'level' => 'intermediate']);
     }
 
+    public function test_a_courses_tier_is_stored_and_governs_upgrade_eligibility(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/courses', [
+            'name' => 'VIP Program (Personal Car)',
+            'description' => 'One-on-one training.',
+            'course_type' => 'manual',
+            'tier' => 'vip',
+            'schedule' => 'weekday',
+            'duration_hours' => 20,
+            'duration_weeks' => 4,
+            'fee' => 199.99,
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('courses', ['name' => 'VIP Program (Personal Car)', 'tier' => 'vip']);
+    }
+
+    public function test_storing_a_course_rejects_an_invalid_tier(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/courses', [
+            'name' => 'Beginner Driving',
+            'description' => 'An introductory course.',
+            'course_type' => 'manual',
+            'tier' => 'not-a-real-tier',
+            'schedule' => 'weekday',
+            'duration_hours' => 20,
+            'duration_weeks' => 4,
+            'fee' => 199.99,
+            'status' => 'active',
+        ]);
+
+        $response->assertSessionHasErrors('tier');
+    }
+
     public function test_storing_a_course_requires_valid_data(): void
     {
         $user = User::factory()->create();

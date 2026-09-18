@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEnrollmentRequest;
+use App\Http\Requests\StoreEnrollmentTierUpgradeRequest;
 use App\Http\Requests\StoreEnrollmentUpgradeRequest;
 use App\Http\Requests\StoreReactivationRequest;
 use App\Models\ActivityLog;
@@ -256,6 +257,52 @@ class EnrollmentController extends Controller
         );
 
         ActivityLog::record("Upgraded {$enrollment->student->name}'s programme from {$fromCourseName} to {$newCourse->name}");
+
+        return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgraded');
+    }
+
+    /**
+     * Show the Director-only form for upgrading an enrollment to a tiered
+     * programme (Weekend, Executive, or VIP) - a switch to a different
+     * kind of programme entirely, unlike the longer-programme upgrade
+     * above, and not limited to the first five training days.
+     */
+    public function showTierUpgradeForm(Enrollment $enrollment): View
+    {
+        abort_unless($enrollment->canUpgradeTier(), 404);
+
+        $enrollment->load(['student', 'course']);
+        $eligibleCourses = $enrollment->eligibleTierUpgrades();
+
+        return view('enrollments.upgrade-tier', compact('enrollment', 'eligibleCourses'));
+    }
+
+    /**
+     * Upgrade the enrollment to the selected tiered programme. Same
+     * fee-difference and training-progress-carries-over mechanics as the
+     * longer-programme upgrade above - see EnrollmentService::upgrade().
+     */
+    public function upgradeTier(StoreEnrollmentTierUpgradeRequest $request, Enrollment $enrollment, EnrollmentService $enrollmentService): RedirectResponse
+    {
+        if (! $enrollment->canUpgradeTier()) {
+            return Redirect::back()->withErrors([
+                'enrollment' => 'This enrollment is no longer eligible for a tier upgrade.',
+            ]);
+        }
+
+        $newCourse = Course::findOrFail($request->validated('course_id'));
+        $fromCourseName = $enrollment->course->name;
+
+        $enrollmentService->upgrade(
+            $enrollment,
+            $newCourse,
+            $request->user(),
+            (float) $request->validated('amount_paid', 0),
+            $request->validated('payment_method'),
+            now(),
+        );
+
+        ActivityLog::record("Upgraded {$enrollment->student->name}'s programme from {$fromCourseName} to {$newCourse->name} (tier upgrade)");
 
         return Redirect::route('students.show', $enrollment->student_id)->with('status', 'enrollment-upgraded');
     }
