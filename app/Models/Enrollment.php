@@ -442,6 +442,41 @@ class Enrollment extends Pivot
     }
 
     /**
+     * The tiered programmes (Weekend, Executive, VIP - see
+     * Course::isTieredProgramme()) this enrollment could upgrade into: any
+     * active tiered course that costs more than the current one, excluding
+     * a course the student already holds any enrollment in. Unlike
+     * eligibleUpgradeCourses(), this deliberately ignores course_type,
+     * schedule, and duration_weeks - a tier upgrade is a switch to a
+     * different kind of programme entirely, not just a longer version of
+     * the same one - and isn't limited to the five-day window either, since
+     * it's a separate, ongoing upsell rather than the time-boxed Programme
+     * Upgrade Policy.
+     */
+    public function eligibleTierUpgrades()
+    {
+        $alreadyEnrolledCourseIds = $this->student->courses()->pluck('courses.id');
+
+        return Course::where('status', 'active')
+            ->whereNotNull('tier')
+            ->where('fee', '>', $this->course->fee)
+            ->whereNotIn('id', $alreadyEnrolledCourseIds)
+            ->orderBy('tier')
+            ->orderBy('fee')
+            ->get();
+    }
+
+    /**
+     * Whether this enrollment can be upgraded to a tiered programme right
+     * now: still active (not completed or locked), and at least one
+     * pricier tiered programme exists to upgrade into.
+     */
+    public function canUpgradeTier(): bool
+    {
+        return $this->status === 'active' && $this->eligibleTierUpgrades()->isNotEmpty();
+    }
+
+    /**
      * The Director/staff-facing label for this enrollment's upgrade
      * eligibility, per the Programme Upgrade Policy's staff view.
      */

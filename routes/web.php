@@ -179,6 +179,8 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::delete('enrollments/{enrollment}', [EnrollmentController::class, 'destroy'])->name('enrollments.destroy');
         Route::get('enrollments/{enrollment}/upgrade', [EnrollmentController::class, 'showUpgradeForm'])->name('enrollments.upgrade.create');
         Route::post('enrollments/{enrollment}/upgrade', [EnrollmentController::class, 'upgrade'])->name('enrollments.upgrade.store');
+        Route::get('enrollments/{enrollment}/upgrade-tier', [EnrollmentController::class, 'showTierUpgradeForm'])->name('enrollments.upgrade-tier.create');
+        Route::post('enrollments/{enrollment}/upgrade-tier', [EnrollmentController::class, 'upgradeTier'])->name('enrollments.upgrade-tier.store');
         Route::delete('student-services/{studentService}', [StudentServiceController::class, 'destroy'])->name('student-services.destroy');
         Route::get('activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
         Route::post('backups/send', [BackupController::class, 'send'])->name('backups.send');
