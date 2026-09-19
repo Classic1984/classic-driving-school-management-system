@@ -139,13 +139,7 @@
                     [
                         'title' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2),
                         'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
-                        // "Pending" here is the outstanding-balance total across
-                        // every enrollment, not a today-scoped figure - it stays
-                        // Director-only like every other non-today money total,
-                        // even though the card itself is now open to anyone.
-                        'sub' => auth()->user()->isDirector()
-                            ? __('Pending').': ₦'.number_format($kpis['pending_payments'], 2)
-                            : trans_choice('{1} :count payment recorded today|[2,*] :count payments recorded today', $todaysPayments->count(), ['count' => $todaysPayments->count()]),
+                        'sub' => __('Pending').': ₦'.number_format($kpis['pending_payments'], 2),
                         'modal' => 'todays-payments-modal',
                     ],
                     [
@@ -234,8 +228,18 @@
                             'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
                             'rows' => [
                                 ['label' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2), 'modal' => 'todays-payments-modal', 'color' => 'green', 'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z'],
-                                ['label' => 'Pending Payments', 'value' => '₦'.number_format($kpis['pending_payments'], 2), 'modal' => 'pending_payments-modal', 'color' => 'amber', 'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5'],
-                                ['label' => 'Revenue Leakage', 'value' => '₦'.number_format($kpis['revenue_leakage'], 2), 'modal' => 'revenue_leakage-modal', 'color' => 'red', 'icon' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941'],
+                                [
+                                    'label' => 'Pending Payments', 'value' => '₦'.number_format($kpis['pending_payments'], 2), 'color' => 'amber',
+                                    'icon' => 'M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5',
+                                    // The aggregate figure is open to any staff role, but the
+                                    // drill-down (which students, how much each) stays
+                                    // Director-only - so only a Director gets the modal trigger.
+                                    ...(auth()->user()->isDirector() ? ['modal' => 'pending_payments-modal'] : []),
+                                ],
+                                // Revenue Leakage is Director-only, same as before.
+                                ...(auth()->user()->isDirector() ? [
+                                    ['label' => 'Revenue Leakage', 'value' => '₦'.number_format($kpis['revenue_leakage'], 2), 'modal' => 'revenue_leakage-modal', 'color' => 'red', 'icon' => 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941'],
+                                ] : []),
                             ],
                         ],
                         [
@@ -250,19 +254,15 @@
                         ],
                     ];
 
-                    // The entire "Finance" panel is a revenue summary -
-                    // Director-only, same as the aggregate hero card and KPI
-                    // modals above.
-                    if (! auth()->user()->isDirector()) {
-                        $summaryGroups = array_values(array_filter($summaryGroups, fn (array $group) => $group['title'] !== 'Finance'));
-                    }
-
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
 
+                    // No secretary-facing "all payments" listing exists (that
+                    // page is Director-only), so the Finance panel gets no
+                    // "View All" link for anyone but a Director.
                     $panelViewAll = [
                         'Students' => route('students.index'),
                         'Training & Operations' => route('enrolled-trainees.index'),
-                        'Finance' => auth()->user()->isDirector() ? route('payment-reports.index') : route('payments.index'),
+                        'Finance' => auth()->user()->isDirector() ? route('payment-reports.index') : null,
                         'Certificates & Services' => route('certificates.index'),
                     ];
                 @endphp
@@ -285,7 +285,9 @@
                                     </span>
                                     <h3 class="text-base font-bold uppercase tracking-widest text-amber-400">{{ __($group['title']) }}</h3>
                                 </div>
-                                <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-gray-300 hover:text-amber-400 shrink-0">{{ __('View All') }}</a>
+                                @if ($panelViewAll[$group['title']] ?? null)
+                                    <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-gray-300 hover:text-amber-400 shrink-0">{{ __('View All') }}</a>
+                                @endif
                             </div>
 
                             <div class="divide-y divide-white/10">

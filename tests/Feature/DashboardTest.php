@@ -312,9 +312,45 @@ class DashboardTest extends TestCase
         $response->assertSee('Paid Today');
         $response->assertSee('Revenue Today');
         $response->assertSee('500.00', false);
+        $response->assertSee('Pending Payments');
         $response->assertDontSee('Revenue Leakage');
         $response->assertDontSee('Total Payments');
         $response->assertDontSee('All Time');
+    }
+
+    public function test_a_secretary_sees_the_pending_payments_total_but_not_the_per_student_breakdown(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create(['name' => 'Owes Money']);
+        $course = Course::factory()->create(['fee' => 4200]);
+        // due_date is set well outside the payment-risk warning window, so
+        // this enrollment doesn't also surface via the (secretary-visible)
+        // At-Risk Students widget - this test is isolated to Pending Payments.
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'due_date' => now()->addMonths(2), 'status' => 'active', 'fee' => 4200]);
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('4,200.00');
+        // The aggregate is visible, but the drill-down (which students, how
+        // much each) stays Director-only - the modal isn't even rendered.
+        // (The student's own name legitimately appears elsewhere on the page,
+        // e.g. the Active Students list, so this isn't checked here.)
+        $response->assertDontSee('pending_payments-modal', false);
+    }
+
+    public function test_a_director_sees_the_pending_payments_drill_down(): void
+    {
+        $director = User::factory()->director()->create();
+        $student = Student::factory()->create(['name' => 'Owes Money']);
+        $course = Course::factory()->create(['fee' => 4200]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'due_date' => now()->addMonths(2), 'status' => 'active', 'fee' => 4200]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('4,200.00');
+        $response->assertSee('pending_payments-modal', false);
     }
 
     public function test_a_director_still_sees_revenue_figures_on_the_dashboard(): void
@@ -334,7 +370,7 @@ class DashboardTest extends TestCase
     {
         $secretary = User::factory()->secretary()->create();
         $student = Student::factory()->create();
-        $course = Course::factory()->create(['fee' => 6543]);
+        $course = Course::factory()->create(['name' => 'Locked Course', 'fee' => 6543]);
         $student->courses()->attach($course->id, [
             'enrolled_at' => now()->subDays(10),
             'due_date' => now()->subDays(6),
@@ -346,7 +382,11 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Locked');
-        $response->assertDontSee('6,543.00');
+        // The locked-students modal itself still redacts the per-enrollment
+        // balance for a secretary - it just no longer means "6,543.00" can't
+        // appear anywhere on the page, since that same locked balance now
+        // legitimately counts toward the visible Pending Payments total.
+        $response->assertDontSee('Locked Course · ₦6,543.00');
     }
 
     public function test_dashboard_shows_zeroes_when_there_is_no_data(): void
