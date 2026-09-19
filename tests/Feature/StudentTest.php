@@ -205,7 +205,30 @@ class StudentTest extends TestCase
         $response->assertDontSee(route('payments.edit', $payment), false);
     }
 
-    public function test_a_secretary_does_not_see_financial_figures_on_the_student_page(): void
+    public function test_a_secretary_does_not_see_charges_and_balances_on_the_student_page(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['fee' => 5000]);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(30),
+            'status' => 'active',
+        ]);
+        $service = Service::factory()->create(['price' => 750]);
+        StudentService::factory()->create(['student_id' => $student->id, 'service_id' => $service->id, 'price' => 750]);
+
+        $response = $this->actingAs($secretary)->get(route('students.show', $student));
+
+        $response->assertOk();
+        // "Financial Overview" (charges/balances/outstanding) stays
+        // Director-only - only the payment history itself opened up.
+        $response->assertSee(__('Charges and balances are only visible to a Director. Use "Balance Payment" to charge whatever this student currently owes.'));
+        $response->assertDontSee('5,000.00');
+        $response->assertDontSee('750.00');
+    }
+
+    public function test_a_secretary_sees_the_full_payment_history_on_the_student_page(): void
     {
         $secretary = User::factory()->secretary()->create();
         $student = Student::factory()->create();
@@ -216,19 +239,15 @@ class StudentTest extends TestCase
             'status' => 'active',
         ]);
         $payment = Payment::factory()->create(['student_id' => $student->id, 'course_id' => $course->id, 'amount' => 1234.56]);
-        $service = Service::factory()->create(['price' => 750]);
-        StudentService::factory()->create(['student_id' => $student->id, 'service_id' => $service->id, 'price' => 750]);
 
         $response = $this->actingAs($secretary)->get(route('students.show', $student));
 
         $response->assertOk();
-        $response->assertDontSee('1,234.56');
-        $response->assertDontSee('5,000.00');
-        $response->assertDontSee('750.00');
-        // The receipt is still reachable, and recording a new payment stays
-        // available - only the browsable history/balances are hidden.
+        $response->assertSee('1,234.56');
         $response->assertSee(route('payments.receipt', $payment), false);
         $response->assertSee(route('payments.record.create', ['student_id' => $student->id]), false);
+        // Editing a payment outright stays Director-only.
+        $response->assertDontSee(route('payments.edit', $payment), false);
     }
 
     public function test_a_director_sees_financial_figures_on_the_student_page(): void
