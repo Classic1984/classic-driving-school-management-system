@@ -86,11 +86,17 @@ class FinanceController extends Controller
             ->whereYear('payment_date', $year)
             ->get(['amount', 'payment_date']);
 
-        $expenses = Expense::whereYear('expense_date', $year)->get(['amount', 'expense_date']);
+        $expenses = Expense::whereYear('expense_date', $year)->get(['amount', 'expense_date', 'category']);
 
         $months = collect(range(1, 12))->map(function (int $month) use ($payments, $expenses, $year) {
-            $income = $payments->filter(fn ($payment) => $payment->payment_date->month === $month)->sum('amount');
-            $expenseTotal = $expenses->filter(fn ($expense) => $expense->expense_date->month === $month)->sum('amount');
+            $monthExpenses = $expenses->filter(fn (Expense $expense) => $expense->expense_date->month === $month);
+
+            // An investment/saving maturing and returning adds to income
+            // instead of being subtracted as an expense - everything else
+            // in the same ledger still counts as an outflow.
+            $income = $payments->filter(fn ($payment) => $payment->payment_date->month === $month)->sum('amount')
+                + $monthExpenses->filter(fn (Expense $expense) => $expense->isIncome())->sum('amount');
+            $expenseTotal = $monthExpenses->reject(fn (Expense $expense) => $expense->isIncome())->sum('amount');
 
             return [
                 'label' => Carbon::create($year, $month, 1)->format('F'),
@@ -132,8 +138,9 @@ class FinanceController extends Controller
      */
     protected function computeOverall(): array
     {
-        $income = Payment::where('status', 'paid')->sum('amount');
-        $expenses = Expense::sum('amount');
+        $income = Payment::where('status', 'paid')->sum('amount')
+            + Expense::whereIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
+        $expenses = Expense::whereNotIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
 
         return [
             'income' => $income,

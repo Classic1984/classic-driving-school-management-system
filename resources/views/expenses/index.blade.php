@@ -32,6 +32,7 @@
             'debt' => $banknoteIconPath,
             'dssp_payment' => $banknoteIconPath,
             'investment_saving' => $banknoteIconPath,
+            'investment_return' => $trendIconPath,
             'car_repair' => $vehicleIconPath,
             'car_bodywork' => $vehicleIconPath,
             'new_car' => $vehicleIconPath,
@@ -141,13 +142,13 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
+                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $expense->isIncome() ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-500' }}">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $categoryIcon[$expense->category] ?? $shoppingBagIconPath }}" /></svg>
                                             </span>
                                             <span class="text-gray-700">{{ \App\Models\Expense::CATEGORIES[$expense->category] ?? $expense->category }}</span>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-sm align-top font-semibold text-gray-800">₦{{ number_format($expense->amount, 2) }}</td>
+                                    <td class="px-4 py-3 text-sm align-top font-semibold {{ $expense->isIncome() ? 'text-green-600' : 'text-gray-800' }}">{{ $expense->isIncome() ? '+' : '' }}₦{{ number_format($expense->amount, 2) }}</td>
                                     <td class="px-4 py-3 text-sm align-top text-gray-600">{{ \Illuminate\Support\Str::limit($expense->description, 40) ?: '—' }}</td>
                                     <td class="px-4 py-3 text-sm align-top text-right">
                                         <div class="relative inline-block text-left" x-data="{ open: false }">

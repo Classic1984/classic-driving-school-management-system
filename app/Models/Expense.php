@@ -41,9 +41,29 @@ class Expense extends Model
         'perfume' => 'Perfume',
         'investment_saving' => 'Investment/Saving',
         'saving' => 'Saving',
+        'investment_return' => 'Investment/Saving Return',
         'gift' => 'Gift',
         'miscellaneous' => 'Miscellaneous/Other',
     ];
+
+    /**
+     * Categories that represent money coming back in rather than going out -
+     * an investment or saving maturing and returning. Unlike every other
+     * category, these count toward income (see FinanceController) instead of
+     * being subtracted as an expense.
+     *
+     * @var list<string>
+     */
+    public const INCOME_CATEGORIES = ['investment_return'];
+
+    /**
+     * Whether this entry is money coming back in (an investment/saving
+     * return) rather than an outflow.
+     */
+    public function isIncome(): bool
+    {
+        return in_array($this->category, self::INCOME_CATEGORIES, true);
+    }
 
     /**
      * The attributes that are mass assignable.

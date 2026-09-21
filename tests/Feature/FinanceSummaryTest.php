@@ -37,6 +37,40 @@ class FinanceSummaryTest extends TestCase
         $response->assertSeeInOrder(['March', '800.00', '250.00', '550.00']);
     }
 
+    public function test_an_investment_return_adds_to_income_instead_of_subtracting_as_an_expense(): void
+    {
+        $director = User::factory()->director()->create();
+
+        Payment::factory()->create(['amount' => 500, 'status' => 'paid', 'payment_date' => '2026-03-10']);
+        Expense::factory()->create(['amount' => 200, 'expense_date' => '2026-03-05', 'category' => 'investment_saving']);
+        Expense::factory()->create(['amount' => 350, 'expense_date' => '2026-03-20', 'category' => 'investment_return']);
+        Expense::factory()->create(['amount' => 100, 'expense_date' => '2026-03-08', 'category' => 'fuel']);
+
+        $response = $this->actingAs($director)->get('/finance?year=2026');
+
+        $response->assertOk();
+        // Income: 500 (payment) + 350 (investment return) = 850.
+        // Expenses: 200 (investment/saving) + 100 (fuel) = 300 - the return
+        // itself is money coming back in, not an outflow.
+        // Balance: 850 - 300 = 550.
+        $response->assertSeeInOrder(['March', '850.00', '300.00', '550.00']);
+    }
+
+    public function test_the_overall_balance_folds_investment_returns_into_income(): void
+    {
+        $director = User::factory()->director()->create();
+
+        Payment::factory()->create(['amount' => 1000, 'status' => 'paid', 'payment_date' => now()->toDateString()]);
+        Expense::factory()->create(['amount' => 400, 'expense_date' => now()->toDateString(), 'category' => 'investment_saving']);
+        Expense::factory()->create(['amount' => 250, 'expense_date' => now()->toDateString(), 'category' => 'investment_return']);
+
+        $response = $this->actingAs($director)->get('/finance');
+
+        $response->assertOk();
+        // Overall: income 1000 + 250 = 1250, expenses 400, balance 850.
+        $response->assertSeeInOrder(['Total Balance', '1,250.00', '400.00', '850.00']);
+    }
+
     public function test_summary_shows_the_overall_running_balance(): void
     {
         $director = User::factory()->director()->create();
