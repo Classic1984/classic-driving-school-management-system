@@ -6,7 +6,7 @@
         <select id="category" name="category" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
             <option value="">{{ __('Select a category') }}</option>
             @foreach (\App\Models\Expense::CATEGORIES as $value => $label)
-                <option value="{{ $value }}" @selected(old('category', $expense?->category) === $value)>{{ __($label) }}</option>
+                <option value="{{ $value }}" @selected(old('category', $expense?->category ?? request('category')) === $value)>{{ __($label) }}</option>
             @endforeach
         </select>
         <x-input-error class="mt-2" :messages="$errors->get('category')" />

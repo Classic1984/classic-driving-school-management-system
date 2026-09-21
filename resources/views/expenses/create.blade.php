@@ -1,7 +1,16 @@
 <x-app-layout>
+    @php
+        // Arriving here via the "Investment Return" nav/dashboard shortcut
+        // pre-selects the category through the query string - the page
+        // greets the Director with a matching title so it's obvious they
+        // landed in the right place, without needing a whole separate form.
+        $prefillCategory = old('category', request('category'));
+        $isInvestmentReturn = $prefillCategory === 'investment_return';
+    @endphp
+
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Record Expense') }}
+            {{ $isInvestmentReturn ? __('Record Investment Return') : __('Record Expense') }}
         </h2>
     </x-slot>
 
@@ -16,8 +25,8 @@
                     <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                 </span>
                 <div>
-                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Record Expense') }}</h3>
-                    <p class="text-sm text-gray-500">{{ __('Log money spent running the school') }}</p>
+                    <h3 class="text-2xl font-extrabold text-gray-900">{{ $isInvestmentReturn ? __('Record Investment Return') : __('Record Expense') }}</h3>
+                    <p class="text-sm text-gray-500">{{ $isInvestmentReturn ? __('This amount will be added to income.') : __('Log money spent running the school') }}</p>
                 </div>
             </div>
 

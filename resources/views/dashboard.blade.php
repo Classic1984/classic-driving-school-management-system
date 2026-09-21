@@ -265,6 +265,15 @@
                         'Finance' => auth()->user()->isDirector() ? route('payment-reports.index') : null,
                         'Certificates & Services' => route('certificates.index'),
                     ];
+
+                    // A one-click way to jump straight to a pre-filled
+                    // Expense form for recording an investment/saving
+                    // return - Expenses itself is Director-only.
+                    $panelExtraAction = [
+                        'Finance' => auth()->user()->isDirector()
+                            ? ['label' => 'Investment Return', 'href' => route('expenses.create', ['category' => 'investment_return'])]
+                            : null,
+                    ];
                 @endphp
 
                 <div class="flex items-center gap-3">
@@ -285,9 +294,14 @@
                                     </span>
                                     <h3 class="text-base font-bold uppercase tracking-widest text-amber-400">{{ __($group['title']) }}</h3>
                                 </div>
-                                @if ($panelViewAll[$group['title']] ?? null)
-                                    <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-gray-300 hover:text-amber-400 shrink-0">{{ __('View All') }}</a>
-                                @endif
+                                <div class="flex items-center gap-3 shrink-0">
+                                    @if (! empty($panelExtraAction[$group['title']]))
+                                        <a href="{{ $panelExtraAction[$group['title']]['href'] }}" class="text-sm font-semibold text-amber-400 hover:text-amber-300">{{ __($panelExtraAction[$group['title']]['label']) }}</a>
+                                    @endif
+                                    @if ($panelViewAll[$group['title']] ?? null)
+                                        <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-gray-300 hover:text-amber-400">{{ __('View All') }}</a>
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="divide-y divide-white/10">
