@@ -177,6 +177,56 @@ class ExpenseTest extends TestCase
         }
     }
 
+    public function test_director_can_store_an_investment_return(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->post('/expenses', [
+            'category' => 'investment_return',
+            'amount' => 65000,
+            'expense_date' => now()->toDateString(),
+            'description' => 'Fixed deposit matured',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('expenses', ['category' => 'investment_return', 'amount' => 65000]);
+    }
+
+    public function test_the_expense_form_lists_the_investment_return_category(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/expenses/create');
+
+        $response->assertOk();
+        $response->assertSee('Investment/Saving Return');
+    }
+
+    public function test_an_investment_return_is_excluded_from_the_total_expenses_figure(): void
+    {
+        $director = User::factory()->director()->create();
+        Expense::factory()->create(['category' => 'fuel', 'amount' => 1000, 'expense_date' => now()->toDateString()]);
+        Expense::factory()->create(['category' => 'investment_return', 'amount' => 65000, 'expense_date' => now()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/expenses');
+
+        $response->assertOk();
+        // Total Expenses only counts the real outflow (1,000) - the return
+        // is money coming back in, not something spent.
+        $response->assertViewHas('totalExpenses', 1000.0);
+    }
+
+    public function test_an_investment_return_is_shown_as_a_positive_addition_in_the_expense_list(): void
+    {
+        $director = User::factory()->director()->create();
+        Expense::factory()->create(['category' => 'investment_return', 'amount' => 65000, 'expense_date' => now()->toDateString()]);
+
+        $response = $this->actingAs($director)->get('/expenses');
+
+        $response->assertOk();
+        $response->assertSee('+₦65,000.00', false);
+    }
+
     public function test_storing_an_expense_requires_valid_data(): void
     {
         $director = User::factory()->director()->create();

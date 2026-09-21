@@ -41,11 +41,14 @@ class ExpenseController extends Controller
         }
 
         $expenses = (clone $query)->latest('expense_date')->paginate(10)->withQueryString();
-        $totalExpenses = (clone $query)->sum('amount');
+        // Investment/Saving Return entries are money coming back in, not an
+        // outflow, so they're excluded from every "how much did we spend"
+        // total on this page - same treatment as the Finance Summary.
+        $totalExpenses = (clone $query)->whereNotIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
         $totalTransactions = (clone $query)->count();
 
-        $totalThisMonth = Expense::whereMonth('expense_date', now()->month)->whereYear('expense_date', now()->year)->sum('amount');
-        $totalLastMonth = Expense::whereMonth('expense_date', now()->subMonthNoOverflow()->month)->whereYear('expense_date', now()->subMonthNoOverflow()->year)->sum('amount');
+        $totalThisMonth = Expense::whereMonth('expense_date', now()->month)->whereYear('expense_date', now()->year)->whereNotIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
+        $totalLastMonth = Expense::whereMonth('expense_date', now()->subMonthNoOverflow()->month)->whereYear('expense_date', now()->subMonthNoOverflow()->year)->whereNotIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
         $percentChange = $totalLastMonth > 0 ? round((($totalThisMonth - $totalLastMonth) / $totalLastMonth) * 100) : null;
 
         return view('expenses.index', compact(
