@@ -353,6 +353,27 @@ class DashboardTest extends TestCase
         $response->assertSee('pending_payments-modal', false);
     }
 
+    public function test_a_director_sees_a_shortcut_to_record_an_investment_return(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Investment Return');
+        $response->assertSee(route('expenses.create', ['category' => 'investment_return']), false);
+    }
+
+    public function test_a_secretary_does_not_see_a_shortcut_to_record_an_investment_return(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Investment Return');
+    }
+
     public function test_a_director_still_sees_revenue_figures_on_the_dashboard(): void
     {
         $director = User::factory()->director()->create();

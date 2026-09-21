@@ -65,8 +65,11 @@
             <x-responsive-nav-link :href="route('approvals.index')" :active="request()->routeIs('approvals.*')">
                 {{ __('Approval Centre') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || request()->routeIs('expenses.*')">
+            <x-responsive-nav-link :href="route('finance.summary')" :active="request()->routeIs('finance.*') || (request()->routeIs('expenses.*') && request()->query('category') !== 'investment_return')">
                 {{ __('Finance') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('expenses.create', ['category' => 'investment_return'])" :active="request()->routeIs('expenses.create') && request()->query('category') === 'investment_return'">
+                {{ __('Investment Return') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('services.index')" :active="request()->routeIs('services.*')">
                 {{ __('Services') }}

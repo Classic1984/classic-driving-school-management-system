@@ -227,6 +227,29 @@ class ExpenseTest extends TestCase
         $response->assertSee('+₦65,000.00', false);
     }
 
+    public function test_the_investment_return_shortcut_preselects_the_category_and_relabels_the_page(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/expenses/create?category=investment_return');
+
+        $response->assertOk();
+        $response->assertSee('Record Investment Return');
+        $response->assertSee('This amount will be added to income.');
+        $response->assertSee('<option value="investment_return" selected', false);
+    }
+
+    public function test_the_navigation_sidebar_links_directly_to_the_investment_return_shortcut(): void
+    {
+        $director = User::factory()->director()->create();
+
+        $response = $this->actingAs($director)->get('/expenses');
+
+        $response->assertOk();
+        $response->assertSee('Investment Return');
+        $response->assertSee(route('expenses.create', ['category' => 'investment_return']), false);
+    }
+
     public function test_storing_an_expense_requires_valid_data(): void
     {
         $director = User::factory()->director()->create();
