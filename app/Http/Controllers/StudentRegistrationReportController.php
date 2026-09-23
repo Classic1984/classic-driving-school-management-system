@@ -49,10 +49,10 @@ class StudentRegistrationReportController extends Controller
         return response()->streamDownload(function () use ($students) {
             $handle = fopen('php://output', 'w');
 
-            fputcsv($handle, ['Student ID', 'Student Name', 'Email', 'Phone', 'Course(s)', 'Registration Date', 'Status']);
+            fputcsv($handle, ['#', 'Student ID', 'Student Name', 'Email', 'Phone', 'Course(s)', 'Registration Date', 'Status']);
 
-            foreach ($students as $student) {
-                fputcsv($handle, $this->row($student));
+            foreach ($students as $index => $student) {
+                fputcsv($handle, $this->row($student, $index + 1));
             }
 
             fclose($handle);
@@ -96,9 +96,10 @@ class StudentRegistrationReportController extends Controller
     /**
      * @return array<int, string>
      */
-    protected function row(Student $student): array
+    protected function row(Student $student, int $number): array
     {
         return [
+            $number,
             $student->student_id_number,
             $student->name,
             $student->email,
