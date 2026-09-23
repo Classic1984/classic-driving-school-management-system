@@ -429,6 +429,48 @@ class PaymentTest extends TestCase
         $this->assertDatabaseMissing('payments', ['id' => $payment->id]);
     }
 
+    public function test_a_payment_covering_multiple_services_with_no_single_course_can_be_deleted(): void
+    {
+        // Regression test: a payment recorded through the allocation flow
+        // (covering services, not one course) has course_id === null - the
+        // classic destroy() used to crash trying to read course_id as an
+        // int and read $payment->course->name on a null relation.
+        $user = User::factory()->create();
+        $payment = Payment::factory()->create(['course_id' => null]);
+
+        $response = $this->actingAs($user)->delete("/payments/{$payment->id}");
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/payments');
+        $this->assertDatabaseMissing('payments', ['id' => $payment->id]);
+    }
+
+    public function test_a_payment_covering_multiple_services_with_no_single_course_can_be_updated(): void
+    {
+        // Regression test: same null-course_id crash, but hit on the first
+        // refreshEnrollmentStatus() call (using the payment's course_id
+        // from before the update) rather than the one after.
+        $user = User::factory()->create();
+        $payment = Payment::factory()->create(['course_id' => null, 'status' => 'pending']);
+        $course = Course::factory()->create();
+        $payment->student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+
+        $response = $this->actingAs($user)->put("/payments/{$payment->id}", [
+            'student_id' => $payment->student_id,
+            'course_id' => $course->id,
+            'amount' => $payment->amount,
+            'payment_date' => $payment->payment_date->format('Y-m-d'),
+            'payment_method' => $payment->payment_method,
+            'status' => 'paid',
+            'reference_number' => $payment->reference_number,
+            'notes' => 'Confirmed.',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/payments');
+        $this->assertSame('paid', $payment->fresh()->status);
+    }
+
     public function test_authenticated_user_can_export_payments_as_csv(): void
     {
         $user = User::factory()->create();
