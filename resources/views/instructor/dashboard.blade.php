@@ -31,7 +31,10 @@
             <h3 class="text-sm font-semibold text-gray-700 mb-2">📘 {{ __("Today's Theory Class") }}</h3>
             @if ($todaysTheoryClass)
                 <p class="text-sm text-gray-800 font-medium">{{ $todaysTheoryClass->topic }}</p>
-                <p class="text-xs text-gray-500 mt-0.5 mb-3">{{ __('Starts at') }} {{ \Carbon\Carbon::createFromFormat('H:i', $todaysTheoryClass->start_time)->format('g:i A') }}</p>
+                <p class="text-xs text-gray-500 mt-0.5 mb-3">
+                    {{ __('Starts at') }}
+                    {{ $todaysTheoryClass->start_time ? \Carbon\Carbon::createFromFormat('H:i', $todaysTheoryClass->start_time)->format('g:i A') : __('Time TBA') }}
+                </p>
 
                 @if ($theoryRoster->isEmpty())
                     <p class="text-sm text-gray-500">{{ __('No students expected today.') }}</p>

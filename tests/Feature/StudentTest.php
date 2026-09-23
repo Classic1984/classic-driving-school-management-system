@@ -1411,6 +1411,25 @@ class StudentTest extends TestCase
         $this->assertDatabaseMissing('students', ['id' => $student->id]);
     }
 
+    public function test_deleting_a_student_with_app_access_also_deletes_their_login_account(): void
+    {
+        // Regression test: leaving the login account behind (pointing at a
+        // deleted student) used to crash the student's next dashboard visit
+        // with a 500, since role-based middleware only checks the account's
+        // role column, not whether the student relation still resolves.
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $this->actingAs($user)->post(route('students.access.store', $student));
+        $studentUserId = $student->refresh()->user_id;
+        $this->assertNotNull($studentUserId);
+
+        $response = $this->actingAs($user)->delete("/students/{$student->id}");
+
+        $response->assertRedirect('/students');
+        $this->assertDatabaseMissing('students', ['id' => $student->id]);
+        $this->assertDatabaseMissing('users', ['id' => $studentUserId]);
+    }
+
     public function test_a_secretary_cannot_change_any_field_on_an_already_registered_student(): void
     {
         $secretary = User::factory()->secretary()->create();

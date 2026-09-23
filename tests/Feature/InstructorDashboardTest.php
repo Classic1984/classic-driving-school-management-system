@@ -120,6 +120,27 @@ class InstructorDashboardTest extends TestCase
         $response->assertSee('Road Signs 101');
     }
 
+    public function test_a_theory_class_with_no_start_time_set_yet_still_renders(): void
+    {
+        // Regression test: a Director can create today's theory class
+        // (e.g. via the scheduled reminder/"create today" action) before
+        // assigning a start time - the dashboard used to crash trying to
+        // parse a null start_time with Carbon::createFromFormat().
+        $instructor = $this->instructorWithAccess();
+        TheoryClass::factory()->create([
+            'instructor_id' => $instructor->id,
+            'class_date' => today(),
+            'topic' => 'Road Signs 101',
+            'start_time' => null,
+        ]);
+
+        $response = $this->actingAs($instructor->user)->get(route('instructor.dashboard'));
+
+        $response->assertOk();
+        $response->assertSee('Road Signs 101');
+        $response->assertSee('Time TBA');
+    }
+
     public function test_a_theory_class_assigned_to_another_instructor_today_is_not_shown(): void
     {
         $instructor = $this->instructorWithAccess();
