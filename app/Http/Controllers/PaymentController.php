@@ -166,7 +166,8 @@ class PaymentController extends Controller
         $this->refreshEnrollmentStatus($previousStudentId, $previousCourseId);
         $this->refreshEnrollmentStatus($payment->student_id, $payment->course_id);
 
-        ActivityLog::record("Updated a payment for {$payment->student->name} ({$payment->course->name})");
+        $courseName = $payment->course->name ?? 'Multiple Services';
+        ActivityLog::record("Updated a payment for {$payment->student->name} ({$courseName})");
 
         return Redirect::route('payments.index')->with('status', 'payment-updated');
     }
@@ -179,7 +180,8 @@ class PaymentController extends Controller
         $payment->load(['student', 'course']);
         $studentId = $payment->student_id;
         $courseId = $payment->course_id;
-        $description = "Deleted a payment for {$payment->student->name} ({$payment->course->name})";
+        $courseName = $payment->course->name ?? 'Multiple Services';
+        $description = "Deleted a payment for {$payment->student->name} ({$courseName})";
 
         $payment->delete();
 
@@ -195,8 +197,16 @@ class PaymentController extends Controller
      * course immediately, so payments unlock training without waiting for
      * the daily scheduled refresh.
      */
-    protected function refreshEnrollmentStatus(int $studentId, int $courseId): void
+    protected function refreshEnrollmentStatus(int $studentId, ?int $courseId): void
     {
+        // A payment covering only services (or split across several
+        // charges via the allocation flow) has no single course_id - there's
+        // no one enrollment to refresh, so this is a no-op rather than an
+        // error.
+        if ($courseId === null) {
+            return;
+        }
+
         Enrollment::where('student_id', $studentId)
             ->where('course_id', $courseId)
             ->first()
