@@ -92,6 +92,7 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-black">
                                     <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                        <th class="px-4 py-3">#</th>
                                         <th class="px-4 py-3">
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
@@ -136,6 +137,9 @@
                                         @php $registrationInitials = collect(explode(' ', $student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
                                         <tr class="hover:bg-amber-50/40 transition">
                                             <td class="px-4 py-3">
+                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 font-mono text-xs font-bold">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                            </td>
+                                            <td class="px-4 py-3">
                                                 <span class="font-mono text-sm text-gray-700">{{ $student->student_id_number }}</span>
                                             </td>
                                             <td class="px-4 py-3 text-sm">
@@ -159,7 +163,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="px-4 py-10 text-center">
+                                            <td colspan="8" class="px-4 py-10 text-center">
                                                 <div class="flex flex-col items-center gap-2">
                                                     <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-50 text-gray-300">
                                                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $noSymbolIconPath }}" /></svg>

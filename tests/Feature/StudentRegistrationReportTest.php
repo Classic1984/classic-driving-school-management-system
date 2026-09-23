@@ -72,6 +72,19 @@ class StudentRegistrationReportTest extends TestCase
         $response->assertSee('Fallback Student');
     }
 
+    public function test_the_report_numbers_each_row(): void
+    {
+        $user = User::factory()->create();
+        Student::factory()->create(['name' => 'First Student', 'enrollment_date' => now()->toDateString()]);
+        Student::factory()->create(['name' => 'Second Student', 'enrollment_date' => now()->toDateString()]);
+
+        $response = $this->actingAs($user)->get('/student-registration-report?period=today');
+
+        $response->assertOk();
+        $response->assertSee('01');
+        $response->assertSee('02');
+    }
+
     public function test_authenticated_user_can_export_the_report_as_csv(): void
     {
         $user = User::factory()->create();
@@ -85,6 +98,11 @@ class StudentRegistrationReportTest extends TestCase
         $content = $response->streamedContent();
         $this->assertStringContainsString('Student ID', $content);
         $this->assertStringContainsString('CSV Student', $content);
+        // Header row leads with the row-number column, and the (only) data
+        // row is numbered 1.
+        $lines = explode("\n", trim($content));
+        $this->assertMatchesRegularExpression('/^"?#"?,/', $lines[0]);
+        $this->assertMatchesRegularExpression('/^"?1"?,/', $lines[1]);
     }
 
     public function test_authenticated_user_can_download_the_report_as_a_pdf(): void

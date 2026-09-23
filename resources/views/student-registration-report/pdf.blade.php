@@ -19,6 +19,7 @@
     <table>
         <thead>
             <tr>
+                <th>#</th>
                 <th>Student ID</th>
                 <th>Student Name</th>
                 <th>Email</th>
@@ -31,6 +32,7 @@
         <tbody>
             @forelse ($students as $student)
                 <tr>
+                    <td>{{ $loop->iteration }}</td>
                     <td>{{ $student->student_id_number }}</td>
                     <td>{{ $student->name }}</td>
                     <td>{{ $student->email }}</td>
@@ -41,7 +43,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">No students registered during this period.</td>
+                    <td colspan="8">No students registered during this period.</td>
                 </tr>
             @endforelse
         </tbody>
