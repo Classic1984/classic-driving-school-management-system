@@ -411,6 +411,15 @@ class StudentController extends Controller
         }
 
         $name = $student->name;
+
+        // If this student still has app access, their login account is
+        // deleted along with them - otherwise it's left pointing at a
+        // deleted student, and their next visit to the student portal
+        // crashes rather than failing gracefully.
+        if ($student->hasAppAccess()) {
+            $student->user->delete();
+        }
+
         $student->delete();
 
         ActivityLog::record("Deleted student {$name}");

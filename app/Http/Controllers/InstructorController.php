@@ -78,6 +78,16 @@ class InstructorController extends Controller
     public function destroy(Instructor $instructor): RedirectResponse
     {
         $name = $instructor->name;
+
+        // If this instructor still has app access, their login account is
+        // deleted along with them - otherwise it's left pointing at a
+        // deleted instructor, and every instructor-app request the account
+        // makes (dashboard, attendance, assessments) crashes rather than
+        // failing gracefully.
+        if ($instructor->hasAppAccess()) {
+            $instructor->user->delete();
+        }
+
         $instructor->delete();
 
         ActivityLog::record("Removed instructor {$name}");

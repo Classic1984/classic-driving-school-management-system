@@ -150,4 +150,24 @@ class InstructorTest extends TestCase
         $response->assertRedirect('/instructors');
         $this->assertDatabaseMissing('instructors', ['id' => $instructor->id]);
     }
+
+    public function test_deleting_an_instructor_with_app_access_also_deletes_their_login_account(): void
+    {
+        // Regression test: leaving the login account behind (pointing at a
+        // deleted instructor) used to crash the instructor's next app
+        // request with a 500, since role-based middleware only checks the
+        // account's role column, not whether the instructor relation still
+        // resolves.
+        $user = User::factory()->create();
+        $instructor = Instructor::factory()->create();
+        $this->actingAs($user)->post(route('instructors.access.store', $instructor));
+        $instructorUserId = $instructor->refresh()->user_id;
+        $this->assertNotNull($instructorUserId);
+
+        $response = $this->actingAs($user)->delete("/instructors/{$instructor->id}");
+
+        $response->assertRedirect('/instructors');
+        $this->assertDatabaseMissing('instructors', ['id' => $instructor->id]);
+        $this->assertDatabaseMissing('users', ['id' => $instructorUserId]);
+    }
 }
