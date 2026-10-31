@@ -294,4 +294,37 @@ class EnrollmentUpgradeRequestTest extends TestCase
         $response->assertOk();
         $response->assertViewHas('todaysOperations', fn (array $ops) => $ops['pending_approvals'] === 1);
     }
+
+    public function test_deleting_the_staff_account_that_requested_an_upgrade_keeps_the_pending_request(): void
+    {
+        // Regression test: requested_by used to cascadeOnDelete(), so
+        // removing the requesting staff account silently deleted the
+        // still-pending request along with it - making it vanish from the
+        // Director's approval queue with no trace, not just losing an
+        // audit trail.
+        $director = User::factory()->director()->create();
+        $secretary = User::factory()->secretary()->create();
+        $twoWeek = Course::factory()->create(['duration_weeks' => 2, 'course_type' => 'manual', 'schedule' => 'weekday', 'fee' => 60000, 'status' => 'active']);
+        $fourWeek = Course::factory()->create(['duration_weeks' => 4, 'course_type' => 'manual', 'schedule' => 'weekday', 'fee' => 90000, 'status' => 'active']);
+        [, $enrollment] = $this->enrollStudent($twoWeek);
+
+        $this->actingAs($secretary)->post("/enrollments/{$enrollment->id}/upgrade", [
+            'course_id' => $fourWeek->id,
+            'amount_paid' => 15000,
+            'payment_method' => 'cash',
+        ])->assertSessionHasNoErrors();
+
+        $upgradeRequest = EnrollmentUpgradeRequest::where('enrollment_id', $enrollment->id)->firstOrFail();
+
+        $this->actingAs($director)->delete("/users/{$secretary->id}")->assertRedirect('/users');
+
+        $this->assertDatabaseHas('enrollment_upgrade_requests', [
+            'id' => $upgradeRequest->id,
+            'status' => 'pending',
+            'requested_by' => null,
+        ]);
+
+        $response = $this->actingAs($director)->get('/approvals');
+        $response->assertOk();
+    }
 }

@@ -222,4 +222,27 @@ class InstructorAssessmentRequestTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('Already Certified');
     }
+
+    public function test_deleting_the_staff_account_that_submitted_an_assessment_request_keeps_the_pending_request(): void
+    {
+        // Regression test: requested_by used to cascadeOnDelete(), so
+        // removing the requesting instructor's login account silently
+        // deleted the still-pending request along with it - making it
+        // vanish from the Director's approval queue with no trace, not
+        // just losing an audit trail.
+        $director = User::factory()->director()->create();
+        $assessmentRequest = AssessmentRequest::factory()->create();
+        $requester = $assessmentRequest->requestedBy;
+
+        $this->actingAs($director)->delete("/users/{$requester->id}")->assertRedirect('/users');
+
+        $this->assertDatabaseHas('assessment_requests', [
+            'id' => $assessmentRequest->id,
+            'status' => 'pending',
+            'requested_by' => null,
+        ]);
+
+        $response = $this->actingAs($director)->get('/approvals');
+        $response->assertOk();
+    }
 }

@@ -131,4 +131,27 @@ class StudentCorrectionRequestTest extends TestCase
             'requested_value' => 'Advanced — 3 Weeks',
         ]);
     }
+
+    public function test_deleting_the_staff_account_that_requested_a_correction_keeps_the_pending_request(): void
+    {
+        // Regression test: requested_by used to cascadeOnDelete(), so
+        // removing the requesting staff account silently deleted the
+        // still-pending request along with it - making it vanish from the
+        // Director's approval queue with no trace, not just losing an
+        // audit trail.
+        $director = User::factory()->director()->create();
+        $secretary = User::factory()->secretary()->create();
+        $correctionRequest = StudentCorrectionRequest::factory()->create(['requested_by' => $secretary->id]);
+
+        $this->actingAs($director)->delete("/users/{$secretary->id}")->assertRedirect('/users');
+
+        $this->assertDatabaseHas('student_correction_requests', [
+            'id' => $correctionRequest->id,
+            'status' => 'pending',
+            'requested_by' => null,
+        ]);
+
+        $response = $this->actingAs($director)->get('/approvals');
+        $response->assertOk();
+    }
 }
