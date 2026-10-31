@@ -321,4 +321,29 @@ class PaymentCorrectionTest extends TestCase
         $response->assertSee('Fixing a data-entry mistake in the original split.');
         $response->assertSee($user->name);
     }
+
+    public function test_deleting_the_staff_account_that_corrected_a_payment_keeps_the_correction_record(): void
+    {
+        // Regression test: corrected_by used to cascadeOnDelete(), so
+        // removing the staff account silently deleted this permanent audit
+        // row along with it instead of keeping it with the author nulled
+        // out, unlike every other "who did this" column in the app.
+        $director = User::factory()->director()->create();
+        $staff = User::factory()->admin()->create();
+        $payment = Payment::factory()->create();
+        $correction = PaymentCorrectionLog::factory()->create([
+            'payment_id' => $payment->id,
+            'corrected_by' => $staff->id,
+        ]);
+
+        $this->actingAs($director)->delete("/users/{$staff->id}")->assertRedirect('/users');
+
+        $this->assertDatabaseHas('payment_correction_logs', [
+            'id' => $correction->id,
+            'corrected_by' => null,
+        ]);
+
+        $response = $this->actingAs($director)->get("/payments/{$payment->id}");
+        $response->assertOk();
+    }
 }

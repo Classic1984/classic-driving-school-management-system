@@ -186,4 +186,29 @@ class PaymentReversalTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('40,000.00');
     }
+
+    public function test_deleting_the_staff_account_that_reversed_a_payment_keeps_the_reversal_record(): void
+    {
+        // Regression test: reversed_by used to cascadeOnDelete(), so
+        // removing the staff account silently deleted this permanent audit
+        // row along with it instead of keeping it with the author nulled
+        // out, unlike every other "who did this" column in the app.
+        $director = User::factory()->director()->create();
+        $staff = User::factory()->admin()->create();
+        $payment = Payment::factory()->create(['status' => 'paid']);
+        $reversal = PaymentReversal::factory()->create([
+            'payment_id' => $payment->id,
+            'reversed_by' => $staff->id,
+        ]);
+
+        $this->actingAs($director)->delete("/users/{$staff->id}")->assertRedirect('/users');
+
+        $this->assertDatabaseHas('payment_reversals', [
+            'id' => $reversal->id,
+            'reversed_by' => null,
+        ]);
+
+        $response = $this->actingAs($director)->get("/payments/{$payment->id}");
+        $response->assertOk();
+    }
 }

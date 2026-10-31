@@ -123,7 +123,7 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top text-gray-600">{{ $cancellation->reason ?: '—' }}</td>
-                                    <td class="px-4 py-3 text-sm align-top text-gray-600">{{ $cancellation->cancelledBy->name }}</td>
+                                    <td class="px-4 py-3 text-sm align-top text-gray-600">{{ $cancellation->cancelledBy?->name ?? '—' }}</td>
                                     <td class="px-4 py-3 text-sm align-top text-right">
                                         <form method="post" action="{{ route('theory-class-cancellations.destroy', $cancellation) }}" onsubmit="return confirm('{{ __('Undo this cancellation?') }}');">
                                             @csrf

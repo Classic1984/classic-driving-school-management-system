@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\TheoryClassCancellation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -135,5 +136,25 @@ class UserManagementTest extends TestCase
 
         $response->assertSessionHasErrors('user');
         $this->assertDatabaseHas('users', ['id' => $director->id]);
+    }
+
+    public function test_removing_a_staff_account_that_cancelled_a_theory_class_does_not_fail(): void
+    {
+        // Regression test: cancelled_by used to be a required, RESTRICT-on
+        // -delete foreign key, so removing a staff account that had ever
+        // cancelled a theory class threw an uncaught QueryException instead
+        // of succeeding.
+        $director = User::factory()->director()->create();
+        $staff = User::factory()->admin()->create();
+        $cancellation = TheoryClassCancellation::factory()->create(['cancelled_by' => $staff->id]);
+
+        $response = $this->actingAs($director)->delete("/users/{$staff->id}");
+
+        $response->assertRedirect('/users');
+        $this->assertDatabaseMissing('users', ['id' => $staff->id]);
+        $this->assertDatabaseHas('theory_class_cancellations', [
+            'id' => $cancellation->id,
+            'cancelled_by' => null,
+        ]);
     }
 }
