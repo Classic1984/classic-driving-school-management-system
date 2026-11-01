@@ -76,14 +76,26 @@ class DashboardController extends Controller
             // column, and an uncast Carbon lower bound (which stringifies
             // with a "00:00:00" time component) would silently exclude a
             // payment recorded on the Monday the week starts.
+            //
+            // whereDate() (not whereBetween()) on both ends for the same
+            // reason the corporateQuery() scope in PaymentController uses
+            // it: a "date" cast's format suffix (payment_date => 'date:
+            // Y-m-d') only controls serialization, not what's actually
+            // written to the column, so a row saved from a raw Carbon
+            // instance can carry a time component - whereBetween() against
+            // plain-date bounds would then exclude it via string
+            // comparison, whereDate() doesn't care.
             $weekStart = now()->startOfWeek()->toDateString();
             $weekEnd = now()->endOfWeek()->toDateString();
 
             $paymentTotals = [
                 'week' => Payment::where('status', 'paid')
-                    ->whereBetween('payment_date', [$weekStart, $weekEnd])
+                    ->whereDate('payment_date', '>=', $weekStart)
+                    ->whereDate('payment_date', '<=', $weekEnd)
                     ->sum('amount')
-                    + CorporatePayment::whereBetween('payment_date', [$weekStart, $weekEnd])->sum('amount'),
+                    + CorporatePayment::whereDate('payment_date', '>=', $weekStart)
+                        ->whereDate('payment_date', '<=', $weekEnd)
+                        ->sum('amount'),
                 'month' => Payment::where('status', 'paid')
                     ->whereYear('payment_date', now()->year)
                     ->whereMonth('payment_date', now()->month)
