@@ -142,7 +142,7 @@
                                 <div class="text-sm">
                                     <p class="font-bold text-blue-900">{{ __('This payment was reversed.') }}</p>
                                     <p class="text-blue-800 mt-1">
-                                        {{ $payment->reversal->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $payment->reversal->reversedBy->name }}
+                                        {{ $payment->reversal->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $payment->reversal->reversedBy?->name ?? '—' }}
                                     </p>
                                     <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $payment->reversal->reason }}</p>
                                     <p class="text-blue-800 mt-1"><span class="font-semibold">{{ __('Amount Reversed') }}:</span> ₦{{ number_format($payment->reversal->amount, 2) }}</p>
@@ -157,7 +157,7 @@
                                     @foreach ($payment->corrections as $correction)
                                         <div class="text-sm rounded-lg bg-gray-50 ring-1 ring-gray-200 p-4">
                                             <p class="text-gray-500">
-                                                {{ $correction->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $correction->correctedBy->name }}
+                                                {{ $correction->created_at->format('l, M j, Y g:i A') }} — {{ __('by') }} {{ $correction->correctedBy?->name ?? '—' }}
                                             </p>
                                             <p class="mt-1"><span class="font-semibold">{{ __('Reason') }}:</span> {{ $correction->reason }}</p>
                                             <div class="mt-2 grid grid-cols-2 gap-4 text-xs">

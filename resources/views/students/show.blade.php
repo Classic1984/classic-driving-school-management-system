@@ -523,7 +523,7 @@
                                                         @endif
                                                         @php $pendingUpgradeRequest = $enrolledCourse->pivot->pendingUpgradeRequest(); @endphp
                                                         @if ($pendingUpgradeRequest)
-                                                            <span class="text-sm text-amber-600" title="{{ __('Requested by :name', ['name' => $pendingUpgradeRequest->requestedBy->name]) }}">{{ __('Upgrade Pending Approval') }}</span>
+                                                            <span class="text-sm text-amber-600" title="{{ __('Requested by :name', ['name' => $pendingUpgradeRequest->requestedBy?->name ?? '—']) }}">{{ __('Upgrade Pending Approval') }}</span>
                                                         @else
                                                             @if ($enrolledCourse->pivot->canUpgrade())
                                                                 <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade') }}</a>
