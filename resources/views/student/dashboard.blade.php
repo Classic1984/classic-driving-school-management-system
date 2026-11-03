@@ -42,7 +42,7 @@
                 @if ($row['certificate'])
                     <div class="mt-3 pt-3 border-t border-gray-100">
                         <p class="text-xs text-gray-500">{{ __('Certificate') }}: {{ $row['certificate']->certificate_number }}</p>
-                        <a href="{{ $row['certificate']->verificationUrl() }}" class="text-xs text-amber-600 hover:underline" target="_blank" rel="noopener">{{ __('Verify Certificate') }}</a>
+                        <a href="{{ $row['certificate']->verificationUrl() }}" class="text-xs text-gold-600 hover:underline" target="_blank" rel="noopener">{{ __('Verify Certificate') }}</a>
                     </div>
                 @endif
             </div>

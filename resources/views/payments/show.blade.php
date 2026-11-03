@@ -34,8 +34,8 @@
                     @endif
 
                     <div class="flex flex-wrap items-center gap-4 mb-6">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                            <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                            <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                         </span>
                         <div class="min-w-0 flex-1">
                             <h3 class="text-2xl font-extrabold text-gray-900 font-mono truncate">{{ $payment->receipt_number }}</h3>
@@ -46,21 +46,21 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Date') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->payment_date->format('l, M j, Y') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Student') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->student->name }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Course') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->course->name ?? __('Multiple Services') }}</p>
@@ -68,7 +68,7 @@
                         </div>
                         @if (auth()->user()->isDirector())
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Amount') }}</p>
                                     <p class="text-sm font-bold text-gray-900">₦{{ number_format($payment->amount, 2) }}</p>
@@ -76,28 +76,28 @@
                             </div>
                         @endif
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Payment Method') }}</p>
                                 <p class="text-sm font-bold text-gray-900 capitalize">{{ str_replace('_', ' ', $payment->payment_method) }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Reference Number') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->reference_number ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Recorded By') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->recordedBy?->name ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Notes') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $payment->notes ?? '—' }}</p>
@@ -112,7 +112,7 @@
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead>
-                                            <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                            <tr class="bg-gold-50/60 text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                                 <th class="px-3 py-3">{{ __('Charge') }}</th>
                                                 <th class="px-3 py-3 text-right">{{ __('Amount') }}</th>
                                             </tr>

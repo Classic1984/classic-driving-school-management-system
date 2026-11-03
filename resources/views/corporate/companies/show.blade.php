@@ -31,12 +31,12 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-navy p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
                             </span>
                             <div>
@@ -54,7 +54,7 @@
                             <a href="{{ route('corporate-companies.edit', $company) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-white/10 transition">
                                 {{ __('Edit') }}
                             </a>
-                            <a href="{{ route('corporate-companies.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-4 py-2 text-sm font-bold text-black transition">
+                            <a href="{{ route('corporate-companies.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-gold-500 hover:bg-gold-400 px-4 py-2 text-sm font-bold text-navy transition">
                                 {{ __('Back to Companies') }}
                             </a>
                         </div>
@@ -62,28 +62,28 @@
 
                     <div class="relative grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
                         <div class="flex items-start gap-2 rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
-                            <svg class="h-4 w-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-400">{{ __('Location') }}</p>
                                 <p class="text-sm font-semibold text-white">{{ implode(', ', array_filter([$company->address, $company->city])) ?: '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
-                            <svg class="h-4 w-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $userIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $userIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-400">{{ __('Contact Person') }}</p>
                                 <p class="text-sm font-semibold text-white">{{ $company->contact_person ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
-                            <svg class="h-4 w-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-400">{{ __('Phone') }}</p>
                                 <p class="text-sm font-semibold text-white">{{ $company->phone ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
-                            <svg class="h-4 w-4 text-amber-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-400">{{ __('Email') }}</p>
                                 <p class="text-sm font-semibold text-white">{{ $company->email ?? '—' }}</p>
@@ -113,15 +113,15 @@
                 <div class="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                         <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500">
-                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                             {{ __('Quotations') }}
                         </h4>
 
                         @if ($company->quotations->isNotEmpty())
                             <div class="flex flex-wrap gap-1.5 mt-3">
-                                <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'invoice_status' => $invoiceStatus])) }}#quotations" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $quotationStatus ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-black text-amber-400' }}">{{ __('All') }}</a>
+                                <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'invoice_status' => $invoiceStatus])) }}#quotations" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $quotationStatus ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-navy text-gold-400' }}">{{ __('All') }}</a>
                                 @foreach ($quotationStatuses as $status)
-                                    <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'quotation_status' => $status, 'invoice_status' => $invoiceStatus])) }}#quotations" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $quotationStatus === $status ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ __(ucfirst($status)) }}</a>
+                                    <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'quotation_status' => $status, 'invoice_status' => $invoiceStatus])) }}#quotations" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $quotationStatus === $status ? 'bg-navy text-gold-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ __(ucfirst($status)) }}</a>
                                 @endforeach
                             </div>
                         @endif
@@ -132,7 +132,7 @@
                             <ul id="quotations" class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
                                 @foreach ($filteredQuotations as $quotation)
                                     <li>
-                                        <a href="{{ route('corporate-quotations.show', $quotation) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-amber-50/40 transition">
+                                        <a href="{{ route('corporate-quotations.show', $quotation) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-gold-50/40 transition">
                                             <span class="font-mono text-gray-700">{{ $quotation->quotation_number }}</span>
                                             <x-badge :color="$statusColor($quotation->displayStatus())">{{ __(ucfirst($quotation->displayStatus())) }}</x-badge>
                                         </a>
@@ -144,15 +144,15 @@
 
                     <div>
                         <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500">
-                            <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                             {{ __('Invoices') }}
                         </h4>
 
                         @if ($company->invoices->isNotEmpty())
                             <div class="flex flex-wrap gap-1.5 mt-3">
-                                <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'quotation_status' => $quotationStatus])) }}#invoices" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $invoiceStatus ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-black text-amber-400' }}">{{ __('All') }}</a>
+                                <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'quotation_status' => $quotationStatus])) }}#invoices" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $invoiceStatus ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-navy text-gold-400' }}">{{ __('All') }}</a>
                                 @foreach ($invoiceStatuses as $status)
-                                    <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'invoice_status' => $status, 'quotation_status' => $quotationStatus])) }}#invoices" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $invoiceStatus === $status ? 'bg-black text-amber-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ __(ucfirst($status)) }}</a>
+                                    <a href="{{ route('corporate-companies.show', array_filter(['corporate_company' => $company->id, 'invoice_status' => $status, 'quotation_status' => $quotationStatus])) }}#invoices" class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $invoiceStatus === $status ? 'bg-navy text-gold-400' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">{{ __(ucfirst($status)) }}</a>
                                 @endforeach
                             </div>
                         @endif
@@ -163,7 +163,7 @@
                             <ul id="invoices" class="mt-3 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
                                 @foreach ($filteredInvoices as $invoice)
                                     <li>
-                                        <a href="{{ route('corporate-invoices.show', $invoice) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-amber-50/40 transition">
+                                        <a href="{{ route('corporate-invoices.show', $invoice) }}" class="flex items-center justify-between px-4 py-3 text-sm hover:bg-gold-50/40 transition">
                                             <span class="font-mono text-gray-700">{{ $invoice->invoice_number }}</span>
                                             <x-badge :color="$statusColor($invoice->displayStatus())">{{ __(ucfirst($invoice->displayStatus())) }}</x-badge>
                                         </a>
@@ -176,7 +176,7 @@
 
                 <div id="drivers" class="p-6 sm:p-8 border-t border-gray-100">
                     <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         {{ __('Enrolled Drivers') }}
                         <span class="text-gray-400 font-normal normal-case">({{ $company->drivers->count() }})</span>
                     </h4>
@@ -202,7 +202,7 @@
                             <x-input-label for="driver_license_number" :value="__('License No. (optional)')" class="text-xs" />
                             <x-text-input id="driver_license_number" name="license_number" type="text" class="block w-full mt-1 text-sm" :value="old('license_number')" />
                         </div>
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-4 py-2 text-sm font-bold text-amber-400 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-4 py-2 text-sm font-bold text-gold-400 transition">
                             {{ __('Add Driver') }}
                         </button>
                     </form>
@@ -213,7 +213,7 @@
                     @else
                         <ul class="mt-4 divide-y divide-gray-100 ring-1 ring-gray-200 rounded-lg overflow-hidden">
                             @foreach ($company->drivers as $driver)
-                                <li class="flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-amber-50/40 transition">
+                                <li class="flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-gold-50/40 transition">
                                     <div>
                                         <p class="font-semibold text-gray-900 flex items-center gap-1.5">
                                             {{ $driver->name }}
@@ -225,14 +225,14 @@
                                     </div>
                                     <div class="flex items-center gap-3 shrink-0">
                                         @if ($driver->student_id)
-                                            <a href="{{ route('students.show', $driver->student) }}" class="text-xs font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                            <a href="{{ route('students.show', $driver->student) }}" class="text-xs font-semibold text-gold-600 hover:underline whitespace-nowrap">
                                                 {{ __('View Student') }}
                                             </a>
                                         @else
-                                            <a href="{{ route('corporate-company-drivers.enroll-create', $driver) }}" class="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 px-3 py-1.5 text-xs font-bold text-black transition whitespace-nowrap">
+                                            <a href="{{ route('corporate-company-drivers.enroll-create', $driver) }}" class="inline-flex items-center gap-1.5 rounded-lg bg-gold-500 hover:bg-gold-400 px-3 py-1.5 text-xs font-bold text-navy transition whitespace-nowrap">
                                                 {{ __('Enroll as Student') }}
                                             </a>
-                                            <a href="{{ route('students.create', ['name' => $driver->name, 'phone' => $driver->phone, 'license_number' => $driver->license_number]) }}" class="text-xs font-semibold text-gray-400 hover:text-amber-600 hover:underline whitespace-nowrap">
+                                            <a href="{{ route('students.create', ['name' => $driver->name, 'phone' => $driver->phone, 'license_number' => $driver->license_number]) }}" class="text-xs font-semibold text-gray-400 hover:text-gold-600 hover:underline whitespace-nowrap">
                                                 {{ __('or full form') }}
                                             </a>
                                         @endif

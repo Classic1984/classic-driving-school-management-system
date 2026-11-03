@@ -38,7 +38,7 @@
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-navy text-gold-400">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
                             </span>
                             <div>
@@ -47,15 +47,15 @@
                             </div>
                         </div>
                         <form method="get" action="{{ route('payment-reports.index') }}" class="print:hidden">
-                            <input type="date" name="date" value="{{ $date }}" class="border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm text-sm" onchange="this.form.submit()" max="{{ now()->format('Y-m-d') }}">
+                            <input type="date" name="date" value="{{ $date }}" class="border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm text-sm" onchange="this.form.submit()" max="{{ now()->format('Y-m-d') }}">
                         </form>
                     </div>
 
                     <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                        <div class="relative overflow-hidden rounded-xl bg-black p-4">
-                            <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
-                            <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Payments') }}</p>
-                            <p class="relative text-2xl font-extrabold text-amber-400 mt-1">{{ $daily['count'] }}</p>
+                        <div class="relative overflow-hidden rounded-xl bg-navy p-4">
+                            <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-gold-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
+                            <p class="relative text-xs uppercase tracking-wider text-gold-400/80">{{ __('Payments') }}</p>
+                            <p class="relative text-2xl font-extrabold text-gold-400 mt-1">{{ $daily['count'] }}</p>
                         </div>
                         <div class="rounded-xl bg-green-50 p-4">
                             <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500/10 text-green-600">
@@ -101,7 +101,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8 pb-0">
                     <div class="flex items-center gap-4 mb-6">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-navy text-gold-400">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                         </span>
                         <div>
@@ -115,8 +115,8 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <thead class="bg-navy">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gold-400">
                                         <th class="px-4 py-3">{{ __('Service') }}</th>
                                         <th class="px-4 py-3 text-right">{{ __('Revenue') }}</th>
                                     </tr>
@@ -134,7 +134,7 @@
                                     @endforelse
                                 </tbody>
                                 <tfoot>
-                                    <tr class="bg-amber-50">
+                                    <tr class="bg-gold-50">
                                         <td class="px-4 py-3 text-sm font-bold text-gray-900">{{ __('TOTAL') }}</td>
                                         <td class="px-4 py-3 text-sm text-right font-bold text-gray-900">₦{{ number_format($revenueByService->sum(), 2) }}</td>
                                     </tr>
@@ -148,7 +148,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8 pb-0">
                     <div class="flex items-center gap-4 mb-6">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-navy text-gold-400">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                         </span>
                         <div>
@@ -162,8 +162,8 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <thead class="bg-navy">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gold-400">
                                         <th class="px-4 py-3">
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
@@ -181,10 +181,10 @@
                                         <tr>
                                             <td class="px-4 py-3">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                                     </span>
-                                                    <a href="{{ route('students.show', $row['student_id']) }}" class="font-semibold text-amber-600 hover:underline">{{ $row['student'] }}</a>
+                                                    <a href="{{ route('students.show', $row['student_id']) }}" class="font-semibold text-gold-600 hover:underline">{{ $row['student'] }}</a>
                                                 </div>
                                             </td>
                                             <td class="px-4 py-3 text-sm text-gray-600">{{ $row['label'] }}</td>
@@ -212,7 +212,7 @@
                 </div>
 
                 <div class="relative overflow-hidden border-t border-gray-100 bg-gray-50/60 px-6 sm:px-8 py-5">
-                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 9l12 12M3 15l6 6" /></svg>
+                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-gold-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 9l12 12M3 15l6 6" /></svg>
                     <div class="relative flex items-center gap-3">
                         <x-application-logo class="h-8 w-8 shrink-0 object-contain" />
                         <div>

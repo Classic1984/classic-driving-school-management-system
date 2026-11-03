@@ -23,8 +23,8 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-wrap items-center gap-4 mb-6">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                            <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                            <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                         </span>
                         <div class="min-w-0 flex-1">
                             <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ $course->name }}</h3>
@@ -35,49 +35,49 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Description') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $course->description ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $boltIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $boltIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Course Type') }}</p>
                                 <p class="text-sm font-bold text-gray-900 capitalize">{{ $course->course_type }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Schedule') }}</p>
                                 <x-badge :color="$course->isWeekend() ? 'blue' : 'gray'" class="capitalize mt-0.5">{{ $course->schedule }}</x-badge>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Duration') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $course->duration_hours }} {{ __('hours') }} ({{ $course->duration_weeks }} {{ __('weeks') }})</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Payment Grace Period') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $course->gracePeriodDays() }} {{ __('days') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Fee') }}</p>
                                 <p class="text-sm font-bold text-gray-900">₦{{ number_format($course->fee, 2) }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                             <div class="min-w-0">
                                 <p class="text-xs text-gray-500">{{ __('Instructors') }}</p>
                                 @forelse ($course->instructors as $courseInstructor)
@@ -106,7 +106,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8 pb-4">
                     <div class="flex items-center gap-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-50 text-gold-500">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         </span>
                         <h3 class="text-lg font-bold text-gray-900">{{ __('Students') }}</h3>
@@ -123,10 +123,10 @@
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead>
-                                    <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                                    <tr class="bg-gold-50/60 text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                         <th class="px-3 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                                <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                                 {{ __('Name') }}
                                             </span>
                                         </th>
@@ -143,10 +143,10 @@
                                         <tr>
                                             <td class="px-3 py-3 text-sm">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-100 text-gold-600">
                                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                                     </span>
-                                                    <a href="{{ route('students.show', $enrolledStudent) }}" class="font-semibold text-gray-800 hover:text-amber-600">{{ $enrolledStudent->name }}</a>
+                                                    <a href="{{ route('students.show', $enrolledStudent) }}" class="font-semibold text-gray-800 hover:text-gold-600">{{ $enrolledStudent->name }}</a>
                                                 </div>
                                             </td>
                                             @if (auth()->user()->isDirector())
@@ -170,11 +170,11 @@
                                                     <form method="post" action="{{ route('enrollments.complete', $enrolledStudent->pivot->id) }}" class="inline">
                                                         @csrf
                                                         @method('patch')
-                                                        <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Mark Complete') }}</button>
+                                                        <button type="submit" class="text-sm text-gold-600 hover:underline">{{ __('Mark Complete') }}</button>
                                                     </form>
                                                 @endif
                                                 @if ($enrolledStudent->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
-                                                    <a href="{{ route('enrollments.reactivate.create', $enrolledStudent->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                                    <a href="{{ route('enrollments.reactivate.create', $enrolledStudent->pivot->id) }}" class="text-sm text-gold-600 hover:underline">{{ __('Reactivate') }}</a>
                                                 @endif
                                             </td>
                                         </tr>

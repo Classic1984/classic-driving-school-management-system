@@ -28,15 +28,15 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Staff') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Manage your team members') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                 </span>
             </div>
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <div class="flex items-center gap-4">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-500">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         </span>
                         <div>
@@ -45,7 +45,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('users.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition shrink-0">
+                    <a href="{{ route('users.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition shrink-0">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 0v3.75m0-3.75h3.75m-3.75 0h-3.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                         {{ __('Add Staff') }}
                     </a>
@@ -63,23 +63,23 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
-                            <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                            <tr class="bg-gold-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         {{ __('Name') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
                                         {{ __('Email') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">{{ __('Role') }}</th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                             @foreach ($gearIconPath as $path)
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                                             @endforeach
@@ -97,7 +97,7 @@
                                 <tr>
                                     <td class="px-4 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400 text-xs font-bold">{{ $initials }}</span>
+                                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                             <span class="font-semibold text-gray-800">{{ $user->name }}</span>
                                         </div>
                                     </td>
@@ -107,7 +107,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
-                                            <a href="{{ route('users.edit', $user) }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition" title="{{ __('Edit') }}">
+                                            <a href="{{ route('users.edit', $user) }}" class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gold-50 text-gold-600 hover:bg-gold-100 transition" title="{{ __('Edit') }}">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
                                             </a>
                                             @if ($user->id !== auth()->id())
@@ -133,7 +133,7 @@
                     </table>
                 </div>
 
-                <div class="rounded-xl bg-amber-50/60 ring-1 ring-amber-100 p-6 mt-6">
+                <div class="rounded-xl bg-gold-50/60 ring-1 ring-gold-100 p-6 mt-6">
                     <div class="grid grid-cols-3 gap-6 text-center">
                         <div>
                             <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-indigo-500">
@@ -167,7 +167,7 @@
                     {{ $users->links() }}
 
                     <form method="get" action="{{ route('users.index') }}" class="flex items-center gap-2">
-                        <select name="per_page" onchange="this.form.submit()" class="rounded-lg border-gray-300 focus:border-amber-500 focus:ring-amber-500 text-sm font-medium">
+                        <select name="per_page" onchange="this.form.submit()" class="rounded-lg border-gray-300 focus:border-gold-500 focus:ring-gold-500 text-sm font-medium">
                             @foreach ([10, 25, 50] as $option)
                                 <option value="{{ $option }}" @selected($perPage === $option)>{{ __(':count / page', ['count' => $option]) }}</option>
                             @endforeach

@@ -21,7 +21,7 @@
     <div class="py-6">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-4">
             <div class="print-hidden flex flex-wrap items-center justify-between gap-3">
-                <a href="{{ route('corporate-invoices.show', $payment->invoice) }}" class="text-sm font-semibold text-amber-600 hover:underline">
+                <a href="{{ route('corporate-invoices.show', $payment->invoice) }}" class="text-sm font-semibold text-gold-600 hover:underline">
                     ← {{ __('Back to Invoice :number', ['number' => $payment->invoice->invoice_number]) }}
                 </a>
                 <div class="flex items-center gap-2">
@@ -64,16 +64,16 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="text-center pb-6 border-b-2 border-amber-400">
+                <div class="text-center pb-6 border-b-2 border-gold-400">
                     <x-application-logo class="h-14 w-auto mx-auto mb-2" />
                     <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600 mb-2">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $checkCircleIconPath }}" /></svg>
                     </span>
-                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight bg-gradient-to-b from-amber-300 via-amber-600 to-black bg-clip-text text-transparent">{{ __('PAYMENT RECEIPT') }}</h1>
-                    <p class="text-sm font-extrabold uppercase tracking-[0.15em] text-black mt-1">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
+                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight bg-gradient-to-b from-gold-300 via-gold-600 to-navy bg-clip-text text-transparent">{{ __('PAYMENT RECEIPT') }}</h1>
+                    <p class="text-sm font-extrabold uppercase tracking-[0.15em] text-navy mt-1">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
                 </div>
 
-                <dl class="mt-6 rounded-2xl overflow-hidden ring-2 ring-amber-300 divide-y divide-amber-100 text-sm">
+                <dl class="mt-6 rounded-2xl overflow-hidden ring-2 ring-gold-300 divide-y divide-gold-100 text-sm">
                     <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Received From') }}</dt>
                         <dd class="font-bold text-gray-900">{{ $payment->invoice->company->name }}</dd>
@@ -88,9 +88,9 @@
                         <dt class="font-semibold text-gray-500">{{ __('Invoice No.') }}</dt>
                         <dd class="font-mono text-gray-900">{{ $payment->invoice->invoice_number }}</dd>
                     </div>
-                    <div class="flex justify-between items-center px-4 py-3 bg-black">
-                        <dt class="font-semibold text-amber-400">{{ __('Amount Paid') }}</dt>
-                        <dd class="text-xl font-black text-amber-400">₦{{ number_format((float) $payment->amount, 0) }}</dd>
+                    <div class="flex justify-between items-center px-4 py-3 bg-navy">
+                        <dt class="font-semibold text-gold-400">{{ __('Amount Paid') }}</dt>
+                        <dd class="text-xl font-black text-gold-400">₦{{ number_format((float) $payment->amount, 0) }}</dd>
                     </div>
                     <div class="flex justify-between px-4 py-2.5">
                         <dt class="font-semibold text-gray-500">{{ __('Payment Method') }}</dt>
@@ -124,7 +124,7 @@
                     <p class="text-2xl text-gray-900" style="font-family: 'Dancing Script', cursive;">{{ __('Thank You!') }}</p>
                     <p class="text-xs text-gray-400 mt-1">{{ __('For choosing :company.', ['company' => $settings->company_name ?: 'Classic Driving School']) }}</p>
                     @if ($settings->website)
-                        <p class="flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-600 mt-2">
+                        <p class="flex items-center justify-center gap-1.5 text-xs font-semibold text-gold-600 mt-2">
                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $globeIconPath }}" /></svg>
                             {{ $settings->website }}
                         </p>
@@ -145,7 +145,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('recipient_email')" />
             </div>
             <div class="flex items-center gap-3 pt-2">
-                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-2.5 text-sm font-bold text-amber-400 transition">{{ __('Send') }}</button>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-2.5 text-sm font-bold text-gold-400 transition">{{ __('Send') }}</button>
                 <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'send-email')">{{ __('Cancel') }}</x-secondary-button>
             </div>
         </form>

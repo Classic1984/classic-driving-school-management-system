@@ -5,7 +5,7 @@
 
 <section>
     <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
-        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-500">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
         </span>
         <div>
@@ -26,7 +26,7 @@
             <x-input-label for="name" :value="__('Name')" />
             <div class="relative mt-1">
                 <x-text-input id="name" name="name" type="text" class="block w-full pr-11" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-                <span class="pointer-events-none absolute right-0 top-0 flex h-full w-11 items-center justify-center text-amber-500">
+                <span class="pointer-events-none absolute right-0 top-0 flex h-full w-11 items-center justify-center text-gold-500">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                 </span>
             </div>
@@ -37,7 +37,7 @@
             <x-input-label for="email" :value="__('Email')" />
             <div class="relative mt-1">
                 <x-text-input id="email" name="email" type="email" class="block w-full pr-11" :value="old('email', $user->email)" required autocomplete="username" />
-                <span class="pointer-events-none absolute right-0 top-0 flex h-full w-11 items-center justify-center text-amber-500">
+                <span class="pointer-events-none absolute right-0 top-0 flex h-full w-11 items-center justify-center text-gold-500">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
                 </span>
             </div>
@@ -48,7 +48,7 @@
                     <p class="text-sm mt-2 text-gray-800">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
+            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                 {{ __('Save') }}
             </button>

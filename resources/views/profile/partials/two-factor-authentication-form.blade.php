@@ -34,7 +34,7 @@
             </p>
 
             @if (session('recoveryCodes'))
-                <div class="rounded-md bg-amber-50 border border-amber-200 p-4">
+                <div class="rounded-md bg-gold-50 border border-gold-200 p-4">
                     <p class="text-sm font-medium text-gray-900">
                         {{ __('Save these recovery codes somewhere safe. Each one can be used once to log in if you lose access to your authenticator app - they will not be shown again.') }}
                     </p>
@@ -81,7 +81,7 @@
         @else
             <form method="post" action="{{ route('two-factor.enable') }}">
                 @csrf
-                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
+                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                     {{ __('Enable Two Factor Authentication') }}
                 </button>
