@@ -11,11 +11,11 @@
         $noSymbolIconPath = 'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636';
 
         $rowPalette = [
-            ['border' => 'border-gold-400', 'bg' => 'bg-gold-50/70', 'avatar' => 'bg-gold-400'],
-            ['border' => 'border-blue-400', 'bg' => 'bg-blue-50/70', 'avatar' => 'bg-blue-400'],
-            ['border' => 'border-purple-400', 'bg' => 'bg-purple-50/70', 'avatar' => 'bg-purple-400'],
-            ['border' => 'border-green-400', 'bg' => 'bg-green-50/70', 'avatar' => 'bg-green-400'],
-            ['border' => 'border-rose-400', 'bg' => 'bg-rose-50/70', 'avatar' => 'bg-rose-400'],
+            ['border' => 'border-gold-400', 'bg' => 'bg-gold-50/70', 'stickyBg' => 'bg-gold-50', 'avatar' => 'bg-gold-400'],
+            ['border' => 'border-blue-400', 'bg' => 'bg-blue-50/70', 'stickyBg' => 'bg-blue-50', 'avatar' => 'bg-blue-400'],
+            ['border' => 'border-purple-400', 'bg' => 'bg-purple-50/70', 'stickyBg' => 'bg-purple-50', 'avatar' => 'bg-purple-400'],
+            ['border' => 'border-green-400', 'bg' => 'bg-green-50/70', 'stickyBg' => 'bg-green-50', 'avatar' => 'bg-green-400'],
+            ['border' => 'border-rose-400', 'bg' => 'bg-rose-50/70', 'stickyBg' => 'bg-rose-50', 'avatar' => 'bg-rose-400'],
         ];
         $gridCols = 'grid-cols-[40px_1.8fr_110px_1.5fr_140px_90px_90px_110px_140px_100px_130px]';
     @endphp
@@ -48,7 +48,7 @@
                         <div class="w-full min-w-[1400px]">
                             <div class="grid {{ $gridCols }} gap-4 rounded-t-lg bg-navy px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-gold-400">
                                 <span>#</span>
-                                <span>{{ __('Student') }}</span>
+                                <span class="sticky left-0 z-10 bg-navy">{{ __('Student') }}</span>
                                 <span>{{ __('Student ID') }}</span>
                                 <span>{{ __('Program') }}</span>
                                 <span>{{ __('Start Date') }}</span>
@@ -70,7 +70,7 @@
                                     @endphp
                                     <div class="grid {{ $gridCols }} gap-4 items-center rounded-lg border-l-4 {{ $rowAccent['border'] }} {{ $rowAccent['bg'] }} px-4 py-4">
                                         <div class="text-sm font-semibold text-gray-400">{{ $rowNumber }}</div>
-                                        <div class="min-w-0">
+                                        <div class="min-w-0 sticky left-0 z-10 {{ $rowAccent['stickyBg'] }}">
                                             <a href="{{ route('students.show', $enrollment->student_id) }}" class="group flex items-center gap-2.5">
                                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white {{ $rowAccent['avatar'] }}">{{ $trainingProgressInitials }}</span>
                                                 <span class="truncate font-semibold text-gray-900 group-hover:text-gold-600">{{ $enrollment->student->name }}</span>
