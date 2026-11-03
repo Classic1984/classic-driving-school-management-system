@@ -7,7 +7,7 @@
 <div>
     <x-input-label for="name" :value="__('Service Name')" />
     <div class="relative mt-1">
-        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-accent-50 text-accent-400">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                 @foreach ($tagIconPath as $path)
                     <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
@@ -22,7 +22,7 @@
 <div>
     <x-input-label for="price" :value="__('Price (₦)')" />
     <div class="relative mt-1">
-        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500 font-bold">
+        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-accent-50 text-accent-400 font-bold">
             ₦
         </span>
         <x-text-input id="price" name="price" type="number" step="0.01" min="0.01" class="block w-full pl-14" placeholder="{{ __('Enter price') }}" :value="old('price', $service->price ?? '')" required />
@@ -33,7 +33,7 @@
 <div>
     <x-input-label for="processing_days" :value="__('Processing Days (optional)')" />
     <div class="relative mt-1">
-        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-accent-50 text-accent-400">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
         </span>
         <x-text-input id="processing_days" name="processing_days" type="number" step="1" min="1" class="block w-full pl-14" placeholder="{{ __('Enter processing days (e.g. 30)') }}" :value="old('processing_days', $service->processing_days ?? '')" />
@@ -48,7 +48,7 @@
 
 <div>
     <div class="flex items-center gap-2.5">
-        <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', $service->is_active ?? true)) class="h-5 w-5 rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+        <input type="checkbox" id="is_active" name="is_active" value="1" @checked(old('is_active', $service->is_active ?? true)) class="h-5 w-5 rounded border-gray-300 text-accent-600 shadow-sm focus:ring-accent-500">
         <label for="is_active" class="text-sm font-medium text-gray-800">{{ __('Active (billable to students)') }}</label>
     </div>
     <p class="mt-1 ml-[1.9rem] text-sm text-gray-500">{{ __('Active services will be available to add on student payments.') }}</p>

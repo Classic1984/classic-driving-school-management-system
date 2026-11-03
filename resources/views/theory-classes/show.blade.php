@@ -54,13 +54,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="relative overflow-hidden rounded-xl border border-amber-200 bg-amber-50/60 p-4">
-                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-20 w-20 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
+                <div class="relative overflow-hidden rounded-xl border border-accent-200 bg-accent-50/60 p-4">
+                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-20 w-20 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
                     <div class="relative flex items-stretch gap-3">
-                        <span class="w-1 shrink-0 rounded-full bg-amber-400"></span>
+                        <span class="w-1 shrink-0 rounded-full bg-accent-400"></span>
                         <div>
-                            <p class="text-xs font-bold uppercase tracking-widest text-amber-700">{{ __('Attendance') }}</p>
-                            <p class="mt-1 text-2xl font-extrabold text-amber-700">{{ $theoryClass->attendancePercentage() }}%</p>
+                            <p class="text-xs font-bold uppercase tracking-widest text-accent-700">{{ __('Attendance') }}</p>
+                            <p class="mt-1 text-2xl font-extrabold text-accent-700">{{ $theoryClass->attendancePercentage() }}%</p>
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8">
                     <div class="flex items-center gap-4 mb-6">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-400">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookIconPath }}" /></svg>
                         </span>
                         <h3 class="text-lg font-bold text-gray-900">{{ __('Class Details') }}</h3>
@@ -88,7 +88,7 @@
 
                             <div>
                                 <x-input-label for="instructor_id" :value="__('Instructor')" />
-                                <select id="instructor_id" name="instructor_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500">
+                                <select id="instructor_id" name="instructor_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-500 focus:ring-accent-500">
                                     <option value="">{{ __('— None —') }}</option>
                                     @foreach ($instructors as $instructor)
                                         <option value="{{ $instructor->id }}" @selected(old('instructor_id', $theoryClass->instructor_id) == $instructor->id)>{{ $instructor->name }}</option>
@@ -105,7 +105,7 @@
 
                             <div class="w-full">
                                 <x-input-label for="notes" :value="__('Class Notes')" />
-                                <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500">{{ old('notes', $theoryClass->notes) }}</textarea>
+                                <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-accent-500 focus:ring-accent-500">{{ old('notes', $theoryClass->notes) }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                             </div>
 
@@ -116,7 +116,7 @@
                                 @if ($theoryClass->materials_path)
                                     <p class="mt-1 text-xs text-gray-500">
                                         {{ __('Current file') }}:
-                                        <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" class="text-amber-600 hover:underline">{{ $theoryClass->materials_original_name ?: __('View') }}</a>
+                                        <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" class="text-accent-600 hover:underline">{{ $theoryClass->materials_original_name ?: __('View') }}</a>
                                         — {{ __('uploading a new file replaces it') }}
                                     </p>
                                 @endif
@@ -127,33 +127,33 @@
                     @else
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Topic') }}</p>
                                     <p class="text-sm font-bold text-gray-900">{{ $theoryClass->topic ?: '—' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Instructor') }}</p>
                                     <p class="text-sm font-bold text-gray-900">{{ $theoryClass->instructor?->name ?? '—' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
+                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Notes') }}</p>
                                     <p class="text-sm font-bold text-gray-900">{{ $theoryClass->notes ?: '—' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>
+                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Lecture Material') }}</p>
                                     <p class="text-sm font-bold text-gray-900">
                                         @if ($theoryClass->materials_path)
-                                            <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" class="text-amber-600 hover:underline">{{ $theoryClass->materials_original_name ?: __('View') }}</a>
+                                            <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" class="text-accent-600 hover:underline">{{ $theoryClass->materials_original_name ?: __('View') }}</a>
                                         @else
                                             —
                                         @endif
@@ -168,7 +168,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8 pb-4">
                     <div class="flex items-center gap-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-500">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-400">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         </span>
                         <h3 class="text-lg font-bold text-gray-900">{{ __('Roster') }}</h3>
@@ -179,11 +179,11 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <thead class="bg-ink">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
                                         <th class="px-4 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                                <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                                 {{ __('Student') }}
                                             </span>
                                         </th>
@@ -197,10 +197,10 @@
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($roster as $entry)
-                                        <tr x-data="{ editing: false }" class="hover:bg-amber-50/40 transition">
+                                        <tr x-data="{ editing: false }" class="hover:bg-accent-50/40 transition">
                                             <td class="px-4 py-3 text-sm">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-100 text-accent-600">
                                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                                     </span>
                                                     <span class="font-semibold text-gray-800">{{ $entry['student']->name }}</span>
@@ -238,7 +238,7 @@
                                                                 </button>
                                                             </form>
                                                         @endif
-                                                        <button type="button" @click="editing = true" class="text-sm text-amber-600 hover:underline">
+                                                        <button type="button" @click="editing = true" class="text-sm text-accent-600 hover:underline">
                                                             {{ $entry['attendance'] ? __('Edit') : __('Other') }}
                                                         </button>
                                                     </div>
@@ -250,20 +250,20 @@
                                                         <input type="hidden" name="student_id" value="{{ $entry['student']->id }}">
 
                                                         <div>
-                                                            <select name="status" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
+                                                            <select name="status" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-accent-500 focus:ring-accent-500">
                                                                 @foreach (['present', 'absent', 'late', 'excused'] as $status)
                                                                     <option value="{{ $status }}" @selected(($entry['attendance']->status ?? 'present') === $status)>{{ ucfirst($status) }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
                                                         <div>
-                                                            <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" value="{{ $entry['attendance']->score ?? '' }}" class="w-20 rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
+                                                            <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" value="{{ $entry['attendance']->score ?? '' }}" class="w-20 rounded-md border-gray-300 shadow-sm text-sm focus:border-accent-500 focus:ring-accent-500">
                                                         </div>
                                                         <div>
-                                                            <input type="text" name="remarks" placeholder="{{ __('Remarks') }}" value="{{ $entry['attendance']->remarks ?? '' }}" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
+                                                            <input type="text" name="remarks" placeholder="{{ __('Remarks') }}" value="{{ $entry['attendance']->remarks ?? '' }}" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-accent-500 focus:ring-accent-500">
                                                         </div>
-                                                        <button type="submit" class="text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
-                                                        <button type="button" @click="editing = false" class="text-sm text-amber-600 hover:underline">{{ __('Cancel') }}</button>
+                                                        <button type="submit" class="text-sm font-medium text-white bg-accent-600 hover:bg-accent-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
+                                                        <button type="button" @click="editing = false" class="text-sm text-accent-600 hover:underline">{{ __('Cancel') }}</button>
                                                     </form>
                                                 </td>
                                             @else

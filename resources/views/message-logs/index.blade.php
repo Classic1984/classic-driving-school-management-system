@@ -30,7 +30,7 @@
             'green' => ['badge' => 'bg-green-100 text-green-700', 'icon' => 'bg-green-100 text-green-500', 'border' => 'border-green-500'],
             'purple' => ['badge' => 'bg-purple-100 text-purple-700', 'icon' => 'bg-purple-100 text-purple-500', 'border' => 'border-purple-500'],
             'rose' => ['badge' => 'bg-rose-100 text-rose-700', 'icon' => 'bg-rose-100 text-rose-500', 'border' => 'border-rose-500'],
-            'amber' => ['badge' => 'bg-amber-100 text-amber-700', 'icon' => 'bg-amber-100 text-amber-500', 'border' => 'border-amber-500'],
+            'amber' => ['badge' => 'bg-accent-100 text-accent-700', 'icon' => 'bg-accent-100 text-accent-400', 'border' => 'border-accent-500'],
             'blue' => ['badge' => 'bg-blue-100 text-blue-700', 'icon' => 'bg-blue-100 text-blue-500', 'border' => 'border-blue-500'],
             'teal' => ['badge' => 'bg-teal-100 text-teal-700', 'icon' => 'bg-teal-100 text-teal-500', 'border' => 'border-teal-500'],
             'emerald' => ['badge' => 'bg-emerald-100 text-emerald-700', 'icon' => 'bg-emerald-100 text-emerald-500', 'border' => 'border-emerald-500'],
@@ -54,8 +54,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
                 <div class="flex items-center gap-4">
-                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                        <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.126A59.768 59.768 0 0 1 21.485 12 59.77 59.77 0 0 1 3.27 20.876L5.999 12Zm0 0h7.5" /></svg>
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
+                        <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.126A59.768 59.768 0 0 1 21.485 12 59.77 59.77 0 0 1 3.27 20.876L5.999 12Zm0 0h7.5" /></svg>
                     </span>
                     <div>
                         <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Message Delivery Log') }}</h3>
@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="relative" x-data="{ open: false }">
-                    <button type="button" @click="open = !open" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-bold text-black transition">
+                    <button type="button" @click="open = !open" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-600 px-4 py-2.5 text-sm font-bold text-black transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                         {{ __('Send New Message') }}
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
@@ -98,14 +98,14 @@
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $meta['icon'] }}" /></svg>
                                 </span>
                                 <p class="mt-3 text-sm font-semibold text-gray-800">{{ __($meta['label']) }}</p>
-                                <button type="submit" class="mt-1 text-sm font-medium text-amber-600 hover:underline">{{ __('Send Now') }} →</button>
+                                <button type="submit" class="mt-1 text-sm font-medium text-accent-600 hover:underline">{{ __('Send Now') }} →</button>
                             </div>
                         </form>
                     @endforeach
                 </div>
             </div>
 
-            <div class="bg-amber-50/40 ring-1 ring-amber-200 border-l-4 border-amber-500 rounded-xl p-6 mb-6">
+            <div class="bg-accent-50/40 ring-1 ring-accent-200 border-l-4 border-accent-500 rounded-xl p-6 mb-6">
                 <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Filter Messages') }}</h3>
 
                 <form method="get" action="{{ route('message-log.index') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -119,7 +119,7 @@
 
                     <div>
                         <x-input-label for="purpose" :value="__('Purpose')" />
-                        <select id="purpose" name="purpose" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                        <select id="purpose" name="purpose" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                             <option value="">{{ __('All Purposes') }}</option>
                             @foreach (\App\Models\MessageLog::PURPOSES as $value => $label)
                                 <option value="{{ $value }}" @selected(request('purpose') === $value)>{{ __($label) }}</option>
@@ -129,7 +129,7 @@
 
                     <div>
                         <x-input-label for="status" :value="__('Status')" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                             <option value="">{{ __('All Status') }}</option>
                             <option value="sent" @selected(request('status') === 'sent')>{{ __('Delivered') }}</option>
                             <option value="failed" @selected(request('status') === 'failed')>{{ __('Failed') }}</option>
@@ -139,13 +139,13 @@
                     <div>
                         <x-input-label :value="__('Date Range')" />
                         <div class="mt-1 grid grid-cols-2 gap-2">
-                            <input type="date" name="date_from" value="{{ request('date_from') }}" class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm">
-                            <input type="date" name="date_to" value="{{ request('date_to') }}" class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm">
+                            <input type="date" name="date_from" value="{{ request('date_from') }}" class="block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm text-sm">
+                            <input type="date" name="date_to" value="{{ request('date_to') }}" class="block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm text-sm">
                         </div>
                     </div>
 
                     <div class="md:col-span-2 flex items-center gap-4">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-800 px-4 py-2 text-sm font-semibold text-white transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:bg-white/5 px-4 py-2 text-sm font-semibold text-white transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" /></svg>
                             {{ __('Apply Filters') }}
                         </button>
@@ -169,31 +169,31 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                            <tr class="bg-accent-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
                                 <th class="px-3 py-3">
-                                    <a href="{{ $sortUrl('created_at') }}" class="inline-flex items-center gap-1.5 hover:text-amber-900">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                                    <a href="{{ $sortUrl('created_at') }}" class="inline-flex items-center gap-1.5 hover:text-accent-900">
+                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                         {{ __('Date & Time') }}
                                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sortIcon('created_at') }}" /></svg>
                                     </a>
                                 </th>
                                 <th class="px-3 py-3">
-                                    <a href="{{ $sortUrl('recipient_name') }}" class="inline-flex items-center gap-1.5 hover:text-amber-900">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                    <a href="{{ $sortUrl('recipient_name') }}" class="inline-flex items-center gap-1.5 hover:text-accent-900">
+                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                                         {{ __('Recipient') }}
                                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sortIcon('recipient_name') }}" /></svg>
                                     </a>
                                 </th>
                                 <th class="px-3 py-3">
-                                    <a href="{{ $sortUrl('purpose') }}" class="inline-flex items-center gap-1.5 hover:text-amber-900">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.83.699 2.528 0l4.318-4.318a1.79 1.79 0 0 0 0-2.528L10.505 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>
+                                    <a href="{{ $sortUrl('purpose') }}" class="inline-flex items-center gap-1.5 hover:text-accent-900">
+                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.83.699 2.528 0l4.318-4.318a1.79 1.79 0 0 0 0-2.528L10.505 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>
                                         {{ __('Purpose') }}
                                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sortIcon('purpose') }}" /></svg>
                                     </a>
                                 </th>
                                 <th class="px-3 py-3">
-                                    <a href="{{ $sortUrl('status') }}" class="inline-flex items-center gap-1.5 hover:text-amber-900">
-                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12" /></svg>
+                                    <a href="{{ $sortUrl('status') }}" class="inline-flex items-center gap-1.5 hover:text-accent-900">
+                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12" /></svg>
                                         {{ __('Status') }}
                                         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sortIcon('status') }}" /></svg>
                                     </a>
@@ -265,7 +265,7 @@
                                     </td>
                                     <td class="px-3 py-3 text-sm align-top text-right">
                                         @if ($profileRoute)
-                                            <a href="{{ $profileRoute }}" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-amber-100 hover:text-amber-600 transition">
+                                            <a href="{{ $profileRoute }}" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-accent-100 hover:text-accent-600 transition">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                             </a>
                                         @endif
@@ -288,7 +288,7 @@
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                         {{ __('Show') }}
-                        <select name="per_page" class="rounded-md border-gray-300 focus:border-amber-500 focus:ring-amber-500 text-sm" onchange="this.form.submit()">
+                        <select name="per_page" class="rounded-md border-gray-300 focus:border-accent-500 focus:ring-accent-500 text-sm" onchange="this.form.submit()">
                             @foreach ([10, 25, 50, 100] as $option)
                                 <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }}</option>
                             @endforeach

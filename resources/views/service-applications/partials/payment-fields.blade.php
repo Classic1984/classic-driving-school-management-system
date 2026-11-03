@@ -6,7 +6,7 @@
     element ids). Defaults the amount to the service's full price - staff
     can lower it for a part payment.
 --}}
-<div class="rounded-xl bg-amber-50/40 ring-1 ring-amber-200 p-4 sm:p-6 space-y-6">
+<div class="rounded-xl bg-accent-50/40 ring-1 ring-accent-200 p-4 sm:p-6 space-y-6">
     <h4 class="text-sm font-bold text-gray-900">{{ __('Payment') }}</h4>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -19,7 +19,7 @@
 
         <div>
             <x-input-label :for="$idPrefix.'_payment_method'" :value="__('Payment Method')" />
-            <select id="{{ $idPrefix }}_payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+            <select id="{{ $idPrefix }}_payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
                 @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                 @endforeach
@@ -42,7 +42,7 @@
 
     <div>
         <x-input-label :for="$idPrefix.'_notes'" :value="__('Notes')" />
-        <textarea id="{{ $idPrefix }}_notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+        <textarea id="{{ $idPrefix }}_notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
     </div>
 </div>

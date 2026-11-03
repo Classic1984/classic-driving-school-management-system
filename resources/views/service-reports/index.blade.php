@@ -19,12 +19,12 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
                             </span>
                             <div>
@@ -53,20 +53,20 @@
                         @foreach ($periodLabels as $value => $tabLabel)
                             <a
                                 href="{{ route('service-reports.index', ['service' => $service, 'period' => $value]) }}"
-                                class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-amber-500 text-black' : 'bg-white/5 ring-1 ring-white/10 text-gray-300 hover:text-white' }}"
+                                class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-accent-500 text-ink' : 'bg-white/5 ring-1 ring-white/10 text-gray-300 hover:text-white' }}"
                             >{{ __($tabLabel) }}</a>
                         @endforeach
                     </div>
 
-                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-gray-900 to-gray-900 ring-1 ring-amber-400/30 p-5 mt-6 max-w-sm">
-                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
+                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent-500/15 via-ink to-ink ring-1 ring-accent-400/30 p-5 mt-6 max-w-sm">
+                        <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
                         <div class="relative flex items-center gap-3">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
                             </span>
                             <p class="text-xs font-semibold uppercase tracking-wider text-gray-300">{{ $service->name }} {{ __('Completed') }}</p>
                         </div>
-                        <p class="relative text-4xl font-extrabold text-amber-400 mt-3">{{ $completed->count() }}</p>
+                        <p class="relative text-4xl font-extrabold text-accent-300 mt-3">{{ $completed->count() }}</p>
                     </div>
                 </div>
 
@@ -74,8 +74,8 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <thead class="bg-ink">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
                                         <th class="px-4 py-3">#</th>
                                         <th class="px-4 py-3">{{ __('Student Name') }}</th>
                                         <th class="px-4 py-3">{{ __('Charged Date') }}</th>
@@ -86,14 +86,14 @@
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($completed as $studentService)
                                         @php $serviceInitials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
-                                        <tr class="hover:bg-amber-50/40 transition">
+                                        <tr class="hover:bg-accent-50/40 transition">
                                             <td class="px-4 py-3 text-sm align-top">
-                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 font-mono text-xs font-bold">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-600 font-mono text-xs font-bold">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                                             </td>
                                             <td class="px-4 py-3 text-sm align-top">
                                                 <a href="{{ route('students.show', $studentService->student_id) }}" class="group flex items-center gap-2.5">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $serviceInitials }}</span>
-                                                    <span class="font-semibold text-gray-900 group-hover:text-amber-600">{{ $studentService->student->name }}</span>
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-800">{{ $serviceInitials }}</span>
+                                                    <span class="font-semibold text-gray-900 group-hover:text-accent-600">{{ $studentService->student->name }}</span>
                                                 </a>
                                             </td>
                                                             <td class="px-4 py-3 text-sm align-top text-gray-600">
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="flex items-start gap-3 rounded-lg bg-gray-50 ring-1 ring-gray-200 p-4 mt-6">
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
                         </span>
                         <p class="text-sm text-gray-600">{{ __('This report shows all :service charges completed :period.', ['service' => $service->name, 'period' => Illuminate\Support\Str::lower($label)]) }}</p>
@@ -141,7 +141,7 @@
                 </div>
 
                 <div class="relative overflow-hidden border-t border-gray-100 bg-gray-50/60 px-6 sm:px-8 py-5">
-                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 9l12 12M3 15l6 6" /></svg>
+                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 9l12 12M3 15l6 6" /></svg>
                     <div class="relative flex items-center gap-3">
                         <x-application-logo class="h-8 w-8 shrink-0 object-contain" />
                         <div>

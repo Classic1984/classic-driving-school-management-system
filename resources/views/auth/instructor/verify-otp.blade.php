@@ -30,6 +30,6 @@
     </form>
 
     <p class="mt-4 text-center text-xs text-gray-400">
-        <a href="{{ route('instructor.login') }}" class="text-amber-600 hover:underline">{{ __('Use a different phone number') }}</a>
+        <a href="{{ route('instructor.login') }}" class="text-accent-600 hover:underline">{{ __('Use a different phone number') }}</a>
     </p>
 </x-guest-layout>
