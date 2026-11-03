@@ -17,8 +17,8 @@
     <div class="py-6">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex items-center gap-4">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
+                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($cogIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -40,7 +40,7 @@
 
                 <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                     <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-4">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
                         {{ __('Company Details') }}
                     </h4>
                     <div class="max-w-xl space-y-6">
@@ -76,7 +76,7 @@
 
                 <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                     <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-4">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bankIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bankIconPath }}" /></svg>
                         {{ __('Payment Details') }}
                     </h4>
                     <div class="max-w-xl space-y-6">
@@ -102,7 +102,7 @@
 
                 <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                     <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-1">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $hashtagIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $hashtagIconPath }}" /></svg>
                         {{ __('Document Numbering') }}
                     </h4>
                     <p class="text-xs text-gray-400 mb-4">{{ __('The number itself is always assigned automatically and resets every year - these prefixes are optional labels, and default to QUO/INV/REC if left blank.') }}</p>
@@ -130,29 +130,29 @@
 
                 <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                     <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-1">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $listIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $listIconPath }}" /></svg>
                         {{ __('Training Details Presets') }}
                     </h4>
                     <p class="text-xs text-gray-400 mb-4">{{ __('One value per line. These show up as suggestions on the Programme, Duration, Number of Drivers, and Charges fields when creating a quotation or invoice - typing something else is always fine too.') }}</p>
                     <div class="max-w-3xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div>
                             <x-input-label for="programme_options" :value="__('Programmes')" />
-                            <textarea id="programme_options" name="programme_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("Defensive Driving\nBasic Driving\nAdvanced Driving") }}">{{ old('programme_options', $settings->programme_options) }}</textarea>
+                            <textarea id="programme_options" name="programme_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" placeholder="{{ __("Defensive Driving\nBasic Driving\nAdvanced Driving") }}">{{ old('programme_options', $settings->programme_options) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('programme_options')" />
                         </div>
                         <div>
                             <x-input-label for="duration_options" :value="__('Durations')" />
-                            <textarea id="duration_options" name="duration_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("One Week\nTwo Weeks\nOne Day") }}">{{ old('duration_options', $settings->duration_options) }}</textarea>
+                            <textarea id="duration_options" name="duration_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" placeholder="{{ __("One Week\nTwo Weeks\nOne Day") }}">{{ old('duration_options', $settings->duration_options) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('duration_options')" />
                         </div>
                         <div>
                             <x-input-label for="driver_count_options" :value="__('Number of Drivers')" />
-                            <textarea id="driver_count_options" name="driver_count_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("1\n5\n10") }}">{{ old('driver_count_options', $settings->driver_count_options) }}</textarea>
+                            <textarea id="driver_count_options" name="driver_count_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" placeholder="{{ __("1\n5\n10") }}">{{ old('driver_count_options', $settings->driver_count_options) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('driver_count_options')" />
                         </div>
                         <div>
                             <x-input-label for="service_options" :value="__('Charges')" />
-                            <textarea id="service_options" name="service_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __("Certificate of Completion\nRegistration Fee") }}">{{ old('service_options', $settings->service_options) }}</textarea>
+                            <textarea id="service_options" name="service_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" placeholder="{{ __("Certificate of Completion\nRegistration Fee") }}">{{ old('service_options', $settings->service_options) }}</textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('service_options')" />
                         </div>
                     </div>
@@ -160,7 +160,7 @@
 
                 <div class="p-4 sm:p-6 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
                     <h4 class="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-500 mb-4">
-                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $signatureIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $signatureIconPath }}" /></svg>
                         {{ __("Director's Signature") }}
                     </h4>
                     <div class="max-w-xl">
@@ -175,13 +175,13 @@
                         @else
                             <p class="mb-3 text-sm text-gray-500">{{ __('No signature uploaded yet - invoices will show a blank signature line.') }}</p>
                         @endif
-                        <input type="file" name="signature" accept="image/*" class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                        <input type="file" name="signature" accept="image/*" class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-accent-50 file:text-accent-700 hover:file:bg-accent-100">
                         <x-input-error class="mt-2" :messages="$errors->get('signature')" />
                     </div>
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-3 text-sm font-bold text-accent-300 transition">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                         {{ __('Save Settings') }}
                     </button>

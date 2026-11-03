@@ -17,7 +17,7 @@
                     <p class="text-base font-medium text-gray-900">{{ $enrollment->course->name }}</p>
                 </div>
 
-                <div class="bg-black text-amber-400 rounded-lg p-4 inline-flex items-baseline gap-2">
+                <div class="bg-ink text-accent-300 rounded-lg p-4 inline-flex items-baseline gap-2">
                     <span class="text-sm font-medium">{{ __('Outstanding Balance') }}</span>
                     <span class="text-2xl font-bold">₦{{ number_format($enrollment->balance(), 2) }}</span>
                 </div>
@@ -40,7 +40,7 @@
 
                     <div>
                         <x-input-label for="payment_method" :value="__('Payment Method')" />
-                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
                             @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                                 <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                             @endforeach
@@ -56,7 +56,7 @@
 
                     <div>
                         <x-input-label for="notes" :value="__('Notes')" />
-                        <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+                        <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                     </div>
 

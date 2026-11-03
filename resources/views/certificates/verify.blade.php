@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="text-center">
         <x-application-logo class="h-16 w-16 mx-auto" />
-        <p class="mt-1 text-xs uppercase tracking-widest text-amber-600">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
+        <p class="mt-1 text-xs uppercase tracking-widest text-accent-600">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
     </div>
 
     @if ($certificate)

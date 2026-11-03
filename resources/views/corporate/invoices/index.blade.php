@@ -13,19 +13,19 @@
             'sent' => 'bg-blue-100 text-blue-700',
             'overdue' => 'bg-red-100 text-red-700',
             'cancelled' => 'bg-gray-200 text-gray-700',
-            'pending' => 'bg-amber-100 text-amber-700',
+            'pending' => 'bg-accent-100 text-accent-700',
         ];
     @endphp
 
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                             </span>
                             <div>
@@ -33,7 +33,7 @@
                                 <p class="text-sm text-gray-400">{{ __('Bills sent to corporate clients') }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('corporate-invoices.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-5 py-2.5 text-sm font-bold text-black transition">
+                        <a href="{{ route('corporate-invoices.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-400 px-5 py-2.5 text-sm font-bold text-black transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $plusIconPath }}" /></svg>
                             {{ __('Create Invoice') }}
                         </a>
@@ -52,8 +52,8 @@
                         <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-black">
-                                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                    <thead class="bg-ink">
+                                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
                                             <th class="px-4 py-3">{{ __('Invoice') }}</th>
                                             <th class="px-4 py-3">{{ __('Company') }}</th>
                                             <th class="px-4 py-3">{{ __('Invoice Date') }}</th>
@@ -68,9 +68,9 @@
                                                 $total = $invoice->items->sum(fn ($item) => $item->amount());
                                                 $displayStatus = $invoice->displayStatus();
                                             @endphp
-                                            <tr class="hover:bg-amber-50/40 transition">
+                                            <tr class="hover:bg-accent-50/40 transition">
                                                 <td class="px-4 py-3 text-sm">
-                                                    <a href="{{ route('corporate-invoices.show', $invoice) }}" class="font-mono font-semibold text-amber-600 hover:underline">{{ $invoice->invoice_number }}</a>
+                                                    <a href="{{ route('corporate-invoices.show', $invoice) }}" class="font-mono font-semibold text-accent-600 hover:underline">{{ $invoice->invoice_number }}</a>
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-900">{{ $invoice->company->name }}</td>
                                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $invoice->invoice_date->format('M j, Y') }}</td>

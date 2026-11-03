@@ -10,12 +10,12 @@
     @php($statusLabels = ['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'])
     @php($yesNo = fn ($value) => $value === null ? '—' : ($value ? __('Yes') : __('No')))
 
-    <div class="rounded-xl bg-amber-50 ring-1 ring-amber-200 p-4 flex flex-wrap items-center justify-between gap-4">
+    <div class="rounded-xl bg-accent-50 ring-1 ring-accent-200 p-4 flex flex-wrap items-center justify-between gap-4">
         <div>
-            <p class="text-sm font-semibold text-amber-800">{{ __('🔒 Director-controlled information') }}</p>
-            <p class="text-sm text-amber-700 mt-0.5">{{ __('Only a Director can edit an already registered student. Submit a request below and a Director will review it.') }}</p>
+            <p class="text-sm font-semibold text-accent-800">{{ __('🔒 Director-controlled information') }}</p>
+            <p class="text-sm text-accent-700 mt-0.5">{{ __('Only a Director can edit an already registered student. Submit a request below and a Director will review it.') }}</p>
         </div>
-        <a href="{{ route('student-correction-requests.create', $student) }}" class="shrink-0 inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-bold text-black transition">{{ __('Request a Correction') }}</a>
+        <a href="{{ route('student-correction-requests.create', $student) }}" class="shrink-0 inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-600 px-4 py-2 text-sm font-bold text-black transition">{{ __('Request a Correction') }}</a>
     </div>
 
     {{-- These fields are all required by the validator, so a hidden input
@@ -76,7 +76,7 @@
 
             <div>
                 <x-input-label for="sex" :value="__('Sex')" />
-                <select id="sex" name="sex" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="sex" name="sex" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (['male' => 'Male', 'female' => 'Female'] as $value => $label)
                         <option value="{{ $value }}" @selected(old('sex', $student?->sex) === $value)>{{ __($label) }}</option>
@@ -172,7 +172,7 @@
             @php($statesAndLgas = config('nigeria.states'))
             <div>
                 <x-input-label for="state_of_origin" :value="__('State of Origin')" />
-                <select id="state_of_origin" name="state_of_origin" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="state_of_origin" name="state_of_origin" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (array_keys($statesAndLgas) as $state)
                         <option value="{{ $state }}" @selected(old('state_of_origin', $student?->state_of_origin) === $state)>{{ $state }}</option>
@@ -183,7 +183,7 @@
 
             <div>
                 <x-input-label for="local_government_area" :value="__('Local Govt. Area')" />
-                <select id="local_government_area" name="local_government_area" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="local_government_area" name="local_government_area" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select a state first') }}</option>
                 </select>
                 <x-input-error class="mt-2" :messages="$errors->get('local_government_area')" />
@@ -228,7 +228,7 @@
 
             <div>
                 <x-input-label for="occupation" :value="__('Occupation')" />
-                <select id="occupation" name="occupation" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="occupation" name="occupation" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (['student' => 'Student', 'business' => 'Business', 'other' => 'Others'] as $value => $label)
                         <option value="{{ $value }}" @selected(old('occupation', $student?->occupation) === $value)>{{ __($label) }}</option>
@@ -239,7 +239,7 @@
 
             <div @if (! $student) x-show="registrationType === 'course'" @endif>
                 <x-input-label for="course_type" :value="__('Course Type')" />
-                <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
                         <option value="{{ $value }}" @selected(old('course_type', $student?->course_type) === $value)>{{ __($label) }}</option>
@@ -250,7 +250,7 @@
 
             <div @if (! $student) x-show="registrationType === 'course'" @endif>
                 <x-input-label for="vehicle_class" :value="__('Class of Vehicle You Wish to Operate After Training')" />
-                <select id="vehicle_class" name="vehicle_class" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="vehicle_class" name="vehicle_class" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (['light' => 'Light', 'heavy' => 'Heavy'] as $value => $label)
                         <option value="{{ $value }}" @selected(old('vehicle_class', $student?->vehicle_class) === $value)>{{ __($label) }}</option>
@@ -268,7 +268,7 @@
             @php($hasDrivingExperience = old('has_driving_experience', $student?->has_driving_experience))
             <div>
                 <x-input-label for="has_driving_experience" :value="__('Do You Have Any Previous Knowledge of Driving?')" />
-                <select id="has_driving_experience" name="has_driving_experience" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="has_driving_experience" name="has_driving_experience" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     <option value="1" @selected($hasDrivingExperience !== null && $hasDrivingExperience !== '' && filter_var($hasDrivingExperience, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
                     <option value="0" @selected($hasDrivingExperience !== null && $hasDrivingExperience !== '' && ! filter_var($hasDrivingExperience, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
@@ -279,7 +279,7 @@
             @php($wearsGlasses = old('wears_glasses', $student?->wears_glasses))
             <div>
                 <x-input-label for="wears_glasses" :value="__('Do You Wear Glasses to Drive?')" />
-                <select id="wears_glasses" name="wears_glasses" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="wears_glasses" name="wears_glasses" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     <option value="1" @selected($wearsGlasses !== null && $wearsGlasses !== '' && filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('Yes') }}</option>
                     <option value="0" @selected($wearsGlasses !== null && $wearsGlasses !== '' && ! filter_var($wearsGlasses, FILTER_VALIDATE_BOOLEAN))>{{ __('No') }}</option>
@@ -289,7 +289,7 @@
 
             <div>
                 <x-input-label for="referral_source" :value="__('How Did You Know About Us?')" />
-                <select id="referral_source" name="referral_source" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="referral_source" name="referral_source" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (['flyer' => 'Flyer', 'referral' => 'Referral', 'facebook' => 'Facebook', 'other' => 'Others'] as $value => $label)
                         <option value="{{ $value }}" @selected(old('referral_source', $student?->referral_source) === $value)>{{ __($label) }}</option>
@@ -313,11 +313,11 @@
         <x-input-label :value="__('Registration Type')" />
         <div class="mt-2 space-y-2">
             <label class="flex items-center gap-2 text-sm text-gray-700">
-                <input type="radio" name="registration_type" value="course" @checked($registrationType === 'course') @change="setRegistrationType('course')" class="border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                <input type="radio" name="registration_type" value="course" @checked($registrationType === 'course') @change="setRegistrationType('course')" class="border-gray-300 text-accent-600 shadow-sm focus:ring-accent-500">
                 {{ __('Enroll in a Course') }}
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700">
-                <input type="radio" name="registration_type" value="service" @checked($registrationType === 'service') @change="setRegistrationType('service')" class="border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                <input type="radio" name="registration_type" value="service" @checked($registrationType === 'service') @change="setRegistrationType('service')" class="border-gray-300 text-accent-600 shadow-sm focus:ring-accent-500">
                 {{ __("Register for a Service Only (Learner's Permit, Driver's Licence, Certificate) - no course") }}
             </label>
         </div>
@@ -433,11 +433,11 @@
                 <img src="{{ Storage::disk('public')->url($student->photo_path) }}" alt="{{ __('Current photo') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-gray-200">
             @endif
             <template x-if="previewUrl">
-                <img :src="previewUrl" alt="{{ __('Captured photo preview') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-amber-400">
+                <img :src="previewUrl" alt="{{ __('Captured photo preview') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-accent-400">
             </template>
 
             <div class="mt-1 flex items-center gap-3">
-                <input id="photo" name="photo" x-ref="photoInput" type="file" accept="image/*" class="block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <input id="photo" name="photo" x-ref="photoInput" type="file" accept="image/*" class="block w-full text-sm border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                 <button type="button" @click="openWebcam" class="shrink-0 inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
                     {{ __('Use Webcam') }}
                 </button>
@@ -447,9 +447,9 @@
             <x-input-error class="mt-2" :messages="$errors->get('photo')" />
 
             <div x-show="webcamOpen" class="mt-3 rounded-md border border-gray-200 bg-gray-50 p-3">
-                <video x-ref="video" autoplay playsinline class="w-full max-w-xs rounded-md bg-black"></video>
+                <video x-ref="video" autoplay playsinline class="w-full max-w-xs rounded-md bg-ink"></video>
                 <div class="mt-2 flex gap-2">
-                    <button type="button" @click="capture" class="rounded-md bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600">{{ __('Capture') }}</button>
+                    <button type="button" @click="capture" class="rounded-md bg-accent-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-600">{{ __('Capture') }}</button>
                     <button type="button" @click="closeWebcam" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Cancel') }}</button>
                 </div>
             </div>
@@ -459,18 +459,18 @@
             <div>
                 <x-input-label for="id_document" :value="__('Identification Document')" />
                 @if ($student?->id_document_path)
-                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::disk('public')->url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
+                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::disk('public')->url($student->id_document_path) }}" target="_blank" class="text-accent-600 hover:underline">{{ __('View current document') }}</a></p>
                 @endif
-                <input id="id_document" name="id_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <input id="id_document" name="id_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                 <x-input-error class="mt-2" :messages="$errors->get('id_document')" />
             </div>
 
             <div>
                 <x-input-label for="license_document" :value="__('Licence Document')" />
                 @if ($student?->license_document_path)
-                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::disk('public')->url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View current document') }}</a></p>
+                    <p class="mt-1 mb-2 text-sm"><a href="{{ Storage::disk('public')->url($student->license_document_path) }}" target="_blank" class="text-accent-600 hover:underline">{{ __('View current document') }}</a></p>
                 @endif
-                <input id="license_document" name="license_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <input id="license_document" name="license_document" type="file" accept="image/*,.pdf" class="mt-1 block w-full text-sm border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
                 <x-input-error class="mt-2" :messages="$errors->get('license_document')" />
             </div>
         </div>
@@ -510,7 +510,7 @@
             @if ($student)
                 <div>
                     <x-input-label for="status" :value="__('Status')" />
-                    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                    <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
                         @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('status', $student->status) === $value)>{{ __($label) }}</option>
                         @endforeach

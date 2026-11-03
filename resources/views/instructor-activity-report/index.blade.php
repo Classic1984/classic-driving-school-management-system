@@ -20,8 +20,8 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-black p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
 
                     <button type="button" onclick="history.back()" class="relative mb-4 inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition print:hidden">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
@@ -30,7 +30,7 @@
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
                             <div>
@@ -59,24 +59,24 @@
                         @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $tabLabel)
                             <a
                                 href="{{ route('instructor-activity-report.index', ['period' => $value]) }}"
-                                class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-amber-500 text-black' : 'text-gray-300 hover:text-white' }}"
+                                class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-accent-500 text-ink' : 'text-gray-300 hover:text-white' }}"
                             >{{ __($tabLabel) }}</a>
                         @endforeach
                     </div>
 
                     <div class="relative grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-gray-900 to-gray-900 ring-1 ring-amber-400/30 p-5">
-                            <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent-500/15 via-ink to-ink ring-1 ring-accent-400/30 p-5">
+                            <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             <div class="relative flex items-center gap-3">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/15 text-accent-300">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                                 </span>
                                 <p class="text-xs font-semibold uppercase tracking-wider text-gray-300">{{ __('Active Instructors') }}</p>
                             </div>
-                            <p class="relative text-4xl font-extrabold text-amber-400 mt-3">{{ $rows->count() }}</p>
+                            <p class="relative text-4xl font-extrabold text-accent-300 mt-3">{{ $rows->count() }}</p>
                         </div>
 
-                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/15 via-gray-900 to-gray-900 ring-1 ring-blue-400/30 p-5">
+                        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/15 via-ink to-ink ring-1 ring-blue-400/30 p-5">
                             <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
                             <div class="relative flex items-center gap-3">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/15 text-blue-400">
@@ -93,8 +93,8 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <thead class="bg-ink">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
                                         <th class="px-4 py-3">
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
@@ -124,11 +124,11 @@
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($rows as $row)
                                         @php $instructorInitials = collect(explode(' ', $row['instructor']->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode(''); @endphp
-                                        <tr class="hover:bg-amber-50/40 transition">
+                                        <tr class="hover:bg-accent-50/40 transition">
                                             <td class="px-4 py-3">
                                                 <a href="{{ route('instructors.show', $row['instructor']) }}" class="group flex items-center gap-2.5">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $instructorInitials }}</span>
-                                                    <span class="font-semibold text-gray-900 group-hover:text-amber-600 print:text-gray-900">{{ $row['instructor']->name }}</span>
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-800">{{ $instructorInitials }}</span>
+                                                    <span class="font-semibold text-gray-900 group-hover:text-accent-600 print:text-gray-900">{{ $row['instructor']->name }}</span>
                                                 </a>
                                             </td>
                                             <td class="px-4 py-3 text-sm text-gray-600">{{ $row['sessions'] }}</td>
@@ -154,7 +154,7 @@
                 </div>
 
                 <div class="relative overflow-hidden border-t border-gray-100 bg-gray-50/60 px-6 sm:px-8 py-5">
-                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 9l12 12M3 15l6 6" /></svg>
+                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M3 9l12 12M3 15l6 6" /></svg>
                     <div class="relative flex items-center gap-3">
                         <x-application-logo class="h-8 w-8 shrink-0 object-contain" />
                         <div>
