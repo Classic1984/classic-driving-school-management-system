@@ -32,7 +32,7 @@
     @endphp
 
     <div class="py-12">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <a href="{{ route('students.index') }}" class="inline-flex items-center gap-1 text-sm text-gray-600 hover:underline mb-4">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowLeftIconPath }}" /></svg>
                 {{ __('Students') }}
@@ -97,7 +97,16 @@
                     $totalOutstanding = $financialOverview->sum('balance');
                     $paymentStatusLabel = $financialOverview->isEmpty() ? '—' : ($totalOutstanding > 0 ? __('Due') : __('Paid'));
                     $paymentTileColor = $financialOverview->isEmpty() ? 'gray' : ($totalOutstanding > 0 ? 'red' : 'green');
+
+                    // Financial Information card (right column): charges
+                    // grouped the same way StudentChargeResolver types them
+                    // - training fee separate from certificate/service fees.
+                    $trainingChargeRows = $financialOverview->where('type', 'training');
+                    $otherChargeRows = $financialOverview->where('type', '!=', 'training');
                 @endphp
+
+                <div class="flex flex-col lg:flex-row gap-5 items-start" x-data="{ showMoreInfo: false }">
+                <aside class="w-full lg:w-[300px] lg:shrink-0 space-y-4">
 
                 <div class="rounded-xl ring-1 ring-gray-200 bg-gray-50/60 p-4 flex items-center gap-4">
                     @if ($student->photo_path)
@@ -130,27 +139,289 @@
                     </div>
                 </div>
 
+                <div class="rounded-xl ring-1 ring-gray-200 bg-white p-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ __('Personal Information') }}</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Date of Birth') }}</span><span class="font-bold text-gray-900 text-right">{{ $student->date_of_birth->format('M j, Y') }}</span></div>
+                        <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Gender') }}</span><span class="font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</span></div>
+                        <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('State') }}</span><span class="font-bold text-gray-900 text-right">{{ $student->state_of_origin ?? '—' }}</span></div>
+                        <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('LGA') }}</span><span class="font-bold text-gray-900 text-right">{{ $student->local_government_area ?? '—' }}</span></div>
+                    </div>
+                </div>
+
+                @if ($primaryEnrolledCourse)
+                    <div class="rounded-xl ring-1 ring-gray-200 bg-white p-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ __('Course & Level') }}</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Course') }}</span><span class="font-bold text-gray-900 text-right">{{ $primaryEnrolledCourse->name }}</span></div>
+                            @if ($transmissionLabel)
+                                <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Transmission') }}</span><span class="font-bold text-gray-900">{{ $transmissionLabel }}</span></div>
+                            @endif
+                            @if ($levelLabel)
+                                <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Level') }}</span><span class="font-bold text-gray-900">{{ $levelLabel }}</span></div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+
+                <div class="rounded-xl ring-1 ring-gray-200 bg-white p-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ __('Contact Information') }}</h3>
+                    <div class="space-y-2.5 text-sm">
+                        <div><p class="text-xs text-gray-500">{{ __('Phone') }}</p><p class="font-bold text-gray-900">{{ $student->phone }}</p></div>
+                        <div><p class="text-xs text-gray-500">{{ __('Email') }}</p><p class="font-bold text-gray-900 break-all">{{ $student->email }}</p></div>
+                        <div><p class="text-xs text-gray-500">{{ __('Address') }}</p><p class="font-bold text-gray-900">{{ $student->address ?? '—' }}</p></div>
+                    </div>
+                </div>
+
+                <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
+                    <button type="button" @click="showMoreInfo = !showMoreInfo" class="w-full flex items-center justify-between gap-2.5 bg-navy px-4 py-3 text-left">
+                        <span class="flex items-center gap-2.5">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-500 text-navy">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                            </span>
+                            <span class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Additional Information') }}</span>
+                        </span>
+                        <svg class="h-4 w-4 text-gold-300 shrink-0 transition-transform" :class="showMoreInfo ? 'rotate-180' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                    </button>
+                    <div x-show="showMoreInfo" x-cloak class="p-3 sm:p-4">
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Mother Maiden Name') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->mother_maiden_name ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Sex') }}</p>
+                                    <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('State of Origin') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $homeIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Local Govt. Area') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $briefcaseIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Occupation') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ match ($student->occupation) {
+                                        'student' => 'Student',
+                                        'business' => 'Business',
+                                        'other' => 'Others',
+                                        default => '—',
+                                    } }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('License Number') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cogIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Course Type') }}</p>
+                                    <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->course_type ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $truckIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Vehicle Class') }}</p>
+                                    <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->vehicle_class ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Previous Driving Experience') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $eyeIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Wears Glasses to Drive') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ is_null($student->wears_glasses) ? '—' : ($student->wears_glasses ? __('Yes') : __('No')) }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $megaphoneIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('How They Heard About Us') }}</p>
+                                    <p class="text-sm font-bold text-gray-900 capitalize">
+                                        {{ $student->referral_source ?? '—' }}
+                                        @if ($student->referral_source === 'other' && $student->referral_source_other)
+                                            ({{ $student->referral_source_other }})
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Enrollment Date') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('l, M j, Y') }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $activityIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Status') }}</p>
+                                    <x-badge :color="$studentStatusColor" class="capitalize mt-0.5">{{ $student->status }}</x-badge>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $devicePhoneIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-0.5">{{ __('App Access') }}</p>
+                                    @if ($student->hasAppAccess())
+                                        <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
+                                            {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
+                                        </x-badge>
+                                        @if (auth()->user()->canManageCourses())
+                                            @if (! $student->user->pin_set_at)
+                                                <form method="post" action="{{ route('students.access.resend', $student) }}" class="inline ms-2">
+                                                    @csrf
+                                                    <button type="submit" class="text-sm text-gold-600 hover:underline">{{ __('Resend Login SMS') }}</button>
+                                                </form>
+                                            @endif
+                                            <form method="post" action="{{ route('students.access.destroy', $student) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this student\'s app access? Their PIN will stop working immediately.') }}');">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Revoke Access') }}</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
+                                        @if (auth()->user()->canManageCourses())
+                                            <form method="post" action="{{ route('students.access.store', $student) }}" class="inline ms-2">
+                                                @csrf
+                                                <button type="submit" class="text-sm text-gold-600 hover:underline">{{ __('Enable App Access') }}</button>
+                                            </form>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (session('status') === 'student-access-granted')
+                    <p class="text-sm font-medium text-green-600">{{ __('App access granted - the student has been texted a login link.') }}</p>
+                @elseif (session('status') === 'student-access-revoked')
+                    <p class="text-sm font-medium text-green-600">{{ __('App access revoked.') }}</p>
+                @elseif (session('status') === 'student-access-resent')
+                    <p class="text-sm font-medium text-green-600">{{ __('Login instructions re-sent.') }}</p>
+                @endif
+                <x-input-error :messages="$errors->get('student')" />
+
+                <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
+                    <div class="flex items-center gap-2.5 bg-navy px-4 py-3">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-500 text-navy">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                        </span>
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Next of Kin') }}</h3>
+                    </div>
+                    <div class="p-3 sm:p-4">
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Name') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_name ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Phone No.') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_phone ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Address') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_address ?? '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
+                                <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                                <div>
+                                    <p class="text-xs text-gray-500">{{ __('Email') }}</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_email ?? '—' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </aside>
+                <div class="flex-1 min-w-0 space-y-4">
+
+                @php
+                    // Radial progress ring geometry shared by the Training
+                    // and Attendance tiles below: r=32 on a 76x76 viewBox
+                    // (circumference ~= 201.06), rotated -90deg so the arc
+                    // starts at 12 o'clock. A null percent (no enrollment /
+                    // no attendance history yet) draws an empty ring rather
+                    // than guessing a value.
+                    $ringCircumference = 2 * M_PI * 32;
+                    $trainingDashoffset = $ringCircumference * (1 - ($trainingPercent ?? 0) / 100);
+                    $attendanceDashoffset = $ringCircumference * (1 - ($attendancePercent ?? 0) / 100);
+                @endphp
+
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="relative overflow-hidden rounded-xl border border-gold-200 bg-gold-50/60 p-3 text-center">
-                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-gold-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
-                        <p class="relative text-xs uppercase tracking-wide text-gold-700">{{ __('Training') }}</p>
-                        <p class="relative mt-1 text-lg font-bold text-gold-700">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</p>
+                    <div class="rounded-xl border border-gold-200 bg-gold-50/60 p-3 flex flex-col items-center text-center">
+                        <svg width="68" height="68" viewBox="0 0 76 76">
+                            <circle cx="38" cy="38" r="32" fill="none" stroke="#ECD6A3" stroke-width="8" />
+                            @if ($trainingPercent !== null)
+                                <circle cx="38" cy="38" r="32" fill="none" stroke="#A8762F" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="{{ $ringCircumference }}" stroke-dashoffset="{{ $trainingDashoffset }}" transform="rotate(-90 38 38)" />
+                            @endif
+                            <text x="38" y="34" text-anchor="middle" font-size="17" font-weight="800" fill="#5F4219" font-family="inherit">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</text>
+                            @if ($primaryEnrolledCourse)
+                                <text x="38" y="47" text-anchor="middle" font-size="9" fill="#A8762F" font-family="inherit">{{ __('Wk :current/:total', ['current' => $currentWeek, 'total' => $primaryEnrolledCourse->duration_weeks]) }}</text>
+                            @endif
+                        </svg>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-gold-700">{{ __('Training') }}</p>
                     </div>
-                    <div class="relative overflow-hidden rounded-xl border border-blue-200 bg-blue-50/60 p-3 text-center">
-                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                        <p class="relative text-xs uppercase tracking-wide text-blue-700">{{ __('Attend.') }}</p>
-                        <p class="relative mt-1 text-lg font-bold text-blue-700">{{ $attendancePercent !== null ? "{$attendancePercent}%" : '—' }}</p>
+                    <div class="rounded-xl border border-blue-200 bg-blue-50/60 p-3 flex flex-col items-center text-center">
+                        <svg width="68" height="68" viewBox="0 0 76 76">
+                            <circle cx="38" cy="38" r="32" fill="none" stroke="#BFDBFE" stroke-width="8" />
+                            @if ($attendancePercent !== null)
+                                <circle cx="38" cy="38" r="32" fill="none" stroke="#1D4ED8" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="{{ $ringCircumference }}" stroke-dashoffset="{{ $attendanceDashoffset }}" transform="rotate(-90 38 38)" />
+                            @endif
+                            <text x="38" y="38" text-anchor="middle" font-size="17" font-weight="800" fill="#1E3A8A" font-family="inherit">{{ $attendancePercent !== null ? "{$attendancePercent}%" : '—' }}</text>
+                        </svg>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-blue-700">{{ __('Attend.') }}</p>
                     </div>
-                    <div class="relative overflow-hidden rounded-xl border {{ $paymentTileColor === 'red' ? 'border-red-200 bg-red-50/60' : ($paymentTileColor === 'green' ? 'border-green-200 bg-green-50/60' : 'border-gray-200 bg-gray-50/60') }} p-3 text-center">
+                    <div class="relative overflow-hidden rounded-xl border {{ $paymentTileColor === 'red' ? 'border-red-200 bg-red-50/60' : ($paymentTileColor === 'green' ? 'border-green-200 bg-green-50/60' : 'border-gray-200 bg-gray-50/60') }} p-3 flex flex-col items-center justify-center text-center">
                         <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 {{ $paymentTileColor === 'red' ? 'text-red-400/10' : ($paymentTileColor === 'green' ? 'text-green-400/10' : 'text-gray-400/10') }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                         <p class="relative text-xs uppercase tracking-wide {{ $paymentTileColor === 'red' ? 'text-red-700' : ($paymentTileColor === 'green' ? 'text-green-700' : 'text-gray-500') }}">{{ __('Payment') }}</p>
                         <p class="relative mt-1 text-lg font-bold {{ $paymentTileColor === 'red' ? 'text-red-700' : ($paymentTileColor === 'green' ? 'text-green-700' : 'text-gray-900') }}">{{ $paymentStatusLabel }}</p>
                     </div>
                 </div>
 
-                <div x-data="{ tab: '{{ in_array(session('status'), ['training-logged', 'attendance-updated']) ? 'attendance' : 'overview' }}' }">
+                <div x-data="{ tab: '{{ in_array(session('status'), ['training-logged', 'attendance-updated']) ? 'attendance' : 'training' }}' }">
                     <nav class="inline-flex flex-wrap items-center gap-1 rounded-full bg-gray-100 p-1 mb-4">
-                        <button type="button" @click="tab = 'overview'" :class="tab === 'overview' ? 'bg-navy text-gold-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Overview') }}</button>
                         <button type="button" @click="tab = 'training'" :class="tab === 'training' ? 'bg-navy text-gold-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Training') }}</button>
                         <button type="button" @click="tab = 'attendance'" :class="tab === 'attendance' ? 'bg-navy text-gold-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Attendance') }}</button>
                         <button type="button" @click="tab = 'payments'" :class="tab === 'payments' ? 'bg-navy text-gold-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Payments') }}</button>
@@ -158,7 +429,35 @@
                         <button type="button" @click="tab = 'documents'" :class="tab === 'documents' ? 'bg-navy text-gold-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Documents') }}</button>
                     </nav>
 
-                    <div x-show="tab === 'overview'" class="space-y-4">
+                    @if (auth()->user()->isDirector() && $financialOverview->isNotEmpty())
+                        <div class="rounded-xl bg-white ring-1 ring-gray-200 p-4 sm:p-5 mb-4">
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-3">{{ __('Financial Information') }}</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                @if ($trainingChargeRows->isNotEmpty())
+                                    <div>
+                                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ __('Training Fee') }}</p>
+                                        <div class="flex gap-5">
+                                            <div><p class="text-[11px] text-gray-400">{{ __('Charged') }}</p><p class="text-sm font-extrabold text-gray-900">₦{{ number_format($trainingChargeRows->sum('price'), 2) }}</p></div>
+                                            <div><p class="text-[11px] text-gray-400">{{ __('Paid') }}</p><p class="text-sm font-extrabold text-green-700">₦{{ number_format($trainingChargeRows->sum('paid'), 2) }}</p></div>
+                                            <div><p class="text-[11px] text-gray-400">{{ __('Balance') }}</p><p class="text-sm font-extrabold {{ $trainingChargeRows->sum('balance') > 0 ? 'text-red-700' : 'text-gray-900' }}">₦{{ number_format($trainingChargeRows->sum('balance'), 2) }}</p></div>
+                                        </div>
+                                    </div>
+                                @endif
+                                @if ($otherChargeRows->isNotEmpty())
+                                    <div>
+                                        <p class="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">{{ __('Certificates & Services') }}</p>
+                                        <div class="flex gap-5">
+                                            <div><p class="text-[11px] text-gray-400">{{ __('Charged') }}</p><p class="text-sm font-extrabold text-gray-900">₦{{ number_format($otherChargeRows->sum('price'), 2) }}</p></div>
+                                            <div><p class="text-[11px] text-gray-400">{{ __('Paid') }}</p><p class="text-sm font-extrabold text-green-700">₦{{ number_format($otherChargeRows->sum('paid'), 2) }}</p></div>
+                                            <div><p class="text-[11px] text-gray-400">{{ __('Balance') }}</p><p class="text-sm font-extrabold {{ $otherChargeRows->sum('balance') > 0 ? 'text-red-700' : 'text-gray-900' }}">₦{{ number_format($otherChargeRows->sum('balance'), 2) }}</p></div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <div x-show="tab === 'training'" class="space-y-4">
                         @if ($primaryEnrolledCourse)
                             <div>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Training Progress') }}</h3>
@@ -168,263 +467,6 @@
                                 <p class="mt-1 text-sm text-gray-600">{{ $trainingPercent }}% &middot; {{ __('Week :current of :total', ['current' => $currentWeek, 'total' => $primaryEnrolledCourse->duration_weeks]) }}</p>
                             </div>
                         @endif
-
-                        <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Personal Information') }}</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('Date of Birth') }}</p>
-                                        <p class="text-sm font-bold text-gray-900">{{ $student->date_of_birth->format('l, M j, Y') }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('Gender') }}</p>
-                                        <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('State') }}</p>
-                                        <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('LGA') }}</p>
-                                        <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Contact Information') }}</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('Phone') }}</p>
-                                        <p class="text-sm font-bold text-gray-900">{{ $student->phone }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('Email') }}</p>
-                                        <p class="text-sm font-bold text-gray-900 break-all">{{ $student->email }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                    <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
-                                    <div>
-                                        <p class="text-xs text-gray-500">{{ __('Address') }}</p>
-                                        <p class="text-sm font-bold text-gray-900">{{ $student->address ?? '—' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
-                            <div class="flex items-center gap-2.5 bg-navy px-4 py-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-500 text-navy">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                </span>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Additional Information') }}</h3>
-                            </div>
-                            <div class="p-3 sm:p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Mother Maiden Name') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->mother_maiden_name ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Sex') }}</p>
-                                            <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('State of Origin') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $homeIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Local Govt. Area') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $briefcaseIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Occupation') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ match ($student->occupation) {
-                                                'student' => 'Student',
-                                                'business' => 'Business',
-                                                'other' => 'Others',
-                                                default => '—',
-                                            } }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('License Number') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cogIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Course Type') }}</p>
-                                            <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->course_type ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $truckIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Vehicle Class') }}</p>
-                                            <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->vehicle_class ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Previous Driving Experience') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $eyeIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Wears Glasses to Drive') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ is_null($student->wears_glasses) ? '—' : ($student->wears_glasses ? __('Yes') : __('No')) }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $megaphoneIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('How They Heard About Us') }}</p>
-                                            <p class="text-sm font-bold text-gray-900 capitalize">
-                                                {{ $student->referral_source ?? '—' }}
-                                                @if ($student->referral_source === 'other' && $student->referral_source_other)
-                                                    ({{ $student->referral_source_other }})
-                                                @endif
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Enrollment Date') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('l, M j, Y') }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $activityIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Status') }}</p>
-                                            <x-badge :color="$studentStatusColor" class="capitalize mt-0.5">{{ $student->status }}</x-badge>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $devicePhoneIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500 mb-0.5">{{ __('App Access') }}</p>
-                                            @if ($student->hasAppAccess())
-                                                <x-badge :color="$student->user->pin_set_at ? 'green' : 'amber'">
-                                                    {{ $student->user->pin_set_at ? __('Active') : __('Pending first login') }}
-                                                </x-badge>
-                                                @if (auth()->user()->canManageCourses())
-                                                    @if (! $student->user->pin_set_at)
-                                                        <form method="post" action="{{ route('students.access.resend', $student) }}" class="inline ms-2">
-                                                            @csrf
-                                                            <button type="submit" class="text-sm text-gold-600 hover:underline">{{ __('Resend Login SMS') }}</button>
-                                                        </form>
-                                                    @endif
-                                                    <form method="post" action="{{ route('students.access.destroy', $student) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this student\'s app access? Their PIN will stop working immediately.') }}');">
-                                                        @csrf
-                                                        @method('delete')
-                                                        <button type="submit" class="text-sm text-red-600 hover:underline">{{ __('Revoke Access') }}</button>
-                                                    </form>
-                                                @endif
-                                            @else
-                                                <x-badge color="gray">{{ __('Not Enabled') }}</x-badge>
-                                                @if (auth()->user()->canManageCourses())
-                                                    <form method="post" action="{{ route('students.access.store', $student) }}" class="inline ms-2">
-                                                        @csrf
-                                                        <button type="submit" class="text-sm text-gold-600 hover:underline">{{ __('Enable App Access') }}</button>
-                                                    </form>
-                                                @endif
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        @if (session('status') === 'student-access-granted')
-                            <p class="text-sm font-medium text-green-600">{{ __('App access granted - the student has been texted a login link.') }}</p>
-                        @elseif (session('status') === 'student-access-revoked')
-                            <p class="text-sm font-medium text-green-600">{{ __('App access revoked.') }}</p>
-                        @elseif (session('status') === 'student-access-resent')
-                            <p class="text-sm font-medium text-green-600">{{ __('Login instructions re-sent.') }}</p>
-                        @endif
-                        <x-input-error :messages="$errors->get('student')" />
-
-                        <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
-                            <div class="flex items-center gap-2.5 bg-navy px-4 py-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-500 text-navy">
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                                </span>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Next of Kin') }}</h3>
-                            </div>
-                            <div class="p-3 sm:p-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Name') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_name ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Phone No.') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_phone ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Address') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_address ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
-                                        <div>
-                                            <p class="text-xs text-gray-500">{{ __('Email') }}</p>
-                                            <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_email ?? '—' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div x-show="tab === 'training'" class="space-y-4">
@@ -1202,6 +1244,9 @@
                     </div>
                 </div>
                 </div>
+
+                </div><!-- /.flex-1 right column -->
+                </div><!-- /.flex two-column wrapper -->
             </div>
         </div>
     </div>

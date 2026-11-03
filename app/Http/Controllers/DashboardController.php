@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\AssessmentRequest;
 use App\Models\Attendance;
 use App\Models\Certificate;
@@ -459,7 +460,56 @@ class DashboardController extends Controller
                 + EnrollmentUpgradeRequest::where('status', 'pending')->count(),
         ];
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressTotalEnrollments', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments'));
+        // Revenue Trend widget (Director-only, same gating as $paymentTotals
+        // above): the current month and the 5 before it, oldest first, each
+        // a real figure - not a projection or placeholder.
+        $revenueTrend = $request->user()->isDirector()
+            ? $this->monthlyTrend(6, fn (\Carbon\Carbon $start, \Carbon\Carbon $end) => Payment::where('status', 'paid')
+                ->whereDate('payment_date', '>=', $start->toDateString())
+                ->whereDate('payment_date', '<=', $end->toDateString())
+                ->sum('amount')
+                + CorporatePayment::whereDate('payment_date', '>=', $start->toDateString())
+                    ->whereDate('payment_date', '<=', $end->toDateString())
+                    ->sum('amount'))
+            : null;
+
+        // Registration Trend widget: new students by enrollment_date, same
+        // 6-month window - visible to every role, unlike revenue.
+        $registrationTrend = $this->monthlyTrend(6, fn (\Carbon\Carbon $start, \Carbon\Carbon $end) => Student::whereDate('enrollment_date', '>=', $start->toDateString())
+            ->whereDate('enrollment_date', '<=', $end->toDateString())
+            ->count());
+
+        // Recent Activity widget: the existing system-wide activity log,
+        // most recent first - the same model/relationship already powering
+        // the Activity Log page, just the latest handful of it.
+        $recentActivity = ActivityLog::with('user')->latest('created_at')->take(8)->get();
+
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressTotalEnrollments', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments', 'revenueTrend', 'registrationTrend', 'recentActivity'));
+    }
+
+    /**
+     * A {label, value} series for the given month and the (months - 1)
+     * before it, oldest first - $metric receives each month's
+     * start-of-month/end-of-month bounds and returns that month's figure.
+     * Shared by the Revenue Trend and Registration Trend dashboard widgets
+     * so both read the same window the same way.
+     *
+     * @return list<array{label: string, value: float}>
+     */
+    protected function monthlyTrend(int $months, \Closure $metric): array
+    {
+        return collect(range($months - 1, 0))
+            ->map(function (int $monthsAgo) use ($metric) {
+                $start = now()->subMonthsNoOverflow($monthsAgo)->startOfMonth();
+                $end = now()->subMonthsNoOverflow($monthsAgo)->endOfMonth();
+
+                return [
+                    'label' => $start->format('M'),
+                    'value' => (float) $metric($start, $end),
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     /**
