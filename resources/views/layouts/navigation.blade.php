@@ -7,8 +7,8 @@
     class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col bg-paper border-r border-line transition-transform duration-200 ease-in-out lg:translate-x-0"
 >
     <div class="flex h-16 shrink-0 items-center justify-between px-4 border-b border-line">
-        <a href="{{ route('dashboard') }}">
-            <x-application-logo class="block h-9 w-auto" />
+        <a href="{{ route('dashboard') }}" class="flex items-center rounded-lg bg-ink p-1.5">
+            <x-application-logo class="block h-7 w-auto" />
         </a>
         <button @click="sidebarOpen = false" class="text-stone-400 hover:text-accent-600 lg:hidden">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">

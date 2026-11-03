@@ -45,8 +45,8 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-8 w-auto" />
+                    <a href="{{ route('dashboard') }}" class="flex items-center rounded-lg bg-ink p-1.5">
+                        <x-application-logo class="block h-6 w-auto" />
                     </a>
                 </div>
 
