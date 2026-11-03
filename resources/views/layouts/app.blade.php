@@ -12,7 +12,7 @@
         <!-- PWA: installable on Android/desktop via the manifest, and on
         iOS via the apple-* tags below (iOS doesn't read the manifest). -->
         <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <meta name="theme-color" content="#000000">
+        <meta name="theme-color" content="#0B1E3D">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,7 +21,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|dancing-script:700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800|figtree:400,500,600|dancing-script:700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -32,15 +32,15 @@
         </script>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100" x-data="{ sidebarOpen: false }">
+        <div class="min-h-screen bg-paper" x-data="{ sidebarOpen: false }">
             <div class="print:hidden">
                 @include('layouts.navigation')
             </div>
 
             <div class="lg:pl-64">
                 <!-- Mobile Top Bar -->
-                <div class="sticky top-0 z-30 flex h-16 items-center gap-4 bg-black px-4 print:hidden lg:hidden">
-                    <button @click="sidebarOpen = true" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-amber-400 hover:bg-gray-800 focus:outline-none focus:bg-gray-800 focus:text-amber-400 transition duration-150 ease-in-out">
+                <div class="sticky top-0 z-30 flex h-16 items-center gap-4 bg-navy px-4 print:hidden lg:hidden">
+                    <button @click="sidebarOpen = true" class="inline-flex items-center justify-center p-2 rounded-md text-navy-300 hover:text-gold-300 hover:bg-white/5 focus:outline-none focus:bg-white/5 focus:text-gold-300 transition duration-150 ease-in-out">
                         <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -52,7 +52,7 @@
 
                 <!-- Page Heading -->
                 @isset($header)
-                    <header class="bg-white shadow print:hidden">
+                    <header class="bg-white border-b border-line print:hidden">
                         <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>
@@ -103,16 +103,16 @@
                 }"
                 x-show="show"
                 x-transition
-                class="fixed bottom-6 right-6 z-50 max-w-sm rounded-lg bg-black px-5 py-4 text-white shadow-lg print:hidden"
+                class="fixed bottom-6 right-6 z-50 max-w-sm rounded-xl bg-navy px-5 py-4 text-white shadow-lg print:hidden"
                 style="display: none;"
             >
                 <div class="flex items-start gap-3">
                     <div class="flex-1">
-                        <p class="text-sm font-semibold text-amber-400">Expenses updated</p>
-                        <p class="mt-1 text-sm text-gray-300">Incurred expenses have changed since you last checked.</p>
-                        <a href="{{ route('expenses.index') }}" class="mt-2 inline-block text-sm font-medium text-amber-400 hover:text-amber-300">View Expenses &rarr;</a>
+                        <p class="text-sm font-semibold text-gold-300">Expenses updated</p>
+                        <p class="mt-1 text-sm text-navy-200">Incurred expenses have changed since you last checked.</p>
+                        <a href="{{ route('expenses.index') }}" class="mt-2 inline-block text-sm font-medium text-gold-300 hover:text-gold-200">View Expenses &rarr;</a>
                     </div>
-                    <button @click="show = false" class="text-gray-400 hover:text-white" aria-label="Dismiss">&times;</button>
+                    <button @click="show = false" class="text-navy-300 hover:text-white" aria-label="Dismiss">&times;</button>
                 </div>
             </div>
         @endif
