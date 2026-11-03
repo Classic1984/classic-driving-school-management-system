@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="border-l-2 border-amber-500 pl-3">
+            <div class="border-l-2 border-accent-500 pl-3">
                 <h2 class="font-extrabold text-2xl text-gray-900 leading-tight">
                     Classic Driving School & Son Nigeria Limited
                 </h2>
                 <p class="text-sm text-gray-500">{{ __('Safety. Skill. Confidence.') }}</p>
             </div>
-            <div class="flex items-center gap-3 rounded-xl bg-amber-50 ring-1 ring-amber-200 px-4 py-2">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-black text-amber-400">
+            <div class="flex items-center gap-3 rounded-xl bg-accent-50 ring-1 ring-accent-200 px-4 py-2">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink text-accent-300">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                 </span>
                 <div>
@@ -37,7 +37,7 @@
                 $kpiColors = [
                     'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400'],
                     'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
-                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'amber' => ['icon' => 'bg-accent-500/10 text-accent-300', 'value' => 'text-accent-300'],
                     'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
                     'teal' => ['icon' => 'bg-teal-500/10 text-teal-400', 'value' => 'text-teal-400'],
                     'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
@@ -98,17 +98,17 @@
             @if (session('status') === 'service-status-updated')
                 <p class="text-sm font-medium text-green-600 mb-4">{{ __(session('serviceStatusMessage', 'Processing status updated successfully.')) }}</p>
             @elseif (session('status') === 'service-status-unchanged')
-                <p class="text-sm font-medium text-amber-600 mb-4">⚠️ {{ __(session('serviceStatusMessage', 'No change - that status was already set.')) }}</p>
+                <p class="text-sm font-medium text-accent-600 mb-4">⚠️ {{ __(session('serviceStatusMessage', 'No change - that status was already set.')) }}</p>
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="flex items-center gap-3">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-accent-600">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $greetingIcon }}" /></svg>
                         </span>
                         <div>
-                            <h1 class="text-2xl font-bold text-gray-900">{{ $greeting }}, <span class="text-amber-600">{{ $firstName }}</span> 👋</h1>
+                            <h1 class="text-2xl font-bold text-ink">{{ $greeting }}, <span class="text-accent-600">{{ $firstName }}</span> 👋</h1>
                             <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
                                 <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                                 {{ now()->format('l, M j, Y') }}
@@ -157,17 +157,17 @@
                     @php $heroTag = ! empty($card['modal']) ? 'button' : 'a'; @endphp
                     <{{ $heroTag }}
                         @if ($heroTag === 'a') href="{{ $card['href'] }}" @else type="button" x-data x-on:click="$dispatch('open-modal', '{{ $card['modal'] }}')" @endif
-                        class="relative overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white p-5 text-left shadow-sm transition hover:brightness-125"
+                        class="relative overflow-hidden rounded-2xl bg-white ring-1 ring-line p-5 text-left shadow-sm transition hover:shadow-md hover:ring-accent-200"
                     >
                         <div class="flex items-start justify-between">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-100 text-accent-600">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                             </span>
-                            <svg class="h-5 w-5 text-amber-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                            <svg class="h-5 w-5 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                         </div>
-                        <p class="mt-4 text-sm font-medium text-gray-300">{{ __($card['title']) }}</p>
-                        <p class="text-3xl font-extrabold tabular-nums text-amber-400">{{ $card['value'] }}</p>
-                        <p class="mt-2 text-xs text-gray-400">{{ $card['sub'] }}</p>
+                        <p class="mt-4 text-sm font-medium text-stone-500">{{ __($card['title']) }}</p>
+                        <p class="text-3xl font-extrabold tabular-nums text-ink">{{ $card['value'] }}</p>
+                        <p class="mt-2 text-xs text-stone-400">{{ $card['sub'] }}</p>
                     </{{ $heroTag }}>
                 @endforeach
             </div>
@@ -277,46 +277,46 @@
                 @endphp
 
                 <div class="flex items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-amber-700">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-accent-100 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-accent-700">
                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                         {{ __('At a Glance') }}
                     </span>
-                    <span class="h-px flex-1 bg-gray-100"></span>
+                    <span class="h-px flex-1 bg-line"></span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     @foreach ($summaryGroups as $group)
-                        <div class="rounded-xl bg-black ring-1 ring-white/10 p-5">
-                            <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-white/10">
+                        <div class="rounded-2xl bg-white ring-1 ring-line p-5">
+                            <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-line">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-100 text-accent-600">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $group['icon'] }}" /></svg>
                                     </span>
-                                    <h3 class="text-base font-bold uppercase tracking-widest text-amber-400">{{ __($group['title']) }}</h3>
+                                    <h3 class="text-base font-bold uppercase tracking-widest text-ink">{{ __($group['title']) }}</h3>
                                 </div>
                                 <div class="flex items-center gap-3 shrink-0">
                                     @if (! empty($panelExtraAction[$group['title']]))
-                                        <a href="{{ $panelExtraAction[$group['title']]['href'] }}" class="text-sm font-semibold text-amber-400 hover:text-amber-300">{{ __($panelExtraAction[$group['title']]['label']) }}</a>
+                                        <a href="{{ $panelExtraAction[$group['title']]['href'] }}" class="text-sm font-semibold text-accent-600 hover:text-accent-700">{{ __($panelExtraAction[$group['title']]['label']) }}</a>
                                     @endif
                                     @if ($panelViewAll[$group['title']] ?? null)
-                                        <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-gray-300 hover:text-amber-400">{{ __('View All') }}</a>
+                                        <a href="{{ $panelViewAll[$group['title']] }}" class="text-sm font-semibold text-stone-500 hover:text-accent-600">{{ __('View All') }}</a>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="divide-y divide-white/10">
+                            <div class="divide-y divide-line">
                                 @foreach ($group['rows'] as $row)
                                     @php $tag = $rowTag($row); @endphp
                                     <{{ $tag }}
                                         @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                                         @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                                        class="group flex items-start justify-between gap-3 py-3 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-white/5 rounded-lg -mx-2 px-2' : '' }}"
+                                        class="group flex items-start justify-between gap-3 py-3 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-accent-50 rounded-lg -mx-2 px-2' : '' }}"
                                     >
-                                        <span class="flex flex-1 items-start gap-2 min-w-0 text-base text-gray-200">
-                                            <svg class="h-5 w-5 shrink-0 mt-0.5 text-amber-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
+                                        <span class="flex flex-1 items-start gap-2 min-w-0 text-base text-stone-700">
+                                            <svg class="h-5 w-5 shrink-0 mt-0.5 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
                                             <span>{{ __($row['label']) }}</span>
                                         </span>
-                                        <span class="shrink-0 text-xl font-extrabold tabular-nums whitespace-nowrap text-amber-400">{{ $row['value'] }}</span>
+                                        <span class="shrink-0 text-xl font-extrabold tabular-nums whitespace-nowrap text-ink">{{ $row['value'] }}</span>
                                     </{{ $tag }}>
                                 @endforeach
                             </div>
@@ -336,7 +336,7 @@
                                 @foreach ($kpiGroups[$card['key']] as $row)
                                     <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                         <div class="min-w-0">
-                                            <a href="{{ $row['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $row['name'] }}</a>
+                                            <a href="{{ $row['href'] }}" class="text-accent-600 hover:underline font-medium">{{ $row['name'] }}</a>
                                             @if ($row['meta'])
                                                 <span class="text-gray-500"> — {{ $row['meta'] }}</span>
                                             @endif
@@ -359,56 +359,56 @@
                 $academicCapPath = 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5';
             @endphp
 
-            <div class="relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
+            <div class="relative overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-line">
                 <!-- Decorative diagonal panel -->
                 <div class="hidden lg:block absolute inset-y-0 right-0 w-[42%]" style="clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%)">
-                    <div class="relative h-full w-full bg-gradient-to-br from-amber-400 via-amber-600 to-gray-900 overflow-hidden">
+                    <div class="relative h-full w-full bg-gradient-to-br from-accent-300 via-accent-500 to-accent-700 overflow-hidden">
                         <svg class="absolute -right-8 top-1/2 -translate-y-1/2 h-72 w-72 text-black/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
                             <circle cx="12" cy="12" r="9" />
                             <circle cx="12" cy="12" r="2.5" />
                             <path stroke-linecap="round" d="M12 3v6.5M12 14.5V21M4.2 8l5.3 3M14.5 13l5.3 3M19.8 8l-5.3 3M9.5 13l-5.3 3" />
                         </svg>
-                        <svg class="absolute right-8 top-8 h-20 w-20 text-black/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
+                        <svg class="absolute right-8 top-8 h-20 w-20 text-black/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
                     </div>
                 </div>
 
                 <div class="relative p-8 lg:pr-[40%]">
-                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="inline-flex items-center gap-3 rounded-xl bg-white ring-1 ring-amber-200 px-4 py-2.5 shadow-sm hover:bg-amber-50 transition mb-6">
-                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                    <a href="{{ route('leads.index', ['status' => 'new']) }}" class="inline-flex items-center gap-3 rounded-xl bg-white ring-1 ring-accent-200 px-4 py-2.5 shadow-sm hover:bg-accent-50 transition mb-6">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>
                         </span>
-                        <span class="text-sm font-semibold text-gray-700">{{ __('New Leads') }}</span>
-                        <span class="h-6 w-px bg-amber-200"></span>
-                        <span class="text-2xl font-black text-amber-500 leading-none">{{ number_format($stats['new_leads']) }}</span>
+                        <span class="text-sm font-semibold text-stone-700">{{ __('New Leads') }}</span>
+                        <span class="h-6 w-px bg-accent-200"></span>
+                        <span class="text-2xl font-black text-accent-600 leading-none">{{ number_format($stats['new_leads']) }}</span>
                     </a>
 
-                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-gray-900">
-                        {{ __('Welcome to') }} <span class="text-amber-500">CDSMS</span>
+                    <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-ink">
+                        {{ __('Welcome to') }} <span class="text-accent-600">CDSMS</span>
                     </h1>
 
-                    <p class="mt-3 text-gray-600">
+                    <p class="mt-3 text-stone-600">
                         {{ __('Classic Driving School Management System') }}
                     </p>
 
                     <div class="mt-8 flex items-center gap-3 max-w-md">
-                        <span class="flex-1 border-t-2 border-dotted border-amber-300"></span>
-                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-amber-200 shadow-sm">
-                            <svg class="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
+                        <span class="flex-1 border-t-2 border-dotted border-accent-300"></span>
+                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-accent-200 shadow-sm">
+                            <svg class="h-6 w-6 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
                         </span>
-                        <span class="flex-1 border-t-2 border-dotted border-amber-300"></span>
+                        <span class="flex-1 border-t-2 border-dotted border-accent-300"></span>
                     </div>
 
                     <form method="get" action="{{ route('students.index') }}" class="mt-6 flex gap-2 max-w-xl">
                         <div class="relative flex-1">
                             <svg class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
-                            <input type="text" name="search" placeholder="{{ __('Search students by name, email, or phone') }}" class="w-full rounded-full border-gray-300 pl-11 focus:border-amber-500 focus:ring-amber-500 shadow-sm">
+                            <input type="text" name="search" placeholder="{{ __('Search students by name, email, or phone') }}" class="w-full rounded-full border-gray-300 pl-11 focus:border-accent-500 focus:ring-accent-500 shadow-sm">
                         </div>
-                        <button type="submit" class="rounded-full bg-black px-6 py-2 text-sm font-bold text-amber-400 hover:bg-gray-800 transition">{{ __('Search') }}</button>
+                        <button type="submit" class="rounded-full bg-ink px-6 py-2 text-sm font-bold text-accent-300 hover:bg-white/5 transition">{{ __('Search') }}</button>
                     </form>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4 mt-8 mb-2">
+            <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4 mt-8 mb-2">
                 <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Needs Attention Today') }}</h2>
             </div>
 
@@ -431,7 +431,7 @@
                     'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400', 'ring' => 'ring-sky-400/60'],
                     'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400', 'ring' => 'ring-purple-400/60'],
                     'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60', 'dot' => 'bg-red-400'],
-                    'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400', 'ring' => 'ring-amber-400/60', 'dot' => 'bg-amber-400'],
+                    'amber' => ['icon' => 'bg-accent-500/10 text-accent-300', 'value' => 'text-accent-300', 'ring' => 'ring-accent-400/60', 'dot' => 'bg-accent-400'],
                     'emerald' => ['icon' => 'bg-emerald-500/10 text-emerald-400', 'value' => 'text-emerald-400', 'ring' => 'ring-emerald-400/70'],
                 ];
 
@@ -508,10 +508,10 @@
                 $operationTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (array_key_exists('modal', $row) ? 'div' : 'a');
             @endphp
 
-            <div class="bg-black text-white rounded-xl p-8 mb-6">
+            <div class="bg-ink text-white rounded-xl p-8 mb-6">
                 <div class="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
-                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                    <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
                         </span>
                         <div>
@@ -537,7 +537,7 @@
                         x-init="setInterval(() => now = new Date(), 1000)"
                         class="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-wider text-gray-300"
                     >
-                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400 animate-pulse"></span>
                         <span x-text="dateLabel">{{ now()->format('l, M j, Y') }}</span>
                         <span class="text-gray-600">&middot;</span>
                         <span x-text="timeLabel">{{ now()->format('h:i A') }}</span>
@@ -549,7 +549,7 @@
                     <{{ $heroTag }}
                         @if ($heroTag === 'a') href="{{ $heroRow['href'] }}" @endif
                         @if ($heroTag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $heroRow['modal'] }}')" @endif
-                        class="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/15 via-gray-900 to-gray-900 p-5 text-left ring-1 ring-emerald-400/40 transition hover:ring-emerald-400/70 sm:col-span-2 lg:row-span-2"
+                        class="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/15 via-ink to-ink p-5 text-left ring-1 ring-emerald-400/40 transition hover:ring-emerald-400/70 sm:col-span-2 lg:row-span-2"
                     >
                         {{-- Emitted before the label row so the amount precedes the label in the
                              page source (screen readers / text search read amount-then-label),
@@ -571,7 +571,7 @@
                         <{{ $tag }}
                             @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                             @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                            class="flex items-center gap-3 rounded-xl bg-gray-900 p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:ring-2 sm:col-span-2"
+                            class="flex items-center gap-3 rounded-xl bg-ink p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:ring-2 sm:col-span-2"
                         >
                             <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
@@ -609,10 +609,10 @@
                 $usersIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
             @endphp
 
-            <div class="bg-black text-white rounded-xl p-8 mt-6">
+            <div class="bg-ink text-white rounded-xl p-8 mt-6">
                 <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                    <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         </span>
                         <div>
@@ -620,14 +620,14 @@
                             <p class="text-sm font-medium text-gray-200">{{ __('See how many students are present and absent today.') }}</p>
                         </div>
                     </div>
-                    <span class="inline-flex items-center gap-2 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white">
-                        <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-ink ring-1 ring-accent-400/40 px-4 py-2 text-sm font-semibold text-white">
+                        <svg class="h-4 w-4 text-accent-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                         {{ now()->format('l, M j, Y') }}
                     </span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-emerald-400/50 transition hover:ring-emerald-400/80">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-emerald-400/50 transition hover:ring-emerald-400/80">
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
@@ -640,7 +640,7 @@
                         <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
                     </button>
 
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
                         <div class="flex items-center gap-2.5">
                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
@@ -665,7 +665,7 @@
                             @foreach ($presentToday as $attendance)
                                 <div class="py-2.5 text-sm">
                                     <div class="flex items-center justify-between gap-4">
-                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
+                                        <a href="{{ route('students.show', $attendance->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $attendance->student->name }}</a>
                                         <span class="text-xs text-gray-500 whitespace-nowrap">{{ __('Checked in') }}: {{ $attendance->created_at->format('g:i A') }}</span>
                                     </div>
                                     <p class="text-xs text-gray-500 mt-0.5">
@@ -693,7 +693,7 @@
                             @foreach ($absentToday as $enrollment)
                                 <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                     <div>
-                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                         <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
                                     </div>
                                 </div>
@@ -719,11 +719,11 @@
                     $walletIconPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z';
                     $arrowRightIconPath = 'M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3';
                 @endphp
-                <div id="outstanding-payments" class="relative overflow-hidden rounded-xl bg-black p-6 sm:p-8 mt-6">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
+                <div id="outstanding-payments" class="relative overflow-hidden rounded-xl bg-ink p-6 sm:p-8 mt-6">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
 
                     <div class="relative flex items-center gap-4">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
                         </span>
                         <div>
@@ -734,13 +734,13 @@
 
                     <div class="relative grid grid-cols-1 {{ $showUpcomingPaymentsCard && $lockedEnrollments->isNotEmpty() ? 'sm:grid-cols-2' : '' }} gap-4 mt-6">
                         @if ($showUpcomingPaymentsCard)
-                            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/15 via-gray-900 to-gray-900 ring-1 ring-amber-400/30 p-6">
-                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
+                            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent-500/15 via-ink to-ink ring-1 ring-accent-400/30 p-6">
+                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
                                 <div class="relative">
-                                    <p class="text-xs font-bold uppercase tracking-widest text-amber-400">{{ __('Upcoming') }}</p>
-                                    <p class="mt-2 text-4xl font-extrabold text-amber-400">{{ $upcomingPayments->count() }}</p>
+                                    <p class="text-xs font-bold uppercase tracking-widest text-accent-300">{{ __('Upcoming') }}</p>
+                                    <p class="mt-2 text-4xl font-extrabold text-accent-300">{{ $upcomingPayments->count() }}</p>
                                     <p class="mt-1 text-sm text-gray-300">{{ trans_choice('{1} student with payment due soon|[2,*] :count students with payment due soon', $upcomingPayments->count(), ['count' => $upcomingPayments->count()]) }}</p>
-                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/5 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-amber-400 hover:bg-white/10 transition">
+                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/5 ring-1 ring-accent-400/40 px-4 py-2 text-sm font-semibold text-accent-300 hover:bg-white/10 transition">
                                         {{ __('Click to view names') }}
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowRightIconPath }}" /></svg>
                                     </button>
@@ -749,7 +749,7 @@
                         @endif
 
                         @if ($lockedEnrollments->isNotEmpty())
-                            <div id="locked-students" class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500/15 via-gray-900 to-gray-900 ring-1 ring-red-400/30 p-6">
+                            <div id="locked-students" class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500/15 via-ink to-ink ring-1 ring-red-400/30 p-6">
                                 <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-red-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                                 <div class="relative">
                                     <p class="text-xs font-bold uppercase tracking-widest text-red-400">{{ __('Locked') }}</p>
@@ -773,7 +773,7 @@
                                 @foreach ($upcomingPayments as $enrollment)
                                     <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                         <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                             <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
                                         </div>
                                         <span class="text-xs text-gray-500 whitespace-nowrap">₦{{ number_format($enrollment->balance(), 2) }} · {{ optional($enrollment->due_date)->format('l, M j, Y') ?? '—' }}</span>
@@ -795,13 +795,13 @@
                                 @foreach ($lockedEnrollments as $enrollment)
                                     <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                         <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                             <span class="text-gray-500"> — {{ $enrollment->course->name }}@if (auth()->user()->isDirector()) · ₦{{ number_format($enrollment->balance(), 2) }}@endif</span>
                                         </div>
                                         <div class="flex items-center gap-2 whitespace-nowrap">
                                             <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
                                             @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
-                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
+                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-accent-600 hover:underline">{{ __('Reactivate') }}</a>
                                             @endif
                                         </div>
                                     </div>
@@ -832,7 +832,7 @@
                                         @if ($payment['type'] === 'corporate' && ! auth()->user()->isDirector())
                                             <span class="font-medium text-gray-800">{{ $payment['name'] }}</span>
                                         @else
-                                            <a href="{{ $payment['href'] }}" class="text-amber-600 hover:underline font-medium">{{ $payment['name'] }}</a>
+                                            <a href="{{ $payment['href'] }}" class="text-accent-600 hover:underline font-medium">{{ $payment['name'] }}</a>
                                         @endif
                                         <p class="text-xs text-gray-500 truncate">{{ $payment['detail'] }}</p>
                                     </div>
@@ -855,7 +855,7 @@
                             @foreach ($approachingCompletionEnrollments as $enrollment)
                                 <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                     <div>
-                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                         <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
                                     </div>
                                     <div class="whitespace-nowrap text-gray-500">
@@ -877,7 +877,7 @@
                     $bellIconPath = 'M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0';
                 @endphp
                 <div id="at-risk-students" class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden mt-6">
-                    <div class="relative overflow-hidden bg-black p-6 sm:p-8">
+                    <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
                         <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-red-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $warningTriangleIconPath }}" /></svg>
 
                         <div class="relative flex flex-wrap items-center justify-between gap-4">
@@ -899,8 +899,8 @@
                         <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-black">
-                                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                    <thead class="bg-ink">
+                                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
                                             <th class="py-3 pl-4 pr-4">
                                                 <span class="inline-flex items-center gap-1.5">
                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
@@ -935,7 +935,7 @@
                                                 <td class="py-3 pl-4 pr-4">
                                                     <div class="flex items-center gap-3">
                                                         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-700">{{ $riskInitials }}</span>
-                                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="font-semibold text-gray-900 hover:text-amber-600">{{ $enrollment->student->name }}</a>
+                                                        <a href="{{ route('students.show', $enrollment->student_id) }}" class="font-semibold text-gray-900 hover:text-accent-600">{{ $enrollment->student->name }}</a>
                                                     </div>
                                                 </td>
                                                 <td class="py-3 pr-4 text-gray-600">{{ $enrollment->course->name }}</td>
@@ -944,7 +944,7 @@
                                                 </td>
                                                 <td class="py-3 pr-4 text-gray-600">{{ implode(' · ', $enrollment->riskReasons()) }}</td>
                                                 <td class="py-3 pr-4 text-right">
-                                                    <a href="{{ route('students.show', $enrollment->student_id) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                                    <a href="{{ route('students.show', $enrollment->student_id) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-accent-600 hover:underline whitespace-nowrap">
                                                         {{ __('View Student') }}
                                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
                                                     </a>
@@ -973,10 +973,10 @@
                 @php
                     $leakageIconPath = 'M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941';
                 @endphp
-                <div id="revenue-leakage" class="bg-white shadow-sm ring-1 ring-amber-200 rounded-xl p-8 mt-6">
+                <div id="revenue-leakage" class="bg-white shadow-sm ring-1 ring-accent-200 rounded-xl p-8 mt-6">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black text-amber-400">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-ink text-accent-300">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $leakageIconPath }}" /></svg>
                             </span>
                             <h3 class="text-xl font-bold text-gray-900">{{ __('Revenue Leakage') }}</h3>
@@ -991,8 +991,8 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-black">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-amber-400">
+                                <thead class="bg-ink">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
                                         <th class="py-3 pl-4 pr-4">
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
@@ -1026,15 +1026,15 @@
                                         <tr>
                                             <td class="py-3 pl-4 pr-4">
                                                 <div class="flex items-center gap-3">
-                                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-800">{{ $leakInitials }}</span>
-                                                    <a href="{{ route('students.show', $leak['student']->id) }}" class="font-semibold text-gray-900 hover:text-amber-600">{{ $leak['student']->name }}</a>
+                                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-100 text-xs font-bold text-accent-800">{{ $leakInitials }}</span>
+                                                    <a href="{{ route('students.show', $leak['student']->id) }}" class="font-semibold text-gray-900 hover:text-accent-600">{{ $leak['student']->name }}</a>
                                                 </div>
                                             </td>
                                             <td class="py-3 pr-4 text-gray-600">{{ $leak['label'] }}</td>
                                             <td class="py-3 pr-4 font-semibold text-gray-900">₦{{ number_format($leak['balance'], 2) }}</td>
                                             <td class="py-3 pr-4 text-gray-600">{{ $leak['since']->diffForHumans() }}</td>
                                             <td class="py-3 pr-4 text-right">
-                                                <a href="{{ route('students.show', $leak['student']->id) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline whitespace-nowrap">
+                                                <a href="{{ route('students.show', $leak['student']->id) }}" class="inline-flex items-center gap-1 text-sm font-semibold text-accent-600 hover:underline whitespace-nowrap">
                                                     {{ __('View Student') }}
                                                     <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
                                                 </a>
@@ -1069,13 +1069,13 @@
                                 <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                     <div>
                                         @if ($enrollment->canUpgrade() && auth()->user()->isDirector())
-                                            <a href="{{ route('enrollments.upgrade.create', $enrollment->id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <a href="{{ route('enrollments.upgrade.create', $enrollment->id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                         @else
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                         @endif
                                         <span class="text-gray-500"> — {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}</span>
                                     </div>
-                                    <span class="text-xs whitespace-nowrap {{ $enrollment->upgradeDaysRemaining() > 0 ? 'text-amber-600' : 'text-red-600 font-semibold' }}">
+                                    <span class="text-xs whitespace-nowrap {{ $enrollment->upgradeDaysRemaining() > 0 ? 'text-accent-600' : 'text-red-600 font-semibold' }}">
                                         @if ($enrollment->upgradeDaysRemaining() > 0)
                                             {{ $enrollment->upgradeDaysRemaining() }} {{ __('day(s) left') }}
                                         @else
@@ -1101,7 +1101,7 @@
                         <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
                             @foreach ($upgradeClosed as $enrollment)
                                 <div class="py-2.5 text-sm">
-                                    <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                    <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                     <span class="text-gray-500"> — {{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}</span>
                                 </div>
                             @endforeach
@@ -1113,7 +1113,7 @@
                 </div>
             </x-modal>
 
-            <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4 mt-8 mb-2">
+            <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4 mt-8 mb-2">
                 <h2 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Detailed Breakdown') }}</h2>
             </div>
 
@@ -1130,15 +1130,15 @@
                 $newStudentsDarkAccent = [
                     'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
                     'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                    'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'month' => ['icon' => 'bg-accent-500/10 text-accent-300', 'value' => 'text-accent-300'],
                     'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
                 ];
                 $newStudentIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
             @endphp
 
-            <div class="bg-black text-white rounded-xl p-8 mt-8">
-                <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+            <div class="bg-ink text-white rounded-xl p-8 mt-8">
+                <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
                     </span>
                     <div>
@@ -1152,7 +1152,7 @@
                          At a Glance Students tile, linking to the same report period. --}}
                     @foreach (['today' => 'Today', 'week' => 'This Week', 'year' => 'This Year'] as $period => $periodLabel)
                         @php $accent = $newStudentsDarkAccent[$period]; @endphp
-                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70">
                             <div class="flex items-center gap-2.5">
                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $newStudentIconPath }}" /></svg>
@@ -1174,7 +1174,7 @@
                 $periodDarkAccent = [
                     'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
                     'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                    'month' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                    'month' => ['icon' => 'bg-accent-500/10 text-accent-300', 'value' => 'text-accent-300'],
                     'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
                 ];
 
@@ -1194,9 +1194,9 @@
             @endphp
 
             @foreach ($periodTables as $table)
-                <div class="bg-black text-white rounded-xl p-8 mt-6">
-                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                <div class="bg-ink text-white rounded-xl p-8 mt-6">
+                    <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['headerIcon'] }}" /></svg>
                         </span>
                         <div>
@@ -1208,7 +1208,7 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                         @foreach (array_intersect_key($allPeriodLabels, array_flip($table['periods'])) as $period => $periodLabel)
                             @php $accent = $periodDarkAccent[$period]; @endphp
-                            <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                            <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70">
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] }}" /></svg>
@@ -1228,7 +1228,7 @@
             @if ($paymentTotals)
                 @php
                     $paymentDarkAccent = [
-                        'week' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                        'week' => ['icon' => 'bg-accent-500/10 text-accent-300', 'value' => 'text-accent-300'],
                         'month' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
                         'all_time' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
                     ];
@@ -1239,9 +1239,9 @@
                     ];
                 @endphp
 
-                <div class="bg-black text-white rounded-xl p-8 mt-8">
-                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                <div class="bg-ink text-white rounded-xl p-8 mt-8">
+                    <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
                         </span>
                         <div>
@@ -1253,7 +1253,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                         @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
                             @php $accent = $paymentDarkAccent[$period]; @endphp
-                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70">
+                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70">
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
@@ -1273,14 +1273,14 @@
                         @endforeach
                     </div>
 
-                    <div class="mt-6 rounded-xl bg-gray-900 ring-1 ring-gray-800 p-5">
+                    <div class="mt-6 rounded-xl bg-ink ring-1 ring-gray-800 p-5">
                         <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
                             <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-400/10 text-amber-400">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-400/10 text-accent-300">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-sm font-bold uppercase tracking-wide text-amber-400">{{ __('Payments Summary') }}</p>
+                                    <p class="text-sm font-bold uppercase tracking-wide text-accent-300">{{ __('Payments Summary') }}</p>
                                     <p class="text-sm font-medium text-gray-200">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
                                 </div>
                             </a>
@@ -1352,7 +1352,7 @@
                         ['key' => 'needs-attention', 'label' => 'Needs Attention', 'value' => $needsAttentionCount, 'description' => 'Due within 3 days', 'color' => 'red', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'],
                     ];
                     $serviceStatColors = [
-                        'amber' => ['icon' => 'bg-amber-500/10 text-amber-400', 'value' => 'text-amber-400'],
+                        'amber' => ['icon' => 'bg-accent-500/10 text-accent-300', 'value' => 'text-accent-300'],
                         'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
                         'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
                         'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
@@ -1368,9 +1368,9 @@
                     ];
                 @endphp
 
-                <div class="bg-black text-white rounded-xl p-8 mt-6">
-                    <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                <div class="bg-ink text-white rounded-xl p-8 mt-6">
+                    <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5" /></svg>
                         </span>
                         <div>
@@ -1386,7 +1386,7 @@
                                 type="button"
                                 x-data
                                 x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
-                                class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                                class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70"
                             >
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
@@ -1414,7 +1414,7 @@
                                     @foreach ($group['items'] as $studentService)
                                         <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                             <div class="min-w-0">
-                                                <a href="{{ route('students.show', $studentService->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $studentService->student->name }}</a>
+                                                <a href="{{ route('students.show', $studentService->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $studentService->student->name }}</a>
                                                 <span class="text-gray-500"> — {{ $studentService->service->name }}</span>
                                             </div>
                                             <div class="flex items-center gap-2 whitespace-nowrap">
@@ -1441,7 +1441,7 @@
 
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-8 mt-6" x-data="{ activeFilter: 'all', overdueOnly: false }">
                     <div class="flex items-center gap-3 mb-4">
-                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-400">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 8.25h16.5M5.25 19.5h13.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H5.25A1.5 1.5 0 0 0 3.75 6v12a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
                         </span>
                         <h4 class="text-lg font-bold text-gray-900">{{ __('Service List') }}</h4>
@@ -1452,17 +1452,17 @@
                         <button
                             type="button"
                             @click="activeFilter = 'all'"
-                            :class="activeFilter === 'all' ? 'bg-amber-100 text-amber-800 ring-amber-300' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'"
+                            :class="activeFilter === 'all' ? 'bg-accent-100 text-accent-800 ring-accent-300' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'"
                             class="inline-flex items-center gap-2 rounded-full ring-1 px-4 py-2 text-sm font-semibold transition"
                         >
                             {{ __('All Services') }}
-                            <span class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1 rounded-full bg-black text-amber-400 text-xs">{{ $serviceProcessing->count() }}</span>
+                            <span class="inline-flex items-center justify-center h-5 min-w-[1.25rem] px-1 rounded-full bg-ink text-accent-300 text-xs">{{ $serviceProcessing->count() }}</span>
                         </button>
                         @foreach ($serviceProcessingNames as $serviceName)
                             <button
                                 type="button"
                                 @click="activeFilter = @js($serviceName)"
-                                :class="activeFilter === @js($serviceName) ? 'bg-amber-100 text-amber-800 ring-amber-300' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'"
+                                :class="activeFilter === @js($serviceName) ? 'bg-accent-100 text-accent-800 ring-accent-300' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'"
                                 class="inline-flex items-center gap-2 rounded-full ring-1 px-4 py-2 text-sm font-semibold transition"
                             >
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0" /></svg>
@@ -1472,7 +1472,7 @@
                         <button
                             type="button"
                             @click="overdueOnly = !overdueOnly"
-                            :class="overdueOnly ? 'bg-amber-100 text-amber-800 ring-amber-300' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'"
+                            :class="overdueOnly ? 'bg-accent-100 text-accent-800 ring-accent-300' : 'bg-gray-50 text-gray-600 ring-gray-200 hover:bg-gray-100'"
                             class="inline-flex items-center gap-2 rounded-full ring-1 px-4 py-2 text-sm font-semibold transition"
                         >
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" /></svg>
@@ -1485,8 +1485,8 @@
                             @php
                                 $percent = $studentService->processingProgressPercent() ?? 0;
                                 $overdue = $studentService->isOverdueProcessing();
-                                $edge = $overdue ? 'border-red-500' : 'border-amber-400';
-                                $bar = $overdue ? 'from-red-500 to-red-600' : 'from-amber-400 to-amber-500';
+                                $edge = $overdue ? 'border-red-500' : 'border-accent-400';
+                                $bar = $overdue ? 'from-red-500 to-red-600' : 'from-accent-400 to-accent-500';
                                 $initials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                             @endphp
                             <a
@@ -1495,12 +1495,12 @@
                                 class="group flex flex-wrap items-center gap-4 rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $edge }} p-4 transition hover:shadow-md"
                             >
                                 <div class="flex items-center gap-3 min-w-[14rem] flex-1">
-                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-sm font-bold text-amber-800">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-100 text-sm font-bold text-accent-800">
                                         {{ $initials }}
                                     </div>
                                     <div class="min-w-0">
                                         <div class="flex items-center gap-2">
-                                            <p class="truncate font-bold text-gray-900 group-hover:text-amber-600">{{ $studentService->student->name }}</p>
+                                            <p class="truncate font-bold text-gray-900 group-hover:text-accent-600">{{ $studentService->student->name }}</p>
                                             @if ($overdue)
                                                 <span class="inline-flex shrink-0 items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
                                                     <svg class="h-2.5 w-2.5 fill-current" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
@@ -1538,7 +1538,7 @@
                                     </div>
                                 </div>
 
-                                <span class="hidden sm:flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
+                                <span class="hidden sm:flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-accent-100 group-hover:text-accent-600 transition">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                 </span>
                             </a>
@@ -1624,7 +1624,7 @@
                         'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'text' => 'text-indigo-400'],
                     ];
                     $statusAccents = [
-                        'Active' => ['bar' => 'bg-amber-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
+                        'Active' => ['bar' => 'bg-accent-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
                         'Completed' => ['bar' => 'bg-green-500', 'chip' => 'bg-green-50 text-green-700', 'dot' => 'bg-green-500'],
                         'Expired' => ['bar' => 'bg-red-500', 'chip' => 'bg-red-50 text-red-700', 'dot' => 'bg-red-500'],
                     ];
@@ -1656,10 +1656,10 @@
                     $overallProgressPercent = max(0, min(100, (float) $trainingProgressStats['overall_progress']));
                     $meterOffset = $meterCircumference * (1 - $overallProgressPercent / 100);
                 @endphp
-                <div class="bg-black text-white rounded-xl p-8 mt-6">
+                <div class="bg-ink text-white rounded-xl p-8 mt-6">
                     <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
-                        <div class="flex items-center gap-3 border-l-2 border-amber-500 pl-4">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500 text-black">
+                        <div class="flex items-center gap-3 border-l-2 border-accent-500 pl-4">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500 text-ink">
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
                             </span>
                             <div>
@@ -1667,8 +1667,8 @@
                                 <p class="text-sm font-medium text-gray-200">{{ __('Monitor and track student training in real-time') }}</p>
                             </div>
                         </div>
-                        <span class="inline-flex items-center gap-2 rounded-full bg-gray-900 ring-1 ring-amber-400/40 px-4 py-2 text-sm font-semibold text-white">
-                            <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                        <span class="inline-flex items-center gap-2 rounded-full bg-ink ring-1 ring-accent-400/40 px-4 py-2 text-sm font-semibold text-white">
+                            <svg class="h-4 w-4 text-accent-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             {{ __('This Month') }}
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                         </span>
@@ -1682,7 +1682,7 @@
                                 type="button"
                                 x-data
                                 x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
-                                class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                                class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70"
                             >
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
@@ -1708,7 +1708,7 @@
                             type="button"
                             x-data
                             x-on:click="$dispatch('open-modal', 'overall-progress-modal')"
-                            class="flex items-center gap-3 text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                            class="flex items-center gap-3 text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70"
                         >
                             <svg class="h-14 w-14 shrink-0" viewBox="0 0 56 56">
                                 <circle cx="28" cy="28" r="{{ $meterRadius }}" fill="none" stroke="rgba(251,191,36,0.15)" stroke-width="6" />
@@ -1726,7 +1726,7 @@
                                 type="button"
                                 x-data
                                 x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
-                                class="flex flex-col text-left bg-gray-900 rounded-lg p-4 ring-1 ring-amber-400/40 transition hover:ring-amber-400/70"
+                                class="flex flex-col text-left bg-ink rounded-lg p-4 ring-1 ring-accent-400/40 transition hover:ring-accent-400/70"
                             >
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
@@ -1746,9 +1746,9 @@
                         @endforeach
                     </div>
 
-                    <div class="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-xl bg-gray-900 ring-1 ring-gray-800 px-6 py-5">
+                    <div class="mt-6 flex flex-wrap items-center justify-between gap-6 rounded-xl bg-ink ring-1 ring-gray-800 px-6 py-5">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-500/10 text-accent-300">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
                             </span>
                             <div>
@@ -1767,11 +1767,11 @@
                                 </div>
                             </button>
                             <button type="button" x-data x-on:click="$dispatch('open-modal', 'average-progress-modal')" class="flex items-center gap-2 text-left transition hover:opacity-80">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-400">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/10 text-accent-300">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-lg font-extrabold text-amber-400 leading-none">{{ $trainingProgressStats['average_progress'] }}%</p>
+                                    <p class="text-lg font-extrabold text-accent-300 leading-none">{{ $trainingProgressStats['average_progress'] }}%</p>
                                     <p class="text-xs font-medium text-gray-300 whitespace-nowrap">{{ __('Average Progress') }}</p>
                                 </div>
                             </button>
@@ -1804,7 +1804,7 @@
                                         @endphp
                                         <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
                                             <div class="min-w-0">
-                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-amber-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
+                                                <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-accent-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
                                                 <span class="text-gray-500"> — {{ $enrollment->course->name }}</span>
                                             </div>
                                             <div class="flex items-center gap-2 whitespace-nowrap">
@@ -1827,7 +1827,7 @@
 
                 @php
                     $rowPalette = [
-                        ['border' => 'border-amber-400', 'bg' => 'bg-amber-50/70', 'avatar' => 'bg-amber-400'],
+                        ['border' => 'border-accent-400', 'bg' => 'bg-accent-50/70', 'avatar' => 'bg-accent-400'],
                         ['border' => 'border-blue-400', 'bg' => 'bg-blue-50/70', 'avatar' => 'bg-blue-400'],
                         ['border' => 'border-purple-400', 'bg' => 'bg-purple-50/70', 'avatar' => 'bg-purple-400'],
                         ['border' => 'border-green-400', 'bg' => 'bg-green-50/70', 'avatar' => 'bg-green-400'],
@@ -1888,7 +1888,7 @@
                                         <div class="[grid-area:1/1] text-sm font-semibold text-gray-400">{{ $loop->iteration }}</div>
                                         <div class="[grid-area:1/2] flex items-center gap-3 min-w-0">
                                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white {{ $rowAccent['avatar'] }}">{{ $initials }}</span>
-                                            <span class="truncate font-semibold text-gray-900 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
+                                            <span class="truncate font-semibold text-gray-900 group-hover:text-accent-600">{{ $enrollment->student->name }}</span>
                                             <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/70 text-gray-400">
                                                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                             </span>
@@ -1916,7 +1916,7 @@
                                             </span>
                                         </div>
                                         <div class="[grid-area:1/7] flex justify-end">
-                                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/70 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
+                                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/70 text-gray-400 group-hover:bg-accent-100 group-hover:text-accent-600 transition">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                             </span>
                                         </div>
