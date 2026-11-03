@@ -35,8 +35,8 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Services') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Manage all billable services') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($gearIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -47,7 +47,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <div class="flex items-center gap-4">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-500">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                         </span>
                         <div>
@@ -58,7 +58,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('services.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition shrink-0">
+                    <a href="{{ route('services.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:bg-ink-700 px-5 py-3 text-sm font-bold text-gold-400 transition shrink-0">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 0v3.75m0-3.75h3.75m-3.75 0h-3.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                         {{ __('Add Service') }}
                     </a>
@@ -84,9 +84,9 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
-                            <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                            <tr class="bg-gold-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                 <th class="px-4 py-3">
-                                    <a href="{{ route('services.index', ['sort' => $sort === 'asc' ? 'desc' : 'asc']) }}" class="inline-flex items-center gap-1.5 hover:text-amber-900">
+                                    <a href="{{ route('services.index', ['sort' => $sort === 'asc' ? 'desc' : 'asc']) }}" class="inline-flex items-center gap-1.5 hover:text-gold-900">
                                         {{ __('Name') }}
                                         <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $sort === 'asc' ? 'm4.5 15.75 7.5-7.5 7.5 7.5' : 'm19.5 8.25-7.5 7.5-7.5-7.5' }}" /></svg>
                                     </a>
@@ -102,7 +102,7 @@
                                 <tr>
                                     <td class="px-4 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-500">
+                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gold-50 text-gold-500">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $serviceIcon($service->name) }}" /></svg>
                                             </span>
                                             <span class="font-semibold text-gray-800">{{ $service->name }}</span>
@@ -119,7 +119,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top text-right">
                                         <div class="relative inline-block text-left" x-data="{ open: false }">
-                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-amber-100 hover:text-amber-600 transition">
+                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gold-100 hover:text-gold-600 transition">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c.621 0 1.125-.504 1.125-1.125S12.621 4.5 12 4.5s-1.125.504-1.125 1.125S11.379 6.75 12 6.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 10.5 12 10.5s-1.125.504-1.125 1.125S11.379 12.75 12 12.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 16.5 12 16.5s-1.125.504-1.125 1.125S11.379 18.75 12 18.75Z" /></svg>
                                             </button>
                                             <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
@@ -143,10 +143,10 @@
                 </div>
             </div>
 
-            <div class="rounded-xl bg-amber-50/60 ring-1 ring-amber-100 p-6">
+            <div class="rounded-xl bg-gold-50/60 ring-1 ring-gold-100 p-6">
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
                     <div>
-                        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-amber-500">
+                        <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white text-gold-500">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cubeIconPath }}" /></svg>
                         </span>
                         <p class="mt-2 text-2xl font-extrabold text-gray-900">{{ number_format($totalServices) }}</p>

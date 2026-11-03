@@ -21,8 +21,8 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-wrap items-center gap-4 mb-6">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                            <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                            <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                         </span>
                         <div class="min-w-0 flex-1">
                             <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ $instructor->name }}</h3>
@@ -42,35 +42,35 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Email') }}</p>
                                 <p class="text-sm font-bold text-gray-900 break-all">{{ $instructor->email }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Phone') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $instructor->phone }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('License Number') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $instructor->license_number ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Hire Date') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $instructor->hire_date->format('l, M j, Y') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
                             <div class="min-w-0">
                                 <p class="text-xs text-gray-500">{{ __('Courses') }}</p>
                                 @forelse ($instructor->courses as $course)
@@ -82,12 +82,12 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 flex items-start gap-3 rounded-lg bg-amber-50 ring-1 ring-amber-100 p-4">
-                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                    <div class="mt-4 flex items-start gap-3 rounded-lg bg-gold-50 ring-1 ring-gold-100 p-4">
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold-100 text-gold-600">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $lockIconPath }}" /></svg>
                         </span>
                         <div class="flex-1 min-w-0">
-                            <p class="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1.5">{{ __('App Access') }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gold-700 mb-1.5">{{ __('App Access') }}</p>
                             @if ($instructor->hasAppAccess())
                                 <x-badge :color="$instructor->user->pin_set_at ? 'green' : 'amber'">
                                     {{ $instructor->user->pin_set_at ? __('Active') : __('Pending first login') }}
@@ -96,7 +96,7 @@
                                     @if (! $instructor->user->pin_set_at)
                                         <form method="post" action="{{ route('instructors.access.resend', $instructor) }}" class="inline ms-2">
                                             @csrf
-                                            <button type="submit" class="text-sm text-amber-700 hover:underline">{{ __('Resend Login SMS') }}</button>
+                                            <button type="submit" class="text-sm text-gold-700 hover:underline">{{ __('Resend Login SMS') }}</button>
                                         </form>
                                     @endif
                                     <form method="post" action="{{ route('instructors.access.destroy', $instructor) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this instructor\'s app access? Their PIN will stop working immediately.') }}');">
@@ -110,7 +110,7 @@
                                 @if (auth()->user()->canManageCourses())
                                     <form method="post" action="{{ route('instructors.access.store', $instructor) }}" class="inline ms-2">
                                         @csrf
-                                        <button type="submit" class="text-sm text-amber-700 hover:underline">{{ __('Enable App Access') }}</button>
+                                        <button type="submit" class="text-sm text-gold-700 hover:underline">{{ __('Enable App Access') }}</button>
                                     </form>
                                 @endif
                             @endif

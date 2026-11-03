@@ -16,8 +16,8 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Enroll :name', ['name' => $driver->name]) }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Sponsored by :company - no payment needed here, their training fee is covered by the companys invoice.', ['company' => $driver->company->name]) }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($userIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -54,7 +54,7 @@
 
                     <div>
                         <x-input-label for="course_id" :value="__('Course')" />
-                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
+                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
                             <option value="">{{ __('Select a course') }}</option>
                             @foreach ($courses as $course)
                                 <option value="{{ $course->id }}" @selected(old('course_id') == $course->id)>{{ $course->name }}</option>
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:bg-ink-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                             {{ __('Enroll as Student') }}
                         </button>

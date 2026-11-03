@@ -9,7 +9,7 @@
     <div class="space-y-6">
         <div x-show="registrationType === 'course'">
             <x-input-label for="course_id" :value="__('Course')" />
-            <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+            <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                 <option value="">{{ __('Select a course') }}</option>
                 @foreach ($courses as $course)
                     <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} — {{ $course->isWeekend() ? 'Weekend' : 'Weekday' }} (₦{{ number_format($course->fee, 2) }})</option>
@@ -29,7 +29,7 @@
                                     type="checkbox"
                                     name="service_ids[]"
                                     value="{{ $offer->id }}"
-                                    class="offer-checkbox rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500"
+                                    class="offer-checkbox rounded border-gray-300 text-gold-600 shadow-sm focus:ring-gold-500"
                                     data-service-id="{{ $offer->id }}"
                                     @checked(collect(old('service_ids', []))->contains((string) $offer->id))
                                 >
@@ -44,7 +44,7 @@
 
         <div x-show="registrationType === 'course'">
             <label class="flex items-center gap-2 text-sm text-gray-700">
-                <input type="checkbox" id="starts_double_period" name="starts_double_period" value="1" @checked(old('starts_double_period')) class="rounded border-gray-300 text-amber-600 shadow-sm focus:ring-amber-500">
+                <input type="checkbox" id="starts_double_period" name="starts_double_period" value="1" @checked(old('starts_double_period')) class="rounded border-gray-300 text-gold-600 shadow-sm focus:ring-gold-500">
                 {{ __('Starting Double Period training immediately (weekday courses only)') }}
             </label>
             <p class="mt-1 text-xs text-gray-500">{{ __('Double Period covers 4 training days in 2 calendar days, so the balance due date is shortened to 2 days instead of the course\'s usual grace period.') }}</p>
@@ -53,7 +53,7 @@
 
         <div x-show="registrationType === 'course'">
             <x-input-label for="discount_choice" :value="__('Discount')" />
-            <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+            <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                 <option value="">{{ __('No Discount') }}</option>
                 @foreach (config('discounts.standard_presets') as $preset)
                     <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
@@ -67,7 +67,7 @@
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('discount_choice')" />
             @unless (auth()->user()->isDirector())
-                <p class="mt-1 text-xs text-amber-600">{{ __('A Director must approve this discount before it applies - the student is enrolled at the full fee until then.') }}</p>
+                <p class="mt-1 text-xs text-gold-600">{{ __('A Director must approve this discount before it applies - the student is enrolled at the full fee until then.') }}</p>
             @endunless
         </div>
 
@@ -90,7 +90,7 @@
         <div id="discount-reason-wrapper" class="hidden space-y-6" x-show="registrationType === 'course'">
             <div>
                 <x-input-label for="discount_reason" :value="__('Reason for Discount')" />
-                <select id="discount_reason" name="discount_reason" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+                <select id="discount_reason" name="discount_reason" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (config('discounts.reasons') as $value => $label)
                         <option value="{{ $value }}" @selected(old('discount_reason') === $value)>{{ __($label) }}</option>
@@ -147,7 +147,7 @@
                                     <td class="px-2 py-1">{{ __('Training') }}</td>
                                     <td class="px-2 py-1" id="allocation-training-price">₦0.00</td>
                                     <td class="px-2 py-1">
-                                        <input type="number" id="training_amount_input" name="training_amount" step="0.01" min="0" class="block w-32 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" value="{{ old('training_amount') }}">
+                                        <input type="number" id="training_amount_input" name="training_amount" step="0.01" min="0" class="block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" value="{{ old('training_amount') }}">
                                         <x-input-error class="mt-1" :messages="$errors->get('training_amount')" />
                                     </td>
                                 </tr>
@@ -156,7 +156,7 @@
                                         <td class="px-2 py-1">{{ $offer->name }}</td>
                                         <td class="px-2 py-1">₦{{ number_format($offer->price, 2) }}</td>
                                         <td class="px-2 py-1">
-                                            <input type="number" name="service_amounts[{{ $offer->id }}]" step="0.01" min="0" max="{{ $offer->price }}" class="service-amount-input block w-32 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" value="{{ old("service_amounts.{$offer->id}") }}">
+                                            <input type="number" name="service_amounts[{{ $offer->id }}]" step="0.01" min="0" max="{{ $offer->price }}" class="service-amount-input block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" value="{{ old("service_amounts.{$offer->id}") }}">
                                             <x-input-error class="mt-1" :messages="$errors->get('service_amounts.'.$offer->id)" />
                                         </td>
                                     </tr>
@@ -175,7 +175,7 @@
 
         <div>
             <x-input-label for="payment_method" :value="__('Payment Method')" />
-            <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
+            <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                 <option value="">{{ __('Select') }}</option>
                 @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>

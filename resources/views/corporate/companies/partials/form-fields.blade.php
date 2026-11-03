@@ -9,7 +9,7 @@
 <div>
     <x-input-label for="name" :value="__('Company Name')" />
     <div class="relative mt-1">
-        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-gold-50 text-gold-500">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
         </span>
         <x-text-input id="name" name="name" type="text" class="block w-full pl-14" placeholder="{{ __('e.g. Arco Worldwide') }}" :value="old('name', $company->name ?? '')" required autofocus />
@@ -21,7 +21,7 @@
     <div>
         <x-input-label for="address" :value="__('Address')" />
         <div class="relative mt-1">
-            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-gold-50 text-gold-500">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
             </span>
             <x-text-input id="address" name="address" type="text" class="block w-full pl-14" placeholder="{{ __('Street address') }}" :value="old('address', $company->address ?? '')" />
@@ -32,7 +32,7 @@
     <div>
         <x-input-label for="city" :value="__('City')" />
         <div class="relative mt-1">
-            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-gold-50 text-gold-500">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
             </span>
             <x-text-input id="city" name="city" type="text" class="block w-full pl-14" placeholder="{{ __('e.g. Port Harcourt') }}" :value="old('city', $company->city ?? '')" />
@@ -45,7 +45,7 @@
     <div>
         <x-input-label for="contact_person" :value="__('Contact Person')" />
         <div class="relative mt-1">
-            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-gold-50 text-gold-500">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $userIconPath }}" /></svg>
             </span>
             <x-text-input id="contact_person" name="contact_person" type="text" class="block w-full pl-14" placeholder="{{ __('e.g. Mr. John') }}" :value="old('contact_person', $company->contact_person ?? '')" />
@@ -56,7 +56,7 @@
     <div>
         <x-input-label for="phone" :value="__('Phone Number')" />
         <div class="relative mt-1">
-            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-gold-50 text-gold-500">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
             </span>
             <x-text-input id="phone" name="phone" type="text" class="block w-full pl-14" placeholder="{{ __('e.g. 08012345678') }}" :value="old('phone', $company->phone ?? '')" />
@@ -68,7 +68,7 @@
 <div>
     <x-input-label for="email" :value="__('Email Address')" />
     <div class="relative mt-1">
-        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-amber-50 text-amber-500">
+        <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center rounded-l-lg bg-gold-50 text-gold-500">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
         </span>
         <x-text-input id="email" name="email" type="email" class="block w-full pl-14" placeholder="{{ __('company@email.com') }}" :value="old('email', $company->email ?? '')" />
@@ -78,6 +78,6 @@
 
 <div>
     <x-input-label for="notes" :value="__('Notes (optional)')" />
-    <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" placeholder="{{ __('Anything else worth remembering about this client') }}">{{ old('notes', $company->notes ?? '') }}</textarea>
+    <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" placeholder="{{ __('Anything else worth remembering about this client') }}">{{ old('notes', $company->notes ?? '') }}</textarea>
     <x-input-error class="mt-2" :messages="$errors->get('notes')" />
 </div>

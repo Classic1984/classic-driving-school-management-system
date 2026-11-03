@@ -20,8 +20,8 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Theory Class Cancellations') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Manage and notify students about cancelled theory classes') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($calendarXIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -31,7 +31,7 @@
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center gap-4 mb-4">
-                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-500">
                         <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             @foreach ($calendarXIconPath as $path)
                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
@@ -47,9 +47,9 @@
                     {{ __('Theory class holds every Thursday at 10am. Cancelling a date here sends a cancellation text to every actively enrolled student instead of the usual reminder - it does not change the weekly schedule itself.') }}
                 </p>
 
-                <div class="flex items-start gap-3 rounded-lg bg-amber-50 ring-1 ring-amber-100 p-4 mb-5">
-                    <svg class="h-5 w-5 shrink-0 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
-                    <p class="text-sm text-amber-800">{{ __('A cancellation SMS will be sent to all actively enrolled students for the selected date.') }}</p>
+                <div class="flex items-start gap-3 rounded-lg bg-gold-50 ring-1 ring-gold-100 p-4 mb-5">
+                    <svg class="h-5 w-5 shrink-0 text-gold-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
+                    <p class="text-sm text-gold-800">{{ __('A cancellation SMS will be sent to all actively enrolled students for the selected date.') }}</p>
                 </div>
 
                 @if (session('status') === 'cancellation-created')
@@ -72,11 +72,11 @@
 
                     <div>
                         <x-input-label for="reason" :value="__('Reason (optional)')" />
-                        <textarea id="reason" name="reason" rows="3" placeholder="{{ __('Enter reason for cancellation (optional)') }}" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm">{{ old('reason') }}</textarea>
+                        <textarea id="reason" name="reason" rows="3" placeholder="{{ __('Enter reason for cancellation (optional)') }}" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">{{ old('reason') }}</textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('reason')" />
                     </div>
 
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:bg-ink-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             @foreach ($calendarXIconPath as $path)
                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />

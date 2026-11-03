@@ -4,13 +4,13 @@
 <!-- Sidebar -->
 <aside
     :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': ! sidebarOpen }"
-    class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col bg-black transition-transform duration-200 ease-in-out lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-50 flex w-64 -translate-x-full flex-col bg-ink transition-transform duration-200 ease-in-out lg:translate-x-0"
 >
     <div class="flex h-16 shrink-0 items-center justify-between px-4 border-b border-gray-800">
         <a href="{{ route('dashboard') }}">
             <x-application-logo class="block h-9 w-auto" />
         </a>
-        <button @click="sidebarOpen = false" class="text-gray-400 hover:text-amber-400 lg:hidden">
+        <button @click="sidebarOpen = false" class="text-gray-400 hover:text-gold-400 lg:hidden">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>

@@ -19,8 +19,8 @@
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex items-center gap-4">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardCheckIconPath }}" /></svg>
                 </span>
                 <div>
                     <p class="text-sm text-gray-500">{{ __('Training Log for') }}</p>
@@ -36,12 +36,12 @@
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex items-center gap-4 mb-4">
-                    <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+                    <span class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-500">
                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                     </span>
                     <div>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-amber-100 text-amber-800">{{ __('Student Information') }}</span>
-                        <span class="mt-1 block h-0.5 w-8 rounded-full bg-amber-400"></span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-gold-100 text-gold-800">{{ __('Student Information') }}</span>
+                        <span class="mt-1 block h-0.5 w-8 rounded-full bg-gold-400"></span>
                     </div>
                 </div>
 
@@ -102,7 +102,7 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
-                            <tr class="bg-amber-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
+                            <tr class="bg-gold-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                 <th class="px-2 py-2">{{ __('S/N') }}</th>
                                 <th class="px-2 py-2">{{ __('Date of Training') }}</th>
                                 <th class="px-2 py-2">{{ __('Time') }}</th>
@@ -141,7 +141,7 @@
                                     <td class="px-2 py-2 text-sm">{{ $attendance->loggedBy?->name ?? '—' }}</td>
                                     <td class="px-2 py-2 text-sm text-right whitespace-nowrap space-x-2">
                                         @if (auth()->user()->canManageCourses())
-                                            <a href="{{ route('attendances.edit', $attendance) }}?redirect_to=training_record" class="text-amber-600 hover:underline">{{ __('Edit') }}</a>
+                                            <a href="{{ route('attendances.edit', $attendance) }}?redirect_to=training_record" class="text-gold-600 hover:underline">{{ __('Edit') }}</a>
                                         @endif
                                         @if (auth()->user()->isAdmin())
                                             <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this training login?') }}');">
@@ -188,7 +188,7 @@
 
                             <div>
                                 <x-input-label for="record_course_id" :value="__('Course')" />
-                                <select id="record_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm" required>
+                                <select id="record_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm" required>
                                     @foreach ($student->courses as $enrolledCourse)
                                         <option value="{{ $enrolledCourse->id }}" @selected($loop->first)>{{ $enrolledCourse->name }}</option>
                                     @endforeach
@@ -197,7 +197,7 @@
 
                             <div>
                                 <x-input-label for="record_type" :value="__('Type')" />
-                                <select id="record_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm">
+                                <select id="record_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
                                     @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
                                         <option value="{{ $value }}" @selected($value === 'practical')>{{ __($label) }}</option>
                                     @endforeach
@@ -206,7 +206,7 @@
 
                             <div>
                                 <x-input-label for="record_instructor_id" :value="__('Instructor')" />
-                                <select id="record_instructor_id" name="instructor_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm">
+                                <select id="record_instructor_id" name="instructor_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach ($instructors as $availableInstructor)
                                         <option value="{{ $availableInstructor->id }}">{{ $availableInstructor->name }}</option>
@@ -216,7 +216,7 @@
 
                             <div>
                                 <x-input-label for="record_vehicle_id" :value="__('Vehicle')" />
-                                <select id="record_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm">
+                                <select id="record_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach ($vehicles as $availableVehicle)
                                         <option value="{{ $availableVehicle->id }}">{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
@@ -226,7 +226,7 @@
 
                             <div class="sm:col-span-2">
                                 <x-input-label for="record_duration" :value="__('Duration')" />
-                                <select id="record_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm">
+                                <select id="record_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
                                     @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
                                         <option value="{{ $value }}">{{ __($label) }}</option>
                                     @endforeach
@@ -234,7 +234,7 @@
                             </div>
 
                             <div class="sm:col-span-2">
-                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-3 text-sm font-bold text-black transition">
+                                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold-500 hover:bg-gold-600 px-4 py-3 text-sm font-bold text-black transition">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                                     {{ __('Save Training Log') }}
                                 </button>
