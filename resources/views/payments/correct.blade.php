@@ -12,8 +12,8 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center gap-4 mb-6 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $pencilIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $pencilIconPath }}" /></svg>
                 </span>
                 <div class="min-w-0 flex-1">
                     <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ __('Correct Payment Allocation') }}</h3>
@@ -36,7 +36,7 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead>
-                                <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                     <th class="px-3 py-3">{{ __('Charge') }}</th>
                                     <th class="px-3 py-3">{{ __('Current Amount') }}</th>
                                     <th class="px-3 py-3">{{ __('Corrected Amount') }}</th>
@@ -55,7 +55,7 @@
                                                 step="0.01"
                                                 min="0.01"
                                                 value="{{ old("allocations.{$index}.amount", $allocation->amount) }}"
-                                                class="block w-32 border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm"
+                                                class="block w-32 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm"
                                                 required
                                             >
                                         </td>
@@ -63,7 +63,7 @@
                                 @endforeach
                             </tbody>
                             <tfoot>
-                                <tr class="bg-accent-50 font-semibold">
+                                <tr class="bg-amber-50 font-semibold">
                                     <td class="px-3 py-3 text-sm">{{ __('TOTAL (must stay the same)') }}</td>
                                     <td class="px-3 py-3 text-sm" colspan="2">{{ number_format($payment->amount, 2) }}</td>
                                 </tr>
@@ -73,7 +73,7 @@
 
                     <div>
                         <x-input-label for="reason" :value="__('Reason for Correction')" />
-                        <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>{{ old('reason') }}</textarea>
+                        <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>{{ old('reason') }}</textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('reason')" />
                     </div>
 

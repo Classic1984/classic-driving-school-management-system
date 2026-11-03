@@ -18,8 +18,8 @@
     $sort = request()->query("{$pageName}_sort", 'oldest');
 @endphp
 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden mt-6">
-    <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
-        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
+    <div class="relative overflow-hidden bg-black p-6 sm:p-8">
+        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-amber-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
             @foreach ($iconPaths as $path)
                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
             @endforeach
@@ -27,7 +27,7 @@
 
         <div class="relative flex flex-col sm:flex-row sm:items-start gap-4">
             <div class="flex items-start gap-4 flex-1 min-w-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400 ring-1 ring-amber-400/30">
                     <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($iconPaths as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
@@ -40,11 +40,11 @@
                 </div>
             </div>
             <div class="flex flex-wrap items-center gap-2 shrink-0">
-                <span class="inline-flex items-center gap-2 rounded-full bg-accent-500/15 ring-1 ring-accent-400/30 px-4 py-2 text-sm font-semibold text-accent-300">
+                <span class="inline-flex items-center gap-2 rounded-full bg-amber-500/15 ring-1 ring-amber-400/30 px-4 py-2 text-sm font-semibold text-amber-400">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                     {{ $requests->total() }} {{ __('Pending') }}
                 </span>
-                <a href="{{ route('service-reports.index', $requests->first()->service) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-400 px-5 py-2.5 text-sm font-bold text-black transition">
+                <a href="{{ route('service-reports.index', $requests->first()->service) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-5 py-2.5 text-sm font-bold text-black transition">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m6 12v.375a.375.375 0 0 1-.375.375h-6a.375.375 0 0 1-.375-.375v-.375m6.75 0h-6.75m6.75 0v-.375a.375.375 0 0 0-.375-.375h-6a.375.375 0 0 0-.375.375v.375m6.75 0H15m-6.75 3h6.75m-6.75 0v.375a.375.375 0 0 0 .375.375h6a.375.375 0 0 0 .375-.375v-.375m0 0H15M9.75 5.25v-.375A1.125 1.125 0 0 1 10.875 3.75h.375c1.5 0 2.812.86 3.444 2.115M9.75 5.25v2.625a1.125 1.125 0 0 1-1.125 1.125h-.375m0 0h-1.5A2.625 2.625 0 0 0 4.125 11.625v9.75c0 .621.504 1.125 1.125 1.125h11.25c.621 0 1.125-.504 1.125-1.125v-2.625" /></svg>
                     {{ __('View Full Report') }}
                 </a>
@@ -115,7 +115,7 @@
                 $status = $amountPaid <= 0 ? 'unpaid' : ($balance > 0 ? 'part_payment' : 'paid');
                 $statusMeta = match ($status) {
                     'paid' => ['color' => 'green', 'classes' => 'bg-green-100 text-green-600', 'icon' => 'M4.5 12.75l6 6 9-13.5'],
-                    'part_payment' => ['color' => 'amber', 'classes' => 'bg-accent-100 text-accent-600', 'icon' => 'M12 6v6l4 2'],
+                    'part_payment' => ['color' => 'amber', 'classes' => 'bg-amber-100 text-amber-600', 'icon' => 'M12 6v6l4 2'],
                     default => ['color' => 'red', 'classes' => 'bg-red-100 text-red-600', 'icon' => 'M6 18 18 6M6 6l12 12'],
                 };
                 $initials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
@@ -123,7 +123,7 @@
             <div class="rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 p-5">
                 <div class="flex flex-wrap items-start justify-between gap-3">
                     <div class="flex items-center gap-3 min-w-0">
-                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-100 text-lg font-bold text-accent-700">
+                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-amber-100 text-lg font-bold text-amber-700">
                             {{ $initials }}
                         </div>
                         <div class="min-w-0">
@@ -162,11 +162,11 @@
                         </div>
                     </div>
                     @if (auth()->user()->isDirector())
-                        <div class="flex items-start gap-2 rounded-lg bg-accent-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
+                        <div class="flex items-start gap-2 rounded-lg bg-amber-50 p-3">
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
                             <div>
-                                <p class="text-xs text-accent-700/70">{{ __('Amount Paid') }}</p>
-                                <p class="text-sm font-bold text-accent-900">₦{{ number_format($amountPaid, 0) }}</p>
+                                <p class="text-xs text-amber-700/70">{{ __('Amount Paid') }}</p>
+                                <p class="text-sm font-bold text-amber-900">₦{{ number_format($amountPaid, 0) }}</p>
                             </div>
                         </div>
                     @endif

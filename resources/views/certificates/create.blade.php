@@ -12,8 +12,8 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center gap-4 mb-6 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($certificateIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach

@@ -19,7 +19,7 @@
                     <p class="text-sm text-gray-500">{{ __('Track income, expenses, and discounts by year') }}</p>
                 </div>
                 <form method="get" action="{{ route('finance.summary') }}">
-                    <select name="year" class="rounded-lg ring-1 ring-gray-300 border-0 focus:border-accent-500 focus:ring-accent-500 text-sm font-semibold" onchange="this.form.submit()">
+                    <select name="year" class="rounded-lg ring-1 ring-gray-300 border-0 focus:border-amber-500 focus:ring-amber-500 text-sm font-semibold" onchange="this.form.submit()">
                         @foreach (range(now()->year, now()->year - 5) as $selectableYear)
                             <option value="{{ $selectableYear }}" @selected($selectableYear === $year)>{{ $selectableYear }}</option>
                         @endforeach
@@ -47,15 +47,15 @@
                     <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                         <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">{{ __('Total Balance') }}</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="bg-ink text-accent-300 rounded-lg p-4">
+                            <div class="bg-black text-amber-400 rounded-lg p-4">
                                 <p class="text-xs uppercase tracking-wider">{{ __('Total Income') }}</p>
                                 <p class="text-2xl font-bold mt-1">₦{{ number_format($overall['income'], 2) }}</p>
                             </div>
-                            <div class="bg-ink text-accent-300 rounded-lg p-4">
+                            <div class="bg-black text-amber-400 rounded-lg p-4">
                                 <p class="text-xs uppercase tracking-wider">{{ __('Total Expenses') }}</p>
                                 <p class="text-2xl font-bold mt-1">₦{{ number_format($overall['expenses'], 2) }}</p>
                             </div>
-                            <div class="bg-accent-500 text-ink rounded-lg p-4">
+                            <div class="bg-amber-500 text-black rounded-lg p-4">
                                 <p class="text-xs uppercase tracking-wider">{{ __('Balance') }}</p>
                                 <p class="text-2xl font-bold mt-1">₦{{ number_format($overall['balance'], 2) }}</p>
                             </div>
@@ -73,8 +73,8 @@
                         <div class="flex items-center justify-between mb-4">
                             <h3 class="text-lg font-semibold">{{ __('Revenue Trend') }} — {{ $year }}</h3>
                             <div class="flex items-center gap-4 text-xs text-gray-600">
-                                <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-accent-500 rounded-sm"></span> {{ __('Income') }}</span>
-                                <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-ink rounded-sm"></span> {{ __('Expenses') }}</span>
+                                <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-amber-500 rounded-sm"></span> {{ __('Income') }}</span>
+                                <span class="flex items-center gap-1"><span class="inline-block w-3 h-3 bg-gray-900 rounded-sm"></span> {{ __('Expenses') }}</span>
                             </div>
                         </div>
 
@@ -117,11 +117,11 @@
 
                     <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                         <div class="flex items-center gap-3 p-6 pb-4">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-100 text-accent-600">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25h13.5A2.25 2.25 0 0 0 21 18v-1.5m-18-9h18m-18 0A2.25 2.25 0 0 1 5.25 6h13.5A2.25 2.25 0 0 1 21 8.25m-18 0v9m18-9v9" /></svg>
                             </span>
                             <div>
-                                <p class="text-xl font-extrabold text-accent-600 leading-none">{{ $year }}</p>
+                                <p class="text-xl font-extrabold text-amber-600 leading-none">{{ $year }}</p>
                                 <p class="mt-0.5 text-sm text-gray-500">{{ __('Monthly Overview') }}</p>
                             </div>
                         </div>
@@ -139,10 +139,10 @@
                                 <tbody class="divide-y divide-gray-50">
                                     @foreach ($months as $month)
                                         @php $hasActivity = $month['income'] > 0 || $month['expenses'] > 0; @endphp
-                                        <tr class="{{ $hasActivity ? 'bg-accent-50/60' : '' }}">
+                                        <tr class="{{ $hasActivity ? 'bg-amber-50/60' : '' }}">
                                             <td class="px-2 py-2 text-sm">
                                                 <span class="inline-flex items-center gap-2">
-                                                    <svg class="h-4 w-4 text-accent-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                                                    <svg class="h-4 w-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                                                     {{ $month['label'] }}
                                                 </span>
                                             </td>
@@ -155,7 +155,7 @@
                                     @endforeach
                                 </tbody>
                                 <tfoot>
-                                    <tr class="bg-accent-100/70 border-t-2 border-accent-300">
+                                    <tr class="bg-amber-100/70 border-t-2 border-amber-300">
                                         <td class="px-2 py-2 text-sm font-bold">{{ __('Year Total') }}</td>
                                         <td class="px-2 py-2 text-sm font-bold">{{ number_format($totals['income'], 2) }}</td>
                                         <td class="px-2 py-2 text-sm font-bold">{{ number_format($totals['expenses'], 2) }}</td>
@@ -171,7 +171,7 @@
                     @if ($discounts->isNotEmpty())
                         <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
                             <div class="flex items-center gap-3 p-6 pb-4">
-                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-100 text-accent-600">
+                                <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.83.699 2.528 0l4.318-4.318a1.79 1.79 0 0 0 0-2.528L10.505 3.66A2.25 2.25 0 0 0 9.568 3Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6Z" /></svg>
                                 </span>
                                 <h3 class="text-lg font-bold text-gray-900">{{ __('Discounts') }} — {{ $year }}</h3>
@@ -199,9 +199,9 @@
                                             <tr>
                                                 <td class="px-2 py-2 text-sm">
                                                     <div class="flex items-center gap-2">
-                                                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-bold text-accent-300">{{ $initials }}</span>
+                                                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-xs font-bold text-amber-400">{{ $initials }}</span>
                                                         <div>
-                                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="font-medium text-accent-600 hover:underline">{{ $enrollment->student->name }}</a>
+                                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="font-medium text-amber-600 hover:underline">{{ $enrollment->student->name }}</a>
                                                             <p class="text-xs text-gray-400">
                                                                 {{ __('Approved by :name', ['name' => $enrollment->discountApprovedBy?->name ?? '—']) }}
                                                                 &middot; {{ config("discounts.reasons.{$enrollment->discount_reason}", $enrollment->discount_reason) }}
@@ -229,12 +229,12 @@
                                         @endforeach
                                     </tbody>
                                     <tfoot>
-                                        <tr class="bg-accent-100/70 border-t-2 border-accent-300">
+                                        <tr class="bg-amber-100/70 border-t-2 border-amber-300">
                                             <td colspan="2" class="px-2 py-2 text-sm font-bold">{{ __('Total Discounts') }}</td>
                                             <td></td>
                                             <td class="px-2 py-2 text-sm font-bold text-green-600">{{ number_format($discounts->sum('discount_amount'), 2) }}</td>
                                             <td class="px-2 py-2 text-sm">
-                                                <span class="inline-flex items-center rounded-full bg-accent-200 px-2 py-0.5 text-xs font-bold text-accent-800">{{ $totalDiscountPercent }}%</span>
+                                                <span class="inline-flex items-center rounded-full bg-amber-200 px-2 py-0.5 text-xs font-bold text-amber-800">{{ $totalDiscountPercent }}%</span>
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -258,22 +258,22 @@
                             <svg class="h-5 w-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 3h6m-6 3h6M6 21h12a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 18 4.5h-7.5L6 9v9.75A2.25 2.25 0 0 0 8.25 21H6Z" /></svg>
                             <span class="text-sm font-semibold text-gray-800">{{ __('Export CSV') }}</span>
                         </a>
-                        <a href="{{ route('expenses.index') }}" class="flex items-center justify-between gap-3 px-5 py-4 bg-accent-50 hover:bg-accent-100 transition">
+                        <a href="{{ route('expenses.index') }}" class="flex items-center justify-between gap-3 px-5 py-4 bg-amber-50 hover:bg-amber-100 transition">
                             <span class="flex items-center gap-3">
-                                <svg class="h-5 w-5 text-accent-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-19.5 0v6a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25v-6m-19.5 0h19.5M4.5 9.75V6.108c0-1.135.845-2.098 1.976-2.192a48.424 48.424 0 0 1 11.048 0c1.131.094 1.976 1.057 1.976 2.192V9.75" /></svg>
-                                <span class="text-sm font-semibold text-accent-800">{{ __('Manage Expenses') }}</span>
+                                <svg class="h-5 w-5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-19.5 0v6a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25v-6m-19.5 0h19.5M4.5 9.75V6.108c0-1.135.845-2.098 1.976-2.192a48.424 48.424 0 0 1 11.048 0c1.131.094 1.976 1.057 1.976 2.192V9.75" /></svg>
+                                <span class="text-sm font-semibold text-amber-800">{{ __('Manage Expenses') }}</span>
                             </span>
-                            <svg class="h-4 w-4 text-accent-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                            <svg class="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                         </a>
                     </div>
 
                     <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 text-center">
-                        <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-accent-50">
-                            <svg class="h-10 w-10 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" /></svg>
+                        <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-amber-50">
+                            <svg class="h-10 w-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" /></svg>
                         </div>
                         <h4 class="text-lg font-bold text-gray-900">{{ __('Manage Your Expenses') }}</h4>
                         <p class="mt-1 text-sm text-gray-500">{{ __('Add, edit and track all expenses to keep your records accurate and up to date.') }}</p>
-                        <a href="{{ route('expenses.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-600 px-4 py-2.5 text-sm font-bold text-black transition">
+                        <a href="{{ route('expenses.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-bold text-black transition">
                             {{ __('Manage Expenses') }}
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                         </a>

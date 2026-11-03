@@ -11,7 +11,7 @@
         $noSymbolIconPath = 'M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636';
 
         $rowPalette = [
-            ['border' => 'border-accent-400', 'bg' => 'bg-accent-50/70', 'avatar' => 'bg-accent-400'],
+            ['border' => 'border-amber-400', 'bg' => 'bg-amber-50/70', 'avatar' => 'bg-amber-400'],
             ['border' => 'border-blue-400', 'bg' => 'bg-blue-50/70', 'avatar' => 'bg-blue-400'],
             ['border' => 'border-purple-400', 'bg' => 'bg-purple-50/70', 'avatar' => 'bg-purple-400'],
             ['border' => 'border-green-400', 'bg' => 'bg-green-50/70', 'avatar' => 'bg-green-400'],
@@ -73,7 +73,7 @@
                                         <div class="min-w-0">
                                             <a href="{{ route('students.show', $enrollment->student_id) }}" class="group flex items-center gap-2.5">
                                                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white {{ $rowAccent['avatar'] }}">{{ $trainingProgressInitials }}</span>
-                                                <span class="truncate font-semibold text-gray-900 group-hover:text-accent-600">{{ $enrollment->student->name }}</span>
+                                                <span class="truncate font-semibold text-gray-900 group-hover:text-amber-600">{{ $enrollment->student->name }}</span>
                                             </a>
                                         </div>
                                         <div class="text-sm font-mono text-gray-600">{{ $enrollment->student->student_id_number }}</div>

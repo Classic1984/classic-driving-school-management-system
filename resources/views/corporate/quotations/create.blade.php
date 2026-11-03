@@ -50,8 +50,8 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Create Quotation') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Give a corporate client a price before they commit to an invoice.') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($documentIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -65,7 +65,7 @@
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 space-y-6">
                     <div>
                         <x-input-label for="corporate_company_id" :value="__('Company')" />
-                        <select id="corporate_company_id" name="corporate_company_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                        <select id="corporate_company_id" name="corporate_company_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                             <option value="">{{ __('Select a company…') }}</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->id }}" @selected(old('corporate_company_id', $selectedCompanyId) == $company->id)>{{ $company->name }}</option>
@@ -73,7 +73,7 @@
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('corporate_company_id')" />
                         @if ($companies->isEmpty())
-                            <p class="mt-2 text-sm text-accent-600">
+                            <p class="mt-2 text-sm text-amber-600">
                                 {{ __('No companies registered yet.') }}
                                 <a href="{{ route('corporate-companies.create') }}" class="underline hover:no-underline">{{ __('Add one first') }}</a>.
                             </p>
@@ -112,12 +112,12 @@
                     </div>
                     <div>
                         <x-input-label for="course_coverage" :value="__('Course Coverage (optional, one topic per line)')" />
-                        <textarea id="course_coverage" name="course_coverage" rows="3" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('course_coverage') }}</textarea>
+                        <textarea id="course_coverage" name="course_coverage" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('course_coverage') }}</textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('course_coverage')" />
                     </div>
                     <div>
                         <x-input-label for="notes" :value="__('Notes (optional)')" />
-                        <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+                        <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h4 class="text-sm font-bold uppercase tracking-wide text-gray-500">{{ __('Charges') }}</h4>
-                        <button type="button" @click="addItem()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-600 hover:underline">
+                        <button type="button" @click="addItem()" class="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-600 hover:underline">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $plusIconPath }}" /></svg>
                             {{ __('Add Item') }}
                         </button>
@@ -155,7 +155,7 @@
                                                     x-on:input="openSuggestions(item, $event)"
                                                     x-on:blur="item.showSuggestions = false"
                                                     autocomplete="off"
-                                                    class="block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm text-sm pr-8"
+                                                    class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm pr-8"
                                                     required
                                                 >
                                                 <button type="button" x-on:mousedown.prevent="item.showSuggestions = !item.showSuggestions" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400">
@@ -169,11 +169,11 @@
                                                         class="z-50 mt-1 max-h-48 overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-gray-200"
                                                     >
                                                         <template x-for="option in filteredServiceOptions(item)" :key="option">
-                                                            <li x-on:mousedown.prevent="selectService(item, option)" x-text="option" class="cursor-pointer px-3 py-2 text-gray-700 hover:bg-accent-50"></li>
+                                                            <li x-on:mousedown.prevent="selectService(item, option)" x-text="option" class="cursor-pointer px-3 py-2 text-gray-700 hover:bg-amber-50"></li>
                                                         </template>
                                                         <li x-show="serviceOptions.length === 0" class="px-3 py-2 text-gray-400 italic">
                                                             {{ __('No suggestions yet.') }}
-                                                            <a href="{{ route('corporate-invoice-settings.edit') }}" class="not-italic text-accent-600 hover:underline">{{ __('Add some in Invoice Settings') }}</a>
+                                                            <a href="{{ route('corporate-invoice-settings.edit') }}" class="not-italic text-amber-600 hover:underline">{{ __('Add some in Invoice Settings') }}</a>
                                                         </li>
                                                         <li x-show="serviceOptions.length > 0 && filteredServiceOptions(item).length === 0" class="px-3 py-2 text-gray-400 italic">{{ __('No matches - your typed value will still be used.') }}</li>
                                                     </ul>
@@ -181,10 +181,10 @@
                                             </div>
                                         </td>
                                         <td class="py-2 px-3">
-                                            <input type="number" step="0.01" min="0.01" :name="`items[${index}][quantity]`" x-model="item.quantity" class="block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="number" step="0.01" min="0.01" :name="`items[${index}][quantity]`" x-model="item.quantity" class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" required>
                                         </td>
                                         <td class="py-2 px-3">
-                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_price]`" x-model="item.unit_price" class="block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_price]`" x-model="item.unit_price" class="block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" required>
                                         </td>
                                         <td class="py-2 pl-3 text-right text-sm font-semibold text-gray-900" x-text="amount(item)"></td>
                                         <td class="py-2 text-right">
@@ -205,7 +205,7 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-3 text-sm font-bold text-accent-300 transition">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                         {{ __('Save Quotation') }}
                     </button>

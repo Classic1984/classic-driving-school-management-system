@@ -31,8 +31,8 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-wrap items-center gap-4 mb-6">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                            <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                            <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                         </span>
                         <div class="min-w-0 flex-1">
                             <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ $attendance->student->name }}</h3>
@@ -43,77 +43,77 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Date') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->date->format('l, M j, Y') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Time') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->created_at->format('H:i') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Session') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->sessionPeriod() ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Student') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->student->name }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Course') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->course->name }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $boltIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $boltIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Type') }}</p>
                                 <p class="text-sm font-bold text-gray-900 capitalize">{{ $attendance->type ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Instructor') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->instructor?->name ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $vehicleIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $vehicleIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Vehicle') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->vehicle?->name ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Duration') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->duration ?? '—' }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Status') }}</p>
                                 <x-badge :color="$statusMeta" class="capitalize mt-0.5">{{ $attendance->status }}</x-badge>
                             </div>
                         </div>
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                            <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                             <div>
                                 <p class="text-xs text-gray-500">{{ __('Notes') }}</p>
                                 <p class="text-sm font-bold text-gray-900">{{ $attendance->notes ?? '—' }}</p>

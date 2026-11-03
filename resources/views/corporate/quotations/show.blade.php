@@ -24,7 +24,7 @@
             'approved' => ['classes' => 'bg-green-100 text-green-700', 'label' => 'Approved'],
             'rejected' => ['classes' => 'bg-red-100 text-red-700', 'label' => 'Rejected'],
             'expired' => ['classes' => 'bg-gray-200 text-gray-700', 'label' => 'Expired'],
-            'converted' => ['classes' => 'bg-accent-100 text-accent-700', 'label' => 'Converted'],
+            'converted' => ['classes' => 'bg-amber-100 text-amber-700', 'label' => 'Converted'],
             default => ['classes' => 'bg-gray-100 text-gray-600', 'label' => 'Draft'],
         };
     @endphp
@@ -52,13 +52,13 @@
                     @if ($quotation->status !== 'converted')
                         <form method="post" action="{{ route('corporate-quotations.convert', $quotation) }}">
                             @csrf
-                            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-400 px-4 py-2 text-sm font-bold text-black transition">
+                            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-4 py-2 text-sm font-bold text-black transition">
                                 {{ __('Convert to Invoice') }}
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowRightIconPath }}" /></svg>
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('corporate-invoices.show', $quotation->converted_invoice_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-400 px-4 py-2 text-sm font-bold text-black transition">
+                        <a href="{{ route('corporate-invoices.show', $quotation->converted_invoice_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 px-4 py-2 text-sm font-bold text-black transition">
                             {{ __('View Invoice :number', ['number' => $quotation->convertedInvoice?->invoice_number]) }}
                         </a>
                     @endif
@@ -87,7 +87,7 @@
                             {{ __('Delete') }}
                         </button>
                     @endif
-                    <a href="{{ route('corporate-companies.show', $quotation->corporate_company_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-4 py-2 text-sm font-bold text-accent-300 transition">
+                    <a href="{{ route('corporate-companies.show', $quotation->corporate_company_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-4 py-2 text-sm font-bold text-amber-400 transition">
                         {{ __('Back to Company') }}
                     </a>
                 </div>
@@ -98,7 +98,7 @@
             @elseif (session('status') === 'quotation-sent')
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Quotation marked as sent.') }}</p>
             @elseif (session('status') === 'quotation-already-converted')
-                <p class="print-hidden text-sm font-medium text-accent-600">{{ __('This quotation was already converted to an invoice.') }}</p>
+                <p class="print-hidden text-sm font-medium text-amber-600">{{ __('This quotation was already converted to an invoice.') }}</p>
             @elseif (session('status') === 'quotation-emailed')
                 <p class="print-hidden text-sm font-medium text-green-600">{{ __('Quotation emailed successfully.') }}</p>
             @elseif (session('status') === 'quotation-whatsapp-sent')
@@ -118,39 +118,39 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="text-center pb-6 border-b-2 border-accent-400">
+                <div class="text-center pb-6 border-b-2 border-amber-400">
                     <x-application-logo class="h-14 w-auto mx-auto mb-2" />
                     <p class="text-lg sm:text-xl font-extrabold uppercase tracking-[0.2em] text-black">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
-                    <h1 class="mt-1 text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-accent-300 via-accent-600 to-black bg-clip-text text-transparent">{{ __('QUOTATION') }}</h1>
+                    <h1 class="mt-1 text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-amber-300 via-amber-600 to-black bg-clip-text text-transparent">{{ __('QUOTATION') }}</h1>
                     @if ($settings->slogan)
-                        <p class="italic text-accent-600 text-sm mt-1">{{ $settings->slogan }}</p>
+                        <p class="italic text-amber-600 text-sm mt-1">{{ $settings->slogan }}</p>
                     @endif
                 </div>
 
                 <dl class="mt-4 text-sm space-y-1">
                     <div class="flex gap-2">
-                        <dt class="font-bold text-accent-600">{{ __('Quotation No:') }}</dt>
+                        <dt class="font-bold text-amber-600">{{ __('Quotation No:') }}</dt>
                         <dd class="font-mono text-gray-900">{{ $quotation->quotation_number }}</dd>
                     </div>
                     <div class="flex gap-2">
-                        <dt class="font-bold text-accent-600">{{ __('Date:') }}</dt>
+                        <dt class="font-bold text-amber-600">{{ __('Date:') }}</dt>
                         <dd class="text-gray-900">{{ $quotation->issue_date->format('d F Y') }}</dd>
                     </div>
                     @if ($quotation->valid_until)
                         <div class="flex gap-2">
-                            <dt class="font-bold text-accent-600">{{ __('Valid Until:') }}</dt>
+                            <dt class="font-bold text-amber-600">{{ __('Valid Until:') }}</dt>
                             <dd class="text-gray-900">{{ $quotation->valid_until->format('d F Y') }}</dd>
                         </div>
                     @endif
                 </dl>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300">
-                        <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                    <div class="rounded-2xl overflow-hidden ring-2 ring-amber-300">
+                        <div class="bg-black flex items-center gap-3 px-4 py-3">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
                             </span>
-                            <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('QUOTED TO') }}</span>
+                            <span class="font-bold text-sm tracking-wide text-amber-400">{{ __('QUOTED TO') }}</span>
                         </div>
                         <div class="bg-white px-4 py-4">
                             <p class="text-lg font-bold text-gray-900">{{ $quotation->company->name }}</p>
@@ -158,12 +158,12 @@
                         </div>
                     </div>
                     @if ($quotation->programme_name || $quotation->duration_label || $quotation->participant_count)
-                        <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300">
-                            <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                        <div class="rounded-2xl overflow-hidden ring-2 ring-amber-300">
+                            <div class="bg-black flex items-center gap-3 px-4 py-3">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                                 </span>
-                                <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('TRAINING DETAILS') }}</span>
+                                <span class="font-bold text-sm tracking-wide text-amber-400">{{ __('TRAINING DETAILS') }}</span>
                             </div>
                             <div class="bg-white px-4 py-4 text-sm space-y-1.5">
                                 @if ($quotation->programme_name)
@@ -180,10 +180,10 @@
                     @endif
                 </div>
 
-                <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300 mt-6">
+                <div class="rounded-2xl overflow-hidden ring-2 ring-amber-300 mt-6">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-ink text-accent-300 text-left text-sm font-bold">
+                            <tr class="bg-black text-amber-400 text-left text-sm font-bold">
                                 <th class="px-4 py-2 w-14">{{ __('S/N') }}</th>
                                 <th class="px-4 py-2">{{ __('Description') }}</th>
                                 <th class="px-4 py-2 text-center w-20">{{ __('Qty') }}</th>
@@ -191,7 +191,7 @@
                                 <th class="px-4 py-2 text-right w-36">{{ __('Amount (₦)') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-accent-50/20 divide-y divide-accent-100">
+                        <tbody class="bg-amber-50/20 divide-y divide-amber-100">
                             @foreach ($quotation->items as $item)
                                 <tr>
                                     <td class="px-4 py-3 text-sm text-gray-500">{{ $loop->iteration }}</td>
@@ -206,26 +206,26 @@
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <div class="flex w-full sm:w-auto rounded-full overflow-hidden ring-2 ring-accent-300">
-                        <div class="bg-gradient-to-r from-accent-300 to-accent-500 text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 pl-4 pr-3 sm:pl-5 sm:pr-4 py-3 whitespace-nowrap">
+                    <div class="flex w-full sm:w-auto rounded-full overflow-hidden ring-2 ring-amber-300">
+                        <div class="bg-gradient-to-r from-amber-300 to-amber-500 text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 pl-4 pr-3 sm:pl-5 sm:pr-4 py-3 whitespace-nowrap">
                             <svg class="h-4 w-4 sm:h-5 sm:w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $coinIconPath }}" /></svg>
                             {{ __('TOTAL') }}
                         </div>
-                        <div class="bg-ink text-accent-300 font-black text-lg sm:text-xl flex items-center whitespace-nowrap pl-3 pr-4 sm:pl-4 sm:pr-5 py-3">₦{{ number_format($quotation->total(), 0) }}</div>
+                        <div class="bg-black text-amber-400 font-black text-lg sm:text-xl flex items-center whitespace-nowrap pl-3 pr-4 sm:pl-4 sm:pr-5 py-3">₦{{ number_format($quotation->total(), 0) }}</div>
                     </div>
                 </div>
 
                 @if (! empty($courseCoveragePairs))
-                    <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300 mt-6">
-                        <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                    <div class="rounded-2xl overflow-hidden ring-2 ring-amber-300 mt-6">
+                        <div class="bg-black flex items-center gap-3 px-4 py-3">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $listIconPath }}" /></svg>
                             </span>
-                            <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('COURSE COVERAGE') }}</span>
+                            <span class="font-bold text-sm tracking-wide text-amber-400">{{ __('COURSE COVERAGE') }}</span>
                         </div>
-                        <div class="bg-white divide-y divide-accent-100">
+                        <div class="bg-white divide-y divide-amber-100">
                             @foreach ($courseCoveragePairs as $pair)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-accent-100 {{ $loop->even ? 'bg-accent-50/60' : '' }}">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-amber-100 {{ $loop->even ? 'bg-amber-50/60' : '' }}">
                                     @foreach ($pair as $topic)
                                         <div class="px-4 py-2 text-sm text-gray-800">{{ $topic }}</div>
                                     @endforeach
@@ -243,7 +243,7 @@
                     <div class="border-t-2 border-black mt-8 pt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-black">
                         @if ($settings->address)
                             <div class="flex items-center gap-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                                 </span>
                                 {{ $settings->address }}
@@ -251,7 +251,7 @@
                         @endif
                         @if ($settings->phone)
                             <div class="flex items-center gap-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                                 </span>
                                 {{ $settings->phone }}
@@ -259,7 +259,7 @@
                         @endif
                         @if ($settings->website)
                             <div class="flex items-center gap-2">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-amber-400">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $globeIconPath }}" /></svg>
                                 </span>
                                 {{ $settings->website }}
@@ -305,7 +305,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('recipient_email')" />
             </div>
             <div class="flex items-center gap-3 pt-2">
-                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-2.5 text-sm font-bold text-accent-300 transition">{{ __('Send') }}</button>
+                <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-2.5 text-sm font-bold text-amber-400 transition">{{ __('Send') }}</button>
                 <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'send-email')">{{ __('Cancel') }}</x-secondary-button>
             </div>
         </form>

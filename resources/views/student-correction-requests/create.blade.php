@@ -12,8 +12,8 @@
     <div class="py-12">
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center gap-4 mb-6 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $lockIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $lockIconPath }}" /></svg>
                 </span>
                 <div class="min-w-0 flex-1">
                     <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ __('Request a Correction') }}</h3>
@@ -31,7 +31,7 @@
 
                     <div>
                         <x-input-label for="field" :value="__('Field')" />
-                        <select id="field" name="field" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                        <select id="field" name="field" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                             @foreach (['name' => 'Name', 'date_of_birth' => 'Date of Birth', 'phone' => 'Phone', 'program' => 'Training Program'] as $value => $label)
                                 <option value="{{ $value }}" @selected(old('field', $field) === $value)>{{ __($label) }}</option>
                             @endforeach
@@ -60,7 +60,7 @@
 
                     <div>
                         <x-input-label for="reason" :value="__('Reason (optional)')" />
-                        <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('reason') }}</textarea>
+                        <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('reason') }}</textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('reason')" />
                     </div>
 

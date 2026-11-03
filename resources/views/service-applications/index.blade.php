@@ -24,8 +24,8 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex flex-wrap items-start justify-between gap-4">
                 <div class="flex items-center gap-4">
-                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                        <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                        <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
                     </span>
                     <div>
                         <h3 class="text-2xl font-extrabold text-gray-900">{{ $title }}</h3>
@@ -44,7 +44,7 @@
                     <button
                         type="button"
                         @click="tab = 'existing'"
-                        :class="tab === 'existing' ? 'border-accent-500 text-accent-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                        :class="tab === 'existing' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
                         class="px-4 py-2.5 text-sm font-semibold border-b-2 transition"
                     >
                         {{ __('Existing Student') }}
@@ -52,7 +52,7 @@
                     <button
                         type="button"
                         @click="tab = 'walk_in'"
-                        :class="tab === 'walk_in' ? 'border-accent-500 text-accent-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                        :class="tab === 'walk_in' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
                         class="px-4 py-2.5 text-sm font-semibold border-b-2 transition"
                     >
                         {{ __('New Walk-in Applicant') }}
@@ -68,7 +68,7 @@
 
                         <div>
                             <x-input-label for="student_id" :value="__('Student')" />
-                            <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                            <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                                 <option value="">{{ __('Select a student') }}</option>
                                 @foreach ($students as $availableStudent)
                                     <option value="{{ $availableStudent->id }}" @selected((string) old('student_id') === (string) $availableStudent->id)>{{ $availableStudent->name }} ({{ $availableStudent->student_id_number }})</option>

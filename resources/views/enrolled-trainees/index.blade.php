@@ -13,15 +13,15 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
                 <div class="flex items-center gap-4">
-                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                        <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                        <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                     </span>
                     <div>
                         <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Enrolled Trainees') }}</h3>
                         <p class="text-sm text-gray-500">{{ __('Monitor and track student training in real-time') }}</p>
                     </div>
                 </div>
-                <a href="{{ route('attendances.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-accent-300 px-4 py-2 text-sm font-semibold text-accent-700 hover:bg-accent-50 transition">
+                <a href="{{ route('attendances.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-amber-300 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50 transition">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>
                     {{ __('View All Training Logins') }}
                 </a>
@@ -86,7 +86,7 @@
                             $accent = match ($label) {
                                 'Expired' => ['ring' => 'ring-red-200', 'bar' => 'bg-red-500', 'edge' => 'bg-red-500', 'dot' => 'bg-red-500', 'text' => 'text-red-700'],
                                 'Completed' => ['ring' => 'ring-blue-200', 'bar' => 'bg-blue-500', 'edge' => 'bg-blue-500', 'dot' => 'bg-blue-500', 'text' => 'text-blue-700'],
-                                default => ['ring' => 'ring-accent-200', 'bar' => 'bg-accent-500', 'edge' => 'bg-accent-500', 'dot' => 'bg-green-500', 'text' => 'text-green-700'],
+                                default => ['ring' => 'ring-amber-200', 'bar' => 'bg-amber-500', 'edge' => 'bg-amber-500', 'dot' => 'bg-green-500', 'text' => 'text-green-700'],
                             };
                             $initials = collect(explode(' ', $trainee->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                             $transmissionLabels = ['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Auto & Manual'];
@@ -94,30 +94,30 @@
                             $trainedToday = $lastLogin && $lastLogin->updated_at->isToday();
                             $serial = $trainees->firstItem() + $loop->index;
                         @endphp
-                        <div class="group relative flex flex-col overflow-hidden rounded-xl p-5 ring-1 {{ $accent['ring'] }} shadow-sm {{ $trainedToday ? 'bg-accent-50/70' : 'bg-white' }}">
+                        <div class="group relative flex flex-col overflow-hidden rounded-xl p-5 ring-1 {{ $accent['ring'] }} shadow-sm {{ $trainedToday ? 'bg-amber-50/70' : 'bg-white' }}">
                             <span class="absolute inset-y-0 left-0 w-1 {{ $accent['edge'] }}"></span>
 
                             <div class="flex items-start gap-3">
                                 <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-500 mt-1">{{ $serial }}</span>
-                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-bold text-accent-300">
+                                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black text-sm font-bold text-amber-400">
                                     {{ $initials }}
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center justify-between gap-2">
-                                        <a href="{{ route('students.training-record', $trainee) }}" class="truncate font-semibold text-gray-900 hover:text-accent-600">{{ $trainee->name }}</a>
+                                        <a href="{{ route('students.training-record', $trainee) }}" class="truncate font-semibold text-gray-900 hover:text-amber-600">{{ $trainee->name }}</a>
                                         <span class="inline-flex shrink-0 items-center gap-1.5">
                                             <span class="h-2 w-2 rounded-full {{ $accent['dot'] }}"></span>
                                             <span class="text-sm font-medium {{ $accent['text'] }}">{{ __($label) }}</span>
                                         </span>
                                     </div>
-                                    <p class="mt-0.5 text-sm text-accent-700">
+                                    <p class="mt-0.5 text-sm text-amber-700">
                                         {{ $trainee->courses->pluck('name')->implode(', ') ?: '—' }}
                                         @if ($transmissionLabel)
                                             &middot; {{ $transmissionLabel }}
                                         @endif
                                     </p>
                                 </div>
-                                <a href="{{ route('students.training-record', $trainee) }}" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-accent-100 group-hover:text-accent-600 transition">
+                                <a href="{{ route('students.training-record', $trainee) }}" class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                 </a>
                             </div>
@@ -136,7 +136,7 @@
 
                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-gray-100 pt-3 text-sm">
                                 <div class="flex items-center gap-2">
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-100 text-accent-600">
+                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
                                     </span>
                                     <div>
@@ -152,7 +152,7 @@
                                         <div class="flex items-center gap-1.5">
                                             <p class="font-bold text-gray-800">{{ $lastLogin?->updated_at->format('l, M j, Y g:i A') ?? '—' }}</p>
                                             @if ($trainedToday)
-                                                <span class="inline-flex items-center rounded-full bg-accent-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">{{ __('Today') }}</span>
+                                                <span class="inline-flex items-center rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-black">{{ __('Today') }}</span>
                                             @endif
                                         </div>
                                         <p class="text-xs text-gray-400">{{ __('Last Modified') }}</p>

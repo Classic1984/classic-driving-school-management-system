@@ -3,7 +3,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
         <x-input-label for="category" :value="__('Category')" />
-        <select id="category" name="category" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+        <select id="category" name="category" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
             <option value="">{{ __('Select a category') }}</option>
             @foreach (\App\Models\Expense::CATEGORIES as $value => $label)
                 <option value="{{ $value }}" @selected(old('category', $expense?->category ?? request('category')) === $value)>{{ __($label) }}</option>
@@ -26,7 +26,7 @@
 
     <div class="sm:col-span-2">
         <x-input-label for="description" :value="__('Description')" />
-        <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('description', $expense?->description) }}</textarea>
+        <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">{{ old('description', $expense?->description) }}</textarea>
         <x-input-error class="mt-2" :messages="$errors->get('description')" />
     </div>
 </div>
@@ -87,11 +87,11 @@
         <img src="{{ Storage::disk('public')->url($expense->receipt_photo_path) }}" alt="{{ __('Current receipt') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-gray-200">
     @endif
     <template x-if="previewUrl">
-        <img :src="previewUrl" alt="{{ __('Captured receipt preview') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-accent-400">
+        <img :src="previewUrl" alt="{{ __('Captured receipt preview') }}" class="mt-2 mb-2 h-24 w-24 object-cover rounded-md border border-amber-400">
     </template>
 
     <div class="mt-1 flex items-center gap-3">
-        <input id="receipt_photo" name="receipt_photo" x-ref="receiptInput" type="file" accept="image/*" class="block w-full text-sm border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+        <input id="receipt_photo" name="receipt_photo" x-ref="receiptInput" type="file" accept="image/*" class="block w-full text-sm border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
         <button type="button" @click="openWebcam" class="shrink-0 inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
             {{ __('Use Camera') }}
         </button>
@@ -102,9 +102,9 @@
     <x-input-error class="mt-2" :messages="$errors->get('receipt_photo')" />
 
     <div x-show="webcamOpen" class="mt-3 rounded-md border border-gray-200 bg-gray-50 p-3">
-        <video x-ref="video" autoplay playsinline class="w-full max-w-xs rounded-md bg-ink"></video>
+        <video x-ref="video" autoplay playsinline class="w-full max-w-xs rounded-md bg-black"></video>
         <div class="mt-2 flex gap-2">
-            <button type="button" @click="capture" class="rounded-md bg-accent-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-accent-600">{{ __('Capture') }}</button>
+            <button type="button" @click="capture" class="rounded-md bg-amber-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-600">{{ __('Capture') }}</button>
             <button type="button" @click="closeWebcam" class="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ __('Cancel') }}</button>
         </div>
     </div>

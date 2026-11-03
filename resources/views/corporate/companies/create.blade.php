@@ -16,8 +16,8 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Add Company') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Register a corporate client before creating quotations or invoices for them.') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($buildingIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -32,7 +32,7 @@
                     @include('corporate.companies.partials.form-fields')
 
                     <div class="flex items-center gap-4">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-3 text-sm font-bold text-accent-300 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                             {{ __('Save Company') }}
                         </button>

@@ -23,15 +23,15 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Add Staff') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Create a new staff account') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                    <svg class="h-7 w-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                 </span>
             </div>
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 space-y-6">
-                <div class="flex items-start gap-3 rounded-lg bg-accent-50 ring-1 ring-accent-100 p-4">
-                    <svg class="h-5 w-5 shrink-0 text-accent-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
-                    <p class="text-sm text-accent-800">{{ __('Share the password you set below with the new staff member directly - they can change it afterward from the login page\'s "Forgot your password?" link.') }}</p>
+                <div class="flex items-start gap-3 rounded-lg bg-amber-50 ring-1 ring-amber-100 p-4">
+                    <svg class="h-5 w-5 shrink-0 text-amber-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $infoIconPath }}" /></svg>
+                    <p class="text-sm text-amber-800">{{ __('Share the password you set below with the new staff member directly - they can change it afterward from the login page\'s "Forgot your password?" link.') }}</p>
                 </div>
 
                 <form method="post" action="{{ route('users.store') }}" class="space-y-6">
@@ -40,7 +40,7 @@
                     <div>
                         <x-input-label for="name" :value="__('Name')" />
                         <div class="relative mt-1">
-                            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center text-accent-400">
+                            <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center text-amber-500">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                             </span>
                             <x-text-input id="name" name="name" type="text" class="block w-full pl-11" :value="old('name')" required autofocus />
@@ -65,7 +65,7 @@
                             <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center text-gray-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                             </span>
-                            <select id="role" name="role" class="block w-full pl-11 border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-lg shadow-sm" required>
+                            <select id="role" name="role" class="block w-full pl-11 border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-lg shadow-sm" required>
                                 <option value="">{{ __('Select a role') }}</option>
                                 @foreach (['admin' => 'Admin (view, no deletes, no Finance)', 'secretary' => 'Secretary (day-to-day operations)', 'director' => 'Director (full access)'] as $value => $label)
                                     <option value="{{ $value }}" @selected(old('role') === $value)>{{ __($label) }}</option>
@@ -106,7 +106,7 @@
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-3 text-sm font-bold text-accent-300 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-black hover:bg-gray-900 px-5 py-3 text-sm font-bold text-amber-400 transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             {{ __('Create Staff Account') }}
                         </button>

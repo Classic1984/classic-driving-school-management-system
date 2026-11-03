@@ -17,7 +17,7 @@
                     <p class="text-base font-medium text-gray-900">{{ $enrollment->course->name }} ({{ $enrollment->course->duration_weeks }} {{ __('Weeks') }}) — ₦{{ number_format($enrollment->fee(), 2) }}</p>
                 </div>
 
-                <div class="bg-accent-50 border border-accent-200 rounded-lg p-3 text-sm text-accent-800">
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
                     {{ __('Training Days Completed') }}: {{ $enrollment->attendedDays() }} &middot;
                     {{ __('Upgrade Window') }}: {{ $enrollment->upgradeDaysRemaining() }} {{ __('day(s) remaining') }}
                 </div>
@@ -27,7 +27,7 @@
                 </p>
 
                 @unless (auth()->user()->isDirector())
-                    <p class="text-sm text-accent-700 bg-accent-50 border border-accent-200 rounded-lg p-3">
+                    <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
                         {{ __('You are not a Director, so submitting this will raise a pending request - the programme only changes once a Director approves it.') }}
                     </p>
                 @endunless
@@ -39,7 +39,7 @@
 
                     <div>
                         <x-input-label for="course_id" :value="__('New Programme')" />
-                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                             <option value="">{{ __('Select') }}</option>
                             @foreach ($eligibleCourses as $course)
                                 <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} ({{ $course->duration_weeks }} {{ __('Weeks') }}) — ₦{{ number_format($course->fee, 2) }}</option>
@@ -48,7 +48,7 @@
                         <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
                     </div>
 
-                    <div class="bg-ink text-accent-300 rounded-lg p-4 inline-flex items-baseline gap-2">
+                    <div class="bg-black text-amber-400 rounded-lg p-4 inline-flex items-baseline gap-2">
                         <span class="text-sm font-medium">{{ __('Upgrade Balance') }}</span>
                         <span class="text-2xl font-bold" id="preview-upgrade-balance">₦0.00</span>
                     </div>
@@ -62,7 +62,7 @@
 
                     <div>
                         <x-input-label for="payment_method" :value="__('Payment Method')" />
-                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                             <option value="">{{ __('Select') }}</option>
                             @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                                 <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>

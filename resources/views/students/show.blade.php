@@ -44,7 +44,7 @@
                     <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
                 @elseif (session('status') === 'student-created-discount-pending')
                     <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
-                    <p class="text-sm font-medium text-accent-600">{{ __('The requested discount is pending Director approval - the student is enrolled at the full fee until then.') }}</p>
+                    <p class="text-sm font-medium text-amber-600">{{ __('The requested discount is pending Director approval - the student is enrolled at the full fee until then.') }}</p>
                     <script>alert({!! json_encode(__('Student registered successfully. The requested discount still needs Director approval before it applies - the student is currently enrolled at the full course fee.')) !!});</script>
                 @elseif (session('status') === 'student-updated')
                     <p class="text-sm font-medium text-green-600">{{ __('Student updated successfully.') }}</p>
@@ -57,7 +57,7 @@
                 @elseif (session('status') === 'service-status-updated')
                     <p class="text-sm font-medium text-green-600">{{ __(session('serviceStatusMessage', 'Processing status updated successfully.')) }}</p>
                 @elseif (session('status') === 'service-status-unchanged')
-                    <p class="text-sm font-medium text-accent-600">⚠️ {{ __(session('serviceStatusMessage', 'No change - that status was already set.')) }}</p>
+                    <p class="text-sm font-medium text-amber-600">⚠️ {{ __(session('serviceStatusMessage', 'No change - that status was already set.')) }}</p>
                 @endif
 
                 @php
@@ -103,7 +103,7 @@
                     @if ($student->photo_path)
                         <img src="{{ Storage::disk('public')->url($student->photo_path) }}" alt="{{ __('Passport photo') }}" class="h-16 w-16 object-cover rounded-lg ring-1 ring-gray-200 shrink-0">
                     @else
-                        <div class="h-16 w-16 rounded-lg ring-1 ring-gray-200 bg-accent-50 flex items-center justify-center text-accent-300 shrink-0">
+                        <div class="h-16 w-16 rounded-lg ring-1 ring-gray-200 bg-amber-50 flex items-center justify-center text-amber-400 shrink-0">
                             <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                         </div>
                     @endif
@@ -131,10 +131,10 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="relative overflow-hidden rounded-xl border border-accent-200 bg-accent-50/60 p-3 text-center">
-                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-accent-300/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
-                        <p class="relative text-xs uppercase tracking-wide text-accent-700">{{ __('Training') }}</p>
-                        <p class="relative mt-1 text-lg font-bold text-accent-700">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</p>
+                    <div class="relative overflow-hidden rounded-xl border border-amber-200 bg-amber-50/60 p-3 text-center">
+                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-amber-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
+                        <p class="relative text-xs uppercase tracking-wide text-amber-700">{{ __('Training') }}</p>
+                        <p class="relative mt-1 text-lg font-bold text-amber-700">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</p>
                     </div>
                     <div class="relative overflow-hidden rounded-xl border border-blue-200 bg-blue-50/60 p-3 text-center">
                         <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
@@ -150,12 +150,12 @@
 
                 <div x-data="{ tab: '{{ in_array(session('status'), ['training-logged', 'attendance-updated']) ? 'attendance' : 'overview' }}' }">
                     <nav class="inline-flex flex-wrap items-center gap-1 rounded-full bg-gray-100 p-1 mb-4">
-                        <button type="button" @click="tab = 'overview'" :class="tab === 'overview' ? 'bg-ink text-accent-300' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Overview') }}</button>
-                        <button type="button" @click="tab = 'training'" :class="tab === 'training' ? 'bg-ink text-accent-300' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Training') }}</button>
-                        <button type="button" @click="tab = 'attendance'" :class="tab === 'attendance' ? 'bg-ink text-accent-300' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Attendance') }}</button>
-                        <button type="button" @click="tab = 'payments'" :class="tab === 'payments' ? 'bg-ink text-accent-300' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Payments') }}</button>
-                        <button type="button" @click="tab = 'certificates'" :class="tab === 'certificates' ? 'bg-ink text-accent-300' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Certificates') }}</button>
-                        <button type="button" @click="tab = 'documents'" :class="tab === 'documents' ? 'bg-ink text-accent-300' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Documents') }}</button>
+                        <button type="button" @click="tab = 'overview'" :class="tab === 'overview' ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Overview') }}</button>
+                        <button type="button" @click="tab = 'training'" :class="tab === 'training' ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Training') }}</button>
+                        <button type="button" @click="tab = 'attendance'" :class="tab === 'attendance' ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Attendance') }}</button>
+                        <button type="button" @click="tab = 'payments'" :class="tab === 'payments' ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Payments') }}</button>
+                        <button type="button" @click="tab = 'certificates'" :class="tab === 'certificates' ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Certificates') }}</button>
+                        <button type="button" @click="tab = 'documents'" :class="tab === 'documents' ? 'bg-black text-amber-400' : 'text-gray-600 hover:text-gray-900'" class="px-4 py-1.5 text-sm font-semibold rounded-full transition">{{ __('Documents') }}</button>
                     </nav>
 
                     <div x-show="tab === 'overview'" class="space-y-4">
@@ -163,7 +163,7 @@
                             <div>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Training Progress') }}</h3>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div class="bg-ink h-2.5 rounded-full" style="width: {{ $trainingPercent }}%"></div>
+                                    <div class="bg-black h-2.5 rounded-full" style="width: {{ $trainingPercent }}%"></div>
                                 </div>
                                 <p class="mt-1 text-sm text-gray-600">{{ $trainingPercent }}% &middot; {{ __('Week :current of :total', ['current' => $currentWeek, 'total' => $primaryEnrolledCourse->duration_weeks]) }}</p>
                             </div>
@@ -173,28 +173,28 @@
                             <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Personal Information') }}</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('Date of Birth') }}</p>
                                         <p class="text-sm font-bold text-gray-900">{{ $student->date_of_birth->format('l, M j, Y') }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('Gender') }}</p>
                                         <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('State') }}</p>
                                         <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('LGA') }}</p>
                                         <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
@@ -207,21 +207,21 @@
                             <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Contact Information') }}</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('Phone') }}</p>
                                         <p class="text-sm font-bold text-gray-900">{{ $student->phone }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('Email') }}</p>
                                         <p class="text-sm font-bold text-gray-900 break-all">{{ $student->email }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                    <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                    <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                                     <div>
                                         <p class="text-xs text-gray-500">{{ __('Address') }}</p>
                                         <p class="text-sm font-bold text-gray-900">{{ $student->address ?? '—' }}</p>
@@ -231,8 +231,8 @@
                         </div>
 
                         <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
-                            <div class="flex items-center gap-2.5 bg-ink px-4 py-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500 text-ink">
+                            <div class="flex items-center gap-2.5 bg-black px-4 py-3">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500 text-black">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                 </span>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Additional Information') }}</h3>
@@ -240,35 +240,35 @@
                             <div class="p-3 sm:p-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Mother Maiden Name') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->mother_maiden_name ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Sex') }}</p>
                                             <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->sex ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('State of Origin') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->state_of_origin ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $homeIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $homeIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Local Govt. Area') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->local_government_area ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $briefcaseIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $briefcaseIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Occupation') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ match ($student->occupation) {
@@ -280,42 +280,42 @@
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('License Number') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cogIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cogIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Course Type') }}</p>
                                             <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->course_type ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $truckIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $truckIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Vehicle Class') }}</p>
                                             <p class="text-sm font-bold text-gray-900 capitalize">{{ $student->vehicle_class ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Previous Driving Experience') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ is_null($student->has_driving_experience) ? '—' : ($student->has_driving_experience ? __('Yes') : __('No')) }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $eyeIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $eyeIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Wears Glasses to Drive') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ is_null($student->wears_glasses) ? '—' : ($student->wears_glasses ? __('Yes') : __('No')) }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $megaphoneIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $megaphoneIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('How They Heard About Us') }}</p>
                                             <p class="text-sm font-bold text-gray-900 capitalize">
@@ -327,21 +327,21 @@
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Enrollment Date') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->enrollment_date->format('l, M j, Y') }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $activityIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $activityIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Status') }}</p>
                                             <x-badge :color="$studentStatusColor" class="capitalize mt-0.5">{{ $student->status }}</x-badge>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $devicePhoneIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $devicePhoneIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500 mb-0.5">{{ __('App Access') }}</p>
                                             @if ($student->hasAppAccess())
@@ -352,7 +352,7 @@
                                                     @if (! $student->user->pin_set_at)
                                                         <form method="post" action="{{ route('students.access.resend', $student) }}" class="inline ms-2">
                                                             @csrf
-                                                            <button type="submit" class="text-sm text-accent-600 hover:underline">{{ __('Resend Login SMS') }}</button>
+                                                            <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Resend Login SMS') }}</button>
                                                         </form>
                                                     @endif
                                                     <form method="post" action="{{ route('students.access.destroy', $student) }}" class="inline ms-2" onsubmit="return confirm('{{ __('Revoke this student\'s app access? Their PIN will stop working immediately.') }}');">
@@ -366,7 +366,7 @@
                                                 @if (auth()->user()->canManageCourses())
                                                     <form method="post" action="{{ route('students.access.store', $student) }}" class="inline ms-2">
                                                         @csrf
-                                                        <button type="submit" class="text-sm text-accent-600 hover:underline">{{ __('Enable App Access') }}</button>
+                                                        <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Enable App Access') }}</button>
                                                     </form>
                                                 @endif
                                             @endif
@@ -386,8 +386,8 @@
                         <x-input-error :messages="$errors->get('student')" />
 
                         <div class="rounded-xl ring-1 ring-gray-200 overflow-hidden">
-                            <div class="flex items-center gap-2.5 bg-ink px-4 py-3">
-                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500 text-ink">
+                            <div class="flex items-center gap-2.5 bg-black px-4 py-3">
+                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500 text-black">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                                 </span>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-white">{{ __('Next of Kin') }}</h3>
@@ -395,28 +395,28 @@
                             <div class="p-3 sm:p-4">
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Name') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_name ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Phone No.') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_phone ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Address') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_address ?? '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3 sm:col-span-2">
-                                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $envelopeIconPath }}" /></svg>
                                         <div>
                                             <p class="text-xs text-gray-500">{{ __('Email') }}</p>
                                             <p class="text-sm font-bold text-gray-900">{{ $student->next_of_kin_email ?? '—' }}</p>
@@ -432,11 +432,11 @@
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Enrollments') }}</h3>
                                 @if (auth()->user()->isDirector())
-                                    <a href="{{ route('students.enroll.create', $student) }}" class="text-xs text-accent-600 hover:underline">{{ __('+ Enroll in a Course') }}</a>
+                                    <a href="{{ route('students.enroll.create', $student) }}" class="text-xs text-amber-600 hover:underline">{{ __('+ Enroll in a Course') }}</a>
                                 @else
                                     <span class="text-xs text-gray-400">
                                         {{ __('🔒 Director-controlled') }} ·
-                                        <a href="{{ route('student-correction-requests.create', ['student' => $student, 'field' => 'program']) }}" class="text-accent-600 hover:underline">{{ __('Request a Correction') }}</a>
+                                        <a href="{{ route('student-correction-requests.create', ['student' => $student, 'field' => 'program']) }}" class="text-amber-600 hover:underline">{{ __('Request a Correction') }}</a>
                                     </span>
                                 @endif
                             </div>
@@ -458,10 +458,10 @@
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead>
-                                            <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                            <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                                 <th class="px-3 py-3">
                                                     <span class="inline-flex items-center gap-1.5">
-                                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
+                                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
                                                         {{ __('Course') }}
                                                     </span>
                                                 </th>
@@ -515,21 +515,21 @@
                                                             <form method="post" action="{{ route('enrollments.complete', $enrolledCourse->pivot->id) }}" class="inline">
                                                                 @csrf
                                                                 @method('patch')
-                                                                <button type="submit" class="text-sm text-accent-600 hover:underline">{{ __('Mark Complete') }}</button>
+                                                                <button type="submit" class="text-sm text-amber-600 hover:underline">{{ __('Mark Complete') }}</button>
                                                             </form>
                                                         @endif
                                                         @if ($enrolledCourse->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
-                                                            <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-accent-600 hover:underline">{{ __('Reactivate') }}</a>
+                                                            <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Reactivate') }}</a>
                                                         @endif
                                                         @php $pendingUpgradeRequest = $enrolledCourse->pivot->pendingUpgradeRequest(); @endphp
                                                         @if ($pendingUpgradeRequest)
-                                                            <span class="text-sm text-accent-600" title="{{ __('Requested by :name', ['name' => $pendingUpgradeRequest->requestedBy?->name ?? '—']) }}">{{ __('Upgrade Pending Approval') }}</span>
+                                                            <span class="text-sm text-amber-600" title="{{ __('Requested by :name', ['name' => $pendingUpgradeRequest->requestedBy?->name ?? '—']) }}">{{ __('Upgrade Pending Approval') }}</span>
                                                         @else
                                                             @if ($enrolledCourse->pivot->canUpgrade())
-                                                                <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-accent-600 hover:underline">{{ __('Upgrade') }}</a>
+                                                                <a href="{{ route('enrollments.upgrade.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade') }}</a>
                                                             @endif
                                                             @if ($enrolledCourse->pivot->canUpgradeTier())
-                                                                <a href="{{ route('enrollments.upgrade-tier.create', $enrolledCourse->pivot->id) }}" class="text-sm text-accent-600 hover:underline">{{ __('Upgrade Tier') }}</a>
+                                                                <a href="{{ route('enrollments.upgrade-tier.create', $enrolledCourse->pivot->id) }}" class="text-sm text-amber-600 hover:underline">{{ __('Upgrade Tier') }}</a>
                                                             @endif
                                                         @endif
                                                         @if (auth()->user()->isDirector() && $enrolledCourse->pivot->amountPaid() <= 0)
@@ -571,7 +571,7 @@
                                                 <x-badge :color="$labelColor">{{ __($label) }}</x-badge>
                                             </div>
                                             <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                                <div class="bg-accent-500 h-2.5 rounded-full" style="width: {{ $enrolledCourse->pivot->trainingCompletionPercentage() }}%"></div>
+                                                <div class="bg-amber-500 h-2.5 rounded-full" style="width: {{ $enrolledCourse->pivot->trainingCompletionPercentage() }}%"></div>
                                             </div>
                                             <div class="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
                                                 <span>{{ $enrolledCourse->pivot->attendedDays() }} / {{ $enrolledCourse->totalTrainingDays() }} {{ __('Days Completed') }}</span>
@@ -613,7 +613,7 @@
                                                 <div class="flex items-center justify-between">
                                                     <span class="text-xs font-medium text-gray-500 uppercase tracking-wide">{{ __('Final Assessment') }}</span>
                                                     @if (auth()->user()->canManageCourses())
-                                                        <button type="button" x-show="!editingAssessment" @click="editingAssessment = true" class="text-xs text-accent-600 hover:underline">{{ $assessment ? __('Edit') : __('Record') }}</button>
+                                                        <button type="button" x-show="!editingAssessment" @click="editingAssessment = true" class="text-xs text-amber-600 hover:underline">{{ $assessment ? __('Edit') : __('Record') }}</button>
                                                     @endif
                                                 </div>
 
@@ -640,20 +640,20 @@
                                                     <form x-show="editingAssessment" x-cloak method="post" action="{{ route('enrollments.assessment.store', $enrolledCourse->pivot->id) }}" class="mt-2 flex flex-wrap items-end gap-3">
                                                         @csrf
                                                         <div>
-                                                            <select name="result" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-accent-500 focus:ring-accent-500">
+                                                            <select name="result" class="rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
                                                                 <option value="pass" @selected(($assessment->result ?? null) === 'pass')>{{ __('Pass') }}</option>
                                                                 <option value="fail" @selected(($assessment->result ?? null) === 'fail')>{{ __('Fail') }}</option>
                                                             </select>
                                                         </div>
                                                         <div>
-                                                            <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" value="{{ $assessment->score ?? '' }}" class="w-20 rounded-md border-gray-300 shadow-sm text-sm focus:border-accent-500 focus:ring-accent-500">
+                                                            <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" value="{{ $assessment->score ?? '' }}" class="w-20 rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
                                                         </div>
                                                         <div class="flex-1 min-w-[10rem]">
-                                                            <input type="text" name="remarks" placeholder="{{ __('Remarks') }}" value="{{ $assessment->remarks ?? '' }}" class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-accent-500 focus:ring-accent-500">
+                                                            <input type="text" name="remarks" placeholder="{{ __('Remarks') }}" value="{{ $assessment->remarks ?? '' }}" class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-amber-500 focus:ring-amber-500">
                                                         </div>
-                                                        <button type="submit" class="text-sm font-medium text-white bg-accent-600 hover:bg-accent-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
+                                                        <button type="submit" class="text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md px-3 py-1.5">{{ __('Save') }}</button>
                                                         @if ($assessment)
-                                                            <button type="button" @click="editingAssessment = false" class="text-sm text-accent-600 hover:underline">{{ __('Cancel') }}</button>
+                                                            <button type="button" @click="editingAssessment = false" class="text-sm text-amber-600 hover:underline">{{ __('Cancel') }}</button>
                                                         @endif
                                                     </form>
                                                 @endif
@@ -710,10 +710,10 @@
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead>
-                                        <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                        <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                             <th class="px-3 py-3">
                                                 <span class="inline-flex items-center gap-1.5">
-                                                    <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                                    <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                                     {{ __('Date') }}
                                                 </span>
                                             </th>
@@ -736,7 +736,7 @@
                                                 <td class="px-3 py-3 text-sm text-gray-600">{{ $attendance->vehicle?->name ?? '—' }}</td>
                                                 <td class="px-3 py-3 text-sm text-right whitespace-nowrap space-x-2">
                                                     @if (auth()->user()->canManageCourses())
-                                                        <a href="{{ route('attendances.edit', $attendance) }}?redirect_to=student" class="text-accent-600 hover:underline">{{ __('Edit') }}</a>
+                                                        <a href="{{ route('attendances.edit', $attendance) }}?redirect_to=student" class="text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                                     @endif
                                                     @if (auth()->user()->isAdmin())
                                                         <form method="post" action="{{ route('attendances.destroy', $attendance) }}" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to remove this training login?') }}');">
@@ -768,7 +768,7 @@
 
                                 <div>
                                     <x-input-label for="quick_login_course_id" :value="__('Course')" />
-                                    <select id="quick_login_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                                    <select id="quick_login_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                                         <option value="">{{ __('Select a course') }}</option>
                                         @foreach ($student->courses as $enrolledCourse)
                                             <option value="{{ $enrolledCourse->id }}">{{ $enrolledCourse->name }}</option>
@@ -778,7 +778,7 @@
 
                                 <div>
                                     <x-input-label for="quick_login_type" :value="__('Type')" />
-                                    <select id="quick_login_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                                    <select id="quick_login_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                                         <option value="">{{ __('Not specified') }}</option>
                                         @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
                                             <option value="{{ $value }}">{{ __($label) }}</option>
@@ -788,7 +788,7 @@
 
                                 <div>
                                     <x-input-label for="quick_login_instructor_id" :value="__('Instructor')" />
-                                    <select id="quick_login_instructor_id" name="instructor_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                                    <select id="quick_login_instructor_id" name="instructor_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                                         <option value="">{{ __('None') }}</option>
                                         @foreach ($instructors as $availableInstructor)
                                             <option value="{{ $availableInstructor->id }}">{{ $availableInstructor->name }}</option>
@@ -798,7 +798,7 @@
 
                                 <div>
                                     <x-input-label for="quick_login_vehicle_id" :value="__('Vehicle')" />
-                                    <select id="quick_login_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                                    <select id="quick_login_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                                         <option value="">{{ __('None') }}</option>
                                         @foreach ($vehicles as $availableVehicle)
                                             <option value="{{ $availableVehicle->id }}">{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
@@ -808,7 +808,7 @@
 
                                 <div>
                                     <x-input-label for="quick_login_duration" :value="__('Duration')" />
-                                    <select id="quick_login_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                                    <select id="quick_login_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm">
                                         @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
                                             <option value="{{ $value }}">{{ __($label) }}</option>
                                         @endforeach
@@ -837,17 +837,17 @@
                                     @endif
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                                    <div class="relative overflow-hidden rounded-xl bg-ink p-4">
-                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-accent-400 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
-                                        <p class="relative text-xs uppercase tracking-wider text-accent-300/80">{{ __('Total Charges') }}</p>
-                                        <p class="relative text-2xl font-bold text-accent-300 mt-1">₦{{ number_format($totalCharges, 2) }}</p>
+                                    <div class="relative overflow-hidden rounded-xl bg-black p-4">
+                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                                        <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Total Charges') }}</p>
+                                        <p class="relative text-2xl font-bold text-amber-400 mt-1">₦{{ number_format($totalCharges, 2) }}</p>
                                     </div>
-                                    <div class="relative overflow-hidden rounded-xl bg-ink p-4">
-                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-accent-400 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
-                                        <p class="relative text-xs uppercase tracking-wider text-accent-300/80">{{ __('Total Paid') }}</p>
-                                        <p class="relative text-2xl font-bold text-accent-300 mt-1">₦{{ number_format($totalOverviewPaid, 2) }}</p>
+                                    <div class="relative overflow-hidden rounded-xl bg-black p-4">
+                                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-amber-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                                        <p class="relative text-xs uppercase tracking-wider text-amber-400/80">{{ __('Total Paid') }}</p>
+                                        <p class="relative text-2xl font-bold text-amber-400 mt-1">₦{{ number_format($totalOverviewPaid, 2) }}</p>
                                     </div>
-                                    <div class="relative overflow-hidden rounded-xl bg-accent-400 p-4">
+                                    <div class="relative overflow-hidden rounded-xl bg-amber-400 p-4">
                                         <svg class="pointer-events-none absolute -right-3 -bottom-3 h-16 w-16 text-black opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" /></svg>
                                         <p class="relative text-xs uppercase tracking-wider text-black/70">{{ __('Total Outstanding') }}</p>
                                         <p class="relative text-2xl font-bold text-black mt-1">₦{{ number_format($totalOutstanding, 2) }}</p>
@@ -859,7 +859,7 @@
                                         <div class="overflow-x-auto">
                                             <table class="min-w-full divide-y divide-gray-200">
                                                 <thead>
-                                                    <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                                    <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                                         <th class="px-3 py-3">{{ __('Item') }}</th>
                                                         <th class="px-3 py-3">{{ __('Price') }}</th>
                                                         <th class="px-3 py-3">{{ __('Paid') }}</th>
@@ -884,7 +884,7 @@
                                                             </td>
                                                             <td class="px-3 py-3 text-sm whitespace-nowrap">
                                                                 @if ($charge['balance'] > 0)
-                                                                    <a href="{{ route('payments.record.create', ['student_id' => $student->id, 'charge_type' => $charge['type'], 'charge_id' => $charge['id']]) }}" class="text-sm text-accent-600 hover:underline">
+                                                                    <a href="{{ route('payments.record.create', ['student_id' => $student->id, 'charge_type' => $charge['type'], 'charge_id' => $charge['id']]) }}" class="text-sm text-amber-600 hover:underline">
                                                                         {{ __('Balance Payment') }}
                                                                     </a>
                                                                 @endif
@@ -893,7 +893,7 @@
                                                     @endforeach
                                                 </tbody>
                                                 <tfoot>
-                                                    <tr class="bg-accent-50">
+                                                    <tr class="bg-amber-50">
                                                         <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ __('TOTAL') }}</td>
                                                         <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalCharges, 2) }}</td>
                                                         <td class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($totalOverviewPaid, 2) }}</td>
@@ -924,16 +924,16 @@
                         <div>
                             <div class="flex items-center justify-between mb-2">
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Payments') }}</h3>
-                                <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}" class="text-sm text-accent-600 hover:underline">{{ __('Record a Payment') }}</a>
+                                <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}" class="text-sm text-amber-600 hover:underline">{{ __('Record a Payment') }}</a>
                             </div>
                             <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead>
-                                            <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                            <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                                 <th class="px-3 py-3">
                                                     <span class="inline-flex items-center gap-1.5">
-                                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                                        <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                                         {{ __('Date') }}
                                                     </span>
                                                 </th>
@@ -951,7 +951,7 @@
                                                 <tr>
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->payment_date->format('l, M j, Y') }}</td>
                                                     <td class="px-3 py-3 text-sm font-mono text-xs">
-                                                        <a href="{{ route('payments.show', $payment) }}" class="text-accent-600 hover:underline">{{ $payment->receipt_number }}</a>
+                                                        <a href="{{ route('payments.show', $payment) }}" class="text-amber-600 hover:underline">{{ $payment->receipt_number }}</a>
                                                     </td>
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->description() }}</td>
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ number_format($payment->amount, 2) }}</td>
@@ -967,10 +967,10 @@
                                                     </td>
                                                     <td class="px-3 py-3 text-sm text-gray-600">{{ $payment->recordedBy?->name ?? '—' }}</td>
                                                     <td class="px-3 py-3 text-sm whitespace-nowrap">
-                                                        <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-accent-600 hover:underline">{{ __('Receipt') }}</a>
+                                                        <a href="{{ route('payments.receipt', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Receipt') }}</a>
                                                         @if (auth()->user()->isDirector())
                                                             <span class="text-gray-300">|</span>
-                                                            <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-accent-600 hover:underline">{{ __('Edit') }}</a>
+                                                            <a href="{{ route('payments.edit', $payment) }}" class="text-sm text-amber-600 hover:underline">{{ __('Edit') }}</a>
                                                         @endif
                                                     </td>
                                                 </tr>
@@ -982,7 +982,7 @@
                                         </tbody>
                                         @if ($student->payments->where('status', 'paid')->isNotEmpty())
                                             <tfoot>
-                                                <tr class="bg-accent-50">
+                                                <tr class="bg-amber-50">
                                                     <td colspan="3" class="px-3 py-3 text-sm font-bold text-gray-900 text-right">{{ __('Total paid') }}</td>
                                                     <td colspan="5" class="px-3 py-3 text-sm font-bold text-gray-900">{{ number_format($student->payments->where('status', 'paid')->sum('amount'), 2) }}</td>
                                                 </tr>
@@ -1002,7 +1002,7 @@
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <thead>
-                                            <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                            <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                                 <th class="px-3 py-3">{{ __('Service') }}</th>
                                                 @if (auth()->user()->isDirector())
                                                     <th class="px-3 py-3">{{ __('Price') }}</th>
@@ -1034,7 +1034,7 @@
                                                         <form method="post" action="{{ route('student-services.processing-status.update', $studentService) }}">
                                                             @csrf
                                                             @method('patch')
-                                                            <select name="processing_status" class="border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
+                                                            <select name="processing_status" class="border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
                                                                 @foreach (\App\Models\StudentService::PROCESSING_STATUSES as $value)
                                                                     <option value="{{ $value }}" @selected($studentService->processing_status === $value)>{{ ucwords(str_replace('_', ' ', $value)) }}</option>
                                                                 @endforeach
@@ -1080,7 +1080,7 @@
 
                                     <div>
                                         <x-input-label for="service_id" :value="__('Charge for a Service')" />
-                                        <select id="service_id" name="service_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                                        <select id="service_id" name="service_id" class="mt-1 block w-full border-gray-300 focus:border-amber-500 focus:ring-amber-500 rounded-md shadow-sm" required>
                                             @foreach ($availableServices as $service)
                                                 <option value="{{ $service->id }}">{{ $service->name }} (₦{{ number_format($service->price, 2) }})</option>
                                             @endforeach
@@ -1099,10 +1099,10 @@
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead>
-                                        <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                        <tr class="bg-amber-50/60 text-left text-xs font-semibold uppercase tracking-wider text-amber-800">
                                             <th class="px-3 py-3">
                                                 <span class="inline-flex items-center gap-1.5">
-                                                    <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
+                                                    <svg class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                                                     {{ __('Certificate #') }}
                                                 </span>
                                             </th>
@@ -1122,7 +1122,7 @@
                                                     <x-badge color="amber">{{ __('Certified') }}</x-badge>
                                                 </td>
                                                 <td class="px-3 py-3 text-sm">
-                                                    <a href="{{ route('certificates.show', $certificate) }}" class="text-sm text-accent-600 hover:underline">{{ __('View / Print') }}</a>
+                                                    <a href="{{ route('certificates.show', $certificate) }}" class="text-sm text-amber-600 hover:underline">{{ __('View / Print') }}</a>
                                                 </td>
                                             </tr>
                                         @empty
@@ -1147,7 +1147,7 @@
                         <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-2">{{ __('Documents') }}</h3>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500 mb-1">{{ __('Passport Photo') }}</p>
                                     @if ($student->photo_path)
@@ -1158,41 +1158,41 @@
                                 </div>
                             </div>
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Identification Document') }}</p>
                                     @if ($student->id_document_path)
-                                        <p class="text-sm font-bold"><a href="{{ Storage::disk('public')->url($student->id_document_path) }}" target="_blank" class="text-accent-600 hover:underline">{{ __('View Document') }}</a></p>
+                                        <p class="text-sm font-bold"><a href="{{ Storage::disk('public')->url($student->id_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a></p>
                                     @else
                                         <p class="text-sm text-gray-400">{{ __('Not uploaded') }}</p>
                                     @endif
                                 </div>
                             </div>
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Licence Document') }}</p>
                                     @if ($student->license_document_path)
-                                        <p class="text-sm font-bold"><a href="{{ Storage::disk('public')->url($student->license_document_path) }}" target="_blank" class="text-accent-600 hover:underline">{{ __('View Document') }}</a></p>
+                                        <p class="text-sm font-bold"><a href="{{ Storage::disk('public')->url($student->license_document_path) }}" target="_blank" class="text-amber-600 hover:underline">{{ __('View Document') }}</a></p>
                                     @else
                                         <p class="text-sm text-gray-400">{{ __('Not uploaded') }}</p>
                                     @endif
                                 </div>
                             </div>
                             <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                                <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
+                                <svg class="h-4 w-4 text-amber-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $idCardIconPath }}" /></svg>
                                 <div>
                                     <p class="text-xs text-gray-500">{{ __('Licence Number') }}</p>
                                     <p class="text-sm font-bold text-gray-900">{{ $student->license_number ?? '—' }}</p>
                                 </div>
                             </div>
                         </div>
-                        <a href="{{ route('students.edit', $student) }}" class="mt-4 inline-block text-sm text-accent-600 hover:underline">{{ __('Upload or replace a document') }}</a>
+                        <a href="{{ route('students.edit', $student) }}" class="mt-4 inline-block text-sm text-amber-600 hover:underline">{{ __('Upload or replace a document') }}</a>
                     </div>
                 </div>
 
                 <div class="flex justify-end relative" x-data="{ open: false }">
-                    <button type="button" @click="open = !open" class="inline-flex items-center gap-1 text-sm font-medium text-white bg-ink hover:bg-white/5 rounded-md px-4 py-2">
+                    <button type="button" @click="open = !open" class="inline-flex items-center gap-1 text-sm font-medium text-white bg-black hover:bg-gray-800 rounded-md px-4 py-2">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         {{ __('Actions') }}
                     </button>
