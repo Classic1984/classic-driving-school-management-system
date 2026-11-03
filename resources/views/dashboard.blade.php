@@ -325,6 +325,141 @@
                 </div>
             </div>
 
+            @php
+                // Bar/line chart geometry for the Revenue Trend and
+                // Registration Trend widgets below - plain inline SVG (same
+                // approach as finance/summary.blade.php's chart), no
+                // charting library. Scaled against each series' own max so
+                // a quiet month still shows a visible bar instead of 0px.
+                $revenueChartMax = $revenueTrend ? max(1, collect($revenueTrend)->max('value')) : 1;
+                $revenueBars = $revenueTrend ? collect($revenueTrend)->values()->map(function (array $month, int $i) use ($revenueChartMax) {
+                    $barHeight = max(1, (int) round(($month['value'] / $revenueChartMax) * 110));
+
+                    return ['label' => $month['label'], 'x' => 18 + $i * 66, 'y' => 140 - $barHeight, 'h' => $barHeight];
+                }) : collect();
+
+                $registrationChartMax = max(1, collect($registrationTrend)->max('value'));
+                $registrationPoints = collect($registrationTrend)->values()->map(function (array $month, int $i) use ($registrationChartMax) {
+                    $y = 140 - (int) round(($month['value'] / $registrationChartMax) * 110);
+
+                    return ['label' => $month['label'], 'x' => 18 + $i * 66 + 18, 'y' => $y, 'value' => $month['value']];
+                });
+                $registrationPolyline = $registrationPoints->map(fn (array $p) => "{$p['x']},{$p['y']}")->implode(' ');
+                $registrationPolygon = '36,160 '.$registrationPolyline.' '.($registrationPoints->last()['x'] ?? 366).',160';
+
+                // iconMeta() returns a color *key* (see ActivityLog::iconMeta()
+                // docblock), not classes - this maps each key to an
+                // inline bg/text pair readable on the Recent Activity
+                // widget's navy background, since Tailwind's content scan
+                // can't see classes built from PHP strings.
+                $activityColorStyles = [
+                    'sky' => ['bg' => 'rgba(56,189,248,0.18)', 'text' => '#7DD3FC'],
+                    'purple' => ['bg' => 'rgba(168,85,247,0.18)', 'text' => '#D8B4FE'],
+                    'red' => ['bg' => 'rgba(239,68,68,0.18)', 'text' => '#FCA5A5'],
+                    'green' => ['bg' => 'rgba(34,197,94,0.18)', 'text' => '#86EFAC'],
+                    'blue' => ['bg' => 'rgba(59,130,246,0.18)', 'text' => '#93C5FD'],
+                    'amber' => ['bg' => 'rgba(201,166,107,0.2)', 'text' => '#E8CB94'],
+                    'indigo' => ['bg' => 'rgba(129,140,248,0.18)', 'text' => '#C7D2FE'],
+                    'orange' => ['bg' => 'rgba(251,146,60,0.18)', 'text' => '#FDBA74'],
+                    'teal' => ['bg' => 'rgba(45,212,191,0.18)', 'text' => '#5EEAD4'],
+                    'default' => ['bg' => 'rgba(174,189,212,0.2)', 'text' => '#D7DEEA'],
+                ];
+            @endphp
+
+            <div class="flex items-center gap-3 mb-3">
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-gold-100 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-gold-800">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg>
+                    {{ __('Trends & Activity') }}
+                </span>
+                <span class="h-px flex-1 bg-gray-100"></span>
+            </div>
+
+            <div class="flex flex-wrap gap-4 mb-6">
+                @if ($revenueTrend)
+                    <div class="flex-1 min-w-[320px] rounded-xl bg-white ring-1 ring-line p-6">
+                        <div class="mb-4">
+                            <h3 class="text-base font-bold text-navy-900">{{ __('Revenue Trend') }}</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ __('Last 6 months — training income collected') }}</p>
+                        </div>
+                        <svg viewBox="0 0 400 160" class="w-full" style="max-height: 180px;">
+                            <line x1="0" y1="20" x2="400" y2="20" stroke="#E7EAF0" stroke-width="1" />
+                            <line x1="0" y1="80" x2="400" y2="80" stroke="#E7EAF0" stroke-width="1" />
+                            <line x1="0" y1="140" x2="400" y2="140" stroke="#E7EAF0" stroke-width="1" />
+                            @foreach ($revenueBars as $i => $bar)
+                                <rect x="{{ $bar['x'] }}" y="{{ $bar['y'] }}" width="36" height="{{ $bar['h'] }}" rx="6" fill="{{ $i === $revenueBars->count() - 1 ? '#C9A66B' : '#0B1E3D' }}" />
+                                <text x="{{ $bar['x'] + 18 }}" y="156" font-size="11" fill="#7E93B7" text-anchor="middle">{{ $bar['label'] }}</text>
+                            @endforeach
+                        </svg>
+                        <div class="flex justify-between mt-3 pt-3 border-t border-line">
+                            <div>
+                                <p class="text-[11px] uppercase tracking-wide text-gray-400">{{ __('This Month') }}</p>
+                                <p class="text-lg font-extrabold text-navy-900">₦{{ number_format(collect($revenueTrend)->last()['value'], 2) }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[11px] uppercase tracking-wide text-gray-400">{{ __('6-Month Total') }}</p>
+                                <p class="text-lg font-extrabold text-navy-900">₦{{ number_format(collect($revenueTrend)->sum('value'), 2) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="flex-1 min-w-[320px] rounded-xl bg-white ring-1 ring-line p-6">
+                    <div class="mb-4">
+                        <h3 class="text-base font-bold text-navy-900">{{ __('Registration Trend') }}</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ __('New students enrolled, last 6 months') }}</p>
+                    </div>
+                    <svg viewBox="0 0 400 160" class="w-full" style="max-height: 180px;">
+                        <line x1="0" y1="20" x2="400" y2="20" stroke="#E7EAF0" stroke-width="1" />
+                        <line x1="0" y1="80" x2="400" y2="80" stroke="#E7EAF0" stroke-width="1" />
+                        <line x1="0" y1="140" x2="400" y2="140" stroke="#E7EAF0" stroke-width="1" />
+                        <polygon points="{{ $registrationPolygon }}" fill="#ECD6A3" opacity="0.5" />
+                        <polyline points="{{ $registrationPolyline }}" fill="none" stroke="#A8762F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                        @foreach ($registrationPoints as $i => $point)
+                            <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}" r="{{ $i === $registrationPoints->count() - 1 ? 5.5 : 4.5 }}" fill="{{ $i === $registrationPoints->count() - 1 ? '#0B1E3D' : '#A8762F' }}" @if ($i === $registrationPoints->count() - 1) stroke="#fff" stroke-width="2" @endif />
+                            <text x="{{ $point['x'] }}" y="156" font-size="11" fill="#7E93B7" text-anchor="middle">{{ $point['label'] }}</text>
+                        @endforeach
+                    </svg>
+                    <div class="flex justify-between mt-3 pt-3 border-t border-line">
+                        <div>
+                            <p class="text-[11px] uppercase tracking-wide text-gray-400">{{ __('This Month') }}</p>
+                            <p class="text-lg font-extrabold text-navy-900">{{ trans_choice(':count student|:count students', collect($registrationTrend)->last()['value'], ['count' => number_format(collect($registrationTrend)->last()['value'])]) }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[11px] uppercase tracking-wide text-gray-400">{{ __('Avg / Month') }}</p>
+                            <p class="text-lg font-extrabold text-navy-900">{{ trans_choice(':count student|:count students', (int) round(collect($registrationTrend)->avg('value')), ['count' => number_format((int) round(collect($registrationTrend)->avg('value')))]) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 min-w-[280px] rounded-xl bg-navy p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-white">{{ __('Recent Activity') }}</h3>
+                        <a href="{{ route('activity-log.index') }}" class="text-xs font-bold text-gold-300 hover:text-gold-200">{{ __('View all') }}</a>
+                    </div>
+                    @if ($recentActivity->isEmpty())
+                        <p class="text-sm text-navy-200">{{ __('No activity recorded yet.') }}</p>
+                    @else
+                        <div class="space-y-3.5">
+                            @foreach ($recentActivity as $log)
+                                @php
+                                    $logMeta = $log->iconMeta();
+                                    $logColors = $activityColorStyles[$logMeta['color']] ?? $activityColorStyles['default'];
+                                @endphp
+                                <div class="flex items-start gap-2.5">
+                                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full" style="background-color: {{ $logColors['bg'] }}; color: {{ $logColors['text'] }};">
+                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $logMeta['icon'] }}" /></svg>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p class="text-[13px] text-navy-50 leading-snug">{{ $log->description }}</p>
+                                        <p class="text-[11px] text-navy-300 mt-0.5">{{ $log->created_at->diffForHumans() }}@if ($log->user) &middot; {{ __('by') }} {{ $log->user->name }}@endif</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             @foreach ($kpiCards as $card)
                 <x-modal name="{{ $card['key'] }}-modal">
                     <div class="p-6">

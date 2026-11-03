@@ -130,18 +130,45 @@
                     </div>
                 </div>
 
+                @php
+                    // Radial progress ring geometry shared by the Training
+                    // and Attendance tiles below: r=32 on a 76x76 viewBox
+                    // (circumference ~= 201.06), rotated -90deg so the arc
+                    // starts at 12 o'clock. A null percent (no enrollment /
+                    // no attendance history yet) draws an empty ring rather
+                    // than guessing a value.
+                    $ringCircumference = 2 * M_PI * 32;
+                    $trainingDashoffset = $ringCircumference * (1 - ($trainingPercent ?? 0) / 100);
+                    $attendanceDashoffset = $ringCircumference * (1 - ($attendancePercent ?? 0) / 100);
+                @endphp
+
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="relative overflow-hidden rounded-xl border border-gold-200 bg-gold-50/60 p-3 text-center">
-                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-gold-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookOpenIconPath }}" /></svg>
-                        <p class="relative text-xs uppercase tracking-wide text-gold-700">{{ __('Training') }}</p>
-                        <p class="relative mt-1 text-lg font-bold text-gold-700">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</p>
+                    <div class="rounded-xl border border-gold-200 bg-gold-50/60 p-3 flex flex-col items-center text-center">
+                        <svg width="68" height="68" viewBox="0 0 76 76">
+                            <circle cx="38" cy="38" r="32" fill="none" stroke="#ECD6A3" stroke-width="8" />
+                            @if ($trainingPercent !== null)
+                                <circle cx="38" cy="38" r="32" fill="none" stroke="#A8762F" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="{{ $ringCircumference }}" stroke-dashoffset="{{ $trainingDashoffset }}" transform="rotate(-90 38 38)" />
+                            @endif
+                            <text x="38" y="34" text-anchor="middle" font-size="17" font-weight="800" fill="#5F4219" font-family="inherit">{{ $trainingPercent !== null ? "{$trainingPercent}%" : '—' }}</text>
+                            @if ($primaryEnrolledCourse)
+                                <text x="38" y="47" text-anchor="middle" font-size="9" fill="#A8762F" font-family="inherit">{{ __('Wk :current/:total', ['current' => $currentWeek, 'total' => $primaryEnrolledCourse->duration_weeks]) }}</text>
+                            @endif
+                        </svg>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-gold-700">{{ __('Training') }}</p>
                     </div>
-                    <div class="relative overflow-hidden rounded-xl border border-blue-200 bg-blue-50/60 p-3 text-center">
-                        <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
-                        <p class="relative text-xs uppercase tracking-wide text-blue-700">{{ __('Attend.') }}</p>
-                        <p class="relative mt-1 text-lg font-bold text-blue-700">{{ $attendancePercent !== null ? "{$attendancePercent}%" : '—' }}</p>
+                    <div class="rounded-xl border border-blue-200 bg-blue-50/60 p-3 flex flex-col items-center text-center">
+                        <svg width="68" height="68" viewBox="0 0 76 76">
+                            <circle cx="38" cy="38" r="32" fill="none" stroke="#BFDBFE" stroke-width="8" />
+                            @if ($attendancePercent !== null)
+                                <circle cx="38" cy="38" r="32" fill="none" stroke="#1D4ED8" stroke-width="8" stroke-linecap="round"
+                                    stroke-dasharray="{{ $ringCircumference }}" stroke-dashoffset="{{ $attendanceDashoffset }}" transform="rotate(-90 38 38)" />
+                            @endif
+                            <text x="38" y="38" text-anchor="middle" font-size="17" font-weight="800" fill="#1E3A8A" font-family="inherit">{{ $attendancePercent !== null ? "{$attendancePercent}%" : '—' }}</text>
+                        </svg>
+                        <p class="mt-1 text-xs uppercase tracking-wide text-blue-700">{{ __('Attend.') }}</p>
                     </div>
-                    <div class="relative overflow-hidden rounded-xl border {{ $paymentTileColor === 'red' ? 'border-red-200 bg-red-50/60' : ($paymentTileColor === 'green' ? 'border-green-200 bg-green-50/60' : 'border-gray-200 bg-gray-50/60') }} p-3 text-center">
+                    <div class="relative overflow-hidden rounded-xl border {{ $paymentTileColor === 'red' ? 'border-red-200 bg-red-50/60' : ($paymentTileColor === 'green' ? 'border-green-200 bg-green-50/60' : 'border-gray-200 bg-gray-50/60') }} p-3 flex flex-col items-center justify-center text-center">
                         <svg class="pointer-events-none absolute -right-3 -bottom-3 h-14 w-14 {{ $paymentTileColor === 'red' ? 'text-red-400/10' : ($paymentTileColor === 'green' ? 'text-green-400/10' : 'text-gray-400/10') }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                         <p class="relative text-xs uppercase tracking-wide {{ $paymentTileColor === 'red' ? 'text-red-700' : ($paymentTileColor === 'green' ? 'text-green-700' : 'text-gray-500') }}">{{ __('Payment') }}</p>
                         <p class="relative mt-1 text-lg font-bold {{ $paymentTileColor === 'red' ? 'text-red-700' : ($paymentTileColor === 'green' ? 'text-green-700' : 'text-gray-900') }}">{{ $paymentStatusLabel }}</p>
