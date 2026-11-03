@@ -12,8 +12,8 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center gap-4 mb-6 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $inquiryIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $inquiryIconPath }}" /></svg>
                 </span>
                 <div class="min-w-0 flex-1">
                     <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ __('Edit Inquiry') }}</h3>
@@ -35,7 +35,7 @@
                 </form>
 
                 <div class="pt-6 border-t border-gray-200">
-                    <a href="{{ route('students.create', ['name' => $lead->name, 'phone' => $lead->phone]) }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-600 hover:underline">
+                    <a href="{{ route('students.create', ['name' => $lead->name, 'phone' => $lead->phone]) }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-600 hover:underline">
                         {{ __('Register This Lead as a Student') }}
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" /></svg>
                     </a>

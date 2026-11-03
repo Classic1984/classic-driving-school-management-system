@@ -21,31 +21,31 @@
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Theory Classes') }}</h3>
                     <p class="text-sm text-gray-500">{{ __('Manage and track theory class sessions') }}</p>
                 </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bookIconPath }}" /></svg>
                 </span>
             </div>
 
             @if (session('status') === 'theory-class-created')
                 <p class="text-sm font-medium text-green-600">{{ __("Today's class was created.") }}</p>
             @elseif (session('status') === 'theory-class-cancelled-today')
-                <p class="text-sm font-medium text-accent-600">{{ __("Today's theory class is cancelled - see Theory Class Cancellations.") }}</p>
+                <p class="text-sm font-medium text-gold-600">{{ __("Today's theory class is cancelled - see Theory Class Cancellations.") }}</p>
             @elseif (session('status') === 'theory-class-deleted')
                 <p class="text-sm font-medium text-green-600">{{ __('Theory class deleted.') }}</p>
             @endif
 
             @if (auth()->user()->canManageCourses() && ! $todaysClassExists && ! $todaysClassCancelled)
-                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-accent-50 via-accent-50 to-white ring-1 ring-accent-100 p-6">
-                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-accent-400 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-gold-50 via-gold-50 to-white ring-1 ring-gold-100 p-6">
+                    <svg class="pointer-events-none absolute -right-4 -bottom-4 h-28 w-28 text-gold-500 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
 
                     <div class="relative flex flex-col sm:flex-row items-start sm:items-center gap-6">
                         <div class="flex flex-1 items-start gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-100 text-accent-600">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold-100 text-gold-600">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                             </span>
                             <div>
-                                <h4 class="text-lg font-bold text-accent-900">{{ __('No class created for today') }}</h4>
-                                <p class="mt-1 text-sm text-accent-800">
+                                <h4 class="text-lg font-bold text-gold-900">{{ __('No class created for today') }}</h4>
+                                <p class="mt-1 text-sm text-gold-800">
                                     {{ __("Today's class hasn't been created yet - it's normally auto-created at 8am. If the reminder run was missed, create it here instead.") }}
                                 </p>
                             </div>
@@ -53,9 +53,9 @@
 
                         <form method="post" action="{{ route('theory-classes.create-today') }}" class="shrink-0">
                             @csrf
-                            <button type="submit" class="flex flex-col items-center justify-center gap-2 rounded-xl bg-ink hover:brightness-110 px-6 py-5 text-center transition">
-                                <svg class="h-6 w-6 text-accent-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                                <span class="text-xs font-bold uppercase tracking-wide text-accent-300 leading-tight">{{ __("Create Today's Class") }}</span>
+                            <button type="submit" class="flex flex-col items-center justify-center gap-2 rounded-xl bg-navy hover:bg-navy-700 px-6 py-5 text-center transition">
+                                <svg class="h-6 w-6 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                <span class="text-xs font-bold uppercase tracking-wide text-gold-400 leading-tight">{{ __("Create Today's Class") }}</span>
                             </button>
                         </form>
                     </div>
@@ -63,10 +63,10 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-navy p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardIconPath }}" /></svg>
                     <div class="relative flex items-center gap-4">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardIconPath }}" /></svg>
                         </span>
                         <div>
@@ -80,11 +80,11 @@
                     <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-ink">
-                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
+                                <thead class="bg-navy">
+                                    <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gold-400">
                                         <th class="px-4 py-3">
                                             <span class="inline-flex items-center gap-1.5">
-                                                <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                                <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                                 {{ __('Date') }}
                                             </span>
                                         </th>
@@ -98,7 +98,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
                                     @forelse ($theoryClasses as $theoryClass)
-                                        <tr class="hover:bg-accent-50/40 transition">
+                                        <tr class="hover:bg-gold-50/40 transition">
                                             <td class="px-4 py-3 text-sm align-top">
                                                 <div class="flex items-center gap-2">
                                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-500">
@@ -118,7 +118,7 @@
                                             <td class="px-4 py-3 text-sm align-top text-gray-600">
                                                 {{ $theoryClass->topic ?: '—' }}
                                                 @if ($theoryClass->materials_path)
-                                                    <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" title="{{ __('Lecture material') }}" class="ms-1 text-gray-400 hover:text-accent-600">📎</a>
+                                                    <a href="{{ $theoryClass->materialsUrl() }}" target="_blank" title="{{ __('Lecture material') }}" class="ms-1 text-gray-400 hover:text-gold-600">📎</a>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-3 text-sm align-top text-gray-600">{{ $theoryClass->instructor?->name ?? '—' }}</td>
@@ -137,7 +137,7 @@
                                             <td class="px-4 py-3 text-sm align-top text-gray-600">{{ $theoryClass->attendancePercentage() }}%</td>
                                             <td class="px-4 py-3 text-sm align-top text-right whitespace-nowrap">
                                                 <div class="flex items-center justify-end gap-2">
-                                                    <a href="{{ route('theory-classes.show', $theoryClass) }}" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-accent-100 hover:text-accent-600 transition" title="{{ __('View Roster') }}">
+                                                    <a href="{{ route('theory-classes.show', $theoryClass) }}" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gold-100 hover:text-gold-600 transition" title="{{ __('View Roster') }}">
                                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                                                     </a>
                                                     @if (auth()->user()->isAdmin())

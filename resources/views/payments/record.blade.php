@@ -12,8 +12,8 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex items-center gap-4 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                 </span>
                 <div>
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Record Payment') }}</h3>
@@ -25,7 +25,7 @@
                 <form method="get" action="{{ route('payments.record.create') }}" class="flex items-end gap-4">
                     <div class="flex-1">
                         <x-input-label for="student_id" :value="__('Student')" />
-                        <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                        <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
                             <option value="">{{ __('Select a student') }}</option>
                             @foreach ($students as $availableStudent)
                                 <option value="{{ $availableStudent->id }}" @selected($student?->id === $availableStudent->id)>{{ $availableStudent->name }} ({{ $availableStudent->student_id_number }})</option>
@@ -79,7 +79,7 @@
                                 <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
                                     <thead>
-                                        <tr class="bg-accent-50/60 text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                        <tr class="bg-gold-50/60 text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                             <th class="px-3 py-3"></th>
                                             <th class="px-3 py-3">{{ __('Charge') }}</th>
                                             <th class="px-3 py-3">{{ __('Full Price') }}</th>
@@ -92,7 +92,7 @@
                                         @foreach ($charges as $index => $charge)
                                             <tr>
                                                 <td class="px-3 py-3 text-sm">
-                                                    <input type="checkbox" :checked="Number(rows[{{ $index }}].amount) > 0" @change="toggle({{ $index }}, $event.target.checked)" class="rounded border-gray-300 text-accent-600 shadow-sm focus:ring-accent-500" aria-label="{{ __('Pay :charge in full', ['charge' => $charge['label']]) }}">
+                                                    <input type="checkbox" :checked="Number(rows[{{ $index }}].amount) > 0" @change="toggle({{ $index }}, $event.target.checked)" class="rounded border-gray-300 text-gold-600 shadow-sm focus:ring-gold-500" aria-label="{{ __('Pay :charge in full', ['charge' => $charge['label']]) }}">
                                                 </td>
                                                 <td class="px-3 py-3 text-sm">
                                                     {{ $charge['label'] }}
@@ -114,7 +114,7 @@
                                                         max="{{ $charge['balance'] }}"
                                                         placeholder="0.00"
                                                         x-model="rows[{{ $index }}].amount"
-                                                        class="block w-32 border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm"
+                                                        class="block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm"
                                                     >
                                                     <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.amount')" />
                                                     <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.id')" />
@@ -136,7 +136,7 @@
 
                                 <div>
                                     <x-input-label for="payment_method" :value="__('Payment Method')" />
-                                    <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                                    <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
                                         @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                                             <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                                         @endforeach
@@ -159,7 +159,7 @@
 
                             <div>
                                 <x-input-label for="notes" :value="__('Notes')" />
-                                <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+                                <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                             </div>
 

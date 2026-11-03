@@ -19,7 +19,7 @@
             'sent' => ['classes' => 'bg-blue-100 text-blue-700', 'label' => 'Sent'],
             'overdue' => ['classes' => 'bg-red-100 text-red-700', 'label' => 'Overdue'],
             'cancelled' => ['classes' => 'bg-gray-200 text-gray-700', 'label' => 'Cancelled'],
-            default => ['classes' => 'bg-accent-100 text-accent-700', 'label' => 'Pending'],
+            default => ['classes' => 'bg-gold-100 text-gold-700', 'label' => 'Pending'],
         };
         $plusIconPath = 'M12 9v3.75m0 0v3.75m0-3.75h3.75m-3.75 0h-3.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z';
         $receiptIconPath = 'M9 14.25 6.75 12l2.25-2.25M15 9.75l2.25 2.25-2.25 2.25M3.375 21h17.25c.621 0 1.125-.504 1.125-1.125V4.125C21.75 3.504 21.246 3 20.625 3H3.375C2.754 3 2.25 3.504 2.25 4.125v15.75c0 .621.504 1.125 1.125 1.125Z';
@@ -64,7 +64,7 @@
                         </form>
                     @endif
                     @if ($canRecordPayment)
-                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'record-payment')" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-400 px-4 py-2 text-sm font-bold text-black transition">
+                        <button type="button" x-data x-on:click="$dispatch('open-modal', 'record-payment')" class="inline-flex items-center gap-2 rounded-lg bg-gold-500 hover:bg-gold-400 px-4 py-2 text-sm font-bold text-navy transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $plusIconPath }}" /></svg>
                             {{ __('Record Payment') }}
                         </button>
@@ -100,7 +100,7 @@
                             {{ __('Delete') }}
                         </button>
                     @endif
-                    <a href="{{ route('corporate-companies.show', $invoice->corporate_company_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-4 py-2 text-sm font-bold text-accent-300 transition">
+                    <a href="{{ route('corporate-companies.show', $invoice->corporate_company_id) }}" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-4 py-2 text-sm font-bold text-gold-400 transition">
                         {{ __('Back to Company') }}
                     </a>
                 </div>
@@ -152,7 +152,7 @@
                                     <span class="font-bold text-gray-900">₦{{ number_format((float) $payment->amount, 0) }}</span>
                                     <span class="text-gray-500">— {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }} · {{ $payment->payment_date->format('M j, Y') }}</span>
                                 </div>
-                                <a href="{{ route('corporate-payments.receipt', $payment) }}" class="inline-flex items-center gap-1.5 text-accent-600 hover:underline font-semibold">
+                                <a href="{{ route('corporate-payments.receipt', $payment) }}" class="inline-flex items-center gap-1.5 text-gold-600 hover:underline font-semibold">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                                     {{ __('View Receipt') }}
                                 </a>
@@ -163,48 +163,48 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-10">
-                <div class="text-center pb-6 border-b-2 border-accent-400">
+                <div class="text-center pb-6 border-b-2 border-gold-400">
                     <x-application-logo class="h-14 w-auto mx-auto mb-2" />
-                    <p class="text-lg sm:text-xl font-extrabold uppercase tracking-[0.2em] text-black">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
-                    <h1 class="mt-1 text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-accent-300 via-accent-600 to-black bg-clip-text text-transparent">{{ __('INVOICE') }}</h1>
+                    <p class="text-lg sm:text-xl font-extrabold uppercase tracking-[0.2em] text-navy">{{ strtoupper($settings->company_name ?: 'CLASSIC DRIVING SCHOOL') }}</p>
+                    <h1 class="mt-1 text-5xl sm:text-6xl font-black tracking-tight bg-gradient-to-b from-gold-300 via-gold-600 to-navy bg-clip-text text-transparent">{{ __('INVOICE') }}</h1>
                     @if ($settings->tagline)
                         <p class="text-gray-500 text-sm mt-1">{{ $settings->tagline }}</p>
                     @endif
                     @if ($settings->slogan)
-                        <p class="italic text-accent-600 text-sm mt-1">{{ $settings->slogan }}</p>
+                        <p class="italic text-gold-600 text-sm mt-1">{{ $settings->slogan }}</p>
                     @endif
                 </div>
 
                 <dl class="mt-4 text-sm space-y-1">
                     <div class="flex gap-2">
-                        <dt class="font-bold text-accent-600">{{ __('Invoice No:') }}</dt>
+                        <dt class="font-bold text-gold-600">{{ __('Invoice No:') }}</dt>
                         <dd class="font-mono text-gray-900">{{ $invoice->invoice_number }}</dd>
                     </div>
                     <div class="flex gap-2">
-                        <dt class="font-bold text-accent-600">{{ __('Date:') }}</dt>
+                        <dt class="font-bold text-gold-600">{{ __('Date:') }}</dt>
                         <dd class="text-gray-900">{{ $invoice->invoice_date->format('d F Y') }}</dd>
                     </div>
                 </dl>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300">
-                        <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                    <div class="rounded-2xl overflow-hidden ring-2 ring-gold-300">
+                        <div class="bg-navy flex items-center gap-3 px-4 py-3">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-400 text-navy">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
                             </span>
-                            <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('BILL TO') }}</span>
+                            <span class="font-bold text-sm tracking-wide text-gold-400">{{ __('BILL TO') }}</span>
                         </div>
                         <div class="bg-white px-4 py-4">
                             <p class="text-lg font-bold text-gray-900">{{ $invoice->company->name }}</p>
                             <p class="text-gray-600 text-sm mt-1">{{ implode(', ', array_filter([$invoice->company->address, $invoice->company->city])) }}</p>
                         </div>
                     </div>
-                    <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300">
-                        <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                    <div class="rounded-2xl overflow-hidden ring-2 ring-gold-300">
+                        <div class="bg-navy flex items-center gap-3 px-4 py-3">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-400 text-navy">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             </span>
-                            <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('TRAINING DETAILS') }}</span>
+                            <span class="font-bold text-sm tracking-wide text-gold-400">{{ __('TRAINING DETAILS') }}</span>
                         </div>
                         <div class="bg-white px-4 py-4 text-sm space-y-1.5">
                             @if ($invoice->programme_name)
@@ -220,10 +220,10 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300 mt-6">
+                <div class="rounded-2xl overflow-hidden ring-2 ring-gold-300 mt-6">
                     <table class="min-w-full">
                         <thead>
-                            <tr class="bg-ink text-accent-300 text-left text-sm font-bold">
+                            <tr class="bg-navy text-gold-400 text-left text-sm font-bold">
                                 <th class="px-4 py-2 w-14">{{ __('S/N') }}</th>
                                 <th class="px-4 py-2">{{ __('Description') }}</th>
                                 <th class="px-4 py-2 text-center w-20">{{ __('Qty') }}</th>
@@ -231,7 +231,7 @@
                                 <th class="px-4 py-2 text-right w-36">{{ __('Amount (₦)') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-accent-50/20 divide-y divide-accent-100">
+                        <tbody class="bg-gold-50/20 divide-y divide-gold-100">
                             @foreach ($invoice->items as $item)
                                 <tr>
                                     <td class="px-4 py-3 text-sm text-gray-500">{{ $loop->iteration }}</td>
@@ -246,28 +246,28 @@
                 </div>
 
                 <div class="flex justify-end mt-4">
-                    <div class="flex w-full sm:w-auto rounded-full overflow-hidden ring-2 ring-accent-300">
-                        <div class="bg-gradient-to-r from-accent-300 to-accent-500 text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 pl-4 pr-3 sm:pl-5 sm:pr-4 py-3 whitespace-nowrap">
+                    <div class="flex w-full sm:w-auto rounded-full overflow-hidden ring-2 ring-gold-300">
+                        <div class="bg-gradient-to-r from-gold-300 to-gold-500 text-navy font-bold text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2 pl-4 pr-3 sm:pl-5 sm:pr-4 py-3 whitespace-nowrap">
                             <svg class="h-4 w-4 sm:h-5 sm:w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $coinIconPath }}" /></svg>
                             {{ __('TOTAL AMOUNT DUE') }}
                         </div>
-                        <div class="bg-ink text-accent-300 font-black text-lg sm:text-xl flex items-center whitespace-nowrap pl-3 pr-4 sm:pl-4 sm:pr-5 py-3">₦{{ number_format($invoice->total(), 0) }}</div>
+                        <div class="bg-navy text-gold-400 font-black text-lg sm:text-xl flex items-center whitespace-nowrap pl-3 pr-4 sm:pl-4 sm:pr-5 py-3">₦{{ number_format($invoice->total(), 0) }}</div>
                     </div>
                 </div>
 
-                <p class="text-sm text-gray-700 mt-3"><span class="font-bold text-accent-600">{{ __('Amount in Words:') }}</span> {{ $invoice->totalInWords() }}</p>
+                <p class="text-sm text-gray-700 mt-3"><span class="font-bold text-gold-600">{{ __('Amount in Words:') }}</span> {{ $invoice->totalInWords() }}</p>
 
                 @if (! empty($courseCoveragePairs))
-                    <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300 mt-6">
-                        <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                    <div class="rounded-2xl overflow-hidden ring-2 ring-gold-300 mt-6">
+                        <div class="bg-navy flex items-center gap-3 px-4 py-3">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-400 text-navy">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $listIconPath }}" /></svg>
                             </span>
-                            <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('COURSE COVERAGE') }}</span>
+                            <span class="font-bold text-sm tracking-wide text-gold-400">{{ __('COURSE COVERAGE') }}</span>
                         </div>
-                        <div class="bg-white divide-y divide-accent-100">
+                        <div class="bg-white divide-y divide-gold-100">
                             @foreach ($courseCoveragePairs as $pair)
-                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-accent-100 {{ $loop->even ? 'bg-accent-50/60' : '' }}">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gold-100 {{ $loop->even ? 'bg-gold-50/60' : '' }}">
                                     @foreach ($pair as $topic)
                                         <div class="px-4 py-2 text-sm text-gray-800">{{ $topic }}</div>
                                     @endforeach
@@ -279,12 +279,12 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                     @if (! empty($paymentTerms))
-                        <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300">
-                            <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                        <div class="rounded-2xl overflow-hidden ring-2 ring-gold-300">
+                            <div class="bg-navy flex items-center gap-3 px-4 py-3">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-400 text-navy">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                                 </span>
-                                <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('PAYMENT TERMS') }}</span>
+                                <span class="font-bold text-sm tracking-wide text-gold-400">{{ __('PAYMENT TERMS') }}</span>
                             </div>
                             <div class="bg-white px-4 py-4">
                                 <ul class="text-sm text-gray-700 space-y-1.5 list-disc list-inside">
@@ -295,12 +295,12 @@
                             </div>
                         </div>
                     @endif
-                    <div class="rounded-2xl overflow-hidden ring-2 ring-accent-300">
-                        <div class="bg-ink flex items-center gap-3 px-4 py-3">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-400 text-black">
+                    <div class="rounded-2xl overflow-hidden ring-2 ring-gold-300">
+                        <div class="bg-navy flex items-center gap-3 px-4 py-3">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-400 text-navy">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $bankIconPath }}" /></svg>
                             </span>
-                            <span class="font-bold text-sm tracking-wide text-accent-300">{{ __('PAYMENT DETAILS') }}</span>
+                            <span class="font-bold text-sm tracking-wide text-gold-400">{{ __('PAYMENT DETAILS') }}</span>
                         </div>
                         <div class="bg-white px-4 py-4 text-sm space-y-1.5">
                             @if ($settings->bank_name)
@@ -315,7 +315,7 @@
                             @if (! $settings->bank_name && ! $settings->bank_account_name && ! $settings->bank_account_number)
                                 <p class="print-hidden text-gray-400 italic">
                                     {{ __('No bank details on file yet.') }}
-                                    <a href="{{ route('corporate-invoice-settings.edit') }}" class="text-accent-600 hover:underline not-italic">{{ __('Add them in Invoice Settings') }}</a>
+                                    <a href="{{ route('corporate-invoice-settings.edit') }}" class="text-gold-600 hover:underline not-italic">{{ __('Add them in Invoice Settings') }}</a>
                                 </p>
                             @endif
                         </div>
@@ -325,12 +325,12 @@
                 <div class="mt-10 pt-6 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <div>
                         <p class="text-4xl sm:text-5xl text-gray-900" style="font-family: 'Dancing Script', cursive;">{{ __('Thank You!') }}</p>
-                        <div class="mt-2 h-1 w-16 bg-gradient-to-r from-accent-400 to-accent-100 rounded-full"></div>
+                        <div class="mt-2 h-1 w-16 bg-gradient-to-r from-gold-400 to-gold-100 rounded-full"></div>
                         <p class="mt-2 text-sm text-gray-500">{{ __('For choosing :company.', ['company' => $settings->company_name ?: 'Classic Driving School']) }}</p>
                     </div>
                     <div class="sm:pl-8 sm:border-l sm:border-gray-200">
                         <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-700">
-                            <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $signatureIconPath }}" /></svg>
+                            <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $signatureIconPath }}" /></svg>
                             {{ __("Director's Signature") }}
                         </p>
                         @if ($settings->signature_path)
@@ -345,10 +345,10 @@
                     </div>
                 </div>
 
-                <div class="border-t-2 border-black mt-8 pt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-black">
+                <div class="border-t-2 border-navy mt-8 pt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-sm text-navy">
                     @if ($settings->address)
                         <div class="flex items-center gap-2">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $mapPinIconPath }}" /></svg>
                             </span>
                             {{ $settings->address }}
@@ -356,7 +356,7 @@
                     @endif
                     @if ($settings->phone)
                         <div class="flex items-center gap-2">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $phoneIconPath }}" /></svg>
                             </span>
                             {{ $settings->phone }}
@@ -364,7 +364,7 @@
                     @endif
                     @if ($settings->website)
                         <div class="flex items-center gap-2">
-                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $globeIconPath }}" /></svg>
                             </span>
                             {{ $settings->website }}
@@ -391,7 +391,7 @@
                         <x-text-input x-ref="amount" id="amount" name="amount" type="number" step="0.01" min="0.01" class="block w-full mt-1" :value="old('amount', $invoice->balance())" required autofocus />
                         <div class="flex flex-wrap gap-1.5 mt-2">
                             <template x-for="pct in [50, 60, 80]" :key="pct">
-                                <button type="button" x-on:click="$refs.amount.value = Math.min(balance, Math.round(total * pct) / 100)" class="rounded-full bg-accent-50 hover:bg-accent-100 px-2.5 py-1 text-xs font-semibold text-accent-700 ring-1 ring-accent-200 transition">
+                                <button type="button" x-on:click="$refs.amount.value = Math.min(balance, Math.round(total * pct) / 100)" class="rounded-full bg-gold-50 hover:bg-gold-100 px-2.5 py-1 text-xs font-semibold text-gold-700 ring-1 ring-gold-200 transition">
                                     <span x-text="pct"></span>%
                                 </button>
                             </template>
@@ -404,7 +404,7 @@
 
                     <div>
                         <x-input-label for="payment_method" :value="__('Payment Method')" />
-                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>
+                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
                             @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                                 <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                             @endforeach
@@ -425,7 +425,7 @@
                     </div>
 
                     <div class="flex items-center gap-3 pt-2">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-2.5 text-sm font-bold text-accent-300 transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-2.5 text-sm font-bold text-gold-400 transition">
                             {{ __('Confirm Payment') }}
                         </button>
                         <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'record-payment')">{{ __('Cancel') }}</x-secondary-button>
@@ -488,7 +488,7 @@
                 </div>
 
                 <div class="flex items-center gap-3 pt-2">
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-5 py-2.5 text-sm font-bold text-accent-300 transition">
+                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-2.5 text-sm font-bold text-gold-400 transition">
                         {{ __('Send') }}
                     </button>
                     <x-secondary-button type="button" x-on:click="$dispatch('close-modal', 'send-email')">{{ __('Cancel') }}</x-secondary-button>

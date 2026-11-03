@@ -51,7 +51,7 @@
                                             <option value="{{ $status }}" @selected(optional($row['attendance'])->status === $status)>{{ ucfirst($status) }}</option>
                                         @endforeach
                                     </select>
-                                    <button type="submit" class="text-xs font-semibold text-amber-600 hover:underline">{{ __('Save') }}</button>
+                                    <button type="submit" class="text-xs font-semibold text-gold-600 hover:underline">{{ __('Save') }}</button>
                                 </form>
                             </div>
                         @endforeach
@@ -119,7 +119,7 @@
                                         <option value="excused">{{ __('Excused') }}</option>
                                         <option value="absent">{{ __('Absent') }}</option>
                                     </select>
-                                    <button type="submit" class="text-xs font-semibold text-amber-600 hover:underline">{{ __('Save') }}</button>
+                                    <button type="submit" class="text-xs font-semibold text-gold-600 hover:underline">{{ __('Save') }}</button>
                                 </form>
                             </div>
                         @endforeach
@@ -141,7 +141,7 @@
                             </div>
 
                             @if ($row['pendingRequest'])
-                                <p class="mt-1 text-xs text-amber-600">
+                                <p class="mt-1 text-xs text-gold-600">
                                     {{ __('Recommended :result — awaiting Director confirmation.', ['result' => ucfirst($row['pendingRequest']->result)]) }}
                                 </p>
                             @else
@@ -152,7 +152,7 @@
                                         <option value="fail">{{ __('Fail') }}</option>
                                     </select>
                                     <input type="number" name="score" min="0" max="100" placeholder="{{ __('Score') }}" class="text-xs rounded-md border-gray-300 py-1 w-20">
-                                    <button type="submit" class="text-xs font-semibold text-amber-600 hover:underline">{{ __('Submit') }}</button>
+                                    <button type="submit" class="text-xs font-semibold text-gold-600 hover:underline">{{ __('Submit') }}</button>
                                 </form>
                             @endif
                         </div>

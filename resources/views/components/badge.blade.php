@@ -2,10 +2,10 @@
 
 @php
     $colors = [
-        'gray' => 'bg-stone-100 text-stone-700',
+        'gray' => 'bg-gray-100 text-gray-700',
         'green' => 'bg-green-100 text-green-700',
         'red' => 'bg-red-100 text-red-700',
-        'amber' => 'bg-accent-100 text-accent-700',
+        'amber' => 'bg-gold-100 text-gold-800',
         'blue' => 'bg-blue-100 text-blue-700',
     ];
     $classes = $colors[$color] ?? $colors['gray'];

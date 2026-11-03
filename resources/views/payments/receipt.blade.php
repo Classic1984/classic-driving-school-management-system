@@ -15,17 +15,17 @@
     <div class="py-12 print:py-0">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 print:max-w-full print:px-0">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden print:shadow-none print:ring-0">
-                <div class="receipt-header bg-ink text-white px-8 py-6 flex items-start justify-between">
+                <div class="receipt-header bg-navy-800 text-white px-8 py-6 flex items-start justify-between">
                     <div class="flex items-center gap-3">
                         <x-application-logo class="h-14 w-auto" />
                         <div>
                             <p class="font-bold text-lg leading-tight">{{ __('Classic Driving School & Son Nigeria Limited') }}</p>
-                            <p class="text-xs text-accent-300 uppercase tracking-widest mt-0.5">{{ __('Official Payment Receipt') }}</p>
+                            <p class="text-xs text-gold-400 uppercase tracking-widest mt-0.5">{{ __('Official Payment Receipt') }}</p>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
                         <p class="text-[10px] uppercase tracking-widest text-gray-400">{{ __('Receipt No.') }}</p>
-                        <p class="font-mono text-sm text-accent-300">{{ $payment->receipt_number }}</p>
+                        <p class="font-mono text-sm text-gold-400">{{ $payment->receipt_number }}</p>
                         <x-qr-code :data="$payment->qrCodeSummary()" class="mt-2 inline-block bg-white p-1 rounded [&_svg]:h-16 [&_svg]:w-16" />
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                             <tfoot>
                                 <tr class="bg-gray-50 font-semibold">
                                     <td class="px-4 py-2 text-sm">{{ __('TOTAL PAID') }}</td>
-                                    <td class="px-4 py-2 text-sm text-right font-mono text-accent-600">₦{{ number_format($payment->amount, 2) }}</td>
+                                    <td class="px-4 py-2 text-sm text-right font-mono text-gold-600">₦{{ number_format($payment->amount, 2) }}</td>
                                 </tr>
                             </tfoot>
                         </table>

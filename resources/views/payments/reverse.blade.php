@@ -34,28 +34,28 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $receiptIconPath }}" /></svg>
                         <div>
                             <p class="text-xs text-gray-500">{{ __('Receipt No.') }}</p>
                             <p class="text-sm font-bold font-mono text-gray-900">{{ $payment->receipt_number }}</p>
                         </div>
                     </div>
                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                         <div>
                             <p class="text-xs text-gray-500">{{ __('Student') }}</p>
                             <p class="text-sm font-bold text-gray-900">{{ $payment->student->name }}</p>
                         </div>
                     </div>
                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentTextIconPath }}" /></svg>
                         <div>
                             <p class="text-xs text-gray-500">{{ __('Description') }}</p>
                             <p class="text-sm font-bold text-gray-900">{{ $payment->description() }}</p>
                         </div>
                     </div>
                     <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
-                        <svg class="h-4 w-4 text-accent-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                        <svg class="h-4 w-4 text-gold-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                         <div>
                             <p class="text-xs text-gray-500">{{ __('Amount to Reverse') }}</p>
                             <p class="text-sm font-bold text-gray-900">₦{{ number_format($payment->amount, 2) }}</p>
@@ -67,7 +67,7 @@
                     @csrf
 
                     <x-input-label for="reason" :value="__('Reason for Reversal')" />
-                    <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm" required>{{ old('reason') }}</textarea>
+                    <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>{{ old('reason') }}</textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('reason')" />
 
                     <div class="flex items-center gap-4 mt-4">

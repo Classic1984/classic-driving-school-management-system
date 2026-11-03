@@ -15,12 +15,12 @@
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-ink p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-accent-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-navy p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-500/15 text-accent-300 ring-1 ring-accent-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $buildingIconPath }}" /></svg>
                             </span>
                             <div>
@@ -33,7 +33,7 @@
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $cogIconPath }}" /></svg>
                                 {{ __('Invoice Settings') }}
                             </a>
-                            <a href="{{ route('corporate-companies.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-400 px-5 py-2.5 text-sm font-bold text-black transition">
+                            <a href="{{ route('corporate-companies.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-gold-500 hover:bg-gold-400 px-5 py-2.5 text-sm font-bold text-navy transition">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $plusIconPath }}" /></svg>
                                 {{ __('Add Company') }}
                             </a>
@@ -47,7 +47,7 @@
                         </div>
                         <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
                             <p class="text-xs text-gray-400">{{ __('Pending') }}</p>
-                            <p class="text-lg font-bold text-accent-300 mt-1">{{ $stats['pendingInvoices'] }}</p>
+                            <p class="text-lg font-bold text-gold-400 mt-1">{{ $stats['pendingInvoices'] }}</p>
                         </div>
                         <div class="rounded-xl bg-white/5 ring-1 ring-white/10 p-4">
                             <p class="text-xs text-gray-400">{{ __('Paid') }}</p>
@@ -71,7 +71,7 @@
                         <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center text-gray-500">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $searchIconPath }}" /></svg>
                         </span>
-                        <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('Search companies…') }}" class="block w-full pl-11 rounded-lg border-0 bg-white/10 text-white placeholder-gray-400 ring-1 ring-white/15 focus:ring-accent-400 focus:bg-white/15">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="{{ __('Search companies…') }}" class="block w-full pl-11 rounded-lg border-0 bg-white/10 text-white placeholder-gray-400 ring-1 ring-white/15 focus:ring-gold-400 focus:bg-white/15">
                     </form>
                 </div>
 
@@ -99,8 +99,8 @@
                         <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-ink">
-                                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
+                                    <thead class="bg-navy">
+                                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gold-400">
                                             <th class="px-4 py-3">{{ __('Company') }}</th>
                                             <th class="px-4 py-3">{{ __('Contact Person') }}</th>
                                             <th class="px-4 py-3">{{ __('Phone / Email') }}</th>
@@ -111,9 +111,9 @@
                                     </thead>
                                     <tbody class="divide-y divide-gray-100 bg-white">
                                         @foreach ($companies as $company)
-                                            <tr class="hover:bg-accent-50/40 transition">
+                                            <tr class="hover:bg-gold-50/40 transition">
                                                 <td class="px-4 py-3 text-sm">
-                                                    <a href="{{ route('corporate-companies.show', $company) }}" class="font-semibold text-gray-900 hover:text-accent-600">{{ $company->name }}</a>
+                                                    <a href="{{ route('corporate-companies.show', $company) }}" class="font-semibold text-gray-900 hover:text-gold-600">{{ $company->name }}</a>
                                                     <p class="text-xs font-mono text-gray-400">{{ $company->company_reference }}</p>
                                                 </td>
                                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $company->contact_person ?? '—' }}</td>
@@ -124,7 +124,7 @@
                                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $company->quotations_count }}</td>
                                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $company->invoices_count }}</td>
                                                 <td class="px-4 py-3 text-right space-x-3 whitespace-nowrap">
-                                                    <a href="{{ route('corporate-companies.edit', $company) }}" class="text-sm font-semibold text-accent-600 hover:underline">{{ __('Edit') }}</a>
+                                                    <a href="{{ route('corporate-companies.edit', $company) }}" class="text-sm font-semibold text-gold-600 hover:underline">{{ __('Edit') }}</a>
                                                     @if ($company->quotations_count === 0 && $company->invoices_count === 0)
                                                         <form method="post" action="{{ route('corporate-companies.destroy', $company) }}" class="inline" onsubmit="return confirm('{{ __('Delete this company? This cannot be undone.') }}');">
                                                             @csrf

@@ -12,7 +12,7 @@
         <!-- PWA: installable on Android/desktop via the manifest, and on
         iOS via the apple-* tags below (iOS doesn't read the manifest). -->
         <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <meta name="theme-color" content="#FAF8F4">
+        <meta name="theme-color" content="#0B1E3D">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,7 +21,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|dancing-script:700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800|figtree:400,500,600|dancing-script:700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -39,14 +39,14 @@
 
             <div class="lg:pl-64">
                 <!-- Mobile Top Bar -->
-                <div class="sticky top-0 z-30 flex h-16 items-center gap-4 bg-paper border-b border-line px-4 print:hidden lg:hidden">
-                    <button @click="sidebarOpen = true" class="inline-flex items-center justify-center p-2 rounded-md text-stone-500 hover:text-accent-600 hover:bg-accent-50 focus:outline-none focus:bg-accent-50 focus:text-accent-600 transition duration-150 ease-in-out">
+                <div class="sticky top-0 z-30 flex h-16 items-center gap-4 bg-navy px-4 print:hidden lg:hidden">
+                    <button @click="sidebarOpen = true" class="inline-flex items-center justify-center p-2 rounded-md text-navy-300 hover:text-gold-300 hover:bg-white/5 focus:outline-none focus:bg-white/5 focus:text-gold-300 transition duration-150 ease-in-out">
                         <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
-                    <a href="{{ route('dashboard') }}" class="flex items-center rounded-lg bg-ink p-1.5">
-                        <x-application-logo class="block h-6 w-auto" />
+                    <a href="{{ route('dashboard') }}">
+                        <x-application-logo class="block h-8 w-auto" />
                     </a>
                 </div>
 
@@ -103,16 +103,16 @@
                 }"
                 x-show="show"
                 x-transition
-                class="fixed bottom-6 right-6 z-50 max-w-sm rounded-xl bg-ink px-5 py-4 text-white shadow-lg print:hidden"
+                class="fixed bottom-6 right-6 z-50 max-w-sm rounded-xl bg-navy px-5 py-4 text-white shadow-lg print:hidden"
                 style="display: none;"
             >
                 <div class="flex items-start gap-3">
                     <div class="flex-1">
-                        <p class="text-sm font-semibold text-accent-300">Expenses updated</p>
-                        <p class="mt-1 text-sm text-stone-300">Incurred expenses have changed since you last checked.</p>
-                        <a href="{{ route('expenses.index') }}" class="mt-2 inline-block text-sm font-medium text-accent-300 hover:text-accent-200">View Expenses &rarr;</a>
+                        <p class="text-sm font-semibold text-gold-300">Expenses updated</p>
+                        <p class="mt-1 text-sm text-navy-200">Incurred expenses have changed since you last checked.</p>
+                        <a href="{{ route('expenses.index') }}" class="mt-2 inline-block text-sm font-medium text-gold-300 hover:text-gold-200">View Expenses &rarr;</a>
                     </div>
-                    <button @click="show = false" class="text-stone-400 hover:text-white" aria-label="Dismiss">&times;</button>
+                    <button @click="show = false" class="text-navy-300 hover:text-white" aria-label="Dismiss">&times;</button>
                 </div>
             </div>
         @endif

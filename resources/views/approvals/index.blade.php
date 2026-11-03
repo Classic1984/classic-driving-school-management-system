@@ -7,7 +7,7 @@
 
     @php
         $typeAccent = [
-            'discount' => ['border' => 'border-accent-500', 'badge' => 'bg-accent-100 text-accent-800'],
+            'discount' => ['border' => 'border-gold-500', 'badge' => 'bg-gold-100 text-gold-800'],
             'assessment' => ['border' => 'border-blue-500', 'badge' => 'bg-blue-100 text-blue-800'],
             'correction' => ['border' => 'border-purple-500', 'badge' => 'bg-purple-100 text-purple-800'],
             'enrollment_upgrade' => ['border' => 'border-green-500', 'badge' => 'bg-green-100 text-green-800'],
@@ -17,8 +17,8 @@
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="flex items-center gap-4 mb-6">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                 </span>
                 <div>
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Approval Centre') }}</h3>
@@ -50,7 +50,7 @@
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 mb-6">
                 <div class="flex items-center gap-3">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                     </span>
                     <h3 class="text-lg font-bold text-gray-900">
@@ -82,10 +82,10 @@
                                 </span>
 
                                 <div class="mt-2 flex items-center gap-2">
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300 text-xs font-bold">{{ $initials }}</span>
+                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ $index + 1 }}.
-                                        <a href="{{ route('students.show', $item->student) }}" class="text-accent-600 hover:underline">{{ $item->student->name }}</a>
+                                        <a href="{{ route('students.show', $item->student) }}" class="text-gold-600 hover:underline">{{ $item->student->name }}</a>
                                         @if ($approval['type'] === 'discount')
                                             — {{ __('Discount on :course', ['course' => $item->course->name]) }}
                                         @elseif ($approval['type'] === 'assessment')
@@ -181,7 +181,7 @@
                                         <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-600 transition">{{ __('Reject') }}</button>
                                     </form>
                                 @else
-                                    <a href="{{ route('students.edit', $item->student) }}" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg ring-1 ring-accent-300 hover:bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-700 transition">{{ __('Edit Student') }}</a>
+                                    <a href="{{ route('students.edit', $item->student) }}" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg ring-1 ring-gold-300 hover:bg-gold-50 px-3 py-1.5 text-sm font-semibold text-gold-700 transition">{{ __('Edit Student') }}</a>
                                     <form method="post" action="{{ route('student-correction-requests.resolve', $item) }}">
                                         @csrf
                                         @method('patch')

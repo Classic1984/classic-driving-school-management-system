@@ -18,8 +18,8 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex items-center gap-4">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         @foreach ($certificateIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
@@ -46,7 +46,7 @@
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
                             {{ __('View Report') }}
                         </a>
-                        <a href="{{ route('certificates.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-4 py-2.5 text-sm font-bold text-accent-300 transition">
+                        <a href="{{ route('certificates.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-4 py-2.5 text-sm font-bold text-gold-400 transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $documentPlusIconPath }}" /></svg>
                             {{ __('Issue Certificate') }}
                         </a>
@@ -64,28 +64,28 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
-                            <tr class="bg-accent-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                            <tr class="bg-gold-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardIconPath }}" /></svg>
                                         {{ __('Certificate #') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                         {{ __('Issue Date') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         {{ __('Student') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                                         {{ __('Course') }}
                                     </span>
                                 </th>
@@ -98,7 +98,7 @@
                                 <tr>
                                     <td class="px-4 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-400">
+                                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gold-50 text-gold-500">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                     @foreach ($certificateIconPath as $path)
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
@@ -120,7 +120,7 @@
                                     <td class="px-4 py-3 text-sm align-top text-gray-600">{{ $certificate->instructor?->name ?? '—' }}</td>
                                     <td class="px-4 py-3 text-sm align-top text-right">
                                         <div class="relative inline-block text-left" x-data="{ open: false }">
-                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-50 text-accent-400 hover:bg-accent-100 transition">
+                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-50 text-gold-500 hover:bg-gold-100 transition">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c.621 0 1.125-.504 1.125-1.125S12.621 4.5 12 4.5s-1.125.504-1.125 1.125S11.379 6.75 12 6.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 10.5 12 10.5s-1.125.504-1.125 1.125S11.379 12.75 12 12.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 16.5 12 16.5s-1.125.504-1.125 1.125S11.379 18.75 12 18.75Z" /></svg>
                                             </button>
                                             <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">

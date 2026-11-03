@@ -19,7 +19,7 @@
 
         $sessionAccent = [
             'Morning' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-600', 'icon' => $sunIconPath],
-            'Afternoon' => ['bg' => 'bg-accent-50', 'text' => 'text-accent-600', 'icon' => $sunIconPath],
+            'Afternoon' => ['bg' => 'bg-gold-50', 'text' => 'text-gold-600', 'icon' => $sunIconPath],
             'Evening' => ['bg' => 'bg-green-50', 'text' => 'text-green-600', 'icon' => $moonIconPath],
         ];
     @endphp
@@ -27,8 +27,8 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             <div class="flex items-center gap-4">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                    <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                 </span>
                 <div>
                     <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Student Login Training') }}</h3>
@@ -39,7 +39,7 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <div class="flex items-center gap-3">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-ink text-accent-300">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-navy text-gold-400">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clipboardIconPath }}" /></svg>
                         </span>
                         <div>
@@ -49,7 +49,7 @@
                     </div>
 
                     @if (auth()->user()->canManageCourses())
-                        <a href="{{ route('attendances.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:brightness-110 px-4 py-2.5 text-sm font-bold text-accent-300 transition">
+                        <a href="{{ route('attendances.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-4 py-2.5 text-sm font-bold text-gold-400 transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $loginIconPath }}" /></svg>
                             {{ __('Log Training') }}
                         </a>
@@ -67,28 +67,28 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
-                            <tr class="bg-accent-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                            <tr class="bg-gold-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
                                         {{ __('Date') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $clockIconPath }}" /></svg>
                                         {{ __('Time') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                                         {{ __('Session') }}
                                     </span>
                                 </th>
                                 <th class="px-4 py-3">
                                     <span class="inline-flex items-center gap-1.5">
-                                        <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
+                                        <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
                                         {{ __('Student') }}
                                     </span>
                                 </th>
@@ -111,8 +111,8 @@
                                 <tr>
                                     <td class="px-4 py-3 text-sm align-top">
                                         <div class="flex items-center gap-2">
-                                            <span class="flex flex-col items-center justify-center rounded-lg bg-accent-50 px-2 py-1 leading-none">
-                                                <span class="text-[10px] font-bold uppercase text-accent-600">{{ $attendance->date->format('M') }}</span>
+                                            <span class="flex flex-col items-center justify-center rounded-lg bg-gold-50 px-2 py-1 leading-none">
+                                                <span class="text-[10px] font-bold uppercase text-gold-600">{{ $attendance->date->format('M') }}</span>
                                                 <span class="text-sm font-extrabold text-gray-900">{{ $attendance->date->format('j') }}</span>
                                             </span>
                                             <span class="text-gray-600">{{ $attendance->date->format('l, M j, Y') }}</span>
@@ -156,7 +156,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top text-right">
                                         <div class="relative inline-block text-left" x-data="{ open: false }">
-                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-accent-100 hover:text-accent-600 transition">
+                                            <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gold-100 hover:text-gold-600 transition">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c.621 0 1.125-.504 1.125-1.125S12.621 4.5 12 4.5s-1.125.504-1.125 1.125S11.379 6.75 12 6.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 10.5 12 10.5s-1.125.504-1.125 1.125S11.379 12.75 12 12.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 16.5 12 16.5s-1.125.504-1.125 1.125S11.379 18.75 12 18.75Z" /></svg>
                                             </button>
                                             <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
@@ -188,7 +188,7 @@
 
                 <div class="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-4">
                     <div class="flex items-center gap-3">
-                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-400">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-50 text-gold-500">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
                         </span>
                         <div>

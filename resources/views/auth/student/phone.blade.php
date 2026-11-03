@@ -19,6 +19,6 @@
     </form>
 
     <p class="mt-4 text-center text-xs text-gray-400">
-        {{ __('Staff member? Use the') }} <a href="{{ route('login') }}" class="text-accent-600 hover:underline">{{ __('regular login') }}</a>.
+        {{ __('Staff member? Use the') }} <a href="{{ route('login') }}" class="text-gold-600 hover:underline">{{ __('regular login') }}</a>.
     </p>
 </x-guest-layout>

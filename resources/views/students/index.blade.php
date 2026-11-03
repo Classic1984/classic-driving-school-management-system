@@ -14,7 +14,7 @@
         $isWalkinView = request('enrollment') === 'walkin';
         $serviceStatusAccent = [
             'paid' => ['color' => 'green', 'border' => 'border-green-500'],
-            'part_payment' => ['color' => 'amber', 'border' => 'border-accent-500'],
+            'part_payment' => ['color' => 'amber', 'border' => 'border-gold-500'],
             'unpaid' => ['color' => 'red', 'border' => 'border-red-500'],
         ];
     @endphp
@@ -23,8 +23,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
                 <div class="flex items-center gap-4">
-                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
-                        <svg class="h-7 w-7 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
+                        <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
                     </span>
                     <div>
                         <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Students') }}</h3>
@@ -39,7 +39,7 @@
                             {{ __('View Referral Source Report') }}
                         </a>
                     @endif
-                    <a href="{{ route('students.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-accent-500 hover:bg-accent-600 px-4 py-2.5 text-sm font-bold text-black transition">
+                    <a href="{{ route('students.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-gold-500 hover:bg-gold-600 px-4 py-2.5 text-sm font-bold text-navy transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                         {{ __('Add Student') }}
                     </a>
@@ -54,7 +54,7 @@
                 <p class="mb-4 text-sm font-medium text-green-600">{{ __('Student removed successfully.') }}</p>
             @endif
 
-            <div class="bg-accent-50/40 ring-1 ring-accent-200 border-l-4 border-accent-500 rounded-xl p-6 mb-6">
+            <div class="bg-gold-50/40 ring-1 ring-gold-200 border-l-4 border-gold-500 rounded-xl p-6 mb-6">
                 <h3 class="text-lg font-bold text-gray-900 mb-4">{{ __('Filter Students') }}</h3>
 
                 <form method="get" action="{{ route('students.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -68,7 +68,7 @@
 
                     <div>
                         <x-input-label for="status" :value="__('Status')" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                             <option value="">{{ __('All') }}</option>
                             @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
                                 <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
@@ -78,7 +78,7 @@
 
                     <div>
                         <x-input-label for="course_id" :value="__('Course')" />
-                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                             <option value="">{{ __('All') }}</option>
                             @foreach ($courses as $course)
                                 <option value="{{ $course->id }}" @selected((string) request('course_id') === (string) $course->id)>{{ $course->name }}</option>
@@ -88,7 +88,7 @@
 
                     <div>
                         <x-input-label for="payment" :value="__('Payment')" />
-                        <select id="payment" name="payment" class="mt-1 block w-full border-gray-300 focus:border-accent-500 focus:ring-accent-500 rounded-md shadow-sm">
+                        <select id="payment" name="payment" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
                             <option value="">{{ __('All') }}</option>
                             <option value="clear" @selected(request('payment') === 'clear')>{{ __('Clear') }}</option>
                             <option value="locked" @selected(request('payment') === 'locked')>{{ __('Locked') }}</option>
@@ -96,7 +96,7 @@
                     </div>
 
                     <div class="md:col-span-4 flex items-center gap-4">
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-ink hover:bg-white/5 px-4 py-2 text-sm font-semibold text-white transition">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-600 px-4 py-2 text-sm font-semibold text-white transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" /></svg>
                             {{ __('Apply Filters') }}
                         </button>
@@ -107,15 +107,15 @@
 
             @if ($isWalkinView)
                 <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                    <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-br from-accent-200 via-accent-300 to-accent-500 px-6 py-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-br from-gold-200 via-gold-300 to-gold-500 px-6 py-4">
                         <div class="flex items-center gap-2.5">
-                            <svg class="h-5 w-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" /></svg>
+                            <svg class="h-5 w-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25Z" /></svg>
                             <div>
-                                <h3 class="text-base font-bold text-black">{{ __('Walk-in Services Only') }}</h3>
+                                <h3 class="text-base font-bold text-navy">{{ __('Walk-in Services Only') }}</h3>
                                 <p class="text-xs font-medium text-black/70">{{ __("Learner's Permit / Driver's License Processing - no course enrollment") }}</p>
                             </div>
                         </div>
-                        <a href="{{ route('students.index') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-2 text-sm font-semibold text-accent-300 hover:bg-white/5 transition">
+                        <a href="{{ route('students.index') }}" class="inline-flex items-center gap-1.5 rounded-lg bg-navy px-3 py-2 text-sm font-semibold text-gold-400 hover:bg-navy-600 transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" /></svg>
                             {{ __('All Students') }}
                         </a>
@@ -125,7 +125,7 @@
                         <div class="overflow-x-auto">
                             <table class="min-w-full">
                                 <thead>
-                                    <tr class="bg-ink rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-accent-300">
+                                    <tr class="bg-navy rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-400">
                                         <th class="px-3 py-3">#</th>
                                         <th class="px-3 py-3">
                                             <span class="inline-flex items-center gap-1.5">
@@ -165,7 +165,7 @@
                                             <td class="px-3 py-3 text-sm align-top text-gray-500">{{ $students->firstItem() + $loop->index }}</td>
                                             <td class="px-3 py-3 text-sm align-top">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300 text-xs font-bold">{{ $initials }}</span>
+                                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                                     <div>
                                                         <p class="font-semibold text-gray-800">{{ $student->name }}</p>
                                                         <p class="text-xs font-mono text-gray-400">{{ $student->student_id_number }}</p>
@@ -193,7 +193,7 @@
                                                 }) }}</x-badge>
                                             </td>
                                             <td class="px-3 py-3 text-sm align-top text-right">
-                                                <a href="{{ route('students.show', $student) }}" class="text-sm font-semibold text-accent-600 hover:underline">{{ __('View') }}</a>
+                                                <a href="{{ route('students.show', $student) }}" class="text-sm font-semibold text-gold-600 hover:underline">{{ __('View') }}</a>
                                             </td>
                                         </tr>
                                     @empty
@@ -219,16 +219,16 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full">
                             <thead>
-                                <tr class="bg-accent-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-accent-800">
+                                <tr class="bg-gold-50/60 rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
                                     <th class="px-3 py-3">
                                         <span class="inline-flex items-center gap-1.5">
-                                            <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0" /></svg>
+                                            <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6.75-10.5a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-4.5 4.5a4.5 4.5 0 0 1 4.5 0" /></svg>
                                             {{ __('Student ID') }}
                                         </span>
                                     </th>
                                     <th class="px-3 py-3">
                                         <span class="inline-flex items-center gap-1.5">
-                                            <svg class="h-4 w-4 text-accent-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                                            <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                                             {{ __('Name') }}
                                         </span>
                                     </th>
@@ -251,7 +251,7 @@
                                         <td class="px-3 py-3 text-xs font-mono align-top text-gray-500">{{ $student->student_id_number }}</td>
                                         <td class="px-3 py-3 text-sm align-top">
                                             <div class="flex items-center gap-2">
-                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-accent-300 text-xs font-bold">{{ $initials }}</span>
+                                                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                                 <div>
                                                     <span class="font-semibold text-gray-800">{{ $student->name }}</span>
                                                     @if ($student->isCorporateSponsored())
@@ -286,7 +286,7 @@
                                         </td>
                                         <td class="px-3 py-3 text-sm align-top text-right">
                                             <div class="relative inline-block text-left" x-data="{ open: false }">
-                                                <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-accent-100 hover:text-accent-600 transition">
+                                                <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gold-100 hover:text-gold-600 transition">
                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75c.621 0 1.125-.504 1.125-1.125S12.621 4.5 12 4.5s-1.125.504-1.125 1.125S11.379 6.75 12 6.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 10.5 12 10.5s-1.125.504-1.125 1.125S11.379 12.75 12 12.75Zm0 6c.621 0 1.125-.504 1.125-1.125S12.621 16.5 12 16.5s-1.125.504-1.125 1.125S11.379 18.75 12 18.75Z" /></svg>
                                                 </button>
                                                 <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
