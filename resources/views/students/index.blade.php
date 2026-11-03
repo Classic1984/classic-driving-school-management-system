@@ -127,7 +127,7 @@
                                 <thead>
                                     <tr class="bg-navy rounded-xl text-left text-xs font-semibold uppercase tracking-wider text-gold-400">
                                         <th class="px-3 py-3">#</th>
-                                        <th class="px-3 py-3">
+                                        <th class="px-3 py-3 sticky left-0 z-10 bg-navy">
                                             <span class="inline-flex items-center gap-1.5">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                                                 {{ __('Student') }}
@@ -163,7 +163,7 @@
                                         @endphp
                                         <tr class="border-l-4 {{ $serviceAccent['border'] }}">
                                             <td class="px-3 py-3 text-sm align-top text-gray-500">{{ $students->firstItem() + $loop->index }}</td>
-                                            <td class="px-3 py-3 text-sm align-top">
+                                            <td class="px-3 py-3 text-sm align-top sticky left-0 z-10 bg-white">
                                                 <div class="flex items-center gap-2">
                                                     <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                                     <div>
@@ -226,7 +226,7 @@
                                             {{ __('Student ID') }}
                                         </span>
                                     </th>
-                                    <th class="px-3 py-3">
+                                    <th class="px-3 py-3 sticky left-0 z-10 bg-gold-50">
                                         <span class="inline-flex items-center gap-1.5">
                                             <svg class="h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
                                             {{ __('Name') }}
@@ -249,7 +249,7 @@
                                     @endphp
                                     <tr class="border-l-4 {{ $accent['border'] }}">
                                         <td class="px-3 py-3 text-xs font-mono align-top text-gray-500">{{ $student->student_id_number }}</td>
-                                        <td class="px-3 py-3 text-sm align-top">
+                                        <td class="px-3 py-3 text-sm align-top sticky left-0 z-10 bg-white">
                                             <div class="flex items-center gap-2">
                                                 <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                                 <div>
