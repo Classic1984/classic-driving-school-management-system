@@ -23,20 +23,20 @@
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
-                <div class="relative overflow-hidden bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 p-6 sm:p-8">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-blue-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                <div class="relative overflow-hidden bg-navy p-6 sm:p-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
 
                     <div class="relative flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-500/15 text-blue-300 ring-1 ring-blue-400/30">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
                                 <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             </span>
                             <div>
                                 <h3 class="text-xl font-bold text-white">{{ __('Student Training Progress') }}</h3>
-                                <p class="text-sm text-blue-200">{{ __('Every active enrollment and how far along it is') }}</p>
+                                <p class="text-sm text-gray-400">{{ __('Every active enrollment and how far along it is') }}</p>
                             </div>
                         </div>
-                        <span class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-bold text-white">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-gold-500 px-4 py-2 text-sm font-bold text-navy">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
                             {{ $enrollments->total() }} {{ __('Enrollments') }}
                         </span>
@@ -46,7 +46,7 @@
                 <div class="p-6 sm:p-8">
                     <div class="overflow-x-auto">
                         <div class="w-full min-w-[1400px]">
-                            <div class="grid {{ $gridCols }} gap-4 rounded-t-lg bg-blue-950 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-blue-200">
+                            <div class="grid {{ $gridCols }} gap-4 rounded-t-lg bg-navy px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-gold-400">
                                 <span>#</span>
                                 <span>{{ __('Student') }}</span>
                                 <span>{{ __('Student ID') }}</span>
