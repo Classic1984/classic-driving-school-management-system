@@ -1,23 +1,31 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="border-l-2 border-gold-500 pl-3">
-                <h2 class="font-extrabold text-2xl leading-tight">
-                    <span class="text-gold-600">Classic</span> <span class="text-navy-900">Driving School</span> <span class="text-navy-400">&amp; Son Nigeria Limited</span>
-                </h2>
-                <p class="text-sm font-semibold">
-                    <span class="text-green-600">{{ __('Safety.') }}</span>
-                    <span class="text-blue-600">{{ __('Skill.') }}</span>
-                    <span class="text-gold-600">{{ __('Confidence.') }}</span>
-                </p>
+        <div>
+            <div class="-mt-6 mb-5 sm:-mx-6 lg:-mx-8 print:hidden" aria-hidden="true">
+                <svg viewBox="0 0 1440 90" preserveAspectRatio="none" class="block w-full h-12 sm:h-14">
+                    <path fill="#0B1E3D" d="M0,0 L1440,0 L1440,45 C1200,80 960,20 720,50 C480,80 240,15 0,55 Z" />
+                    <path fill="#C9A66B" d="M0,53 C240,13 480,78 720,48 C960,18 1200,78 1440,43 L1440,55 C1200,90 960,30 720,58 C480,86 240,21 0,61 Z" />
+                </svg>
             </div>
-            <div class="flex items-center gap-3 rounded-xl bg-gold-50 ring-1 ring-gold-200 px-4 py-2">
-                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy text-gold-300">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
-                </span>
-                <div>
-                    <p class="text-sm font-bold text-navy-900 leading-none">{{ __('CDSMS') }}</p>
-                    <p class="mt-0.5 text-xs text-gray-500">{{ __('Executive Edition') }}</p>
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="border-l-2 border-gold-500 pl-3">
+                    <h2 class="font-extrabold text-2xl leading-tight">
+                        <span class="text-gold-600">Classic</span> <span class="text-navy-900">Driving School</span> <span class="text-navy-400">&amp; Son Nigeria Limited</span>
+                    </h2>
+                    <p class="text-sm font-semibold">
+                        <span class="text-green-600">{{ __('Safety.') }}</span>
+                        <span class="text-blue-600">{{ __('Skill.') }}</span>
+                        <span class="text-gold-600">{{ __('Confidence.') }}</span>
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-gold-300 to-gold-500 px-5 py-3 shadow-sm">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-navy text-gold-300 shadow-inner">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
+                    </span>
+                    <div>
+                        <p class="text-base font-extrabold text-navy-900 leading-none">{{ __('CDSMS') }}</p>
+                        <p class="mt-1 text-xs font-semibold text-navy-800/80">{{ __('Executive Edition') }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,24 +114,25 @@
             @endif
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
-                <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-100 text-gold-700">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $greetingIcon }}" /></svg>
-                        </span>
-                        <div>
-                            <h1 class="text-2xl font-bold text-navy-900">{{ $greeting }}, <span class="text-gold-700">{{ $firstName }}</span> 👋</h1>
-                            <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
-                                <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                                {{ now()->format('l, M j, Y') }}
-                            </p>
-                        </div>
+                <div class="flex items-center gap-3">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-100 text-gold-700">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $greetingIcon }}" /></svg>
+                    </span>
+                    <div>
+                        <h1 class="text-2xl font-bold text-navy-900">{{ $greeting }}, <span class="text-gold-700">{{ $firstName }}</span> 👋</h1>
+                        <p class="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                            {{ now()->format('l, M j, Y') }}
+                        </p>
                     </div>
-                    <p class="text-right text-sm italic text-gray-400 max-w-xs">
-                        "{{ __('Safe Drivers. Better Roads. A Brighter Tomorrow.') }}"<br>
-                        <span class="text-xs not-italic">{{ __('When you say Classic, you say it all.') }}</span>
-                    </p>
                 </div>
+                <p class="mt-5 text-center text-sm sm:text-base italic text-navy-800">
+                    &ldquo;{{ __('Safe Drivers. Better Roads. A Brighter Tomorrow.') }}&rdquo;
+                </p>
+                <div class="mt-3 flex justify-center" aria-hidden="true">
+                    <svg width="140" height="12" viewBox="0 0 140 12" fill="none"><path d="M2 8 C 30 -2, 50 14, 70 6 C 90 -2, 110 14, 138 6" stroke="#C9A66B" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <p class="mt-2 text-center text-xs text-gray-400">{{ __('When you say Classic, you say it all.') }}</p>
             </div>
 
             @php
@@ -2090,6 +2099,16 @@
                     </div>
                 </div>
             @endif
+
+            <div class="mt-10 sm:-mx-6 lg:-mx-8 print:hidden" aria-hidden="true">
+                <svg viewBox="0 0 1440 90" preserveAspectRatio="none" class="block w-full h-14 sm:h-16">
+                    <path fill="#C9A66B" d="M0,30 C240,70 480,5 720,35 C960,65 1200,10 1440,40 L1440,90 L0,90 Z" />
+                    <path fill="#0B1E3D" d="M0,40 C240,80 480,15 720,45 C960,75 1200,20 1440,50 L1440,90 L0,90 Z" />
+                </svg>
+                <div class="bg-navy py-4 text-center">
+                    <p class="text-sm italic text-gold-200">{{ __('Driving Excellence. Managing Progress.') }}</p>
+                </div>
+            </div>
 
         </div>
     </div>
