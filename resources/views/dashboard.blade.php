@@ -58,20 +58,25 @@
 
                 // Shared light-tile palette for every white card on this
                 // page that carries a semantic 'color' key - the hero
-                // cards and the At a Glance group panels both read from
-                // this so a given color key (e.g. 'purple') always means
-                // the same tile bg/ring/chip/text combination.
+                // cards, the At a Glance group panels, and the dark-navy
+                // status panels further down (Today's Attendance,
+                // Outstanding Payments, New Students, Training Statistics,
+                // Total Payments, Service Processing) all read from this,
+                // so a given color key (e.g. 'purple') always means the
+                // same tile bg/ring/chip/text/edge combination.
                 $tileColorClasses = [
-                    'blue' => ['bg' => 'bg-blue-50', 'ring' => 'ring-blue-100', 'chip' => 'bg-blue-100 text-blue-700', 'text' => 'text-blue-600'],
-                    'green' => ['bg' => 'bg-green-50', 'ring' => 'ring-green-100', 'chip' => 'bg-green-100 text-green-700', 'text' => 'text-green-600'],
-                    'teal' => ['bg' => 'bg-teal-50', 'ring' => 'ring-teal-100', 'chip' => 'bg-teal-100 text-teal-700', 'text' => 'text-teal-600'],
-                    'purple' => ['bg' => 'bg-purple-50', 'ring' => 'ring-purple-100', 'chip' => 'bg-purple-100 text-purple-700', 'text' => 'text-purple-600'],
-                    'red' => ['bg' => 'bg-red-50', 'ring' => 'ring-red-100', 'chip' => 'bg-red-100 text-red-700', 'text' => 'text-red-600'],
-                    'pink' => ['bg' => 'bg-pink-50', 'ring' => 'ring-pink-100', 'chip' => 'bg-pink-100 text-pink-700', 'text' => 'text-pink-600'],
-                    'amber' => ['bg' => 'bg-amber-50', 'ring' => 'ring-amber-100', 'chip' => 'bg-amber-100 text-amber-700', 'text' => 'text-amber-600'],
-                    'orange' => ['bg' => 'bg-orange-50', 'ring' => 'ring-orange-100', 'chip' => 'bg-orange-100 text-orange-700', 'text' => 'text-orange-600'],
-                    'indigo' => ['bg' => 'bg-indigo-50', 'ring' => 'ring-indigo-100', 'chip' => 'bg-indigo-100 text-indigo-700', 'text' => 'text-indigo-600'],
-                    'gray' => ['bg' => 'bg-gray-50', 'ring' => 'ring-gray-200', 'chip' => 'bg-gray-100 text-gray-600', 'text' => 'text-gray-500'],
+                    'blue' => ['bg' => 'bg-blue-50', 'ring' => 'ring-blue-100', 'chip' => 'bg-blue-100 text-blue-700', 'text' => 'text-blue-600', 'edge' => 'border-blue-500'],
+                    'green' => ['bg' => 'bg-green-50', 'ring' => 'ring-green-100', 'chip' => 'bg-green-100 text-green-700', 'text' => 'text-green-600', 'edge' => 'border-green-500'],
+                    'teal' => ['bg' => 'bg-teal-50', 'ring' => 'ring-teal-100', 'chip' => 'bg-teal-100 text-teal-700', 'text' => 'text-teal-600', 'edge' => 'border-teal-500'],
+                    'purple' => ['bg' => 'bg-purple-50', 'ring' => 'ring-purple-100', 'chip' => 'bg-purple-100 text-purple-700', 'text' => 'text-purple-600', 'edge' => 'border-purple-500'],
+                    'violet' => ['bg' => 'bg-violet-50', 'ring' => 'ring-violet-100', 'chip' => 'bg-violet-100 text-violet-700', 'text' => 'text-violet-600', 'edge' => 'border-violet-500'],
+                    'red' => ['bg' => 'bg-red-50', 'ring' => 'ring-red-100', 'chip' => 'bg-red-100 text-red-700', 'text' => 'text-red-600', 'edge' => 'border-red-500'],
+                    'pink' => ['bg' => 'bg-pink-50', 'ring' => 'ring-pink-100', 'chip' => 'bg-pink-100 text-pink-700', 'text' => 'text-pink-600', 'edge' => 'border-pink-500'],
+                    'amber' => ['bg' => 'bg-amber-50', 'ring' => 'ring-amber-100', 'chip' => 'bg-amber-100 text-amber-700', 'text' => 'text-amber-600', 'edge' => 'border-amber-500'],
+                    'orange' => ['bg' => 'bg-orange-50', 'ring' => 'ring-orange-100', 'chip' => 'bg-orange-100 text-orange-700', 'text' => 'text-orange-600', 'edge' => 'border-orange-500'],
+                    'indigo' => ['bg' => 'bg-indigo-50', 'ring' => 'ring-indigo-100', 'chip' => 'bg-indigo-100 text-indigo-700', 'text' => 'text-indigo-600', 'edge' => 'border-indigo-500'],
+                    'emerald' => ['bg' => 'bg-emerald-50', 'ring' => 'ring-emerald-100', 'chip' => 'bg-emerald-100 text-emerald-700', 'text' => 'text-emerald-600', 'edge' => 'border-emerald-500'],
+                    'gray' => ['bg' => 'bg-gray-50', 'ring' => 'ring-gray-200', 'chip' => 'bg-gray-100 text-gray-600', 'text' => 'text-gray-500', 'edge' => 'border-gray-400'],
                 ];
                 $tileColor = fn (?string $key) => $tileColorClasses[$key] ?? $tileColorClasses['gray'];
 
@@ -789,48 +794,49 @@
                 $usersIconPath = 'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z';
             @endphp
 
-            <div class="bg-navy text-white rounded-xl p-8 mt-6">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mt-6">
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="flex items-center gap-3 border-l-2 border-gold-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-black">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-bold">{{ __("Today's Attendance") }}</h3>
-                            <p class="text-sm font-medium text-gray-200">{{ __('See how many students are present and absent today.') }}</p>
+                            <h3 class="text-2xl font-bold text-navy-900">{{ __("Today's Attendance") }}</h3>
+                            <p class="text-sm font-medium text-gray-500">{{ __('See how many students are present and absent today.') }}</p>
                         </div>
                     </div>
-                    <span class="inline-flex items-center gap-2 rounded-full bg-navy-800 ring-1 ring-gold-400/40 px-4 py-2 text-sm font-semibold text-white">
-                        <svg class="h-4 w-4 text-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                    <span class="inline-flex items-center gap-2 rounded-full bg-gold-50 ring-1 ring-gold-200 px-4 py-2 text-sm font-semibold text-navy-900">
+                        <svg class="h-4 w-4 text-gold-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                         {{ now()->format('l, M j, Y') }}
                     </span>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left bg-navy-800 rounded-lg p-4 ring-1 ring-emerald-400/50 transition hover:ring-emerald-400/80">
+                    @php $presentColor = $tileColor('emerald'); $absentColor = $tileColor('red'); @endphp
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'present-today-modal')" class="flex flex-col text-left {{ $presentColor['bg'] }} border-l-4 {{ $presentColor['edge'] }} rounded-lg p-4 ring-1 {{ $presentColor['ring'] }} transition hover:shadow-md">
                         <div class="flex items-center gap-2.5">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $presentColor['chip'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Present') }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __('Present') }}</p>
                         </div>
 
-                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-emerald-400">{{ $presentToday->count() }}</p>
+                        <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $presentColor['text'] }}">{{ $presentToday->count() }}</p>
 
-                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
+                        <p class="mt-1 text-xs font-medium text-gray-500">{{ __('Click to view names') }}</p>
                     </button>
 
-                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left bg-navy-800 rounded-lg p-4 ring-1 ring-red-400/50 transition hover:ring-red-400/80">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'absent-today-modal')" class="flex flex-col text-left {{ $absentColor['bg'] }} border-l-4 {{ $absentColor['edge'] }} rounded-lg p-4 ring-1 {{ $absentColor['ring'] }} transition hover:shadow-md">
                         <div class="flex items-center gap-2.5">
-                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-400">
+                            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $absentColor['chip'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersIconPath }}" /></svg>
                             </span>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __('Absent') }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __('Absent') }}</p>
                         </div>
 
-                        <p class="text-2xl font-bold mt-3 whitespace-nowrap text-red-400">{{ $absentToday->count() }}</p>
+                        <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $absentColor['text'] }}">{{ $absentToday->count() }}</p>
 
-                        <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Click to view names') }}</p>
+                        <p class="mt-1 text-xs font-medium text-gray-500">{{ __('Click to view names') }}</p>
                     </button>
                 </div>
             </div>
@@ -899,28 +905,28 @@
                     $walletIconPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z';
                     $arrowRightIconPath = 'M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3';
                 @endphp
-                <div id="outstanding-payments" class="relative overflow-hidden rounded-xl bg-navy p-6 sm:p-8 mt-6">
-                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
+                <div id="outstanding-payments" class="relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200 p-6 sm:p-8 mt-6">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-100" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
 
                     <div class="relative flex items-center gap-4">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-100 text-gold-700 ring-1 ring-gold-200">
                             <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-xl font-bold text-white">{{ __('Outstanding Payments') }}</h3>
-                            <p class="text-sm text-gray-400">{{ __('Students with upcoming payments due.') }}</p>
+                            <h3 class="text-xl font-bold text-navy-900">{{ __('Outstanding Payments') }}</h3>
+                            <p class="text-sm text-gray-500">{{ __('Students with upcoming payments due.') }}</p>
                         </div>
                     </div>
 
                     <div class="relative grid grid-cols-1 {{ $showUpcomingPaymentsCard && $lockedEnrollments->isNotEmpty() ? 'sm:grid-cols-2' : '' }} gap-4 mt-6">
                         @if ($showUpcomingPaymentsCard)
-                            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gold-500/15 via-navy-800 to-navy-800 ring-1 ring-gold-400/30 p-6">
-                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-gold-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
+                            <div class="relative overflow-hidden rounded-2xl bg-gold-50 border-l-4 border-gold-500 ring-1 ring-gold-100 p-6">
+                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-gold-200/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $walletIconPath }}" /></svg>
                                 <div class="relative">
-                                    <p class="text-xs font-bold uppercase tracking-widest text-gold-400">{{ __('Upcoming') }}</p>
-                                    <p class="mt-2 text-4xl font-extrabold text-gold-400">{{ $upcomingPayments->count() }}</p>
-                                    <p class="mt-1 text-sm text-gray-300">{{ trans_choice('{1} student with payment due soon|[2,*] :count students with payment due soon', $upcomingPayments->count(), ['count' => $upcomingPayments->count()]) }}</p>
-                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/5 ring-1 ring-gold-400/40 px-4 py-2 text-sm font-semibold text-gold-400 hover:bg-white/10 transition">
+                                    <p class="text-xs font-bold uppercase tracking-widest text-gold-700">{{ __('Upcoming') }}</p>
+                                    <p class="mt-2 text-4xl font-extrabold text-gold-700">{{ $upcomingPayments->count() }}</p>
+                                    <p class="mt-1 text-sm text-gray-600">{{ trans_choice('{1} student with payment due soon|[2,*] :count students with payment due soon', $upcomingPayments->count(), ['count' => $upcomingPayments->count()]) }}</p>
+                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'upcoming-payments-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white ring-1 ring-gold-300 px-4 py-2 text-sm font-semibold text-gold-800 hover:bg-gold-100 transition">
                                         {{ __('Click to view names') }}
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowRightIconPath }}" /></svg>
                                     </button>
@@ -929,13 +935,13 @@
                         @endif
 
                         @if ($lockedEnrollments->isNotEmpty())
-                            <div id="locked-students" class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500/15 via-navy-800 to-navy-800 ring-1 ring-red-400/30 p-6">
-                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-red-400/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                            <div id="locked-students" class="relative overflow-hidden rounded-2xl bg-red-50 border-l-4 border-red-500 ring-1 ring-red-100 p-6">
+                                <svg class="pointer-events-none absolute -right-6 -bottom-6 h-32 w-32 text-red-200/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
                                 <div class="relative">
-                                    <p class="text-xs font-bold uppercase tracking-widest text-red-400">{{ __('Locked') }}</p>
-                                    <p class="mt-2 text-4xl font-extrabold text-red-400">{{ $lockedEnrollments->count() }}</p>
-                                    <p class="mt-1 text-sm text-gray-300">{{ trans_choice('{1} student currently locked out|[2,*] :count students currently locked out', $lockedEnrollments->count(), ['count' => $lockedEnrollments->count()]) }}</p>
-                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/5 ring-1 ring-red-400/40 px-4 py-2 text-sm font-semibold text-red-400 hover:bg-white/10 transition">
+                                    <p class="text-xs font-bold uppercase tracking-widest text-red-700">{{ __('Locked') }}</p>
+                                    <p class="mt-2 text-4xl font-extrabold text-red-700">{{ $lockedEnrollments->count() }}</p>
+                                    <p class="mt-1 text-sm text-gray-600">{{ trans_choice('{1} student currently locked out|[2,*] :count students currently locked out', $lockedEnrollments->count(), ['count' => $lockedEnrollments->count()]) }}</p>
+                                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'locked-students-modal')" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white ring-1 ring-red-300 px-4 py-2 text-sm font-semibold text-red-800 hover:bg-red-100 transition">
                                         {{ __('Click to view names') }}
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowRightIconPath }}" /></svg>
                                     </button>
@@ -1307,23 +1313,18 @@
             @endphp
 
             @php
-                $newStudentsDarkAccent = [
-                    'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
-                    'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                    'month' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400'],
-                    'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
-                ];
+                $newStudentsColorKeys = ['today' => 'violet', 'week' => 'green', 'month' => 'amber', 'year' => 'blue'];
                 $newStudentIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
             @endphp
 
-            <div class="bg-navy text-white rounded-xl p-8 mt-8">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mt-8">
                 <div class="flex items-center gap-3 border-l-2 border-gold-500 pl-4">
                     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-black">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
                     </span>
                     <div>
-                        <h3 class="text-2xl font-bold">{{ __('New Students') }}</h3>
-                        <p class="text-sm font-medium text-gray-200">{{ __('Track new student registrations') }}</p>
+                        <h3 class="text-2xl font-bold text-navy-900">{{ __('New Students') }}</h3>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Track new student registrations') }}</p>
                     </div>
                 </div>
 
@@ -1331,18 +1332,18 @@
                     {{-- "This Month" is skipped here - it already has its own row in the
                          At a Glance Students tile, linking to the same report period. --}}
                     @foreach (['today' => 'Today', 'week' => 'This Week', 'year' => 'This Year'] as $period => $periodLabel)
-                        @php $accent = $newStudentsDarkAccent[$period]; @endphp
-                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left bg-navy-800 rounded-lg p-4 ring-1 ring-gold-400/40 transition hover:ring-gold-400/70">
+                        @php $accent = $tileColor($newStudentsColorKeys[$period]); @endphp
+                        <a href="{{ route('student-registration-report.index', ['period' => $period]) }}" class="flex flex-col text-left {{ $accent['bg'] }} border-l-4 {{ $accent['edge'] }} rounded-lg p-4 ring-1 {{ $accent['ring'] }} transition hover:shadow-md">
                             <div class="flex items-center gap-2.5">
-                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['chip'] }}">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $newStudentIconPath }}" /></svg>
                                 </span>
-                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __($periodLabel) }}</p>
                             </div>
 
-                            <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($newStudentTotals[$period]) }}</p>
+                            <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['text'] }}">{{ number_format($newStudentTotals[$period]) }}</p>
 
-                            <p class="mt-1 text-xs font-medium text-gray-300">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
+                            <p class="mt-1 text-xs font-medium text-gray-500">{{ __('New students registered :period', ['period' => strtolower($periodLabel)]) }}</p>
                         </a>
                     @endforeach
                 </div>
@@ -1351,12 +1352,7 @@
             @php
                 $calendarIconPath = 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5';
 
-                $periodDarkAccent = [
-                    'today' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
-                    'week' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                    'month' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400'],
-                    'year' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400'],
-                ];
+                $periodColorKeys = ['today' => 'violet', 'week' => 'green', 'month' => 'amber', 'year' => 'blue'];
 
                 $allPeriodLabels = ['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'];
 
@@ -1374,31 +1370,31 @@
             @endphp
 
             @foreach ($periodTables as $table)
-                <div class="bg-navy text-white rounded-xl p-8 mt-6">
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mt-6">
                     <div class="flex items-center gap-3 border-l-2 border-gold-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-black">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['headerIcon'] }}" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-bold">{{ __($table['title']) }}</h3>
-                            <p class="text-sm font-medium text-gray-200">{{ __($table['subtitle']) }}</p>
+                            <h3 class="text-2xl font-bold text-navy-900">{{ __($table['title']) }}</h3>
+                            <p class="text-sm font-medium text-gray-500">{{ __($table['subtitle']) }}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                         @foreach (array_intersect_key($allPeriodLabels, array_flip($table['periods'])) as $period => $periodLabel)
-                            @php $accent = $periodDarkAccent[$period]; @endphp
-                            <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left bg-navy-800 rounded-lg p-4 ring-1 ring-gold-400/40 transition hover:ring-gold-400/70">
+                            @php $accent = $tileColor($periodColorKeys[$period]); @endphp
+                            <a href="{{ route($table['route'], ['period' => $period]) }}" class="flex flex-col text-left {{ $accent['bg'] }} border-l-4 {{ $accent['edge'] }} rounded-lg p-4 ring-1 {{ $accent['ring'] }} transition hover:shadow-md">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['chip'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $table['rowIcon'] }}" /></svg>
                                     </span>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __($periodLabel) }}</p>
                                 </div>
 
-                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ number_format($table['stats'][$period]) }}</p>
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['text'] }}">{{ number_format($table['stats'][$period]) }}</p>
 
-                                <p class="mt-1 text-xs font-medium text-gray-300">{{ $table['describe']($periodLabel) }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-500">{{ $table['describe']($periodLabel) }}</p>
                             </a>
                         @endforeach
                     </div>
@@ -1407,11 +1403,7 @@
 
             @if ($paymentTotals)
                 @php
-                    $paymentDarkAccent = [
-                        'week' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400'],
-                        'month' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                        'all_time' => ['icon' => 'bg-violet-500/10 text-violet-400', 'value' => 'text-violet-400'],
-                    ];
+                    $paymentColorKeys = ['week' => 'amber', 'month' => 'green', 'all_time' => 'violet'];
                     $paymentPeriodIcon = [
                         'week' => $periodIllustration['month'],
                         'month' => $periodIllustration['month'],
@@ -1419,58 +1411,58 @@
                     ];
                 @endphp
 
-                <div class="bg-navy text-white rounded-xl p-8 mt-8">
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mt-8">
                     <div class="flex items-center gap-3 border-l-2 border-gold-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-black">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-bold">{{ __('Total Payments') }}</h3>
-                            <p class="text-sm font-medium text-gray-200">{{ __('Overview of all payments received') }}</p>
+                            <h3 class="text-2xl font-bold text-navy-900">{{ __('Total Payments') }}</h3>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Overview of all payments received') }}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                         @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $period => $periodLabel)
-                            @php $accent = $paymentDarkAccent[$period]; @endphp
-                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left bg-navy-800 rounded-lg p-4 ring-1 ring-gold-400/40 transition hover:ring-gold-400/70">
+                            @php $accent = $tileColor($paymentColorKeys[$period]); @endphp
+                            <a href="{{ route('payments.index', ['period' => $period]) }}" class="flex flex-col text-left {{ $accent['bg'] }} border-l-4 {{ $accent['edge'] }} rounded-lg p-4 ring-1 {{ $accent['ring'] }} transition hover:shadow-md">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['chip'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $paymentPeriodIcon[$period] }}" /></svg>
                                     </span>
                                     <div>
-                                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($periodLabel) }}</p>
+                                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __($periodLabel) }}</p>
                                         @if (isset($paymentPeriodRanges[$period]))
                                             <p class="text-[11px] font-medium text-gray-400">{{ $paymentPeriodRanges[$period] }}</p>
                                         @endif
                                     </div>
                                 </div>
 
-                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['text'] }}">₦{{ number_format($paymentTotals[$period], 2) }}</p>
 
-                                <p class="mt-1 text-xs font-medium text-gray-300">{{ __('Total payments received') }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-500">{{ __('Total payments received') }}</p>
                             </a>
                         @endforeach
                     </div>
 
-                    <div class="mt-6 rounded-xl bg-navy-800 ring-1 ring-gray-800 p-5">
-                        <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-700">
+                    <div class="mt-6 rounded-xl bg-gray-50 ring-1 ring-gray-200 p-5">
+                        <div class="flex flex-col sm:flex-row items-stretch gap-4 sm:gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
                             <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 sm:pr-6 hover:opacity-80 transition">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-400/10 text-gold-400">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-100 text-gold-700">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-sm font-bold uppercase tracking-wide text-gold-400">{{ __('Payments Summary') }}</p>
-                                    <p class="text-sm font-medium text-gray-200">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
+                                    <p class="text-sm font-bold uppercase tracking-wide text-gold-700">{{ __('Payments Summary') }}</p>
+                                    <p class="text-sm font-medium text-gray-600">{{ __('All amounts are in Nigerian Naira (₦) — view the full financial reports') }}</p>
                                 </div>
                             </a>
                             <button type="button" x-data x-on:click="$dispatch('open-modal', 'payment-security-modal')" class="flex items-center gap-3 pt-4 sm:pt-0 sm:pl-6 text-left hover:opacity-80 transition">
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-50 text-navy-800">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" /></svg>
                                 </span>
                                 <div>
-                                    <p class="text-sm font-bold text-white">{{ __('Secure & Verified') }}</p>
-                                    <p class="text-sm font-medium text-gray-200">{{ __('All transactions are secure and verified') }}</p>
+                                    <p class="text-sm font-bold text-navy-900">{{ __('Secure & Verified') }}</p>
+                                    <p class="text-sm font-medium text-gray-600">{{ __('All transactions are secure and verified') }}</p>
                                 </div>
                             </button>
                         </div>
@@ -1531,14 +1523,6 @@
                         ['key' => 'overdue', 'label' => 'Overdue', 'value' => $overdueCount, 'description' => 'Overdue services', 'color' => 'orange', 'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'],
                         ['key' => 'needs-attention', 'label' => 'Needs Attention', 'value' => $needsAttentionCount, 'description' => 'Due within 3 days', 'color' => 'red', 'icon' => 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'],
                     ];
-                    $serviceStatColors = [
-                        'amber' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400'],
-                        'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400'],
-                        'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400'],
-                        'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400'],
-                        'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
-                    ];
-
                     $serviceModalGroups = [
                         'total-services' => ['title' => 'Total Services', 'items' => $serviceProcessing],
                         'in-progress' => ['title' => 'In Progress', 'items' => $serviceProcessing],
@@ -1548,36 +1532,36 @@
                     ];
                 @endphp
 
-                <div class="bg-navy text-white rounded-xl p-8 mt-6">
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mt-6">
                     <div class="flex items-center gap-3 border-l-2 border-gold-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-black">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 4.5h6M9 4.5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 4.5M9 4.5H6.75A2.25 2.25 0 0 0 4.5 6.75v12A2.25 2.25 0 0 0 6.75 21h10.5a2.25 2.25 0 0 0 2.25-2.25v-12A2.25 2.25 0 0 0 17.25 4.5H15M9 12.75l2.25 2.25L15 10.5" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-bold">{{ __('Service Processing') }}</h3>
-                            <p class="text-sm font-medium text-gray-200">{{ __('Track and manage all ongoing services') }}</p>
+                            <h3 class="text-2xl font-bold text-navy-900">{{ __('Service Processing') }}</h3>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Track and manage all ongoing services') }}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
                         @foreach ($serviceStatCards as $card)
-                            @php $accent = $serviceStatColors[$card['color']]; @endphp
+                            @php $accent = $tileColor($card['color']); @endphp
                             <button
                                 type="button"
                                 x-data
                                 x-on:click="$dispatch('open-modal', '{{ $card['key'] }}-modal')"
-                                class="flex flex-col text-left bg-navy-800 rounded-lg p-4 ring-1 ring-gold-400/40 transition hover:ring-gold-400/70"
+                                class="flex flex-col text-left {{ $accent['bg'] }} border-l-4 {{ $accent['edge'] }} rounded-lg p-4 ring-1 {{ $accent['ring'] }} transition hover:shadow-md"
                             >
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['chip'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                                     </span>
-                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($card['label']) }}</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __($card['label']) }}</p>
                                 </div>
 
-                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['value'] }}">{{ $card['value'] }}</p>
+                                <p class="text-2xl font-bold mt-3 whitespace-nowrap {{ $accent['text'] }}">{{ $card['value'] }}</p>
 
-                                <p class="mt-1 text-xs font-medium text-gray-300">{{ __($card['description']) }}</p>
+                                <p class="mt-1 text-xs font-medium text-gray-500">{{ __($card['description']) }}</p>
                             </button>
                         @endforeach
                     </div>
