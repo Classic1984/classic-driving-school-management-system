@@ -56,6 +56,25 @@
                     'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400'],
                 ];
 
+                // Shared light-tile palette for every white card on this
+                // page that carries a semantic 'color' key - the hero
+                // cards and the At a Glance group panels both read from
+                // this so a given color key (e.g. 'purple') always means
+                // the same tile bg/ring/chip/text combination.
+                $tileColorClasses = [
+                    'blue' => ['bg' => 'bg-blue-50', 'ring' => 'ring-blue-100', 'chip' => 'bg-blue-100 text-blue-700', 'text' => 'text-blue-600'],
+                    'green' => ['bg' => 'bg-green-50', 'ring' => 'ring-green-100', 'chip' => 'bg-green-100 text-green-700', 'text' => 'text-green-600'],
+                    'teal' => ['bg' => 'bg-teal-50', 'ring' => 'ring-teal-100', 'chip' => 'bg-teal-100 text-teal-700', 'text' => 'text-teal-600'],
+                    'purple' => ['bg' => 'bg-purple-50', 'ring' => 'ring-purple-100', 'chip' => 'bg-purple-100 text-purple-700', 'text' => 'text-purple-600'],
+                    'red' => ['bg' => 'bg-red-50', 'ring' => 'ring-red-100', 'chip' => 'bg-red-100 text-red-700', 'text' => 'text-red-600'],
+                    'pink' => ['bg' => 'bg-pink-50', 'ring' => 'ring-pink-100', 'chip' => 'bg-pink-100 text-pink-700', 'text' => 'text-pink-600'],
+                    'amber' => ['bg' => 'bg-amber-50', 'ring' => 'ring-amber-100', 'chip' => 'bg-amber-100 text-amber-700', 'text' => 'text-amber-600'],
+                    'orange' => ['bg' => 'bg-orange-50', 'ring' => 'ring-orange-100', 'chip' => 'bg-orange-100 text-orange-700', 'text' => 'text-orange-600'],
+                    'indigo' => ['bg' => 'bg-indigo-50', 'ring' => 'ring-indigo-100', 'chip' => 'bg-indigo-100 text-indigo-700', 'text' => 'text-indigo-600'],
+                    'gray' => ['bg' => 'bg-gray-50', 'ring' => 'ring-gray-200', 'chip' => 'bg-gray-100 text-gray-600', 'text' => 'text-gray-500'],
+                ];
+                $tileColor = fn (?string $key) => $tileColorClasses[$key] ?? $tileColorClasses['gray'];
+
                 $kpiCards = [
                     [
                         'key' => 'active_students', 'label' => 'Active Students', 'color' => 'purple', 'currency' => false,
@@ -138,25 +157,25 @@
             @php
                 $heroCards = [
                     [
-                        'title' => 'Total Students', 'value' => number_format($stats['students']),
+                        'title' => 'Total Students', 'value' => number_format($stats['students']), 'color' => 'purple',
                         'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
                         'sub' => number_format($stats['students_in_program']).' '.__('In Program').' · '.number_format($stats['students_walkin_only']).' '.__('Walk-in'),
                         'href' => route('students.index'),
                     ],
                     [
-                        'title' => 'Training Today', 'value' => number_format($kpis['training_today']),
+                        'title' => 'Training Today', 'value' => number_format($kpis['training_today']), 'color' => 'blue',
                         'icon' => 'M4.26 10.147a60.436 60.436 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.57 50.57 0 0 0-2.658-.813A59.905 59.905 0 0 1 12 3.493a59.902 59.902 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
                         'sub' => number_format($kpis['training_today']).' '.__('Students').' · '.number_format($todaysOperations['vehicles_in_use']).' '.__('Vehicles'),
                         'href' => route('training-report.index', ['period' => 'today']),
                     ],
                     [
-                        'title' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2),
+                        'title' => 'Paid Today', 'value' => '₦'.number_format($stats['payments'], 2), 'color' => 'green',
                         'icon' => 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z',
                         'sub' => __('Pending').': ₦'.number_format($kpis['pending_payments'], 2),
                         'modal' => 'todays-payments-modal',
                     ],
                     [
-                        'title' => 'Certificates Issued', 'value' => number_format($stats['certificates']),
+                        'title' => 'Certificates Issued', 'value' => number_format($stats['certificates']), 'color' => 'indigo',
                         'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
                         'sub' => __('Due').': '.number_format($kpis['certificates_due']).' · '.__("Learner's Permit").': '.number_format(max(0, $learnersPermitStats['charged'] - $learnersPermitStats['completed'])),
                         'href' => route('certificates.index'),
@@ -167,13 +186,13 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 @foreach ($heroCards as $card)
-                    @php $heroTag = ! empty($card['modal']) ? 'button' : 'a'; @endphp
+                    @php $heroTag = ! empty($card['modal']) ? 'button' : 'a'; $heroColor = $tileColor($card['color'] ?? null); @endphp
                     <{{ $heroTag }}
                         @if ($heroTag === 'a') href="{{ $card['href'] }}" @else type="button" x-data x-on:click="$dispatch('open-modal', '{{ $card['modal'] }}')" @endif
-                        class="relative overflow-hidden rounded-xl bg-white ring-1 ring-line p-5 text-left shadow-sm transition hover:shadow-md hover:ring-gold-200"
+                        class="relative overflow-hidden rounded-xl {{ $heroColor['bg'] }} ring-1 {{ $heroColor['ring'] }} p-5 text-left shadow-sm transition hover:shadow-md hover:ring-gold-300"
                     >
                         <div class="flex items-start justify-between">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-navy-50 text-navy-800">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $heroColor['chip'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}" /></svg>
                             </span>
                             <svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
@@ -271,23 +290,10 @@
 
                     // Every row/group above already carries a semantic
                     // 'color' key (red for at-risk, green for in-program,
-                    // amber for pending, etc.) that the markup never
-                    // actually read - this maps it to real classes so the
-                    // icon/value/chip tie back to what the row means
-                    // instead of a flat gold-and-navy look throughout.
-                    $glanceColorClasses = [
-                        'blue' => ['text' => 'text-blue-600', 'chip' => 'bg-blue-50 text-blue-700'],
-                        'green' => ['text' => 'text-green-600', 'chip' => 'bg-green-50 text-green-700'],
-                        'teal' => ['text' => 'text-teal-600', 'chip' => 'bg-teal-50 text-teal-700'],
-                        'purple' => ['text' => 'text-purple-600', 'chip' => 'bg-purple-50 text-purple-700'],
-                        'red' => ['text' => 'text-red-600', 'chip' => 'bg-red-50 text-red-700'],
-                        'pink' => ['text' => 'text-pink-600', 'chip' => 'bg-pink-50 text-pink-700'],
-                        'amber' => ['text' => 'text-amber-600', 'chip' => 'bg-amber-50 text-amber-700'],
-                        'orange' => ['text' => 'text-orange-600', 'chip' => 'bg-orange-50 text-orange-700'],
-                        'indigo' => ['text' => 'text-indigo-600', 'chip' => 'bg-indigo-50 text-indigo-700'],
-                        'gray' => ['text' => 'text-gray-500', 'chip' => 'bg-gray-100 text-gray-600'],
-                    ];
-                    $glanceColor = fn (?string $key) => $glanceColorClasses[$key] ?? $glanceColorClasses['gray'];
+                    // amber for pending, etc.) - reuses the same tile
+                    // palette as the hero cards above so a color key means
+                    // the same thing everywhere on this page.
+                    $glanceColor = $tileColor;
 
                     // No secretary-facing "all payments" listing exists (that
                     // page is Director-only), so the Finance panel gets no
@@ -320,7 +326,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     @foreach ($summaryGroups as $group)
                         @php $groupColor = $glanceColor($group['color'] ?? null); @endphp
-                        <div class="rounded-xl bg-white ring-1 ring-line p-5">
+                        <div class="rounded-xl {{ $groupColor['bg'] }} ring-1 {{ $groupColor['ring'] }} p-5">
                             <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-line">
                                 <div class="flex items-center gap-2.5">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $groupColor['chip'] }}">
@@ -344,7 +350,7 @@
                                     <{{ $tag }}
                                         @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                                         @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                                        class="group flex items-start justify-between gap-3 py-3 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-gold-50 rounded-lg -mx-2 px-2' : '' }}"
+                                        class="group flex items-start justify-between gap-3 py-3 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-white/70 rounded-lg -mx-2 px-2' : '' }}"
                                     >
                                         <span class="flex flex-1 items-start gap-2 min-w-0 text-base text-gray-600">
                                             <svg class="h-5 w-5 shrink-0 mt-0.5 {{ $rowColor['text'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
