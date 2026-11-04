@@ -598,16 +598,21 @@
                     'locked_students' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
                 ];
 
+                // Light-card palette (bg tint / left-edge border / ring / icon
+                // chip / value text) matching the Service Processing cards
+                // further down the page - this section used to be a dark
+                // navy panel with light text, now it's styled the same way
+                // as the rest of the dashboard's status cards.
                 $operationColors = [
-                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400', 'ring' => 'ring-indigo-400/60'],
-                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400', 'ring' => 'ring-blue-400/60'],
-                    'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400', 'ring' => 'ring-green-400/60'],
-                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400', 'ring' => 'ring-orange-400/60'],
-                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400', 'ring' => 'ring-sky-400/60'],
-                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400', 'ring' => 'ring-purple-400/60'],
-                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60', 'dot' => 'bg-red-400'],
-                    'amber' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400', 'ring' => 'ring-gold-400/60', 'dot' => 'bg-gold-400'],
-                    'emerald' => ['icon' => 'bg-emerald-500/10 text-emerald-400', 'value' => 'text-emerald-400', 'ring' => 'ring-emerald-400/70'],
+                    'indigo' => ['bg' => 'bg-indigo-50', 'edge' => 'border-indigo-500', 'ring' => 'ring-indigo-100', 'icon' => 'bg-indigo-100 text-indigo-700', 'value' => 'text-indigo-700'],
+                    'blue' => ['bg' => 'bg-blue-50', 'edge' => 'border-blue-500', 'ring' => 'ring-blue-100', 'icon' => 'bg-blue-100 text-blue-700', 'value' => 'text-blue-700'],
+                    'green' => ['bg' => 'bg-green-50', 'edge' => 'border-green-500', 'ring' => 'ring-green-100', 'icon' => 'bg-green-100 text-green-700', 'value' => 'text-green-700'],
+                    'orange' => ['bg' => 'bg-orange-50', 'edge' => 'border-orange-500', 'ring' => 'ring-orange-100', 'icon' => 'bg-orange-100 text-orange-700', 'value' => 'text-orange-700'],
+                    'sky' => ['bg' => 'bg-sky-50', 'edge' => 'border-sky-500', 'ring' => 'ring-sky-100', 'icon' => 'bg-sky-100 text-sky-700', 'value' => 'text-sky-700'],
+                    'purple' => ['bg' => 'bg-purple-50', 'edge' => 'border-purple-500', 'ring' => 'ring-purple-100', 'icon' => 'bg-purple-100 text-purple-700', 'value' => 'text-purple-700'],
+                    'red' => ['bg' => 'bg-red-50', 'edge' => 'border-red-500', 'ring' => 'ring-red-100', 'icon' => 'bg-red-100 text-red-700', 'value' => 'text-red-700', 'dot' => 'bg-red-500'],
+                    'amber' => ['bg' => 'bg-gold-50', 'edge' => 'border-gold-400', 'ring' => 'ring-gold-200', 'icon' => 'bg-gold-100 text-gold-700', 'value' => 'text-gold-700', 'dot' => 'bg-gold-500'],
+                    'emerald' => ['bg' => 'bg-emerald-50', 'edge' => 'border-emerald-500', 'ring' => 'ring-emerald-100', 'icon' => 'bg-emerald-100 text-emerald-700', 'value' => 'text-emerald-700'],
                 ];
 
                 $operationRows = collect([
@@ -683,15 +688,15 @@
                 $operationTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (array_key_exists('modal', $row) ? 'div' : 'a');
             @endphp
 
-            <div class="bg-navy text-white rounded-xl p-8 mb-6">
-                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 sm:p-8 mb-6">
+                <div class="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
                     <div class="flex items-center gap-3 border-l-2 border-gold-500 pl-4">
                         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-black">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5 13.5 3l-1.5 7.5h8.25L10.5 21l1.5-7.5H3.75Z" /></svg>
                         </span>
                         <div>
-                            <h3 class="text-2xl font-bold">{{ __("Today's Operations") }}</h3>
-                            <p class="text-sm font-medium text-gray-200">{{ __('Real-time overview of key activities') }}</p>
+                            <h3 class="text-2xl font-bold text-navy-900">{{ __("Today's Operations") }}</h3>
+                            <p class="text-sm font-medium text-gray-500">{{ __('Real-time overview of key activities') }}</p>
                         </div>
                     </div>
                     <div
@@ -710,11 +715,11 @@
                             },
                         }"
                         x-init="setInterval(() => now = new Date(), 1000)"
-                        class="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-wider text-gray-300"
+                        class="flex items-center gap-2 pt-1 text-xs font-semibold uppercase tracking-wider text-gray-500"
                     >
-                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-gold-400 animate-pulse"></span>
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500 animate-pulse"></span>
                         <span x-text="dateLabel">{{ now()->format('l, M j, Y') }}</span>
-                        <span class="text-gray-600">&middot;</span>
+                        <span class="text-gray-300">&middot;</span>
                         <span x-text="timeLabel">{{ now()->format('h:i A') }}</span>
                     </div>
                 </div>
@@ -724,7 +729,7 @@
                     <{{ $heroTag }}
                         @if ($heroTag === 'a') href="{{ $heroRow['href'] }}" @endif
                         @if ($heroTag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $heroRow['modal'] }}')" @endif
-                        class="group relative flex flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/15 via-navy-800 to-navy-800 p-5 text-left ring-1 ring-emerald-400/40 transition hover:ring-emerald-400/70 sm:col-span-2 lg:row-span-2"
+                        class="group relative flex flex-col justify-between overflow-hidden rounded-xl {{ $heroAccent['bg'] }} border-l-4 {{ $heroAccent['edge'] }} p-5 text-left ring-1 {{ $heroAccent['ring'] }} transition hover:shadow-md sm:col-span-2 lg:row-span-2"
                     >
                         {{-- Emitted before the label row so the amount precedes the label in the
                              page source (screen readers / text search read amount-then-label),
@@ -735,10 +740,10 @@
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $heroAccent['icon'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$heroRow['key']] }}" /></svg>
                             </span>
-                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($heroRow['label']) }}</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __($heroRow['label']) }}</p>
                         </div>
 
-                        <p class="order-3 mt-2 text-xs font-medium text-gray-300">{{ __($heroRow['description']) }}</p>
+                        <p class="order-3 mt-2 text-xs font-medium text-gray-500">{{ __($heroRow['description']) }}</p>
                     </{{ $heroTag }}>
 
                     @foreach ($midRows as $row)
@@ -746,17 +751,17 @@
                         <{{ $tag }}
                             @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                             @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                            class="flex items-center gap-3 rounded-xl bg-navy-800 p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:ring-2 sm:col-span-2"
+                            class="flex items-center gap-3 rounded-xl {{ $accent['bg'] }} border-l-4 {{ $accent['edge'] }} p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:shadow-md sm:col-span-2"
                         >
                             <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
                                 @if ($row['state'] !== 'ok')
-                                    <span class="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full {{ $accent['dot'] }} ring-2 ring-gray-900 animate-pulse"></span>
+                                    <span class="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full {{ $accent['dot'] }} ring-2 ring-white animate-pulse"></span>
                                 @endif
                             </span>
                             <div class="flex min-w-0 flex-col">
                                 <p class="order-2 text-xl font-bold whitespace-nowrap {{ $accent['value'] }}">{{ $row['value'] }}</p>
-                                <p class="order-1 truncate text-xs font-semibold uppercase tracking-wider text-gray-200">{{ __($row['label']) }}</p>
+                                <p class="order-1 truncate text-xs font-semibold uppercase tracking-wider text-gray-600">{{ __($row['label']) }}</p>
                             </div>
                         </{{ $tag }}>
                     @endforeach
@@ -768,13 +773,13 @@
                         <{{ $tag }}
                             @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                             @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                            class="flex flex-col text-left rounded-lg bg-white/5 p-3 ring-1 ring-white/10 transition hover:bg-white/10"
+                            class="flex flex-col text-left rounded-lg {{ $accent['bg'] }} border-l-4 {{ $accent['edge'] }} p-3 ring-1 {{ $accent['ring'] }} transition hover:shadow-md"
                         >
                             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md {{ $accent['icon'] }}">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
                             </span>
                             <p class="mt-2 text-lg font-bold whitespace-nowrap {{ $accent['value'] }}">{{ $row['value'] }}</p>
-                            <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide leading-tight text-gray-300">{{ __($row['label']) }}</p>
+                            <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide leading-tight text-gray-600">{{ __($row['label']) }}</p>
                         </{{ $tag }}>
                     @endforeach
                 </div>
