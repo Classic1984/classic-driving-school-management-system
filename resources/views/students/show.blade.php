@@ -139,7 +139,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-xl ring-1 ring-gray-200 bg-white p-4">
+                <div class="rounded-xl ring-1 ring-gray-200 bg-gray-50/60 p-4">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ __('Personal Information') }}</h3>
                     <div class="space-y-2 text-sm">
                         <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Date of Birth') }}</span><span class="font-bold text-gray-900 text-right">{{ $student->date_of_birth->format('M j, Y') }}</span></div>
@@ -150,7 +150,7 @@
                 </div>
 
                 @if ($primaryEnrolledCourse)
-                    <div class="rounded-xl ring-1 ring-gray-200 bg-white p-4">
+                    <div class="rounded-xl ring-1 ring-gray-200 bg-gray-50/60 p-4">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ __('Course & Level') }}</h3>
                         <div class="space-y-2 text-sm">
                             <div class="flex items-center justify-between gap-2"><span class="text-gray-500">{{ __('Course') }}</span><span class="font-bold text-gray-900 text-right">{{ $primaryEnrolledCourse->name }}</span></div>
@@ -164,7 +164,7 @@
                     </div>
                 @endif
 
-                <div class="rounded-xl ring-1 ring-gray-200 bg-white p-4">
+                <div class="rounded-xl ring-1 ring-gray-200 bg-gray-50/60 p-4">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2">{{ __('Contact Information') }}</h3>
                     <div class="space-y-2.5 text-sm">
                         <div><p class="text-xs text-gray-500">{{ __('Phone') }}</p><p class="font-bold text-gray-900">{{ $student->phone }}</p></div>
