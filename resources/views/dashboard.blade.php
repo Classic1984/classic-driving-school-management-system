@@ -420,7 +420,7 @@
                 <span class="h-px flex-1 bg-gray-100"></span>
             </div>
 
-            <div class="flex flex-wrap gap-4 mb-6">
+            <div class="flex flex-wrap items-start gap-4 mb-6">
                 @if ($revenueTrend)
                     <div class="flex-1 min-w-[320px] rounded-xl bg-white ring-1 ring-line p-6">
                         <div class="mb-4">
