@@ -399,16 +399,16 @@
                 // white card, since Tailwind's content scan can't see
                 // classes built from PHP strings.
                 $activityColorStyles = [
-                    'sky' => ['bg' => '#E0F2FE', 'text' => '#0369A1'],
-                    'purple' => ['bg' => '#F3E8FF', 'text' => '#7E22CE'],
-                    'red' => ['bg' => '#FEE2E2', 'text' => '#B91C1C'],
-                    'green' => ['bg' => '#DCFCE7', 'text' => '#15803D'],
-                    'blue' => ['bg' => '#DBEAFE', 'text' => '#1D4ED8'],
-                    'amber' => ['bg' => '#F5E9CF', 'text' => '#845C24'],
-                    'indigo' => ['bg' => '#E0E7FF', 'text' => '#4338CA'],
-                    'orange' => ['bg' => '#FFEDD5', 'text' => '#C2410C'],
-                    'teal' => ['bg' => '#CCFBF1', 'text' => '#0F766E'],
-                    'default' => ['bg' => '#F3F4F6', 'text' => '#4B5563'],
+                    'sky' => ['bg' => '#E0F2FE', 'text' => '#0369A1', 'row' => '#F0F9FF', 'edge' => '#38BDF8'],
+                    'purple' => ['bg' => '#F3E8FF', 'text' => '#7E22CE', 'row' => '#FAF5FF', 'edge' => '#A855F7'],
+                    'red' => ['bg' => '#FEE2E2', 'text' => '#B91C1C', 'row' => '#FEF2F2', 'edge' => '#EF4444'],
+                    'green' => ['bg' => '#DCFCE7', 'text' => '#15803D', 'row' => '#F0FDF4', 'edge' => '#22C55E'],
+                    'blue' => ['bg' => '#DBEAFE', 'text' => '#1D4ED8', 'row' => '#EFF6FF', 'edge' => '#3B82F6'],
+                    'amber' => ['bg' => '#F5E9CF', 'text' => '#845C24', 'row' => '#FBF6EC', 'edge' => '#C9A66B'],
+                    'indigo' => ['bg' => '#E0E7FF', 'text' => '#4338CA', 'row' => '#EEF2FF', 'edge' => '#6366F1'],
+                    'orange' => ['bg' => '#FFEDD5', 'text' => '#C2410C', 'row' => '#FFF7ED', 'edge' => '#F97316'],
+                    'teal' => ['bg' => '#CCFBF1', 'text' => '#0F766E', 'row' => '#F0FDFA', 'edge' => '#14B8A6'],
+                    'default' => ['bg' => '#F3F4F6', 'text' => '#4B5563', 'row' => '#F9FAFB', 'edge' => '#9CA3AF'],
                 ];
             @endphp
 
@@ -485,13 +485,13 @@
                     @if ($recentActivity->isEmpty())
                         <p class="text-sm text-gray-500">{{ __('No activity recorded yet.') }}</p>
                     @else
-                        <div class="space-y-4">
+                        <div class="space-y-2.5">
                             @foreach ($recentActivity as $log)
                                 @php
                                     $logMeta = $log->iconMeta();
                                     $logColors = $activityColorStyles[$logMeta['color']] ?? $activityColorStyles['default'];
                                 @endphp
-                                <div class="flex items-start gap-3">
+                                <div class="flex items-start gap-3 rounded-lg border-l-4 p-3" style="background-color: {{ $logColors['row'] }}; border-color: {{ $logColors['edge'] }};">
                                     <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full" style="background-color: {{ $logColors['bg'] }}; color: {{ $logColors['text'] }};">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $logMeta['icon'] }}" /></svg>
                                     </span>
