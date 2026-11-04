@@ -420,7 +420,7 @@
                 <span class="h-px flex-1 bg-gray-100"></span>
             </div>
 
-            <div class="flex flex-wrap gap-4 mb-6">
+            <div class="flex flex-wrap items-start gap-4 mb-6">
                 @if ($revenueTrend)
                     <div class="flex-1 min-w-[320px] rounded-xl bg-white ring-1 ring-line p-6">
                         <div class="mb-4">
@@ -485,7 +485,7 @@
                     @if ($recentActivity->isEmpty())
                         <p class="text-sm text-gray-500">{{ __('No activity recorded yet.') }}</p>
                     @else
-                        <div class="space-y-2.5">
+                        <div class="space-y-2.5 max-h-[210px] overflow-y-auto pr-1">
                             @foreach ($recentActivity as $log)
                                 @php
                                     $logMeta = $log->iconMeta();
