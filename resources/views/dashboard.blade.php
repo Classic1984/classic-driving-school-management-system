@@ -1662,12 +1662,14 @@
                                 $overdue = $studentService->isOverdueProcessing();
                                 $edge = $overdue ? 'border-red-500' : 'border-gold-400';
                                 $bar = $overdue ? 'from-red-500 to-red-600' : 'from-gold-400 to-gold-500';
+                                $cardBg = $overdue ? 'bg-red-50' : 'bg-gold-50/60';
+                                $cardRing = $overdue ? 'ring-red-100' : 'ring-gold-200';
                                 $initials = collect(explode(' ', $studentService->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                             @endphp
                             <a
                                 href="{{ route('students.show', $studentService->student_id) }}"
                                 x-show="(activeFilter === 'all' || activeFilter === @js($studentService->service->name)) && (!overdueOnly || {{ $overdue ? 'true' : 'false' }})"
-                                class="group flex flex-wrap items-center gap-4 rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $edge }} p-4 transition hover:shadow-md"
+                                class="group flex flex-wrap items-center gap-4 rounded-xl {{ $cardBg }} ring-1 {{ $cardRing }} border-l-4 {{ $edge }} p-4 transition hover:shadow-md"
                             >
                                 <div class="flex items-center gap-3 min-w-[14rem] flex-1">
                                     <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold-100 text-sm font-bold text-gold-800">
