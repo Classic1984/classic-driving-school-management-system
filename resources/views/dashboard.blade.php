@@ -485,7 +485,7 @@
                     @if ($recentActivity->isEmpty())
                         <p class="text-sm text-gray-500">{{ __('No activity recorded yet.') }}</p>
                     @else
-                        <div class="space-y-2.5">
+                        <div class="space-y-2.5 max-h-[210px] overflow-y-auto pr-1">
                             @foreach ($recentActivity as $log)
                                 @php
                                     $logMeta = $log->iconMeta();
