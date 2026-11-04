@@ -599,15 +599,15 @@
                 ];
 
                 $operationColors = [
-                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400', 'ring' => 'ring-indigo-400/60'],
-                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400', 'ring' => 'ring-blue-400/60'],
-                    'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400', 'ring' => 'ring-green-400/60'],
-                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400', 'ring' => 'ring-orange-400/60'],
-                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400', 'ring' => 'ring-sky-400/60'],
-                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400', 'ring' => 'ring-purple-400/60'],
-                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60', 'dot' => 'bg-red-400'],
-                    'amber' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400', 'ring' => 'ring-gold-400/60', 'dot' => 'bg-gold-400'],
-                    'emerald' => ['icon' => 'bg-emerald-500/10 text-emerald-400', 'value' => 'text-emerald-400', 'ring' => 'ring-emerald-400/70'],
+                    'indigo' => ['icon' => 'bg-indigo-500/10 text-indigo-400', 'value' => 'text-indigo-400', 'ring' => 'ring-indigo-400/60', 'card' => 'bg-gradient-to-br from-indigo-500/15 via-navy-800 to-navy-800'],
+                    'blue' => ['icon' => 'bg-blue-500/10 text-blue-400', 'value' => 'text-blue-400', 'ring' => 'ring-blue-400/60', 'card' => 'bg-gradient-to-br from-blue-500/15 via-navy-800 to-navy-800'],
+                    'green' => ['icon' => 'bg-green-500/10 text-green-400', 'value' => 'text-green-400', 'ring' => 'ring-green-400/60', 'card' => 'bg-gradient-to-br from-green-500/15 via-navy-800 to-navy-800'],
+                    'orange' => ['icon' => 'bg-orange-500/10 text-orange-400', 'value' => 'text-orange-400', 'ring' => 'ring-orange-400/60', 'card' => 'bg-gradient-to-br from-orange-500/15 via-navy-800 to-navy-800'],
+                    'sky' => ['icon' => 'bg-sky-500/10 text-sky-400', 'value' => 'text-sky-400', 'ring' => 'ring-sky-400/60', 'card' => 'bg-gradient-to-br from-sky-500/15 via-navy-800 to-navy-800'],
+                    'purple' => ['icon' => 'bg-purple-500/10 text-purple-400', 'value' => 'text-purple-400', 'ring' => 'ring-purple-400/60', 'card' => 'bg-gradient-to-br from-purple-500/15 via-navy-800 to-navy-800'],
+                    'red' => ['icon' => 'bg-red-500/10 text-red-400', 'value' => 'text-red-400', 'ring' => 'ring-red-400/60', 'dot' => 'bg-red-400', 'card' => 'bg-gradient-to-br from-red-500/15 via-navy-800 to-navy-800'],
+                    'amber' => ['icon' => 'bg-gold-500/10 text-gold-400', 'value' => 'text-gold-400', 'ring' => 'ring-gold-400/60', 'dot' => 'bg-gold-400', 'card' => 'bg-gradient-to-br from-gold-500/15 via-navy-800 to-navy-800'],
+                    'emerald' => ['icon' => 'bg-emerald-500/10 text-emerald-400', 'value' => 'text-emerald-400', 'ring' => 'ring-emerald-400/70', 'card' => 'bg-gradient-to-br from-emerald-500/15 via-navy-800 to-navy-800'],
                 ];
 
                 $operationRows = collect([
@@ -746,7 +746,7 @@
                         <{{ $tag }}
                             @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                             @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                            class="flex items-center gap-3 rounded-xl bg-navy-800 p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:ring-2 sm:col-span-2"
+                            class="flex items-center gap-3 rounded-xl {{ $accent['card'] }} p-4 text-left ring-1 {{ $accent['ring'] }} transition hover:ring-2 sm:col-span-2"
                         >
                             <span class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $accent['icon'] }}">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
@@ -768,7 +768,7 @@
                         <{{ $tag }}
                             @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                             @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
-                            class="flex flex-col text-left rounded-lg bg-white/5 p-3 ring-1 ring-white/10 transition hover:bg-white/10"
+                            class="flex flex-col text-left rounded-lg {{ $accent['card'] }} p-3 ring-1 {{ $accent['ring'] }} transition hover:ring-2"
                         >
                             <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md {{ $accent['icon'] }}">
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $operationIcons[$row['key']] }}" /></svg>
