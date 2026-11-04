@@ -388,21 +388,21 @@
                 $registrationPolygon = '36,160 '.$registrationPolyline.' '.($registrationPoints->last()['x'] ?? 366).',160';
 
                 // iconMeta() returns a color *key* (see ActivityLog::iconMeta()
-                // docblock), not classes - this maps each key to an
-                // inline bg/text pair readable on the Recent Activity
-                // widget's navy background, since Tailwind's content scan
-                // can't see classes built from PHP strings.
+                // docblock), not classes - this maps each key to an inline
+                // bg/text pair readable on the Recent Activity widget's
+                // white card, since Tailwind's content scan can't see
+                // classes built from PHP strings.
                 $activityColorStyles = [
-                    'sky' => ['bg' => 'rgba(56,189,248,0.18)', 'text' => '#7DD3FC'],
-                    'purple' => ['bg' => 'rgba(168,85,247,0.18)', 'text' => '#D8B4FE'],
-                    'red' => ['bg' => 'rgba(239,68,68,0.18)', 'text' => '#FCA5A5'],
-                    'green' => ['bg' => 'rgba(34,197,94,0.18)', 'text' => '#86EFAC'],
-                    'blue' => ['bg' => 'rgba(59,130,246,0.18)', 'text' => '#93C5FD'],
-                    'amber' => ['bg' => 'rgba(201,166,107,0.2)', 'text' => '#E8CB94'],
-                    'indigo' => ['bg' => 'rgba(129,140,248,0.18)', 'text' => '#C7D2FE'],
-                    'orange' => ['bg' => 'rgba(251,146,60,0.18)', 'text' => '#FDBA74'],
-                    'teal' => ['bg' => 'rgba(45,212,191,0.18)', 'text' => '#5EEAD4'],
-                    'default' => ['bg' => 'rgba(174,189,212,0.2)', 'text' => '#D7DEEA'],
+                    'sky' => ['bg' => '#E0F2FE', 'text' => '#0369A1'],
+                    'purple' => ['bg' => '#F3E8FF', 'text' => '#7E22CE'],
+                    'red' => ['bg' => '#FEE2E2', 'text' => '#B91C1C'],
+                    'green' => ['bg' => '#DCFCE7', 'text' => '#15803D'],
+                    'blue' => ['bg' => '#DBEAFE', 'text' => '#1D4ED8'],
+                    'amber' => ['bg' => '#F5E9CF', 'text' => '#845C24'],
+                    'indigo' => ['bg' => '#E0E7FF', 'text' => '#4338CA'],
+                    'orange' => ['bg' => '#FFEDD5', 'text' => '#C2410C'],
+                    'teal' => ['bg' => '#CCFBF1', 'text' => '#0F766E'],
+                    'default' => ['bg' => '#F3F4F6', 'text' => '#4B5563'],
                 ];
             @endphp
 
@@ -471,27 +471,27 @@
                     </div>
                 </div>
 
-                <div class="flex-1 min-w-[280px] rounded-xl bg-navy p-6">
+                <div class="flex-1 min-w-[280px] rounded-xl bg-white ring-1 ring-line p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-base font-bold text-white">{{ __('Recent Activity') }}</h3>
-                        <a href="{{ route('activity-log.index') }}" class="text-xs font-bold text-gold-300 hover:text-gold-200">{{ __('View all') }}</a>
+                        <h3 class="text-base font-bold text-navy-900">{{ __('Recent Activity') }}</h3>
+                        <a href="{{ route('activity-log.index') }}" class="text-sm font-bold text-gold-700 hover:text-gold-800">{{ __('View all') }}</a>
                     </div>
                     @if ($recentActivity->isEmpty())
-                        <p class="text-sm text-navy-200">{{ __('No activity recorded yet.') }}</p>
+                        <p class="text-sm text-gray-500">{{ __('No activity recorded yet.') }}</p>
                     @else
-                        <div class="space-y-3.5">
+                        <div class="space-y-4">
                             @foreach ($recentActivity as $log)
                                 @php
                                     $logMeta = $log->iconMeta();
                                     $logColors = $activityColorStyles[$logMeta['color']] ?? $activityColorStyles['default'];
                                 @endphp
-                                <div class="flex items-start gap-2.5">
-                                    <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full" style="background-color: {{ $logColors['bg'] }}; color: {{ $logColors['text'] }};">
-                                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $logMeta['icon'] }}" /></svg>
+                                <div class="flex items-start gap-3">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full" style="background-color: {{ $logColors['bg'] }}; color: {{ $logColors['text'] }};">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $logMeta['icon'] }}" /></svg>
                                     </span>
                                     <div class="min-w-0">
-                                        <p class="text-[13px] text-navy-50 leading-snug">{{ $log->description }}</p>
-                                        <p class="text-[11px] text-navy-300 mt-0.5">{{ $log->created_at->diffForHumans() }}@if ($log->user) &middot; {{ __('by') }} {{ $log->user->name }}@endif</p>
+                                        <p class="text-sm text-gray-800 leading-snug">{{ $log->description }}</p>
+                                        <p class="text-xs text-gray-400 mt-1">{{ $log->created_at->diffForHumans() }}@if ($log->user) &middot; {{ __('by') }} {{ $log->user->name }}@endif</p>
                                     </div>
                                 </div>
                             @endforeach
