@@ -2,10 +2,14 @@
     <x-slot name="header">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="border-l-2 border-gold-500 pl-3">
-                <h2 class="font-extrabold text-2xl text-navy-900 leading-tight">
-                    Classic Driving School & Son Nigeria Limited
+                <h2 class="font-extrabold text-2xl leading-tight">
+                    <span class="text-gold-600">Classic</span> <span class="text-navy-900">Driving School</span> <span class="text-navy-400">&amp; Son Nigeria Limited</span>
                 </h2>
-                <p class="text-sm text-gray-500">{{ __('Safety. Skill. Confidence.') }}</p>
+                <p class="text-sm font-semibold">
+                    <span class="text-green-600">{{ __('Safety.') }}</span>
+                    <span class="text-blue-600">{{ __('Skill.') }}</span>
+                    <span class="text-gold-600">{{ __('Confidence.') }}</span>
+                </p>
             </div>
             <div class="flex items-center gap-3 rounded-xl bg-gold-50 ring-1 ring-gold-200 px-4 py-2">
                 <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy text-gold-300">
@@ -378,7 +382,7 @@
                 @if ($revenueTrend)
                     <div class="flex-1 min-w-[320px] rounded-xl bg-white ring-1 ring-line p-6">
                         <div class="mb-4">
-                            <h3 class="text-base font-bold text-navy-900">{{ __('Revenue Trend') }}</h3>
+                            <h3 class="text-base font-bold"><span class="text-gold-600">{{ __('Revenue') }}</span> <span class="text-navy-900">{{ __('Trend') }}</span></h3>
                             <p class="text-xs text-gray-500 mt-0.5">{{ __('Last 6 months — training income collected') }}</p>
                         </div>
                         <svg viewBox="0 0 400 160" class="w-full" style="max-height: 180px;">
@@ -405,7 +409,7 @@
 
                 <div class="flex-1 min-w-[320px] rounded-xl bg-white ring-1 ring-line p-6">
                     <div class="mb-4">
-                        <h3 class="text-base font-bold text-navy-900">{{ __('Registration Trend') }}</h3>
+                        <h3 class="text-base font-bold"><span class="text-blue-600">{{ __('Registration') }}</span> <span class="text-navy-900">{{ __('Trend') }}</span></h3>
                         <p class="text-xs text-gray-500 mt-0.5">{{ __('New students enrolled, last 6 months') }}</p>
                     </div>
                     <svg viewBox="0 0 400 160" class="w-full" style="max-height: 180px;">
