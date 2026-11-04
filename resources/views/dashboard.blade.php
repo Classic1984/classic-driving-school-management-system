@@ -541,7 +541,7 @@
             @endphp
 
             <div class="relative overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
-                <!-- Decorative diagonal panel -->
+                <!-- Decorative diagonal panel (desktop only) -->
                 <div class="hidden lg:block absolute inset-y-0 right-0 w-[42%]" style="clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%)">
                     <div class="relative h-full w-full bg-gradient-to-br from-gold-400 via-gold-600 to-navy-800 overflow-hidden">
                         <svg class="absolute -right-8 top-1/2 -translate-y-1/2 h-72 w-72 text-black/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
@@ -551,6 +551,16 @@
                         </svg>
                         <svg class="absolute right-8 top-8 h-20 w-20 text-black/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
                     </div>
+                </div>
+
+                <!-- Decorative gold band (mobile/tablet only, since the diagonal panel is hidden below lg) -->
+                <div class="lg:hidden relative h-20 bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 overflow-hidden">
+                    <svg class="absolute -right-6 -top-10 h-40 w-40 text-black/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75">
+                        <circle cx="12" cy="12" r="9" />
+                        <circle cx="12" cy="12" r="2.5" />
+                        <path stroke-linecap="round" d="M12 3v6.5M12 14.5V21M4.2 8l5.3 3M14.5 13l5.3 3M19.8 8l-5.3 3M9.5 13l-5.3 3" />
+                    </svg>
+                    <svg class="absolute right-5 top-1/2 -translate-y-1/2 h-11 w-11 text-black/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapPath }}" /></svg>
                 </div>
 
                 <div class="relative p-8 lg:pr-[40%]">
