@@ -269,6 +269,26 @@
 
                     $rowTag = fn (array $row) => ! empty($row['modal']) ? 'button' : (! empty($row['href']) ? 'a' : 'div');
 
+                    // Every row/group above already carries a semantic
+                    // 'color' key (red for at-risk, green for in-program,
+                    // amber for pending, etc.) that the markup never
+                    // actually read - this maps it to real classes so the
+                    // icon/value/chip tie back to what the row means
+                    // instead of a flat gold-and-navy look throughout.
+                    $glanceColorClasses = [
+                        'blue' => ['text' => 'text-blue-600', 'chip' => 'bg-blue-50 text-blue-700'],
+                        'green' => ['text' => 'text-green-600', 'chip' => 'bg-green-50 text-green-700'],
+                        'teal' => ['text' => 'text-teal-600', 'chip' => 'bg-teal-50 text-teal-700'],
+                        'purple' => ['text' => 'text-purple-600', 'chip' => 'bg-purple-50 text-purple-700'],
+                        'red' => ['text' => 'text-red-600', 'chip' => 'bg-red-50 text-red-700'],
+                        'pink' => ['text' => 'text-pink-600', 'chip' => 'bg-pink-50 text-pink-700'],
+                        'amber' => ['text' => 'text-amber-600', 'chip' => 'bg-amber-50 text-amber-700'],
+                        'orange' => ['text' => 'text-orange-600', 'chip' => 'bg-orange-50 text-orange-700'],
+                        'indigo' => ['text' => 'text-indigo-600', 'chip' => 'bg-indigo-50 text-indigo-700'],
+                        'gray' => ['text' => 'text-gray-500', 'chip' => 'bg-gray-100 text-gray-600'],
+                    ];
+                    $glanceColor = fn (?string $key) => $glanceColorClasses[$key] ?? $glanceColorClasses['gray'];
+
                     // No secretary-facing "all payments" listing exists (that
                     // page is Director-only), so the Finance panel gets no
                     // "View All" link for anyone but a Director.
@@ -299,10 +319,11 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     @foreach ($summaryGroups as $group)
+                        @php $groupColor = $glanceColor($group['color'] ?? null); @endphp
                         <div class="rounded-xl bg-white ring-1 ring-line p-5">
                             <div class="flex items-center justify-between gap-2 pb-3 mb-2 border-b border-line">
                                 <div class="flex items-center gap-2.5">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy-50 text-navy-800">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $groupColor['chip'] }}">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $group['icon'] }}" /></svg>
                                     </span>
                                     <h3 class="text-base font-bold uppercase tracking-widest text-navy-900">{{ __($group['title']) }}</h3>
@@ -319,17 +340,17 @@
 
                             <div class="divide-y divide-line">
                                 @foreach ($group['rows'] as $row)
-                                    @php $tag = $rowTag($row); @endphp
+                                    @php $tag = $rowTag($row); $rowColor = $glanceColor($row['color'] ?? null); @endphp
                                     <{{ $tag }}
                                         @if ($tag === 'a') href="{{ $row['href'] }}" @endif
                                         @if ($tag === 'button') type="button" x-data x-on:click="$dispatch('open-modal', '{{ $row['modal'] }}')" @endif
                                         class="group flex items-start justify-between gap-3 py-3 text-left w-full {{ $tag !== 'div' ? 'transition hover:bg-gold-50 rounded-lg -mx-2 px-2' : '' }}"
                                     >
                                         <span class="flex flex-1 items-start gap-2 min-w-0 text-base text-gray-600">
-                                            <svg class="h-5 w-5 shrink-0 mt-0.5 text-gold-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
+                                            <svg class="h-5 w-5 shrink-0 mt-0.5 {{ $rowColor['text'] }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $row['icon'] }}" /></svg>
                                             <span>{{ __($row['label']) }}</span>
                                         </span>
-                                        <span class="shrink-0 text-xl font-extrabold tabular-nums whitespace-nowrap text-navy-900">{{ $row['value'] }}</span>
+                                        <span class="shrink-0 text-xl font-extrabold tabular-nums whitespace-nowrap {{ $rowColor['text'] }}">{{ $row['value'] }}</span>
                                     </{{ $tag }}>
                                 @endforeach
                             </div>
