@@ -461,10 +461,11 @@ class DashboardController extends Controller
         ];
 
         // Revenue Trend widget (Director-only, same gating as $paymentTotals
-        // above): the current month and the 5 before it, oldest first, each
-        // a real figure - not a projection or placeholder.
-        $revenueTrend = $request->user()->isDirector()
-            ? $this->monthlyTrend(6, fn (\Carbon\Carbon $start, \Carbon\Carbon $end) => Payment::where('status', 'paid')
+        // above): fetches 12 months so the displayed 6-month window can be
+        // compared against the 6 months before it - oldest first, each a
+        // real figure, not a projection or placeholder.
+        $revenueTrendFull = $request->user()->isDirector()
+            ? $this->monthlyTrend(12, fn (\Carbon\Carbon $start, \Carbon\Carbon $end) => Payment::where('status', 'paid')
                 ->whereDate('payment_date', '>=', $start->toDateString())
                 ->whereDate('payment_date', '<=', $end->toDateString())
                 ->sum('amount')
@@ -472,19 +473,36 @@ class DashboardController extends Controller
                     ->whereDate('payment_date', '<=', $end->toDateString())
                     ->sum('amount'))
             : null;
+        $revenueTrend = $revenueTrendFull ? array_slice($revenueTrendFull, 6) : null;
+        $revenueMomChange = $revenueTrendFull
+            ? $this->percentChange($revenueTrendFull[11]['value'], $revenueTrendFull[10]['value'])
+            : null;
+        $revenuePeriodChange = $revenueTrendFull
+            ? $this->percentChange(
+                array_sum(array_column(array_slice($revenueTrendFull, 6, 6), 'value')),
+                array_sum(array_column(array_slice($revenueTrendFull, 0, 6), 'value'))
+            )
+            : null;
 
         // Registration Trend widget: new students by enrollment_date, same
-        // 6-month window - visible to every role, unlike revenue.
-        $registrationTrend = $this->monthlyTrend(6, fn (\Carbon\Carbon $start, \Carbon\Carbon $end) => Student::whereDate('enrollment_date', '>=', $start->toDateString())
+        // 12-month fetch/6-month display split as above - visible to every
+        // role, unlike revenue.
+        $registrationTrendFull = $this->monthlyTrend(12, fn (\Carbon\Carbon $start, \Carbon\Carbon $end) => Student::whereDate('enrollment_date', '>=', $start->toDateString())
             ->whereDate('enrollment_date', '<=', $end->toDateString())
             ->count());
+        $registrationTrend = array_slice($registrationTrendFull, 6);
+        $registrationMomChange = $this->percentChange($registrationTrendFull[11]['value'], $registrationTrendFull[10]['value']);
+        $registrationPeriodChange = $this->percentChange(
+            array_sum(array_column(array_slice($registrationTrendFull, 6, 6), 'value')),
+            array_sum(array_column(array_slice($registrationTrendFull, 0, 6), 'value'))
+        );
 
         // Recent Activity widget: the existing system-wide activity log,
         // most recent first - the same model/relationship already powering
         // the Activity Log page, just the latest handful of it.
         $recentActivity = ActivityLog::with('user')->latest('created_at')->take(8)->get();
 
-        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressTotalEnrollments', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments', 'revenueTrend', 'registrationTrend', 'recentActivity'));
+        return view('dashboard', compact('stats', 'newStudentTotals', 'paymentTotals', 'paymentPeriodRanges', 'todaysPayments', 'upcomingPayments', 'trainingProgress', 'trainingProgressTotalEnrollments', 'trainingProgressStats', 'trainingProgressGroups', 'presentToday', 'absentToday', 'trainingStats', 'absenceStats', 'lockedEnrollments', 'serviceProcessing', 'upgradeEligible', 'upgradeClosed', 'kpis', 'kpiGroups', 'todaysOperations', 'revenueLeakage', 'learnersPermitRequests', 'onlineCertificateRequests', 'driversLicenseRequests', 'learnersPermitStats', 'onlineCertificateStats', 'driversLicenseStats', 'atRiskEnrollments', 'approachingCompletionEnrollments', 'revenueTrend', 'revenueMomChange', 'revenuePeriodChange', 'registrationTrend', 'registrationMomChange', 'registrationPeriodChange', 'recentActivity'));
     }
 
     /**
@@ -510,6 +528,22 @@ class DashboardController extends Controller
             })
             ->values()
             ->all();
+    }
+
+    /**
+     * Percent change from $previous to $current, for the Revenue/
+     * Registration Trend widgets' "vs Last Month"/"vs Previous Period"
+     * callouts. Null when $previous is 0 - "up 100%" or similar off a zero
+     * base is a meaningless percentage, not a real comparison, so the
+     * widget omits the callout entirely rather than show one.
+     */
+    protected function percentChange(float $current, float $previous): ?float
+    {
+        if ($previous <= 0) {
+            return null;
+        }
+
+        return round((($current - $previous) / $previous) * 100, 1);
     }
 
     /**
