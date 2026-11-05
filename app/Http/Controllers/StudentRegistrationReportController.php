@@ -7,6 +7,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -31,9 +32,10 @@ class StudentRegistrationReportController extends Controller
     public function index(Request $request): View
     {
         $period = $this->period($request);
+        $month = $this->month($request);
 
-        $students = $this->query($period)->with('courses')->latest('enrollment_date')->get();
-        $label = self::LABELS[$period];
+        $students = $this->query($period, $month)->with('courses')->latest('enrollment_date')->get();
+        $label = $month ? $month->format('F Y') : self::LABELS[$period];
 
         return view('student-registration-report.index', compact('students', 'period', 'label'));
     }
@@ -44,7 +46,8 @@ class StudentRegistrationReportController extends Controller
     public function export(Request $request): StreamedResponse
     {
         $period = $this->period($request);
-        $students = $this->query($period)->with('courses')->latest('enrollment_date')->get();
+        $month = $this->month($request);
+        $students = $this->query($period, $month)->with('courses')->latest('enrollment_date')->get();
 
         return response()->streamDownload(function () use ($students) {
             $handle = fopen('php://output', 'w');
@@ -65,8 +68,9 @@ class StudentRegistrationReportController extends Controller
     public function exportPdf(Request $request): Response
     {
         $period = $this->period($request);
-        $students = $this->query($period)->with('courses')->latest('enrollment_date')->get();
-        $label = self::LABELS[$period];
+        $month = $this->month($request);
+        $students = $this->query($period, $month)->with('courses')->latest('enrollment_date')->get();
+        $label = $month ? $month->format('F Y') : self::LABELS[$period];
 
         $pdf = Pdf::loadView('student-registration-report.pdf', compact('students', 'label'));
 
@@ -80,8 +84,29 @@ class StudentRegistrationReportController extends Controller
         return in_array($period, self::PERIODS, true) ? $period : 'today';
     }
 
-    protected function query(string $period): Builder
+    /**
+     * An explicit "YYYY-MM" calendar month from the Registration Trend
+     * chart's per-point links, overriding $period below so a past month
+     * (not just "this month") can be drilled into.
+     */
+    protected function month(Request $request): ?Carbon
     {
+        $month = $request->query('month');
+
+        if ($month && \DateTime::createFromFormat('Y-m', $month) !== false) {
+            return Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        }
+
+        return null;
+    }
+
+    protected function query(string $period, ?Carbon $month = null): Builder
+    {
+        if ($month) {
+            return Student::whereDate('enrollment_date', '>=', $month->toDateString())
+                ->whereDate('enrollment_date', '<=', $month->copy()->endOfMonth()->toDateString());
+        }
+
         [$from, $to] = match ($period) {
             'week' => [now()->startOfWeek(), now()->endOfWeek()],
             'month' => [now()->startOfMonth(), now()->endOfMonth()],

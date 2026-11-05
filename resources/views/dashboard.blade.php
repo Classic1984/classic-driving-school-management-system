@@ -381,14 +381,14 @@
                 $revenueBars = $revenueTrend ? collect($revenueTrend)->values()->map(function (array $month, int $i) use ($revenueChartMax) {
                     $barHeight = max(1, (int) round(($month['value'] / $revenueChartMax) * 110));
 
-                    return ['label' => $month['label'], 'value' => $month['value'], 'x' => 18 + $i * 66, 'y' => 140 - $barHeight, 'h' => $barHeight];
+                    return ['label' => $month['label'], 'month' => $month['month'], 'value' => $month['value'], 'x' => 18 + $i * 66, 'y' => 140 - $barHeight, 'h' => $barHeight];
                 }) : collect();
 
                 $registrationChartMax = max(1, collect($registrationTrend)->max('value'));
                 $registrationPoints = collect($registrationTrend)->values()->map(function (array $month, int $i) use ($registrationChartMax) {
                     $y = 140 - (int) round(($month['value'] / $registrationChartMax) * 110);
 
-                    return ['label' => $month['label'], 'x' => 18 + $i * 66 + 18, 'y' => $y, 'value' => $month['value']];
+                    return ['label' => $month['label'], 'month' => $month['month'], 'x' => 18 + $i * 66 + 18, 'y' => $y, 'value' => $month['value']];
                 });
                 $registrationPolyline = $registrationPoints->map(fn (array $p) => "{$p['x']},{$p['y']}")->implode(' ');
                 $registrationPolygon = '36,160 '.$registrationPolyline.' '.($registrationPoints->last()['x'] ?? 366).',160';
@@ -469,10 +469,12 @@
                                 <text x="26" y="144" font-size="10" fill="#9CA3AF" text-anchor="end">₦0</text>
                                 @foreach ($revenueBars as $i => $bar)
                                     @php $badgeY = max(2, $bar['y'] - 20); @endphp
-                                    <rect x="{{ $bar['x'] - 5 }}" y="{{ $badgeY }}" width="46" height="16" rx="8" fill="#ffffff" stroke="#E7EAF0" stroke-width="1" />
-                                    <text x="{{ $bar['x'] + 18 }}" y="{{ $badgeY + 11 }}" font-size="9.5" font-weight="700" fill="#0B1E3D" text-anchor="middle">{{ $compactNaira($bar['value']) }}</text>
-                                    <rect x="{{ $bar['x'] }}" y="{{ $bar['y'] }}" width="36" height="{{ $bar['h'] }}" rx="6" fill="{{ $i === $revenueBars->count() - 1 ? '#C9A66B' : '#0B1E3D' }}" />
-                                    <text x="{{ $bar['x'] + 18 }}" y="156" font-size="11" fill="#7E93B7" text-anchor="middle">{{ $bar['label'] }}</text>
+                                    <a href="{{ route('payments.index', ['month' => $bar['month']]) }}" class="cursor-pointer hover:opacity-75 transition">
+                                        <rect x="{{ $bar['x'] - 5 }}" y="{{ $badgeY }}" width="46" height="16" rx="8" fill="#ffffff" stroke="#E7EAF0" stroke-width="1" />
+                                        <text x="{{ $bar['x'] + 18 }}" y="{{ $badgeY + 11 }}" font-size="9.5" font-weight="700" fill="#0B1E3D" text-anchor="middle">{{ $compactNaira($bar['value']) }}</text>
+                                        <rect x="{{ $bar['x'] }}" y="{{ $bar['y'] }}" width="36" height="{{ $bar['h'] }}" rx="6" fill="{{ $i === $revenueBars->count() - 1 ? '#C9A66B' : '#0B1E3D' }}" />
+                                        <text x="{{ $bar['x'] + 18 }}" y="156" font-size="11" fill="#7E93B7" text-anchor="middle">{{ $bar['label'] }}</text>
+                                    </a>
                                 @endforeach
                             </svg>
 
@@ -538,10 +540,12 @@
                             <polyline points="{{ $registrationPolyline }}" fill="none" stroke="#A8762F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                             @foreach ($registrationPoints as $i => $point)
                                 @php $badgeY = max(2, $point['y'] - 22); @endphp
-                                <rect x="{{ $point['x'] - 13 }}" y="{{ $badgeY }}" width="26" height="16" rx="8" fill="#0B1E3D" />
-                                <text x="{{ $point['x'] }}" y="{{ $badgeY + 11 }}" font-size="9.5" font-weight="700" fill="#ffffff" text-anchor="middle">{{ $point['value'] }}</text>
-                                <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}" r="{{ $i === $registrationPoints->count() - 1 ? 5.5 : 4.5 }}" fill="{{ $i === $registrationPoints->count() - 1 ? '#0B1E3D' : '#A8762F' }}" @if ($i === $registrationPoints->count() - 1) stroke="#fff" stroke-width="2" @endif />
-                                <text x="{{ $point['x'] }}" y="156" font-size="11" fill="#7E93B7" text-anchor="middle">{{ $point['label'] }}</text>
+                                <a href="{{ route('student-registration-report.index', ['month' => $point['month']]) }}" class="cursor-pointer hover:opacity-75 transition">
+                                    <rect x="{{ $point['x'] - 13 }}" y="{{ $badgeY }}" width="26" height="16" rx="8" fill="#0B1E3D" />
+                                    <text x="{{ $point['x'] }}" y="{{ $badgeY + 11 }}" font-size="9.5" font-weight="700" fill="#ffffff" text-anchor="middle">{{ $point['value'] }}</text>
+                                    <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}" r="{{ $i === $registrationPoints->count() - 1 ? 5.5 : 4.5 }}" fill="{{ $i === $registrationPoints->count() - 1 ? '#0B1E3D' : '#A8762F' }}" @if ($i === $registrationPoints->count() - 1) stroke="#fff" stroke-width="2" @endif />
+                                    <text x="{{ $point['x'] }}" y="156" font-size="11" fill="#7E93B7" text-anchor="middle">{{ $point['label'] }}</text>
+                                </a>
                             @endforeach
                         </svg>
 

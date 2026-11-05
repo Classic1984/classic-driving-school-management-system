@@ -523,6 +523,7 @@ class DashboardController extends Controller
 
                 return [
                     'label' => $start->format('M'),
+                    'month' => $start->format('Y-m'),
                     'value' => (float) $metric($start, $end),
                 ];
             })
