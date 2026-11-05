@@ -445,12 +445,12 @@
                 @if ($revenueTrend)
                     <div class="rounded-xl bg-white ring-1 ring-line overflow-hidden">
                         <div class="flex items-center justify-between gap-3 bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-5 py-4">
-                            <div class="flex items-center gap-3 min-w-0">
+                            <a href="{{ route('payment-reports.index') }}" class="flex items-center gap-3 min-w-0 group">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-500 text-navy-900">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $trendUpIconPath }}" /></svg>
                                 </span>
-                                <h3 class="text-base font-bold text-white truncate">{{ __('Revenue Trend') }}</h3>
-                            </div>
+                                <h3 class="text-base font-bold text-white truncate group-hover:underline">{{ __('Revenue Trend') }}</h3>
+                            </a>
                             <span class="shrink-0 inline-flex items-center rounded-full ring-1 ring-gold-400/50 px-3 py-1.5 text-xs font-semibold text-gold-300 whitespace-nowrap">{{ __('Last 6 Months') }}</span>
                         </div>
 
@@ -512,12 +512,12 @@
 
                 <div class="rounded-xl bg-white ring-1 ring-line overflow-hidden @if (! $revenueTrend) lg:col-span-2 @endif">
                     <div class="flex items-center justify-between gap-3 bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-5 py-4">
-                        <div class="flex items-center gap-3 min-w-0">
+                        <a href="{{ route('student-registration-report.index') }}" class="flex items-center gap-3 min-w-0 group">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-500 text-navy-900">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersGroupIconPath }}" /></svg>
                             </span>
-                            <h3 class="text-base font-bold text-white truncate">{{ __('Registration Trend') }}</h3>
-                        </div>
+                            <h3 class="text-base font-bold text-white truncate group-hover:underline">{{ __('Registration Trend') }}</h3>
+                        </a>
                         <span class="shrink-0 inline-flex items-center rounded-full ring-1 ring-gold-400/50 px-3 py-1.5 text-xs font-semibold text-gold-300 whitespace-nowrap">{{ __('Last 6 Months') }}</span>
                     </div>
 
