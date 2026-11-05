@@ -16,12 +16,13 @@ class StudentRegistrationReportController extends Controller
     /**
      * Periods the dashboard's New Students cards link into.
      */
-    protected const PERIODS = ['today', 'week', 'month', 'year'];
+    protected const PERIODS = ['today', 'week', 'month', 'last_6_months', 'year'];
 
     protected const LABELS = [
         'today' => 'Today',
         'week' => 'This Week',
         'month' => 'This Month',
+        'last_6_months' => 'Last 6 Months',
         'year' => 'This Year',
     ];
 
@@ -110,6 +111,10 @@ class StudentRegistrationReportController extends Controller
         [$from, $to] = match ($period) {
             'week' => [now()->startOfWeek(), now()->endOfWeek()],
             'month' => [now()->startOfMonth(), now()->endOfMonth()],
+            // Same 6-calendar-month window (current month plus the 5
+            // before it) as the dashboard's Registration Trend chart, so
+            // its "Avg / Month" tile links to exactly what it's averaging.
+            'last_6_months' => [now()->subMonthsNoOverflow(5)->startOfMonth(), now()->endOfMonth()],
             'year' => [now()->startOfYear(), now()->endOfYear()],
             default => [today(), today()],
         };

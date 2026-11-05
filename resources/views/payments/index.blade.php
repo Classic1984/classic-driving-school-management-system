@@ -42,7 +42,7 @@
             <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
                 @if (auth()->user()->isDirector())
                     <div class="flex items-center gap-2">
-                        @foreach (['week' => 'This Week', 'month' => 'This Month', 'all_time' => 'All Time'] as $value => $tabLabel)
+                        @foreach (['week' => 'This Week', 'month' => 'This Month', 'last_6_months' => 'Last 6 Months', 'all_time' => 'All Time'] as $value => $tabLabel)
                             <a
                                 href="{{ route('payments.index', ['period' => $value]) }}"
                                 class="px-3 py-1.5 text-sm font-semibold rounded-lg {{ $period === $value ? 'bg-navy text-gold-400' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
