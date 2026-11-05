@@ -24,11 +24,12 @@ class PaymentController extends Controller
     /**
      * Periods the dashboard's Total Payments cards link into.
      */
-    protected const PERIODS = ['week', 'month', 'all_time'];
+    protected const PERIODS = ['week', 'month', 'last_6_months', 'all_time'];
 
     protected const LABELS = [
         'week' => 'This Week',
         'month' => 'This Month',
+        'last_6_months' => 'Last 6 Months',
         'all_time' => 'All Time',
     ];
 
@@ -268,6 +269,11 @@ class PaymentController extends Controller
             'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
                 ->whereDate('payment_date', '<=', now()->endOfWeek()->toDateString()),
             'month' => $query->whereYear('payment_date', now()->year)->whereMonth('payment_date', now()->month),
+            // Same 6-calendar-month window (current month plus the 5 before
+            // it) as the dashboard's Revenue Trend chart, so its "6-Month
+            // Total" tile links to exactly what it's summing.
+            'last_6_months' => $query->whereDate('payment_date', '>=', now()->subMonthsNoOverflow(5)->startOfMonth()->toDateString())
+                ->whereDate('payment_date', '<=', now()->endOfMonth()->toDateString()),
             default => null,
         };
 
@@ -291,6 +297,8 @@ class PaymentController extends Controller
             'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
                 ->whereDate('payment_date', '<=', now()->endOfWeek()->toDateString()),
             'month' => $query->whereYear('payment_date', now()->year)->whereMonth('payment_date', now()->month),
+            'last_6_months' => $query->whereDate('payment_date', '>=', now()->subMonthsNoOverflow(5)->startOfMonth()->toDateString())
+                ->whereDate('payment_date', '<=', now()->endOfMonth()->toDateString()),
             default => null,
         };
 

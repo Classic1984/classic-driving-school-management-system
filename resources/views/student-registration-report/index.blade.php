@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="relative inline-flex items-center gap-1 rounded-full bg-white/5 ring-1 ring-white/10 p-1 mt-6 print:hidden">
-                        @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $tabLabel)
+                        @foreach (['today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'last_6_months' => 'Last 6 Months', 'year' => 'This Year'] as $value => $tabLabel)
                             <a
                                 href="{{ route('student-registration-report.index', ['period' => $value]) }}"
                                 class="px-4 py-1.5 text-sm font-semibold rounded-full transition {{ $period === $value ? 'bg-gold-500 text-navy' : 'text-gray-300 hover:text-white' }}"

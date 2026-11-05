@@ -480,7 +480,7 @@
                             </svg>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-                                <div class="rounded-xl bg-blue-50 p-4 flex items-center gap-3">
+                                <a href="{{ route('payments.index', ['period' => 'month']) }}" class="rounded-xl bg-blue-50 p-4 flex items-center gap-3 hover:bg-blue-100 transition">
                                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
                                     </span>
@@ -493,8 +493,8 @@
                                             </p>
                                         @endif
                                     </div>
-                                </div>
-                                <div class="rounded-xl bg-gold-50 p-4 flex items-center gap-3">
+                                </a>
+                                <a href="{{ route('payments.index', ['period' => 'last_6_months']) }}" class="rounded-xl bg-gold-50 p-4 flex items-center gap-3 hover:bg-gold-100 transition">
                                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
                                     </span>
@@ -507,7 +507,7 @@
                                             </p>
                                         @endif
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -552,7 +552,7 @@
                         </svg>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-                            <div class="rounded-xl bg-blue-50 p-4 flex items-center gap-3">
+                            <a href="{{ route('student-registration-report.index', ['period' => 'month']) }}" class="rounded-xl bg-blue-50 p-4 flex items-center gap-3 hover:bg-blue-100 transition">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $usersGroupIconPath }}" /></svg>
                                 </span>
@@ -565,8 +565,8 @@
                                         </p>
                                     @endif
                                 </div>
-                            </div>
-                            <div class="rounded-xl bg-gold-50 p-4 flex items-center gap-3">
+                            </a>
+                            <a href="{{ route('student-registration-report.index', ['period' => 'last_6_months']) }}" class="rounded-xl bg-gold-50 p-4 flex items-center gap-3 hover:bg-gold-100 transition">
                                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $chartBarIconPath }}" /></svg>
                                 </span>
@@ -579,7 +579,7 @@
                                         </p>
                                     @endif
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
