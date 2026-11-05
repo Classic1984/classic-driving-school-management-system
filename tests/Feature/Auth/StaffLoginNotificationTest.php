@@ -64,6 +64,17 @@ class StaffLoginNotificationTest extends TestCase
         Notification::assertNothingSentTo($director);
     }
 
+    public function test_login_succeeds_even_if_sending_the_staff_login_notification_fails(): void
+    {
+        Notification::shouldReceive('send')->once()->andThrow(new \RuntimeException('smtp unreachable'));
+
+        $secretary = User::factory()->secretary()->create();
+        User::factory()->director()->create();
+
+        $this->post('/login', ['email' => $secretary->email, 'password' => 'password'])
+            ->assertRedirect(route('dashboard', absolute: false));
+    }
+
     public function test_no_notification_is_sent_when_no_other_director_exists(): void
     {
         Notification::fake();

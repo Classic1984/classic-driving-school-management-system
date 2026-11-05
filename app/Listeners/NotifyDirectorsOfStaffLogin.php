@@ -6,7 +6,9 @@ use App\Models\User;
 use App\Notifications\StaffLoginNotification;
 use App\Services\WebPushService;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Throwable;
 
 class NotifyDirectorsOfStaffLogin
 {
@@ -44,7 +46,14 @@ class NotifyDirectorsOfStaffLogin
             return;
         }
 
-        Notification::send($recipients, new StaffLoginNotification($user, request()?->ip()));
+        // Best-effort: a staff member's login must never fail because
+        // notifying directors about it did - a down/misconfigured mail
+        // server would otherwise turn every staff login into a 500.
+        try {
+            Notification::send($recipients, new StaffLoginNotification($user, request()?->ip()));
+        } catch (Throwable $e) {
+            Log::error('Failed to send staff login notification.', ['exception' => $e]);
+        }
 
         // sendToUser() per recipient rather than sendToDirectors(), so the
         // director who just logged in doesn't push-notify themselves
