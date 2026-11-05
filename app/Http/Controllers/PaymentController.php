@@ -14,6 +14,7 @@ use App\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -37,8 +38,9 @@ class PaymentController extends Controller
     public function index(Request $request): View
     {
         $period = $this->period($request);
+        $month = $this->month($request);
 
-        $payments = $this->query($period)
+        $payments = $this->query($period, $month)
             ->with(['student', 'course', 'recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service', 'reversal'])
             ->latest('payment_date')
             ->paginate(10)
@@ -59,9 +61,9 @@ class PaymentController extends Controller
             ->sum('amount')
             + $corporateTodayTotal;
 
-        $corporatePeriodTotal = $this->corporateQuery($period)->sum('amount');
-        $periodTotal = $this->query($period)->where('status', 'paid')->sum('amount') + $corporatePeriodTotal;
-        $periodLabel = self::LABELS[$period];
+        $corporatePeriodTotal = $this->corporateQuery($period, $month)->sum('amount');
+        $periodTotal = $this->query($period, $month)->where('status', 'paid')->sum('amount') + $corporatePeriodTotal;
+        $periodLabel = $month ? $month->format('F Y') : self::LABELS[$period];
 
         return view('payments.index', compact('payments', 'todayTotal', 'periodTotal', 'periodLabel', 'period', 'corporateTodayTotal', 'corporatePeriodTotal'));
     }
@@ -73,7 +75,8 @@ class PaymentController extends Controller
     public function export(Request $request): StreamedResponse
     {
         $period = $this->period($request);
-        $payments = $this->query($period)->with(['student', 'course'])->latest('payment_date')->get();
+        $month = $this->month($request);
+        $payments = $this->query($period, $month)->with(['student', 'course'])->latest('payment_date')->get();
 
         return response()->streamDownload(function () use ($payments) {
             $handle = fopen('php://output', 'w');
@@ -234,11 +237,32 @@ class PaymentController extends Controller
     }
 
     /**
-     * Payments recorded during the given period, unfiltered for "all_time".
+     * An explicit "YYYY-MM" calendar month from the Revenue Trend chart's
+     * per-bar links, overriding $period below so a past month (not just
+     * "this month") can be drilled into.
      */
-    protected function query(string $period): Builder
+    protected function month(Request $request): ?Carbon
+    {
+        $month = $request->query('month');
+
+        if ($month && \DateTime::createFromFormat('Y-m', $month) !== false) {
+            return Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        }
+
+        return null;
+    }
+
+    /**
+     * Payments recorded during the given period, unfiltered for "all_time".
+     * $month, when given, overrides $period with an explicit calendar month.
+     */
+    protected function query(string $period, ?Carbon $month = null): Builder
     {
         $query = Payment::query();
+
+        if ($month) {
+            return $query->whereYear('payment_date', $month->year)->whereMonth('payment_date', $month->month);
+        }
 
         match ($period) {
             'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
@@ -255,9 +279,13 @@ class PaymentController extends Controller
      * "all_time" - same date-range logic as query(), just against the
      * corporate_payments table instead of payments.
      */
-    protected function corporateQuery(string $period): Builder
+    protected function corporateQuery(string $period, ?Carbon $month = null): Builder
     {
         $query = CorporatePayment::query();
+
+        if ($month) {
+            return $query->whereYear('payment_date', $month->year)->whereMonth('payment_date', $month->month);
+        }
 
         match ($period) {
             'week' => $query->whereDate('payment_date', '>=', now()->startOfWeek()->toDateString())
