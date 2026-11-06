@@ -1,20 +1,21 @@
 @php($legend = $legend ?? __('Course Enrollment & Initial Payment'))
 
-<fieldset class="rounded-xl ring-1 ring-gray-200 p-4">
-    <legend class="text-sm font-bold uppercase tracking-wider text-gray-500 px-1">
+<fieldset class="rounded-xl ring-1 ring-line bg-paper/40 p-4">
+    <legend class="inline-flex items-center gap-1.5 rounded-full bg-gold-100 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-gold-800">
+        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.25c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>
         <span x-show="registrationType === 'course'">{{ $legend }}</span>
         <span x-show="registrationType === 'service'">{{ __('Services & Initial Payment') }}</span>
     </legend>
 
-    <div class="space-y-6">
+    <div class="space-y-6 mt-2">
         <div x-show="registrationType === 'course'">
             <x-input-label for="course_id" :value="__('Course')" />
-            <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+            <x-select id="course_id" name="course_id" class="mt-1 block w-full">
                 <option value="">{{ __('Select a course') }}</option>
                 @foreach ($courses as $course)
                     <option value="{{ $course->id }}" @selected((string) old('course_id') === (string) $course->id)>{{ $course->name }} — {{ $course->isWeekend() ? 'Weekend' : 'Weekday' }} (₦{{ number_format($course->fee, 2) }})</option>
                 @endforeach
-            </select>
+            </x-select>
             <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
         </div>
 
@@ -53,7 +54,7 @@
 
         <div x-show="registrationType === 'course'">
             <x-input-label for="discount_choice" :value="__('Discount')" />
-            <select id="discount_choice" name="discount_choice" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+            <x-select id="discount_choice" name="discount_choice" class="mt-1 block w-full">
                 <option value="">{{ __('No Discount') }}</option>
                 @foreach (config('discounts.standard_presets') as $preset)
                     <option value="{{ $preset }}" @selected(old('discount_choice') === (string) $preset)>₦{{ number_format($preset) }}</option>
@@ -64,7 +65,7 @@
                     @endforeach
                     <option value="custom" @selected(old('discount_choice') === 'custom')>{{ __('Custom (Director Only)') }}</option>
                 @endif
-            </select>
+            </x-select>
             <x-input-error class="mt-2" :messages="$errors->get('discount_choice')" />
             @unless (auth()->user()->isDirector())
                 <p class="mt-1 text-xs text-gold-600">{{ __('A Director must approve this discount before it applies - the student is enrolled at the full fee until then.') }}</p>
@@ -90,12 +91,12 @@
         <div id="discount-reason-wrapper" class="hidden space-y-6" x-show="registrationType === 'course'">
             <div>
                 <x-input-label for="discount_reason" :value="__('Reason for Discount')" />
-                <select id="discount_reason" name="discount_reason" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                <x-select id="discount_reason" name="discount_reason" class="mt-1 block w-full">
                     <option value="">{{ __('Select') }}</option>
                     @foreach (config('discounts.reasons') as $value => $label)
                         <option value="{{ $value }}" @selected(old('discount_reason') === $value)>{{ __($label) }}</option>
                     @endforeach
-                </select>
+                </x-select>
                 <x-input-error class="mt-2" :messages="$errors->get('discount_reason')" />
             </div>
 
@@ -106,13 +107,13 @@
             </div>
         </div>
 
-        <div id="fee-preview" class="bg-gray-50 border border-gray-200 rounded-md p-4 text-sm space-y-1">
+        <div id="fee-preview" class="bg-white ring-1 ring-line rounded-xl p-4 text-sm space-y-1">
             <div class="flex justify-between" x-show="registrationType === 'course'"><span>{{ __('Package Fee') }}</span><span id="preview-package-fee">₦0.00</span></div>
             <div class="flex justify-between" x-show="registrationType === 'course'"><span>{{ __('Discount') }}</span><span id="preview-discount">₦0.00</span></div>
-            <div class="flex justify-between font-semibold border-t border-gray-300 pt-1 mt-1" x-show="registrationType === 'course'"><span>{{ __('Final Course Fee') }}</span><span id="preview-final-fee">₦0.00</span></div>
+            <div class="flex justify-between font-semibold border-t border-line pt-1 mt-1" x-show="registrationType === 'course'"><span>{{ __('Final Course Fee') }}</span><span id="preview-final-fee">₦0.00</span></div>
             <div id="preview-offers-wrapper" class="hidden">
                 <div class="flex justify-between"><span>{{ __('Additional Offers') }}</span><span id="preview-offers-total">₦0.00</span></div>
-                <div class="flex justify-between font-semibold border-t border-gray-300 pt-1 mt-1"><span>{{ __('Total Package') }}</span><span id="preview-total-package">₦0.00</span></div>
+                <div class="flex justify-between font-semibold border-t border-line pt-1 mt-1"><span>{{ __('Total Package') }}</span><span id="preview-total-package">₦0.00</span></div>
             </div>
         </div>
 
@@ -133,30 +134,30 @@
                         <p class="mt-1 text-xs text-gray-500">{{ __('Optional, per item. Leave any row blank to keep that charge outstanding for now.') }}</p>
                     </div>
 
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <div class="overflow-x-auto rounded-xl ring-1 ring-line">
+                        <table class="min-w-full divide-y divide-line text-sm">
                             <thead>
-                                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    <th class="px-2 py-1">{{ __('Charge') }}</th>
-                                    <th class="px-2 py-1">{{ __('Price') }}</th>
-                                    <th class="px-2 py-1">{{ __('Amount to Pay') }}</th>
+                                <tr class="bg-navy-50 text-left text-xs font-semibold text-navy-700 uppercase tracking-wider">
+                                    <th class="px-3 py-2">{{ __('Charge') }}</th>
+                                    <th class="px-3 py-2">{{ __('Price') }}</th>
+                                    <th class="px-3 py-2">{{ __('Amount to Pay') }}</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-line bg-white">
                                 <tr x-show="registrationType === 'course'">
-                                    <td class="px-2 py-1">{{ __('Training') }}</td>
-                                    <td class="px-2 py-1" id="allocation-training-price">₦0.00</td>
-                                    <td class="px-2 py-1">
-                                        <input type="number" id="training_amount_input" name="training_amount" step="0.01" min="0" class="block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" value="{{ old('training_amount') }}">
+                                    <td class="px-3 py-2">{{ __('Training') }}</td>
+                                    <td class="px-3 py-2" id="allocation-training-price">₦0.00</td>
+                                    <td class="px-3 py-2">
+                                        <input type="number" id="training_amount_input" name="training_amount" step="0.01" min="0" class="block w-32 border-line focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm" value="{{ old('training_amount') }}">
                                         <x-input-error class="mt-1" :messages="$errors->get('training_amount')" />
                                     </td>
                                 </tr>
                                 @foreach ($additionalOffers as $offer)
                                     <tr class="allocation-offer-row hidden" data-service-id="{{ $offer->id }}">
-                                        <td class="px-2 py-1">{{ $offer->name }}</td>
-                                        <td class="px-2 py-1">₦{{ number_format($offer->price, 2) }}</td>
-                                        <td class="px-2 py-1">
-                                            <input type="number" name="service_amounts[{{ $offer->id }}]" step="0.01" min="0" max="{{ $offer->price }}" class="service-amount-input block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" value="{{ old("service_amounts.{$offer->id}") }}">
+                                        <td class="px-3 py-2">{{ $offer->name }}</td>
+                                        <td class="px-3 py-2">₦{{ number_format($offer->price, 2) }}</td>
+                                        <td class="px-3 py-2">
+                                            <input type="number" name="service_amounts[{{ $offer->id }}]" step="0.01" min="0" max="{{ $offer->price }}" class="service-amount-input block w-32 border-line focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm" value="{{ old("service_amounts.{$offer->id}") }}">
                                             <x-input-error class="mt-1" :messages="$errors->get('service_amounts.'.$offer->id)" />
                                         </td>
                                     </tr>
@@ -165,9 +166,9 @@
                         </table>
                     </div>
 
-                    <div class="bg-gray-50 border border-gray-200 rounded-md p-4 text-sm space-y-1">
+                    <div class="bg-white ring-1 ring-line rounded-xl p-4 text-sm space-y-1">
                         <div class="flex justify-between font-medium"><span>{{ __('Amount Paid') }}</span><span id="preview-amount-paid">₦0.00</span></div>
-                        <div class="flex justify-between font-semibold border-t border-gray-300 pt-1 mt-1"><span>{{ __('Balance') }}</span><span id="preview-balance">₦0.00</span></div>
+                        <div class="flex justify-between font-semibold border-t border-line pt-1 mt-1"><span>{{ __('Balance') }}</span><span id="preview-balance">₦0.00</span></div>
                     </div>
                 </div>
             @endif
@@ -175,12 +176,12 @@
 
         <div>
             <x-input-label for="payment_method" :value="__('Payment Method')" />
-            <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+            <x-select id="payment_method" name="payment_method" class="mt-1 block w-full">
                 <option value="">{{ __('Select') }}</option>
                 @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                 @endforeach
-            </select>
+            </x-select>
             <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
         </div>
 
