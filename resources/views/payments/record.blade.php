@@ -11,35 +11,46 @@
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="flex items-center gap-4 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
-                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
-                </span>
-                <div>
-                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Record Payment') }}</h3>
-                    <p class="text-sm text-gray-500">{{ __('Pick a student, then tick off the charges being paid') }}</p>
-                </div>
-            </div>
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden">
+                <div class="relative overflow-hidden bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-4 py-6 sm:px-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
 
-            <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
-                <form method="get" action="{{ route('payments.record.create') }}" class="flex items-end gap-4">
-                    <div class="flex-1">
-                        <x-input-label for="student_id" :value="__('Student')" />
-                        <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
-                            <option value="">{{ __('Select a student') }}</option>
-                            @foreach ($students as $availableStudent)
-                                <option value="{{ $availableStudent->id }}" @selected($student?->id === $availableStudent->id)>{{ $availableStudent->name }} ({{ $availableStudent->student_id_number }})</option>
-                            @endforeach
-                        </select>
+                    <div class="relative flex items-center gap-4">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $banknotesIconPath }}" /></svg>
+                        </span>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white">{{ __('Record Payment') }}</h3>
+                            <p class="text-sm text-gray-400">{{ __('Pick a student, then tick off the charges being paid') }}</p>
+                        </div>
                     </div>
+                </div>
 
-                    <x-secondary-button type="submit">{{ __('Load Charges') }}</x-secondary-button>
-                </form>
+                <div class="p-4 sm:p-8">
+                    <form method="get" action="{{ route('payments.record.create') }}" class="flex items-end gap-4">
+                        <div class="flex-1">
+                            <x-input-label for="student_id" :value="__('Student')" />
+                            <x-select id="student_id" name="student_id" class="mt-1 block w-full" required>
+                                <option value="">{{ __('Select a student') }}</option>
+                                @foreach ($students as $availableStudent)
+                                    <option value="{{ $availableStudent->id }}" @selected($student?->id === $availableStudent->id)>{{ $availableStudent->name }} ({{ $availableStudent->student_id_number }})</option>
+                                @endforeach
+                            </x-select>
+                        </div>
+
+                        <x-secondary-button type="submit">{{ __('Load Charges') }}</x-secondary-button>
+                    </form>
+                </div>
             </div>
 
             @if ($student)
                 <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
-                    <h3 class="text-lg font-semibold mb-4">{{ $student->name }} ({{ $student->student_id_number }})</h3>
+                    <div class="flex items-center gap-3 mb-5">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-100 text-gold-700">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+                        </span>
+                        <h3 class="text-lg font-bold text-navy-900">{{ $student->name }} ({{ $student->student_id_number }})</h3>
+                    </div>
 
                     @if ($charges->isEmpty())
                         <p class="text-sm text-gray-500">{{ __('This student has no outstanding charges.') }}</p>
@@ -75,11 +86,11 @@
 
                             <x-input-error class="mb-2" :messages="$errors->get('allocations')" />
 
-                            <div class="overflow-hidden rounded-xl ring-1 ring-gray-200">
+                            <div class="overflow-hidden rounded-xl ring-1 ring-line">
                                 <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
+                                <table class="min-w-full divide-y divide-line">
                                     <thead>
-                                        <tr class="bg-gold-50/60 text-left text-xs font-semibold uppercase tracking-wider text-gold-800">
+                                        <tr class="bg-navy-50 text-left text-xs font-semibold uppercase tracking-wider text-navy-700">
                                             <th class="px-3 py-3"></th>
                                             <th class="px-3 py-3">{{ __('Charge') }}</th>
                                             <th class="px-3 py-3">{{ __('Full Price') }}</th>
@@ -88,7 +99,7 @@
                                             <th class="px-3 py-3">{{ __('Amount to Pay') }}</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-100 bg-white">
+                                    <tbody class="divide-y divide-line bg-white">
                                         @foreach ($charges as $index => $charge)
                                             <tr>
                                                 <td class="px-3 py-3 text-sm">
@@ -114,7 +125,7 @@
                                                         max="{{ $charge['balance'] }}"
                                                         placeholder="0.00"
                                                         x-model="rows[{{ $index }}].amount"
-                                                        class="block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm"
+                                                        class="block w-32 border-line focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm"
                                                     >
                                                     <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.amount')" />
                                                     <x-input-error class="mt-1" :messages="$errors->get('allocations.'.$index.'.id')" />
@@ -129,18 +140,18 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <x-input-label for="amount" :value="__('Payment Amount')" />
-                                    <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full bg-gray-50" :value="old('amount')" x-bind:value="total" readonly required />
+                                    <x-text-input id="amount" name="amount" type="number" step="0.01" min="0.01" class="mt-1 block w-full bg-paper font-bold text-navy-900" :value="old('amount')" x-bind:value="total" readonly required />
                                     <p class="mt-1 text-xs text-gray-500">{{ __('Calculated automatically from the charges ticked above.') }}</p>
                                     <x-input-error class="mt-2" :messages="$errors->get('amount')" />
                                 </div>
 
                                 <div>
                                     <x-input-label for="payment_method" :value="__('Payment Method')" />
-                                    <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+                                    <x-select id="payment_method" name="payment_method" class="mt-1 block w-full" required>
                                         @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                                             <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select>
                                     <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
                                 </div>
 
@@ -159,11 +170,11 @@
 
                             <div>
                                 <x-input-label for="notes" :value="__('Notes')" />
-                                <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+                                <x-textarea id="notes" name="notes" rows="3" class="mt-1 block w-full">{{ old('notes') }}</x-textarea>
                                 <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                             </div>
 
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-4 pt-4 border-t border-line">
                                 <x-primary-button>{{ __('Save Payment') }}</x-primary-button>
                                 <a href="{{ route('students.show', $student) }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
                             </div>
