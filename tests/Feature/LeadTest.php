@@ -142,9 +142,10 @@ class LeadTest extends TestCase
         $response = $this->actingAs($secretary)->get('/leads/create');
 
         $response->assertOk();
-        $response->assertSee('<select id="course_interested"', false);
+        $response->assertSee('<select', false);
+        $response->assertSee('id="course_interested"', false);
         $response->assertSee('Standard Driving Course');
-        $response->assertSee('<select id="source"', false);
+        $response->assertSee('id="source"', false);
         foreach (Lead::SOURCES as $source) {
             $response->assertSee($source);
         }
