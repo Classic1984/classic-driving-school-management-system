@@ -4,7 +4,7 @@
 @endphp
 
 <section>
-    <div class="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+    <div class="flex items-center gap-4 mb-4 pb-4 border-b border-line">
         <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold-50 text-gold-500">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
         </span>

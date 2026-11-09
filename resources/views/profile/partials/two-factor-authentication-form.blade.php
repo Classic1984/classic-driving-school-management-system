@@ -23,7 +23,7 @@
         <svg class="h-5 w-5 shrink-0 text-gray-400 transition-transform" x-bind:class="open ? 'rotate-90' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
     </button>
 
-    <div x-show="open" x-cloak x-transition class="mt-6 space-y-6 pt-4 border-t border-gray-100">
+    <div x-show="open" x-cloak x-transition class="mt-6 space-y-6 pt-4 border-t border-line">
         <p class="text-sm text-gray-600">
             {{ __('Add an extra layer of security to your account by requiring a code from an authenticator app (like Google Authenticator) when you log in.') }}
         </p>
@@ -63,7 +63,7 @@
                 {{ __('Scan the QR code below with your authenticator app, then enter the 6-digit code it generates to finish setup.') }}
             </p>
 
-            <div class="inline-block bg-white p-4 border border-gray-200 rounded-md">
+            <div class="inline-block bg-white p-4 border border-line rounded-lg">
                 {!! $qrCodeSvg !!}
             </div>
 
