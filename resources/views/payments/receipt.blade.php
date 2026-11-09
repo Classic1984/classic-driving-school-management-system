@@ -124,7 +124,9 @@
                             </div>
                         </div>
 
-                        <div class="flex items-end justify-between mt-6">
+                        <p class="text-xs font-semibold text-red-600 text-center mt-6">{{ __('All payments are final. No refunds after payment.') }}</p>
+
+                        <div class="flex items-end justify-between mt-3">
                             <p class="text-xs text-gray-400">{{ __('Printed on :date', ['date' => now()->format('l, M j, Y g:i A')]) }}</p>
                             <p class="text-xs italic text-gray-400 text-right">{{ __('"When you say Classic, you say it all."') }}</p>
                         </div>
