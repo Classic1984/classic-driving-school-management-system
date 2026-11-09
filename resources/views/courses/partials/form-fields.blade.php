@@ -10,62 +10,62 @@
 
 <div>
     <x-input-label for="description" :value="__('Description')" />
-    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('description', $course?->description) }}</textarea>
+    <x-textarea id="description" name="description" rows="3" class="mt-1 block w-full">{{ old('description', $course?->description) }}</x-textarea>
     <x-input-error class="mt-2" :messages="$errors->get('description')" />
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
         <x-input-label for="course_type" :value="__('Course Type')" />
-        <select id="course_type" name="course_type" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="course_type" name="course_type" class="mt-1 block w-full" required>
             @foreach (['manual' => 'Manual', 'automatic' => 'Automatic', 'both' => 'Both'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('course_type', $course?->course_type) === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('course_type')" />
     </div>
 
     <div>
         <x-input-label for="level" :value="__('Level')" />
-        <select id="level" name="level" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="level" name="level" class="mt-1 block w-full" required>
             @foreach (['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('level', $course?->level ?? 'beginner') === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <p class="mt-1 text-xs text-gray-500">{{ __('Shown on the certificate students earn for this course.') }}</p>
         <x-input-error class="mt-2" :messages="$errors->get('level')" />
     </div>
 
     <div>
         <x-input-label for="tier" :value="__('Programme Tier')" />
-        <select id="tier" name="tier" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+        <x-select id="tier" name="tier" class="mt-1 block w-full">
             <option value="">{{ __('Standard (none)') }}</option>
             @foreach (['weekend' => 'Weekend', 'executive' => 'Executive', 'vip' => 'VIP'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('tier', $course?->tier) === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <p class="mt-1 text-xs text-gray-500">{{ __('A tiered programme is what a student in any standard programme can upgrade into at any time, regardless of schedule or duration.') }}</p>
         <x-input-error class="mt-2" :messages="$errors->get('tier')" />
     </div>
 
     <div>
         <x-input-label for="schedule" :value="__('Schedule')" />
-        <select id="schedule" name="schedule" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="schedule" name="schedule" class="mt-1 block w-full" required>
             @foreach (['weekday' => 'Weekday', 'weekend' => 'Weekend'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('schedule', $course?->schedule ?? 'weekday') === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <p class="mt-1 text-xs text-gray-500">{{ __('Weekend courses get a 7-day payment grace period, since students are only back the following Saturday.') }}</p>
         <x-input-error class="mt-2" :messages="$errors->get('schedule')" />
     </div>
 
     <div>
         <x-input-label for="status" :value="__('Status')" />
-        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="status" name="status" class="mt-1 block w-full" required>
             @foreach (['active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('status', $course?->status ?? 'active') === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('status')" />
     </div>
 
@@ -92,7 +92,7 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
         <x-input-label :value="__('Instructors')" />
-        <div class="mt-1 space-y-1 rounded-lg ring-1 ring-gray-200 p-3 max-h-48 overflow-y-auto">
+        <div class="mt-1 space-y-1 rounded-lg ring-1 ring-line bg-paper/40 p-3 max-h-48 overflow-y-auto">
             @forelse ($instructors as $availableInstructor)
                 <label class="flex items-center gap-2 text-sm text-gray-700">
                     <input type="checkbox" name="instructors[]" value="{{ $availableInstructor->id }}" @checked(in_array($availableInstructor->id, $selectedInstructors)) class="rounded border-gray-300 text-gold-600 shadow-sm focus:ring-gold-500">
@@ -108,7 +108,7 @@
     @if (auth()->user()->isDirector())
         <div>
             <x-input-label :value="__('Students')" />
-            <div class="mt-1 space-y-1 rounded-lg ring-1 ring-gray-200 p-3 max-h-48 overflow-y-auto">
+            <div class="mt-1 space-y-1 rounded-lg ring-1 ring-line bg-paper/40 p-3 max-h-48 overflow-y-auto">
                 @forelse ($students as $availableStudent)
                     <label class="flex items-center gap-2 text-sm text-gray-700">
                         <input type="checkbox" name="students[]" value="{{ $availableStudent->id }}" @checked(in_array($availableStudent->id, $selectedStudents)) class="rounded border-gray-300 text-gold-600 shadow-sm focus:ring-gold-500">

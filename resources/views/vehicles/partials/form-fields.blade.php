@@ -15,11 +15,11 @@
 
     <div>
         <x-input-label for="status" :value="__('Status')" />
-        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="status" name="status" class="mt-1 block w-full" required>
             @foreach (['active' => 'Active', 'inactive' => 'Inactive'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('status', $vehicle?->status ?? 'active') === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('status')" />
     </div>
 </div>
