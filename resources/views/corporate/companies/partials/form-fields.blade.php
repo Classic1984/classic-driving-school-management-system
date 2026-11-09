@@ -78,6 +78,6 @@
 
 <div>
     <x-input-label for="notes" :value="__('Notes (optional)')" />
-    <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" placeholder="{{ __('Anything else worth remembering about this client') }}">{{ old('notes', $company->notes ?? '') }}</textarea>
+    <x-textarea id="notes" name="notes" rows="3" class="mt-1 block w-full" placeholder="{{ __('Anything else worth remembering about this client') }}">{{ old('notes', $company->notes ?? '') }}</x-textarea>
     <x-input-error class="mt-2" :messages="$errors->get('notes')" />
 </div>
