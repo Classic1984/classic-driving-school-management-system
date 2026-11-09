@@ -3,23 +3,23 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     <div>
         <x-input-label for="student_id" :value="__('Student')" />
-        <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="student_id" name="student_id" class="mt-1 block w-full" required>
             <option value="">{{ __('Select a student') }}</option>
             @foreach ($students as $availableStudent)
                 <option value="{{ $availableStudent->id }}" @selected((int) old('student_id', $payment?->student_id) === $availableStudent->id)>{{ $availableStudent->name }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('student_id')" />
     </div>
 
     <div>
         <x-input-label for="course_id" :value="__('Course')" />
-        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="course_id" name="course_id" class="mt-1 block w-full" required>
             <option value="">{{ __('Select a course') }}</option>
             @foreach ($courses as $availableCourse)
                 <option value="{{ $availableCourse->id }}" @selected((int) old('course_id', $payment?->course_id) === $availableCourse->id)>{{ $availableCourse->name }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
     </div>
 
@@ -37,21 +37,21 @@
 
     <div>
         <x-input-label for="payment_method" :value="__('Payment Method')" />
-        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="payment_method" name="payment_method" class="mt-1 block w-full" required>
             @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('payment_method', $payment?->payment_method) === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
     </div>
 
     <div>
         <x-input-label for="status" :value="__('Status')" />
-        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="status" name="status" class="mt-1 block w-full" required>
             @foreach (['paid' => 'Paid', 'pending' => 'Pending', 'failed' => 'Failed', 'refunded' => 'Refunded'] as $value => $label)
                 <option value="{{ $value }}" @selected(old('status', $payment?->status ?? 'paid') === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('status')" />
     </div>
 
@@ -63,7 +63,7 @@
 
     <div class="sm:col-span-2">
         <x-input-label for="notes" :value="__('Notes')" />
-        <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('notes', $payment?->notes) }}</textarea>
+        <x-textarea id="notes" name="notes" rows="3" class="mt-1 block w-full">{{ old('notes', $payment?->notes) }}</x-textarea>
         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
     </div>
 </div>
