@@ -20,39 +20,39 @@
 
     <div>
         <x-input-label for="course_interested" :value="__('Course Interested In')" />
-        <select id="course_interested" name="course_interested" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+        <x-select id="course_interested" name="course_interested" class="mt-1 block w-full">
             <option value="">{{ __('Select a course') }}</option>
             @foreach ($courseOptions as $course)
                 <option value="{{ $course }}" @selected($selectedCourse === $course)>{{ $course }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('course_interested')" />
     </div>
 
     <div>
         <x-input-label for="source" :value="__('How They Heard About Us')" />
-        <select id="source" name="source" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+        <x-select id="source" name="source" class="mt-1 block w-full">
             <option value="">{{ __('Select a source') }}</option>
             @foreach ($sourceOptions as $source)
                 <option value="{{ $source }}" @selected($selectedSource === $source)>{{ $source }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('source')" />
     </div>
 
     <div>
         <x-input-label for="status" :value="__('Status')" />
-        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+        <x-select id="status" name="status" class="mt-1 block w-full" required>
             @foreach (\App\Models\Lead::STATUSES as $value => $label)
                 <option value="{{ $value }}" @selected(old('status', $lead?->status ?? 'new') === $value)>{{ __($label) }}</option>
             @endforeach
-        </select>
+        </x-select>
         <x-input-error class="mt-2" :messages="$errors->get('status')" />
     </div>
 
     <div class="sm:col-span-2">
         <x-input-label for="notes" :value="__('Notes')" />
-        <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('notes', $lead?->notes) }}</textarea>
+        <x-textarea id="notes" name="notes" rows="3" class="mt-1 block w-full">{{ old('notes', $lead?->notes) }}</x-textarea>
         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
     </div>
 </div>

@@ -11,32 +11,38 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex items-center gap-4 mb-6 px-4 sm:px-0">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
-                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
-                </span>
-                <div class="min-w-0 flex-1">
-                    <h3 class="text-2xl font-extrabold text-gray-900 truncate">{{ __('Enroll in a Course') }}</h3>
-                    <p class="text-sm text-gray-500 truncate">{{ $student->name }}</p>
-                </div>
-            </div>
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden">
+                <div class="relative overflow-hidden bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-4 py-6 sm:px-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
 
-            <div class="p-4 sm:p-8 bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl">
-                @if ($courses->isEmpty())
-                    <p class="text-sm text-gray-500">{{ __('There are no active courses left to enroll this student in - either add a new course, or they are already enrolled in every active one.') }}</p>
-                    <a href="{{ route('students.show', $student) }}" class="mt-4 inline-block text-sm text-gray-600 hover:underline">{{ __('Back to :name', ['name' => $student->name]) }}</a>
-                @else
-                    <form method="post" action="{{ route('students.enroll.store', $student) }}" class="space-y-6" x-data="{ registrationType: 'course' }">
-                        @csrf
-
-                        @include('students.partials.enrollment-fields', ['courses' => $courses, 'legend' => __('Course Enrollment & Initial Payment')])
-
-                        <div class="flex items-center gap-4">
-                            <x-primary-button>{{ __('Enroll') }}</x-primary-button>
-                            <a href="{{ route('students.show', $student) }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
+                    <div class="relative flex items-center gap-4 min-w-0">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $academicCapIconPath }}" /></svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white truncate">{{ __('Enroll in a Course') }}</h3>
+                            <p class="text-sm text-gray-400 truncate">{{ $student->name }}</p>
                         </div>
-                    </form>
-                @endif
+                    </div>
+                </div>
+
+                <div class="p-4 sm:p-8">
+                    @if ($courses->isEmpty())
+                        <p class="text-sm text-gray-500">{{ __('There are no active courses left to enroll this student in - either add a new course, or they are already enrolled in every active one.') }}</p>
+                        <a href="{{ route('students.show', $student) }}" class="mt-4 inline-block text-sm text-gray-600 hover:underline">{{ __('Back to :name', ['name' => $student->name]) }}</a>
+                    @else
+                        <form method="post" action="{{ route('students.enroll.store', $student) }}" class="space-y-6" x-data="{ registrationType: 'course' }">
+                            @csrf
+
+                            @include('students.partials.enrollment-fields', ['courses' => $courses, 'legend' => __('Course Enrollment & Initial Payment')])
+
+                            <div class="flex items-center gap-4 pt-4 border-t border-line">
+                                <x-primary-button>{{ __('Enroll') }}</x-primary-button>
+                                <a href="{{ route('students.show', $student) }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
+                            </div>
+                        </form>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
