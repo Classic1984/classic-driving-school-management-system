@@ -54,7 +54,7 @@
                                                 name="allocations[{{ $index }}][amount]"
                                                 step="0.01"
                                                 min="0.01"
-                                                value="{{ old("allocations.{$index}.amount", $allocation->amount) }}"
+                                                value="{{ old('allocations.'.$index.'.amount', $allocation->amount) }}"
                                                 class="block w-32"
                                                 required
                                             />
