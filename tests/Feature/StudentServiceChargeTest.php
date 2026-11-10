@@ -100,7 +100,7 @@ class StudentServiceChargeTest extends TestCase
         // overview and services tables, but must not appear in the
         // "charge for a new service" dropdown's options.
         $response->assertSee('Already Charged Service');
-        preg_match('/<select id="service_id".*?<\/select>/s', $response->getContent(), $matches);
+        preg_match('/<select[^>]*\bid="service_id"[^>]*>.*?<\/select>/s', $response->getContent(), $matches);
         $this->assertStringContainsString('Available Service', $matches[0]);
         $this->assertStringNotContainsString('Already Charged Service', $matches[0]);
     }

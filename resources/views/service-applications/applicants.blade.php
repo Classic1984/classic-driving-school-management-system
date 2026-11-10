@@ -83,31 +83,31 @@
                 <form method="get" action="{{ route("{$routePrefix}.applicants") }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <x-input-label for="period" :value="__('Period')" />
-                        <select id="period" name="period" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="period" name="period" class="mt-1 block w-full">
                             @foreach (['all_time' => 'All Time', 'today' => 'Today', 'week' => 'This Week', 'month' => 'This Month', 'year' => 'This Year'] as $value => $label)
                                 <option value="{{ $value }}" @selected($period === $value)>{{ __($label) }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <x-input-label for="date" :value="__('Specific Date')" />
-                        <input type="date" id="date" name="date" value="{{ $date }}" max="{{ now()->format('Y-m-d') }}" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-text-input type="date" id="date" name="date" value="{{ $date }}" max="{{ now()->format('Y-m-d') }}" class="mt-1 block w-full" />
                         <p class="mt-1 text-xs text-gray-500">{{ __('Overrides Period when set.') }}</p>
                     </div>
 
                     <div>
                         <x-input-label for="source" :value="__('Source')" />
-                        <select id="source" name="source" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="source" name="source" class="mt-1 block w-full">
                             <option value="">{{ __('All') }}</option>
                             <option value="walk_in" @selected($source === 'walk_in')>{{ __('Walk-in') }}</option>
                             <option value="existing_student" @selected($source === 'existing_student')>{{ __('Existing Student') }}</option>
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <x-input-label for="status" :value="__('Status')" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="status" name="status" class="mt-1 block w-full">
                             <option value="">{{ __('All') }}</option>
                             <optgroup label="{{ __('Payment') }}">
                                 <option value="paid" @selected($status === 'paid')>{{ __('Paid') }}</option>
@@ -119,7 +119,7 @@
                                 <option value="processing" @selected($status === 'processing')>{{ __('Processing') }}</option>
                                 <option value="completed" @selected($status === 'completed')>{{ __('Completed') }}</option>
                             </optgroup>
-                        </select>
+                        </x-select>
                     </div>
 
                     <div class="flex items-end gap-4">

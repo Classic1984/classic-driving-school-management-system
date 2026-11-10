@@ -404,11 +404,11 @@
 
                     <div>
                         <x-input-label for="payment_method" :value="__('Payment Method')" />
-                        <select id="payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+                        <x-select id="payment_method" name="payment_method" class="mt-1 block w-full" required>
                             @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                                 <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                         <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
                     </div>
 

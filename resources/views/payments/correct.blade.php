@@ -49,15 +49,15 @@
                                         <td class="px-3 py-3 text-sm">{{ number_format($allocation->amount, 2) }}</td>
                                         <td class="px-3 py-3 text-sm">
                                             <input type="hidden" name="allocations[{{ $index }}][id]" value="{{ $allocation->id }}">
-                                            <input
+                                            <x-text-input
                                                 type="number"
                                                 name="allocations[{{ $index }}][amount]"
                                                 step="0.01"
                                                 min="0.01"
                                                 value="{{ old("allocations.{$index}.amount", $allocation->amount) }}"
-                                                class="block w-32 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm"
+                                                class="block w-32"
                                                 required
-                                            >
+                                            />
                                         </td>
                                     </tr>
                                 @endforeach
@@ -73,7 +73,7 @@
 
                     <div>
                         <x-input-label for="reason" :value="__('Reason for Correction')" />
-                        <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>{{ old('reason') }}</textarea>
+                        <x-textarea id="reason" name="reason" rows="3" class="mt-1 block w-full" required>{{ old('reason') }}</x-textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('reason')" />
                     </div>
 

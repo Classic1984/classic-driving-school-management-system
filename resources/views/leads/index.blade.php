@@ -51,12 +51,12 @@
                 <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                     <h3 class="text-lg font-bold text-gray-900">{{ __('Inquiry Records') }}</h3>
                     <form method="get" action="{{ route('leads.index') }}">
-                        <select name="status" onchange="this.form.submit()" class="rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500 text-sm">
+                        <x-select name="status" onchange="this.form.submit()" class="text-sm">
                             <option value="">{{ __('All Statuses') }}</option>
                             @foreach (\App\Models\Lead::STATUSES as $value => $label)
                                 <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </form>
                 </div>
 

@@ -188,49 +188,49 @@
 
                             <div>
                                 <x-input-label for="record_course_id" :value="__('Course')" />
-                                <select id="record_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm" required>
+                                <x-select id="record_course_id" name="course_id" class="mt-1 block w-full" required>
                                     @foreach ($student->courses as $enrolledCourse)
                                         <option value="{{ $enrolledCourse->id }}" @selected($loop->first)>{{ $enrolledCourse->name }}</option>
                                     @endforeach
-                                </select>
+                                </x-select>
                             </div>
 
                             <div>
                                 <x-input-label for="record_type" :value="__('Type')" />
-                                <select id="record_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
+                                <x-select id="record_type" name="type" class="mt-1 block w-full">
                                     @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
                                         <option value="{{ $value }}" @selected($value === 'practical')>{{ __($label) }}</option>
                                     @endforeach
-                                </select>
+                                </x-select>
                             </div>
 
                             <div>
                                 <x-input-label for="record_instructor_id" :value="__('Instructor')" />
-                                <select id="record_instructor_id" name="instructor_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
+                                <x-select id="record_instructor_id" name="instructor_id" class="mt-1 block w-full">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach ($instructors as $availableInstructor)
                                         <option value="{{ $availableInstructor->id }}">{{ $availableInstructor->name }}</option>
                                     @endforeach
-                                </select>
+                                </x-select>
                             </div>
 
                             <div>
                                 <x-input-label for="record_vehicle_id" :value="__('Vehicle')" />
-                                <select id="record_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
+                                <x-select id="record_vehicle_id" name="vehicle_id" class="mt-1 block w-full">
                                     <option value="">{{ __('None') }}</option>
                                     @foreach ($vehicles as $availableVehicle)
                                         <option value="{{ $availableVehicle->id }}">{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
                                     @endforeach
-                                </select>
+                                </x-select>
                             </div>
 
                             <div class="sm:col-span-2">
                                 <x-input-label for="record_duration" :value="__('Duration')" />
-                                <select id="record_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">
+                                <x-select id="record_duration" name="duration" class="mt-1 block w-full">
                                     @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
                                         <option value="{{ $value }}">{{ __($label) }}</option>
                                     @endforeach
-                                </select>
+                                </x-select>
                             </div>
 
                             <div class="sm:col-span-2">

@@ -119,28 +119,28 @@
 
                     <div>
                         <x-input-label for="purpose" :value="__('Purpose')" />
-                        <select id="purpose" name="purpose" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="purpose" name="purpose" class="mt-1 block w-full">
                             <option value="">{{ __('All Purposes') }}</option>
                             @foreach (\App\Models\MessageLog::PURPOSES as $value => $label)
                                 <option value="{{ $value }}" @selected(request('purpose') === $value)>{{ __($label) }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <x-input-label for="status" :value="__('Status')" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="status" name="status" class="mt-1 block w-full">
                             <option value="">{{ __('All Status') }}</option>
                             <option value="sent" @selected(request('status') === 'sent')>{{ __('Delivered') }}</option>
                             <option value="failed" @selected(request('status') === 'failed')>{{ __('Failed') }}</option>
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <x-input-label :value="__('Date Range')" />
                         <div class="mt-1 grid grid-cols-2 gap-2">
-                            <input type="date" name="date_from" value="{{ request('date_from') }}" class="block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm text-sm">
-                            <input type="date" name="date_to" value="{{ request('date_to') }}" class="block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm text-sm">
+                            <x-text-input type="date" name="date_from" value="{{ request('date_from') }}" class="block w-full text-sm" />
+                            <x-text-input type="date" name="date_to" value="{{ request('date_to') }}" class="block w-full text-sm" />
                         </div>
                     </div>
 
@@ -288,11 +288,11 @@
                             <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                         @endforeach
                         {{ __('Show') }}
-                        <select name="per_page" class="rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500 text-sm" onchange="this.form.submit()">
+                        <x-select name="per_page" class="text-sm" onchange="this.form.submit()">
                             @foreach ([10, 25, 50, 100] as $option)
                                 <option value="{{ $option }}" @selected($perPage === $option)>{{ $option }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                         {{ __('entries') }}
                     </form>
 

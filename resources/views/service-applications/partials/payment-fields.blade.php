@@ -19,11 +19,11 @@
 
         <div>
             <x-input-label :for="$idPrefix.'_payment_method'" :value="__('Payment Method')" />
-            <select id="{{ $idPrefix }}_payment_method" name="payment_method" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+            <x-select id="{{ $idPrefix }}_payment_method" name="payment_method" class="mt-1 block w-full" required>
                 @foreach (['cash' => 'Cash', 'card' => 'Card', 'bank_transfer' => 'Bank Transfer', 'mobile_money' => 'Mobile Money'] as $value => $label)
                     <option value="{{ $value }}" @selected(old('payment_method') === $value)>{{ __($label) }}</option>
                 @endforeach
-            </select>
+            </x-select>
             <x-input-error class="mt-2" :messages="$errors->get('payment_method')" />
         </div>
 
@@ -42,7 +42,7 @@
 
     <div>
         <x-input-label :for="$idPrefix.'_notes'" :value="__('Notes')" />
-        <textarea id="{{ $idPrefix }}_notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+        <x-textarea id="{{ $idPrefix }}_notes" name="notes" rows="2" class="mt-1 block w-full">{{ old('notes') }}</x-textarea>
         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
     </div>
 </div>
