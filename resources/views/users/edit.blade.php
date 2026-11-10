@@ -12,19 +12,27 @@
     @endphp
 
     <div class="py-6">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Edit Staff Account') }}</h3>
-                    <p class="text-sm text-gray-500">{{ __('Update this staff member\'s details') }}</p>
-                </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
-                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" /></svg>
-                </span>
-            </div>
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
+                <div class="relative overflow-hidden bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-4 py-6 sm:px-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" />
+                    </svg>
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
-                <form method="post" action="{{ route('users.update', $user) }}" class="space-y-6">
+                    <div class="relative flex items-center gap-4 min-w-0">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $personIconPath }}" />
+                            </svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white truncate">{{ __('Edit Staff Account') }}</h3>
+                            <p class="text-sm text-gray-400 truncate">{{ __('Update this staff member\'s details') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" action="{{ route('users.update', $user) }}" class="p-4 sm:p-8 space-y-6">
                     @csrf
                     @method('put')
 
@@ -56,21 +64,24 @@
                             <span class="pointer-events-none absolute left-0 top-0 flex h-full w-11 items-center justify-center text-gray-400">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                             </span>
-                            <select id="role" name="role" class="block w-full pl-11 border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm" required>
+                            <x-select id="role" name="role" class="block w-full pl-11" required>
                                 @foreach (['admin' => 'Admin (view, no deletes, no Finance)', 'secretary' => 'Secretary (day-to-day operations)', 'director' => 'Director (full access)'] as $value => $label)
                                     <option value="{{ $value }}" @selected(old('role', $user->role) === $value)>{{ __($label) }}</option>
                                 @endforeach
-                            </select>
+                            </x-select>
                         </div>
                         <x-input-error class="mt-2" :messages="$errors->get('role')" />
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                             {{ __('Save') }}
                         </button>
-                        <a href="{{ route('users.index') }}" class="text-sm text-gray-600 hover:underline">{{ __('Cancel') }}</a>
+                        <a href="{{ route('users.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-line hover:bg-paper px-5 py-3 text-sm font-semibold text-gray-700 transition">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                            {{ __('Cancel') }}
+                        </a>
                     </div>
                 </form>
             </div>
