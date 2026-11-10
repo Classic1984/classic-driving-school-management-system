@@ -810,51 +810,51 @@
 
                                 <div>
                                     <x-input-label for="quick_login_course_id" :value="__('Course')" />
-                                    <select id="quick_login_course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+                                    <x-select id="quick_login_course_id" name="course_id" class="mt-1 block w-full" required>
                                         <option value="">{{ __('Select a course') }}</option>
                                         @foreach ($student->courses as $enrolledCourse)
                                             <option value="{{ $enrolledCourse->id }}">{{ $enrolledCourse->name }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select>
                                 </div>
 
                                 <div>
                                     <x-input-label for="quick_login_type" :value="__('Type')" />
-                                    <select id="quick_login_type" name="type" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                                    <x-select id="quick_login_type" name="type" class="mt-1 block w-full">
                                         <option value="">{{ __('Not specified') }}</option>
                                         @foreach (['practical' => 'Practical', 'classroom' => 'Classroom'] as $value => $label)
                                             <option value="{{ $value }}">{{ __($label) }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select>
                                 </div>
 
                                 <div>
                                     <x-input-label for="quick_login_instructor_id" :value="__('Instructor')" />
-                                    <select id="quick_login_instructor_id" name="instructor_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                                    <x-select id="quick_login_instructor_id" name="instructor_id" class="mt-1 block w-full">
                                         <option value="">{{ __('None') }}</option>
                                         @foreach ($instructors as $availableInstructor)
                                             <option value="{{ $availableInstructor->id }}">{{ $availableInstructor->name }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select>
                                 </div>
 
                                 <div>
                                     <x-input-label for="quick_login_vehicle_id" :value="__('Vehicle')" />
-                                    <select id="quick_login_vehicle_id" name="vehicle_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                                    <x-select id="quick_login_vehicle_id" name="vehicle_id" class="mt-1 block w-full">
                                         <option value="">{{ __('None') }}</option>
                                         @foreach ($vehicles as $availableVehicle)
                                             <option value="{{ $availableVehicle->id }}">{{ $availableVehicle->name }} ({{ $availableVehicle->plate_number }})</option>
                                         @endforeach
-                                    </select>
+                                    </x-select>
                                 </div>
 
                                 <div>
                                     <x-input-label for="quick_login_duration" :value="__('Duration')" />
-                                    <select id="quick_login_duration" name="duration" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                                    <x-select id="quick_login_duration" name="duration" class="mt-1 block w-full">
                                         @foreach ([1 => '1 Day (Single Session)', 2 => '2 Days (Double Period / Saturday)', 3 => '3 Days (Sunday)'] as $value => $label)
                                             <option value="{{ $value }}">{{ __($label) }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select>
                                 </div>
 
                                 <div>
@@ -1076,11 +1076,11 @@
                                                         <form method="post" action="{{ route('student-services.processing-status.update', $studentService) }}">
                                                             @csrf
                                                             @method('patch')
-                                                            <select name="processing_status" class="border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
+                                                            <x-select name="processing_status" class="text-sm" onchange="this.form.submit()">
                                                                 @foreach (\App\Models\StudentService::PROCESSING_STATUSES as $value)
                                                                     <option value="{{ $value }}" @selected($studentService->processing_status === $value)>{{ ucwords(str_replace('_', ' ', $value)) }}</option>
                                                                 @endforeach
-                                                            </select>
+                                                            </x-select>
                                                         </form>
                                                         @if ($studentService->processingProgressPercent() !== null)
                                                             <div class="mt-1 text-xs text-gray-500">
@@ -1122,11 +1122,11 @@
 
                                     <div>
                                         <x-input-label for="service_id" :value="__('Charge for a Service')" />
-                                        <select id="service_id" name="service_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+                                        <x-select id="service_id" name="service_id" class="mt-1 block w-full" required>
                                             @foreach ($availableServices as $service)
                                                 <option value="{{ $service->id }}">{{ $service->name }} (₦{{ number_format($service->price, 2) }})</option>
                                             @endforeach
-                                        </select>
+                                        </x-select>
                                     </div>
 
                                     <x-primary-button>{{ __('Add Charge') }}</x-primary-button>

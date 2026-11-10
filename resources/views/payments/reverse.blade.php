@@ -67,7 +67,7 @@
                     @csrf
 
                     <x-input-label for="reason" :value="__('Reason for Reversal')" />
-                    <textarea id="reason" name="reason" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>{{ old('reason') }}</textarea>
+                    <x-textarea id="reason" name="reason" rows="3" class="mt-1 block w-full" required>{{ old('reason') }}</x-textarea>
                     <x-input-error class="mt-2" :messages="$errors->get('reason')" />
 
                     <div class="flex items-center gap-4 mt-4">

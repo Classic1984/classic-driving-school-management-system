@@ -68,31 +68,31 @@
 
                     <div>
                         <x-input-label for="status" :value="__('Status')" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="status" name="status" class="mt-1 block w-full">
                             <option value="">{{ __('All') }}</option>
                             @foreach (['active' => 'Active', 'completed' => 'Completed', 'withdrawn' => 'Withdrawn'] as $value => $label)
                                 <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <x-input-label for="course_id" :value="__('Course')" />
-                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="course_id" name="course_id" class="mt-1 block w-full">
                             <option value="">{{ __('All') }}</option>
                             @foreach ($courses as $course)
                                 <option value="{{ $course->id }}" @selected((string) request('course_id') === (string) $course->id)>{{ $course->name }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </div>
 
                     <div>
                         <x-input-label for="payment" :value="__('Payment')" />
-                        <select id="payment" name="payment" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">
+                        <x-select id="payment" name="payment" class="mt-1 block w-full">
                             <option value="">{{ __('All') }}</option>
                             <option value="clear" @selected(request('payment') === 'clear')>{{ __('Clear') }}</option>
                             <option value="locked" @selected(request('payment') === 'locked')>{{ __('Locked') }}</option>
-                        </select>
+                        </x-select>
                     </div>
 
                     <div class="md:col-span-4 flex items-center gap-4">

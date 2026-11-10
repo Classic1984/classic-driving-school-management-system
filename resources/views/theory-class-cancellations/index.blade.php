@@ -72,7 +72,7 @@
 
                     <div>
                         <x-input-label for="reason" :value="__('Reason (optional)')" />
-                        <textarea id="reason" name="reason" rows="3" placeholder="{{ __('Enter reason for cancellation (optional)') }}" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm">{{ old('reason') }}</textarea>
+                        <x-textarea id="reason" name="reason" rows="3" placeholder="{{ __('Enter reason for cancellation (optional)') }}" class="mt-1 block w-full">{{ old('reason') }}</x-textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('reason')" />
                     </div>
 

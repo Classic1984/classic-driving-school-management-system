@@ -167,11 +167,11 @@
                     {{ $users->links() }}
 
                     <form method="get" action="{{ route('users.index') }}" class="flex items-center gap-2">
-                        <select name="per_page" onchange="this.form.submit()" class="rounded-lg border-gray-300 focus:border-gold-500 focus:ring-gold-500 text-sm font-medium">
+                        <x-select name="per_page" onchange="this.form.submit()" class="text-sm font-medium">
                             @foreach ([10, 25, 50] as $option)
                                 <option value="{{ $option }}" @selected($perPage === $option)>{{ __(':count / page', ['count' => $option]) }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                     </form>
                 </div>
             </div>

@@ -68,12 +68,12 @@
 
                         <div>
                             <x-input-label for="student_id" :value="__('Student')" />
-                            <select id="student_id" name="student_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+                            <x-select id="student_id" name="student_id" class="mt-1 block w-full" required>
                                 <option value="">{{ __('Select a student') }}</option>
                                 @foreach ($students as $availableStudent)
                                     <option value="{{ $availableStudent->id }}" @selected((string) old('student_id') === (string) $availableStudent->id)>{{ $availableStudent->name }} ({{ $availableStudent->student_id_number }})</option>
                                 @endforeach
-                            </select>
+                            </x-select>
                             <x-input-error class="mt-2" :messages="$errors->get('student_id')" />
                         </div>
 

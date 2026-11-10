@@ -97,22 +97,22 @@
             <form method="get" action="{{ route('expenses.index') }}" class="flex flex-wrap gap-3">
                 <div class="relative">
                     <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $calendarIconPath }}" /></svg>
-                    <select name="period" onchange="this.form.submit()" class="pl-9 pr-8 rounded-lg border-gray-300 focus:border-gold-500 focus:ring-gold-500 text-sm font-medium">
+                    <x-select name="period" onchange="this.form.submit()" class="pl-9 pr-8 text-sm font-medium">
                         <option value="all_time" @selected($period === 'all_time')>{{ __('All Time') }}</option>
                         <option value="this_month" @selected($period === 'this_month')>{{ __('This Month') }}</option>
                         <option value="last_month" @selected($period === 'last_month')>{{ __('Last Month') }}</option>
                         <option value="this_year" @selected($period === 'this_year')>{{ __('This Year') }}</option>
-                    </select>
+                    </x-select>
                 </div>
 
                 <div class="relative">
                     <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $funnelIconPath }}" /></svg>
-                    <select name="category" onchange="this.form.submit()" class="pl-9 pr-8 rounded-lg border-gray-300 focus:border-gold-500 focus:ring-gold-500 text-sm font-medium">
+                    <x-select name="category" onchange="this.form.submit()" class="pl-9 pr-8 text-sm font-medium">
                         <option value="">{{ __('All Categories') }}</option>
                         @foreach (\App\Models\Expense::CATEGORIES as $value => $label)
                             <option value="{{ $value }}" @selected($category === $value)>{{ $label }}</option>
                         @endforeach
-                    </select>
+                    </x-select>
                 </div>
             </form>
 
