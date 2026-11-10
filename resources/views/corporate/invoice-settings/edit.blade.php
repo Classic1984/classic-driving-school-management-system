@@ -16,17 +16,25 @@
 
     <div class="py-6">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="flex items-center gap-4">
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
-                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        @foreach ($cogIconPath as $path)
-                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
-                        @endforeach
-                    </svg>
-                </span>
-                <div>
-                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Invoice Settings') }}</h3>
-                    <p class="text-sm text-gray-500">{{ __('Company, bank, and numbering details printed on every corporate quotation, invoice, and receipt.') }}</p>
+            <div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-4 py-6 sm:px-8">
+                <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
+                    @foreach ($cogIconPath as $path)
+                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
+                    @endforeach
+                </svg>
+
+                <div class="relative flex items-center gap-4">
+                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                        <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            @foreach ($cogIconPath as $path)
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
+                            @endforeach
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-extrabold text-white">{{ __('Invoice Settings') }}</h3>
+                        <p class="text-sm text-gray-400">{{ __('Company, bank, and numbering details printed on every corporate quotation, invoice, and receipt.') }}</p>
+                    </div>
                 </div>
             </div>
 
@@ -137,22 +145,22 @@
                     <div class="max-w-3xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div>
                             <x-input-label for="programme_options" :value="__('Programmes')" />
-                            <textarea id="programme_options" name="programme_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" placeholder="{{ __("Defensive Driving\nBasic Driving\nAdvanced Driving") }}">{{ old('programme_options', $settings->programme_options) }}</textarea>
+                            <x-textarea id="programme_options" name="programme_options" rows="4" class="mt-1 block w-full" placeholder='{{ __("Defensive Driving\nBasic Driving\nAdvanced Driving") }}'>{{ old('programme_options', $settings->programme_options) }}</x-textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('programme_options')" />
                         </div>
                         <div>
                             <x-input-label for="duration_options" :value="__('Durations')" />
-                            <textarea id="duration_options" name="duration_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" placeholder="{{ __("One Week\nTwo Weeks\nOne Day") }}">{{ old('duration_options', $settings->duration_options) }}</textarea>
+                            <x-textarea id="duration_options" name="duration_options" rows="4" class="mt-1 block w-full" placeholder='{{ __("One Week\nTwo Weeks\nOne Day") }}'>{{ old('duration_options', $settings->duration_options) }}</x-textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('duration_options')" />
                         </div>
                         <div>
                             <x-input-label for="driver_count_options" :value="__('Number of Drivers')" />
-                            <textarea id="driver_count_options" name="driver_count_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" placeholder="{{ __("1\n5\n10") }}">{{ old('driver_count_options', $settings->driver_count_options) }}</textarea>
+                            <x-textarea id="driver_count_options" name="driver_count_options" rows="4" class="mt-1 block w-full" placeholder='{{ __("1\n5\n10") }}'>{{ old('driver_count_options', $settings->driver_count_options) }}</x-textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('driver_count_options')" />
                         </div>
                         <div>
                             <x-input-label for="service_options" :value="__('Charges')" />
-                            <textarea id="service_options" name="service_options" rows="4" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" placeholder="{{ __("Certificate of Completion\nRegistration Fee") }}">{{ old('service_options', $settings->service_options) }}</textarea>
+                            <x-textarea id="service_options" name="service_options" rows="4" class="mt-1 block w-full" placeholder='{{ __("Certificate of Completion\nRegistration Fee") }}'>{{ old('service_options', $settings->service_options) }}</x-textarea>
                             <x-input-error class="mt-2" :messages="$errors->get('service_options')" />
                         </div>
                     </div>

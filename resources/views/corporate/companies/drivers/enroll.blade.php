@@ -10,23 +10,31 @@
     @endphp
 
     <div class="py-6">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Enroll :name', ['name' => $driver->name]) }}</h3>
-                    <p class="text-sm text-gray-500">{{ __('Sponsored by :company - no payment needed here, their training fee is covered by the companys invoice.', ['company' => $driver->company->name]) }}</p>
-                </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
-                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
+                <div class="relative overflow-hidden bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-4 py-6 sm:px-8">
+                    <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
                         @foreach ($userIconPath as $path)
                             <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                         @endforeach
                     </svg>
-                </span>
-            </div>
 
-            <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">
-                <form method="post" action="{{ route('corporate-company-drivers.enroll-store', $driver) }}" class="space-y-6">
+                    <div class="relative flex items-center gap-4 min-w-0">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                            <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                @foreach ($userIconPath as $path)
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
+                                @endforeach
+                            </svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-xl sm:text-2xl font-extrabold text-white truncate">{{ __('Enroll :name', ['name' => $driver->name]) }}</h3>
+                            <p class="text-sm text-gray-400 truncate">{{ __('Sponsored by :company - no payment needed here, their training fee is covered by the companys invoice.', ['company' => $driver->company->name]) }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" action="{{ route('corporate-company-drivers.enroll-store', $driver) }}" class="p-4 sm:p-8 space-y-6">
                     @csrf
 
                     <div>
@@ -54,21 +62,21 @@
 
                     <div>
                         <x-input-label for="course_id" :value="__('Course')" />
-                        <select id="course_id" name="course_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
+                        <x-select id="course_id" name="course_id" class="mt-1 block w-full" required>
                             <option value="">{{ __('Select a course') }}</option>
                             @foreach ($courses as $course)
                                 <option value="{{ $course->id }}" @selected(old('course_id') == $course->id)>{{ $course->name }}</option>
                             @endforeach
-                        </select>
+                        </x-select>
                         <x-input-error class="mt-2" :messages="$errors->get('course_id')" />
                     </div>
 
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                             {{ __('Enroll as Student') }}
                         </button>
-                        <a href="{{ route('corporate-companies.show', $driver->company) }}#drivers" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 hover:bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition">
+                        <a href="{{ route('corporate-companies.show', $driver->company) }}#drivers" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-line hover:bg-paper px-5 py-3 text-sm font-semibold text-gray-700 transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                             {{ __('Cancel') }}
                         </a>

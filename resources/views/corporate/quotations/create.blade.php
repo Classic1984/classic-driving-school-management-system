@@ -45,51 +45,61 @@
         }"
     >
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="flex items-start justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-extrabold text-gray-900">{{ __('Create Quotation') }}</h3>
-                    <p class="text-sm text-gray-500">{{ __('Give a corporate client a price before they commit to an invoice.') }}</p>
-                </div>
-                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-50">
-                    <svg class="h-7 w-7 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        @foreach ($documentIconPath as $path)
-                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
-                        @endforeach
-                    </svg>
-                </span>
-            </div>
-
             <form method="post" action="{{ route('corporate-quotations.store') }}" class="space-y-6">
                 @csrf
 
-                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6 space-y-6">
-                    <div>
-                        <x-input-label for="corporate_company_id" :value="__('Company')" />
-                        <select id="corporate_company_id" name="corporate_company_id" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm" required>
-                            <option value="">{{ __('Select a company…') }}</option>
-                            @foreach ($companies as $company)
-                                <option value="{{ $company->id }}" @selected(old('corporate_company_id', $selectedCompanyId) == $company->id)>{{ $company->name }}</option>
+                <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl overflow-hidden">
+                    <div class="relative overflow-hidden bg-gradient-to-r from-navy-900 via-navy-800 to-navy px-4 py-6 sm:px-8">
+                        <svg class="pointer-events-none absolute -right-8 -top-8 h-48 w-48 text-gold-500/10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.75">
+                            @foreach ($documentIconPath as $path)
+                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
                             @endforeach
-                        </select>
-                        <x-input-error class="mt-2" :messages="$errors->get('corporate_company_id')" />
-                        @if ($companies->isEmpty())
-                            <p class="mt-2 text-sm text-gold-600">
-                                {{ __('No companies registered yet.') }}
-                                <a href="{{ route('corporate-companies.create') }}" class="underline hover:no-underline">{{ __('Add one first') }}</a>.
-                            </p>
-                        @endif
+                        </svg>
+
+                        <div class="relative flex items-center gap-4">
+                            <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gold-500/15 text-gold-400 ring-1 ring-gold-400/30">
+                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                    @foreach ($documentIconPath as $path)
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="{{ $path }}" />
+                                    @endforeach
+                                </svg>
+                            </span>
+                            <div>
+                                <h3 class="text-xl sm:text-2xl font-extrabold text-white">{{ __('Create Quotation') }}</h3>
+                                <p class="text-sm text-gray-400">{{ __('Give a corporate client a price before they commit to an invoice.') }}</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="p-4 sm:p-8 space-y-6">
                         <div>
-                            <x-input-label for="issue_date" :value="__('Issue Date')" />
-                            <x-text-input id="issue_date" name="issue_date" type="date" class="block w-full mt-1" :value="old('issue_date', now()->format('Y-m-d'))" required />
-                            <x-input-error class="mt-2" :messages="$errors->get('issue_date')" />
+                            <x-input-label for="corporate_company_id" :value="__('Company')" />
+                            <x-select id="corporate_company_id" name="corporate_company_id" class="mt-1 block w-full" required>
+                                <option value="">{{ __('Select a company…') }}</option>
+                                @foreach ($companies as $company)
+                                    <option value="{{ $company->id }}" @selected(old('corporate_company_id', $selectedCompanyId) == $company->id)>{{ $company->name }}</option>
+                                @endforeach
+                            </x-select>
+                            <x-input-error class="mt-2" :messages="$errors->get('corporate_company_id')" />
+                            @if ($companies->isEmpty())
+                                <p class="mt-2 text-sm text-gold-600">
+                                    {{ __('No companies registered yet.') }}
+                                    <a href="{{ route('corporate-companies.create') }}" class="underline hover:no-underline">{{ __('Add one first') }}</a>.
+                                </p>
+                            @endif
                         </div>
-                        <div>
-                            <x-input-label for="valid_until" :value="__('Valid Until (optional)')" />
-                            <x-text-input id="valid_until" name="valid_until" type="date" class="block w-full mt-1" :value="old('valid_until', now()->addDays(30)->format('Y-m-d'))" />
-                            <x-input-error class="mt-2" :messages="$errors->get('valid_until')" />
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <x-input-label for="issue_date" :value="__('Issue Date')" />
+                                <x-text-input id="issue_date" name="issue_date" type="date" class="block w-full mt-1" :value="old('issue_date', now()->format('Y-m-d'))" required />
+                                <x-input-error class="mt-2" :messages="$errors->get('issue_date')" />
+                            </div>
+                            <div>
+                                <x-input-label for="valid_until" :value="__('Valid Until (optional)')" />
+                                <x-text-input id="valid_until" name="valid_until" type="date" class="block w-full mt-1" :value="old('valid_until', now()->addDays(30)->format('Y-m-d'))" />
+                                <x-input-error class="mt-2" :messages="$errors->get('valid_until')" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -112,12 +122,12 @@
                     </div>
                     <div>
                         <x-input-label for="course_coverage" :value="__('Course Coverage (optional, one topic per line)')" />
-                        <textarea id="course_coverage" name="course_coverage" rows="3" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('course_coverage') }}</textarea>
+                        <x-textarea id="course_coverage" name="course_coverage" rows="3" class="mt-1 block w-full">{{ old('course_coverage') }}</x-textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('course_coverage')" />
                     </div>
                     <div>
                         <x-input-label for="notes" :value="__('Notes (optional)')" />
-                        <textarea id="notes" name="notes" rows="2" class="mt-1 block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm">{{ old('notes') }}</textarea>
+                        <x-textarea id="notes" name="notes" rows="2" class="mt-1 block w-full">{{ old('notes') }}</x-textarea>
                         <x-input-error class="mt-2" :messages="$errors->get('notes')" />
                     </div>
                 </div>
@@ -155,7 +165,7 @@
                                                     x-on:input="openSuggestions(item, $event)"
                                                     x-on:blur="item.showSuggestions = false"
                                                     autocomplete="off"
-                                                    class="block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm text-sm pr-8"
+                                                    class="block w-full border-line focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm text-sm pr-8"
                                                     required
                                                 >
                                                 <button type="button" x-on:mousedown.prevent="item.showSuggestions = !item.showSuggestions" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400">
@@ -181,10 +191,10 @@
                                             </div>
                                         </td>
                                         <td class="py-2 px-3">
-                                            <input type="number" step="0.01" min="0.01" :name="`items[${index}][quantity]`" x-model="item.quantity" class="block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="number" step="0.01" min="0.01" :name="`items[${index}][quantity]`" x-model="item.quantity" class="block w-full border-line focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm text-sm" required>
                                         </td>
                                         <td class="py-2 px-3">
-                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_price]`" x-model="item.unit_price" class="block w-full border-gray-300 focus:border-gold-500 focus:ring-gold-500 rounded-md shadow-sm text-sm" required>
+                                            <input type="number" step="0.01" min="0" :name="`items[${index}][unit_price]`" x-model="item.unit_price" class="block w-full border-line focus:border-gold-500 focus:ring-gold-500 rounded-lg shadow-sm text-sm" required>
                                         </td>
                                         <td class="py-2 pl-3 text-right text-sm font-semibold text-gray-900" x-text="amount(item)"></td>
                                         <td class="py-2 text-right">
@@ -209,7 +219,7 @@
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
                         {{ __('Save Quotation') }}
                     </button>
-                    <a href="{{ $selectedCompanyId ? route('corporate-companies.show', $selectedCompanyId) : route('corporate-companies.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 hover:bg-gray-50 px-5 py-3 text-sm font-semibold text-gray-700 transition">
+                    <a href="{{ $selectedCompanyId ? route('corporate-companies.show', $selectedCompanyId) : route('corporate-companies.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-line hover:bg-paper px-5 py-3 text-sm font-semibold text-gray-700 transition">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                         {{ __('Cancel') }}
                     </a>
