@@ -105,7 +105,7 @@
                     $otherChargeRows = $financialOverview->where('type', '!=', 'training');
                 @endphp
 
-                <div class="flex flex-col lg:flex-row gap-5 items-start" x-data="{ showMoreInfo: false }">
+                <div class="flex flex-col lg:flex-row gap-5 lg:items-start" x-data="{ showMoreInfo: false }">
                 <aside class="w-full lg:w-[300px] lg:shrink-0 space-y-4">
 
                 <div class="rounded-xl ring-1 ring-gray-200 bg-gray-50/60 p-4 flex items-center gap-4">
