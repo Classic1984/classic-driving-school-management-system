@@ -1301,6 +1301,38 @@ class DashboardTest extends TestCase
         $response->assertSee('₦100.00', false);
     }
 
+    public function test_the_locked_balance_hero_tile_excludes_students_locked_for_an_expired_training_period(): void
+    {
+        $director = User::factory()->create();
+        $overdueCourse = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $overdueStudent = Student::factory()->create();
+        $overdueCourse->students()->attach($overdueStudent->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+        Enrollment::where('student_id', $overdueStudent->id)->where('course_id', $overdueCourse->id)->firstOrFail()->refreshStatus();
+
+        $expiredCourse = Course::factory()->create(['fee' => 5000]);
+        $expiredStudent = Student::factory()->create();
+        $expiredCourse->students()->attach($expiredStudent->id, [
+            'enrolled_at' => now()->subMonths(3),
+            'due_date' => now()->addDays(30),
+            'status' => 'locked',
+            'locked_reason' => 'training_period_expired',
+        ]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Locked Balance');
+        // Only the overdue-balance student's ₦100 counts toward the tile -
+        // the expired-training-period student's ₦5,000 balance must not be
+        // folded in, since that lock has nothing to do with unpaid fees.
+        $response->assertSee('₦100.00', false);
+        $response->assertSee('student locked out for balance');
+    }
+
     public function test_a_secretary_does_not_see_the_locked_balance_hero_tile(): void
     {
         $secretary = User::factory()->secretary()->create();

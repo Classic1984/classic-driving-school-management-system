@@ -168,10 +168,15 @@
                 // total.
                 $heroCards = [];
                 if (auth()->user()->isDirector()) {
+                    // Only count students locked for an overdue balance -
+                    // not ones locked because their training period
+                    // expired, since this tile is specifically about money
+                    // owed, not every reason a student can be locked out.
+                    $lockedForBalanceEnrollments = $lockedEnrollments->where('locked_reason', 'overdue_balance');
                     $heroCards[] = [
-                        'title' => 'Locked Balance', 'value' => '₦'.number_format($lockedEnrollments->sum(fn (\App\Models\Enrollment $enrollment) => $enrollment->balance()), 2), 'color' => 'red',
+                        'title' => 'Locked Balance', 'value' => '₦'.number_format($lockedForBalanceEnrollments->sum(fn (\App\Models\Enrollment $enrollment) => $enrollment->balance()), 2), 'color' => 'red',
                         'icon' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
-                        'sub' => $lockedEnrollments->isNotEmpty() ? trans_choice('{1} student locked out|[2,*] :count students locked out', $lockedEnrollments->count(), ['count' => $lockedEnrollments->count()]) : __('No students locked out'),
+                        'sub' => $lockedForBalanceEnrollments->isNotEmpty() ? trans_choice('{1} student locked out for balance|[2,*] :count students locked out for balance', $lockedForBalanceEnrollments->count(), ['count' => $lockedForBalanceEnrollments->count()]) : __('No students locked out for balance'),
                         'modal' => 'locked-students-modal',
                     ];
                 }
