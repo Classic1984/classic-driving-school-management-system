@@ -161,7 +161,21 @@
             </div>
 
             @php
-                $heroCards = [
+                // Director-only, same restriction as every other individual
+                // student balance figure on this page (see the comment above
+                // $showUpcomingPaymentsCard below) - a secretary still sees
+                // the locked-student count further down, just never the ₦
+                // total.
+                $heroCards = [];
+                if (auth()->user()->isDirector()) {
+                    $heroCards[] = [
+                        'title' => 'Locked Balance', 'value' => '₦'.number_format($lockedEnrollments->sum(fn (\App\Models\Enrollment $enrollment) => $enrollment->balance()), 2), 'color' => 'red',
+                        'icon' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
+                        'sub' => $lockedEnrollments->isNotEmpty() ? trans_choice('{1} student locked out|[2,*] :count students locked out', $lockedEnrollments->count(), ['count' => $lockedEnrollments->count()]) : __('No students locked out'),
+                        'modal' => 'locked-students-modal',
+                    ];
+                }
+                $heroCards = [...$heroCards, ...[
                     [
                         'title' => 'Total Students', 'value' => number_format($stats['students']), 'color' => 'purple',
                         'icon' => 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 22.5c-2.676 0-5.216-.584-7.499-1.632Z',
@@ -186,11 +200,11 @@
                         'sub' => __('Due').': '.number_format($kpis['certificates_due']).' · '.__("Learner's Permit").': '.number_format(max(0, $learnersPermitStats['charged'] - $learnersPermitStats['completed'])),
                         'href' => route('certificates.index'),
                     ],
-                ];
+                ]];
 
             @endphp
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ count($heroCards) >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4' }} gap-4 mb-6">
                 @foreach ($heroCards as $card)
                     @php $heroTag = ! empty($card['modal']) ? 'button' : 'a'; $heroColor = $tileColor($card['color'] ?? null); @endphp
                     <{{ $heroTag }}

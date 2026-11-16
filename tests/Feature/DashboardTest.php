@@ -9,6 +9,7 @@ use App\Models\CorporateCompany;
 use App\Models\CorporateInvoice;
 use App\Models\Course;
 use App\Models\DiscountRequest;
+use App\Models\Enrollment;
 use App\Models\Instructor;
 use App\Models\Lead;
 use App\Models\Payment;
@@ -1279,6 +1280,43 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertDontSee('Pending Approvals');
+    }
+
+    public function test_a_director_sees_the_locked_balance_hero_tile_with_the_total_owed(): void
+    {
+        $director = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+        Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail()->refreshStatus();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Locked Balance');
+        $response->assertSee('₦100.00', false);
+    }
+
+    public function test_a_secretary_does_not_see_the_locked_balance_hero_tile(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $student = Student::factory()->create();
+        $course->students()->attach($student->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+        Enrollment::where('student_id', $student->id)->where('course_id', $course->id)->firstOrFail()->refreshStatus();
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Locked Balance');
     }
 
     public function test_dashboard_lists_a_pending_learners_permit_request(): void
