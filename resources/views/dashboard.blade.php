@@ -177,7 +177,7 @@
                         'title' => 'Locked Balance', 'value' => '₦'.number_format($lockedForBalanceEnrollments->sum(fn (\App\Models\Enrollment $enrollment) => $enrollment->balance()), 2), 'color' => 'red',
                         'icon' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
                         'sub' => $lockedForBalanceEnrollments->isNotEmpty() ? trans_choice('{1} student locked out for balance|[2,*] :count students locked out for balance', $lockedForBalanceEnrollments->count(), ['count' => $lockedForBalanceEnrollments->count()]) : __('No students locked out for balance'),
-                        'modal' => 'locked-students-modal',
+                        'modal' => 'locked-balance-modal',
                     ];
                 }
                 $heroCards = [...$heroCards, ...[
@@ -1111,27 +1111,36 @@
                 @endif
 
                 @if ($lockedEnrollments->isNotEmpty())
+                    {{-- Combined view for the "at a glance" locked-count card
+                    above, which deliberately totals every lock reason - the
+                    hero tiles each get their own modal below, scoped to just
+                    the reason they're about. --}}
                     <x-modal name="locked-students-modal">
                         <div class="p-6">
                             <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Students') }}</h3>
                             <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                @foreach ($lockedEnrollments as $enrollment)
-                                    <div class="py-2.5 flex items-center justify-between gap-4 text-sm">
-                                        <div>
-                                            <a href="{{ route('students.show', $enrollment->student_id) }}" class="text-gold-600 hover:underline font-medium">{{ $enrollment->student->name }}</a>
-                                            <span class="text-gray-500"> — {{ $enrollment->course->name }}@if (auth()->user()->isDirector()) · ₦{{ number_format($enrollment->balance(), 2) }}@endif</span>
-                                        </div>
-                                        <div class="flex items-center gap-2 whitespace-nowrap">
-                                            <x-badge color="red">{{ $enrollment->lockedReasonLabel() }}</x-badge>
-                                            @if ($enrollment->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
-                                                <a href="{{ route('enrollments.reactivate.create', $enrollment->id) }}" class="text-xs text-gold-600 hover:underline">{{ __('Reactivate') }}</a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
+                                @include('partials.dashboard.locked-enrollments-list', ['enrollments' => $lockedEnrollments])
                             </div>
                             <div class="mt-4 text-right">
                                 <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-students-modal')">{{ __('Close') }}</x-secondary-button>
+                            </div>
+                        </div>
+                    </x-modal>
+                @endif
+
+                @if (auth()->user()->isDirector())
+                    <x-modal name="locked-balance-modal">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Balance') }}</h3>
+                            @if ($lockedForBalanceEnrollments->isEmpty())
+                                <p class="text-sm text-gray-500">{{ __('No students locked out for balance.') }}</p>
+                            @else
+                                <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                    @include('partials.dashboard.locked-enrollments-list', ['enrollments' => $lockedForBalanceEnrollments])
+                                </div>
+                            @endif
+                            <div class="mt-4 text-right">
+                                <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-balance-modal')">{{ __('Close') }}</x-secondary-button>
                             </div>
                         </div>
                     </x-modal>

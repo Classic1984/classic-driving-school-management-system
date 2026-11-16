@@ -1333,6 +1333,42 @@ class DashboardTest extends TestCase
         $response->assertSee('student locked out for balance');
     }
 
+    public function test_the_locked_balance_modal_only_lists_students_locked_for_an_overdue_balance(): void
+    {
+        $director = User::factory()->create();
+        $overdueCourse = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $overdueStudent = Student::factory()->create(['name' => 'Overdue Student']);
+        $overdueCourse->students()->attach($overdueStudent->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+        Enrollment::where('student_id', $overdueStudent->id)->where('course_id', $overdueCourse->id)->firstOrFail()->refreshStatus();
+
+        $expiredCourse = Course::factory()->create();
+        $expiredStudent = Student::factory()->create(['name' => 'Expired Student']);
+        $expiredCourse->students()->attach($expiredStudent->id, [
+            'enrolled_at' => now()->subMonths(3),
+            'due_date' => now()->addDays(30),
+            'status' => 'locked',
+            'locked_reason' => 'training_period_expired',
+        ]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        // The tile's own modal must not mix in the other lock reason -
+        // that was the bug: clicking "Locked Balance" opened a list that
+        // still showed training-period-expired students alongside it.
+        $html = $response->getContent();
+        $modalStart = strpos($html, 'id="locked-balance-modal"');
+        $modalEnd = strpos($html, 'id="', $modalStart + 1);
+        $modalHtml = substr($html, $modalStart, $modalEnd - $modalStart);
+
+        $this->assertStringContainsString('Overdue Student', $modalHtml);
+        $this->assertStringNotContainsString('Expired Student', $modalHtml);
+    }
+
     public function test_a_secretary_does_not_see_the_locked_balance_hero_tile(): void
     {
         $secretary = User::factory()->secretary()->create();
