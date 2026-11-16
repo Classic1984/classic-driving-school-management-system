@@ -1416,6 +1416,39 @@ class DashboardTest extends TestCase
         $response->assertSeeInOrder(['Training Expired', '1']);
     }
 
+    public function test_the_training_expired_modal_only_lists_students_locked_for_an_expired_training_period(): void
+    {
+        $director = User::factory()->create();
+        $overdueCourse = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
+        $overdueStudent = Student::factory()->create(['name' => 'Overdue Student']);
+        $overdueCourse->students()->attach($overdueStudent->id, [
+            'enrolled_at' => now()->subDays(10)->toDateString(),
+            'due_date' => now()->subDays(6)->toDateString(),
+            'status' => 'active',
+        ]);
+        Enrollment::where('student_id', $overdueStudent->id)->where('course_id', $overdueCourse->id)->firstOrFail()->refreshStatus();
+
+        $expiredCourse = Course::factory()->create();
+        $expiredStudent = Student::factory()->create(['name' => 'Expired Student']);
+        $expiredCourse->students()->attach($expiredStudent->id, [
+            'enrolled_at' => now()->subMonths(3),
+            'due_date' => now()->addDays(30),
+            'status' => 'locked',
+            'locked_reason' => 'training_period_expired',
+        ]);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $html = $response->getContent();
+        $modalStart = strpos($html, 'id="training-expired-modal"');
+        $modalEnd = strpos($html, 'id="', $modalStart + 1);
+        $modalHtml = substr($html, $modalStart, $modalEnd - $modalStart);
+
+        $this->assertStringContainsString('Expired Student', $modalHtml);
+        $this->assertStringNotContainsString('Overdue Student', $modalHtml);
+    }
+
     public function test_a_secretary_also_sees_the_training_expired_hero_tile(): void
     {
         $secretary = User::factory()->secretary()->create();

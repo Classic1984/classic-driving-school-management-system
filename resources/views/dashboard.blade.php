@@ -187,7 +187,7 @@
                     'title' => 'Training Expired', 'value' => number_format($trainingExpiredEnrollments->count()), 'color' => 'orange',
                     'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
                     'sub' => $trainingExpiredEnrollments->isNotEmpty() ? trans_choice('{1} student past the training period|[2,*] :count students past the training period', $trainingExpiredEnrollments->count(), ['count' => $trainingExpiredEnrollments->count()]) : __('No students past the training period'),
-                    'modal' => 'locked-students-modal',
+                    'modal' => 'training-expired-modal',
                 ];
                 $heroCards = [...$heroCards, ...[
                     [
@@ -1158,6 +1158,24 @@
                         </div>
                     </x-modal>
                 @endif
+
+                {{-- Not Director-gated, matching the Training Expired tile
+                itself - everyone who can see the tile can open this. --}}
+                <x-modal name="training-expired-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">⏰ {{ __('Training Expired') }}</h3>
+                        @if ($trainingExpiredEnrollments->isEmpty())
+                            <p class="text-sm text-gray-500">{{ __('No students past the training period.') }}</p>
+                        @else
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @include('partials.dashboard.locked-enrollments-list', ['enrollments' => $trainingExpiredEnrollments])
+                            </div>
+                        @endif
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'training-expired-modal')">{{ __('Close') }}</x-secondary-button>
+                        </div>
+                    </div>
+                </x-modal>
             @endif
 
             <x-modal name="todays-payments-modal">
