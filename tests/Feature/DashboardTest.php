@@ -1345,6 +1345,21 @@ class DashboardTest extends TestCase
         $response->assertSee('₦100.00', false);
     }
 
+    public function test_a_directors_seven_hero_tiles_avoid_a_near_empty_trailing_row(): void
+    {
+        $director = User::factory()->create();
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        // A director always sees exactly 7 hero tiles (Locked Balance,
+        // Training Expired, Total Students, Walk-in Students, Training
+        // Today, Paid Today, Certificates Issued) - fitting 7 into 6
+        // columns would leave the 7th alone on a near-empty second row.
+        $response->assertDontSee('lg:grid-cols-6', false);
+        $response->assertSee('lg:grid-cols-4', false);
+    }
+
     public function test_the_locked_balance_hero_tile_excludes_students_locked_for_an_expired_training_period(): void
     {
         $director = User::factory()->create();

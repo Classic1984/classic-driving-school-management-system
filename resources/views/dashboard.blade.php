@@ -225,6 +225,11 @@
             @endphp
 
             <div class="grid grid-cols-1 sm:grid-cols-2 {{ match (true) {
+                // 7 doesn't divide evenly into any column count up to 6, so
+                // fitting it to 6 columns (as the >= 6 case below would)
+                // leaves a near-empty, mostly-blank trailing row - 4 columns
+                // instead gives a tidier 4-then-3 split.
+                count($heroCards) === 7 => 'lg:grid-cols-4',
                 count($heroCards) >= 6 => 'lg:grid-cols-6',
                 count($heroCards) === 5 => 'lg:grid-cols-5',
                 default => 'lg:grid-cols-4',
