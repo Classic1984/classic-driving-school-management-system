@@ -354,6 +354,21 @@ class DashboardTest extends TestCase
         $response->assertSee('pending_payments-modal', false);
     }
 
+    public function test_the_walk_in_students_hero_tile_counts_only_students_with_no_course_enrollment(): void
+    {
+        $user = User::factory()->create();
+        $enrolledStudent = Student::factory()->create();
+        $course = Course::factory()->create();
+        $enrolledStudent->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active']);
+        Student::factory()->create();
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Walk-in Students');
+        $response->assertSeeInOrder(['Total Students', '2', 'Walk-in Students', '1']);
+    }
+
     public function test_a_director_sees_a_shortcut_to_record_an_investment_return(): void
     {
         $director = User::factory()->director()->create();
