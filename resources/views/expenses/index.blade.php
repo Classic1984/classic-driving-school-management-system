@@ -71,7 +71,7 @@
                         <div>
                             <h4 class="text-lg font-bold text-gray-900">{{ __('Finance Summary') }}</h4>
                             <p class="text-sm text-gray-500">{{ __('This Month') }}</p>
-                            <p class="text-3xl font-extrabold text-gray-900 mt-1">₦{{ number_format($totalThisMonth, 2) }}</p>
+                            <p class="text-3xl font-extrabold text-gray-900 mt-1"><span class="mr-1">₦</span>{{ number_format($totalThisMonth, 2) }}</p>
                             @if (! is_null($percentChange))
                                 <span class="mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold {{ $percentChange <= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                     <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
