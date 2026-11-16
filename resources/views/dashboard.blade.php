@@ -236,7 +236,7 @@
                             <svg class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                         </div>
                         <p class="mt-4 text-sm font-medium text-gray-500">{{ __($card['title']) }}</p>
-                        <p class="text-3xl font-extrabold tabular-nums text-navy-900">{{ $card['value'] }}</p>
+                        <p class="text-3xl font-extrabold tabular-nums text-navy-900"><x-naira-value :value="$card['value']" /></p>
                         <p class="mt-2 text-xs text-gray-400">{{ $card['sub'] }}</p>
                     </{{ $heroTag }}>
                 @endforeach
@@ -889,7 +889,7 @@
                         {{-- Emitted before the label row so the amount precedes the label in the
                              page source (screen readers / text search read amount-then-label),
                              then repositioned visually above/below via flex `order`. --}}
-                        <p class="order-2 mt-3 text-3xl font-extrabold whitespace-nowrap {{ $heroAccent['value'] }}">{{ $heroRow['value'] }}</p>
+                        <p class="order-2 mt-3 text-3xl font-extrabold whitespace-nowrap {{ $heroAccent['value'] }}"><x-naira-value :value="$heroRow['value']" /></p>
 
                         <div class="order-1 flex items-center gap-2.5">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $heroAccent['icon'] }}">
