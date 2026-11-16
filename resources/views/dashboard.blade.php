@@ -221,10 +221,29 @@
                         'href' => route('certificates.index'),
                     ],
                 ]];
+                // Director-only, same restriction as the Approval Centre
+                // link itself and the matching rows elsewhere on this page -
+                // a secretary has no route to view or act on these.
+                if (auth()->user()->isDirector()) {
+                    $heroCards[] = [
+                        'title' => 'Pending Approvals', 'value' => number_format($todaysOperations['pending_approvals']), 'color' => 'red',
+                        'icon' => 'M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z',
+                        'sub' => $todaysOperations['pending_approvals'] > 0 ? trans_choice('{1} request awaiting review|[2,*] :count requests awaiting review', $todaysOperations['pending_approvals'], ['count' => $todaysOperations['pending_approvals']]) : __('No pending approvals'),
+                        'href' => route('approvals.index'),
+                    ];
+                }
 
             @endphp
 
             <div class="grid grid-cols-1 sm:grid-cols-2 {{ match (true) {
+                // 8 (a director's full set) divides evenly into two rows of
+                // 4. 7 doesn't divide evenly into any column count up to 6
+                // (fitting it to 6, as the >= 6 case below would, leaves a
+                // near-empty trailing row), so 4 columns there too gives the
+                // tidiest available split (4-then-3) if that count is ever
+                // reached again.
+                count($heroCards) === 8 => 'lg:grid-cols-4',
+                count($heroCards) === 7 => 'lg:grid-cols-4',
                 count($heroCards) >= 6 => 'lg:grid-cols-6',
                 count($heroCards) === 5 => 'lg:grid-cols-5',
                 default => 'lg:grid-cols-4',
