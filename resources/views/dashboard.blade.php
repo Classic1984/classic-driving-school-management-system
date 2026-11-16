@@ -180,6 +180,15 @@
                         'modal' => 'locked-students-modal',
                     ];
                 }
+                // Not money, so not Director-gated - everyone who sees the
+                // locked-student count further down can see this tile too.
+                $trainingExpiredEnrollments = $lockedEnrollments->where('locked_reason', 'training_period_expired');
+                $heroCards[] = [
+                    'title' => 'Training Expired', 'value' => number_format($trainingExpiredEnrollments->count()), 'color' => 'orange',
+                    'icon' => 'M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+                    'sub' => $trainingExpiredEnrollments->isNotEmpty() ? trans_choice('{1} student past the training period|[2,*] :count students past the training period', $trainingExpiredEnrollments->count(), ['count' => $trainingExpiredEnrollments->count()]) : __('No students past the training period'),
+                    'modal' => 'locked-students-modal',
+                ];
                 $heroCards = [...$heroCards, ...[
                     [
                         'title' => 'Total Students', 'value' => number_format($stats['students']), 'color' => 'purple',
@@ -209,7 +218,11 @@
 
             @endphp
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 {{ count($heroCards) >= 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4' }} gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 {{ match (true) {
+                count($heroCards) >= 6 => 'lg:grid-cols-6',
+                count($heroCards) === 5 => 'lg:grid-cols-5',
+                default => 'lg:grid-cols-4',
+            } }} gap-4 mb-6">
                 @foreach ($heroCards as $card)
                     @php $heroTag = ! empty($card['modal']) ? 'button' : 'a'; $heroColor = $tileColor($card['color'] ?? null); @endphp
                     <{{ $heroTag }}
