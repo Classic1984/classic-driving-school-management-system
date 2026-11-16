@@ -113,22 +113,23 @@ class DashboardController extends Controller
             ];
         }
 
-        $outstandingEnrollments = Enrollment::with(['student', 'course'])
-            ->get()
-            ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0);
-
         // Once an enrollment actually goes overdue, the system locks it on
         // its own (see Enrollment::applyLockingRules()) - so "overdue" was
         // never really a third state distinct from "locked", just the same
-        // enrollment briefly caught before the lock refresh runs. Rather
-        // than surface that transient overlap as its own box (and risk the
-        // same student showing up in both an "Outstanding Payments" widget
-        // and the "Locked Students" widget at once), this is everyone who
-        // owes money and isn't locked - a completed enrollment can still
+        // enrollment briefly caught before the lock refresh runs. Every
+        // "pending/outstanding payments" figure below (the KPI total, its
+        // list, the count, and the "Upcoming Payments" card) is meant to be
+        // everyone who owes money and ISN'T locked yet - a locked student's
+        // balance is already represented by the Locked Balance tile, so
+        // including them here too would double-count the same balance
+        // under two different widgets. A completed enrollment can still
         // owe a balance (training completion doesn't clear it), so only
         // "locked" is excluded here, not "completed".
+        $outstandingEnrollments = Enrollment::with(['student', 'course'])
+            ->get()
+            ->filter(fn (Enrollment $enrollment) => $enrollment->balance() > 0 && $enrollment->status !== 'locked');
+
         $upcomingPayments = $outstandingEnrollments
-            ->filter(fn (Enrollment $enrollment) => $enrollment->status !== 'locked')
             ->sortBy(fn (Enrollment $enrollment) => $enrollment->due_date?->timestamp ?? PHP_INT_MAX)
             ->values();
 

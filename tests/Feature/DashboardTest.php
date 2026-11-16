@@ -404,11 +404,40 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Locked');
-        // The locked-students modal itself still redacts the per-enrollment
-        // balance for a secretary - it just no longer means "6,543.00" can't
-        // appear anywhere on the page, since that same locked balance now
-        // legitimately counts toward the visible Pending Payments total.
+        // The locked-students modal itself redacts the per-enrollment
+        // balance for a secretary either way, but this also isn't counted
+        // into the Pending Payments total - a locked balance is already
+        // represented by the Locked Balance tile, so it shouldn't surface
+        // here too.
         $response->assertDontSee('Locked Course · ₦6,543.00');
+        $response->assertDontSee('6,543.00');
+    }
+
+    public function test_a_locked_enrollments_balance_is_excluded_from_pending_payments(): void
+    {
+        $user = User::factory()->create();
+        $activeStudent = Student::factory()->create();
+        $activeCourse = Course::factory()->create(['fee' => 1000]);
+        $activeStudent->courses()->attach($activeCourse->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 1000]);
+
+        $lockedStudent = Student::factory()->create();
+        $lockedCourse = Course::factory()->create(['fee' => 9000]);
+        $lockedStudent->courses()->attach($lockedCourse->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->subDays(2),
+            'status' => 'locked',
+            'locked_reason' => 'overdue_balance',
+            'fee' => 9000,
+        ]);
+
+        $response = $this->actingAs($user)->get('/dashboard');
+
+        $response->assertOk();
+        // Only the active student's ₦1,000 counts toward Pending Payments -
+        // the locked student's ₦9,000 belongs to Locked Balance instead, so
+        // the total must not be their combined ₦10,000.
+        $response->assertSee('1,000.00');
+        $response->assertDontSee('10,000.00');
     }
 
     public function test_dashboard_shows_zeroes_when_there_is_no_data(): void
