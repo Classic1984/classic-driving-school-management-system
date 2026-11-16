@@ -1345,19 +1345,56 @@ class DashboardTest extends TestCase
         $response->assertSee('₦100.00', false);
     }
 
-    public function test_a_directors_seven_hero_tiles_avoid_a_near_empty_trailing_row(): void
+    public function test_a_directors_eight_hero_tiles_fill_two_even_rows(): void
     {
         $director = User::factory()->create();
 
         $response = $this->actingAs($director)->get('/dashboard');
 
         $response->assertOk();
-        // A director always sees exactly 7 hero tiles (Locked Balance,
+        // A director always sees exactly 8 hero tiles (Locked Balance,
         // Training Expired, Total Students, Walk-in Students, Training
-        // Today, Paid Today, Certificates Issued) - fitting 7 into 6
-        // columns would leave the 7th alone on a near-empty second row.
+        // Today, Paid Today, Certificates Issued, Pending Approvals) -
+        // 4 columns divides that into two full rows with no gap, unlike
+        // 6 columns which would leave the last row mostly empty.
         $response->assertDontSee('lg:grid-cols-6', false);
         $response->assertSee('lg:grid-cols-4', false);
+    }
+
+    public function test_a_secretarys_six_hero_tiles_fill_one_even_row(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        // A secretary doesn't get Locked Balance or Pending Approvals, so
+        // their 6 tiles fit a single row exactly. (Not asserting the
+        // absence of lg:grid-cols-4 here - that class is legitimately
+        // reused elsewhere on the page for unrelated grids.)
+        $response->assertSee('lg:grid-cols-6', false);
+    }
+
+    public function test_a_director_sees_the_pending_approvals_hero_tile(): void
+    {
+        $director = User::factory()->create();
+        DiscountRequest::factory()->create(['status' => 'pending']);
+
+        $response = $this->actingAs($director)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertSee('Pending Approvals');
+        $response->assertSee('request awaiting review');
+    }
+
+    public function test_a_secretary_does_not_see_the_pending_approvals_hero_tile(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+
+        $response = $this->actingAs($secretary)->get('/dashboard');
+
+        $response->assertOk();
+        $response->assertDontSee('Pending Approvals');
     }
 
     public function test_the_locked_balance_hero_tile_excludes_students_locked_for_an_expired_training_period(): void
