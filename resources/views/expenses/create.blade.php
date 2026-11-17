@@ -7,6 +7,10 @@
         $prefillCategory = old('category', request('category'));
         $isInvestmentReturn = $prefillCategory === 'investment_return';
         $banknotesIconPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-9-10.5h16.5a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5H3.75a1.5 1.5 0 0 1-1.5-1.5v-9a1.5 1.5 0 0 1 1.5-1.5Z';
+        // An Accountant's own entry goes into the pending-approval queue
+        // instead of being immediately effective - see
+        // ExpenseController::store().
+        $isAccountant = auth()->user()->isAccountant();
     @endphp
 
     <x-slot name="header">
@@ -39,12 +43,18 @@
                 <form method="post" action="{{ route('expenses.store') }}" class="p-4 sm:p-8 space-y-6" enctype="multipart/form-data">
                     @csrf
 
+                    @if ($isAccountant)
+                        <p class="rounded-lg bg-amber-50 ring-1 ring-amber-200 px-4 py-3 text-sm text-amber-800">
+                            {{ __("This will be submitted to the Director for approval - it won't be paid until it's approved and then marked paid.") }}
+                        </p>
+                    @endif
+
                     @include('expenses.partials.form-fields')
 
                     <div class="flex items-center gap-4 pt-4 border-t border-line">
                         <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
-                            {{ __('Save') }}
+                            {{ $isAccountant ? __('Submit for Approval') : __('Save') }}
                         </button>
                         <a href="{{ route('expenses.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-line hover:bg-paper px-5 py-3 text-sm font-semibold text-gray-700 transition">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>

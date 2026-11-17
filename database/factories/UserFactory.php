@@ -81,6 +81,18 @@ class UserFactory extends Factory
     }
 
     /**
+     * Indicate that the user has the "accountant" role - can record
+     * payments and submit expenses, but an expense they submit goes into
+     * the pending-approval queue rather than being immediately effective.
+     */
+    public function accountant(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'accountant',
+        ]);
+    }
+
+    /**
      * Indicate that the model has not (yet) confirmed two-factor
      * authentication - the real state a brand new account starts in.
      */

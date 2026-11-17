@@ -86,7 +86,7 @@ class FinanceController extends Controller
             ->whereYear('payment_date', $year)
             ->get(['amount', 'payment_date']);
 
-        $expenses = Expense::whereYear('expense_date', $year)->get(['amount', 'expense_date', 'category']);
+        $expenses = Expense::paid()->whereYear('expense_date', $year)->get(['amount', 'expense_date', 'category']);
 
         $months = collect(range(1, 12))->map(function (int $month) use ($payments, $expenses, $year) {
             $monthExpenses = $expenses->filter(fn (Expense $expense) => $expense->expense_date->month === $month);
@@ -139,8 +139,8 @@ class FinanceController extends Controller
     protected function computeOverall(): array
     {
         $income = Payment::where('status', 'paid')->sum('amount')
-            + Expense::whereIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
-        $expenses = Expense::whereNotIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
+            + Expense::paid()->whereIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
+        $expenses = Expense::paid()->whereNotIn('category', Expense::INCOME_CATEGORIES)->sum('amount');
 
         return [
             'income' => $income,

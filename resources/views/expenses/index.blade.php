@@ -130,6 +130,7 @@
                                 <th class="px-4 py-3">{{ __('Category') }}</th>
                                 <th class="px-4 py-3">{{ __('Amount') }}</th>
                                 <th class="px-4 py-3">{{ __('Description') }}</th>
+                                <th class="px-4 py-3">{{ __('Status') }}</th>
                                 <th class="px-4 py-3">{{ __('Action') }}</th>
                             </tr>
                         </thead>
@@ -150,6 +151,22 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm align-top font-semibold {{ $expense->isIncome() ? 'text-green-600' : 'text-gray-800' }}">{{ $expense->isIncome() ? '+' : '' }}₦{{ number_format($expense->amount, 2) }}</td>
                                     <td class="px-4 py-3 text-sm align-top text-gray-600">{{ \Illuminate\Support\Str::limit($expense->description, 40) ?: '—' }}</td>
+                                    <td class="px-4 py-3 text-sm align-top">
+                                        <x-badge :color="match ($expense->status) {
+                                            'pending' => 'amber',
+                                            'approved' => 'blue',
+                                            'rejected' => 'red',
+                                            'paid' => 'green',
+                                            default => 'gray',
+                                        }">{{ __(\App\Models\Expense::STATUSES[$expense->status] ?? $expense->status) }}</x-badge>
+                                        @if ($expense->status === 'approved')
+                                            <form method="post" action="{{ route('expenses.pay', $expense) }}" class="mt-1">
+                                                @csrf
+                                                @method('patch')
+                                                <button type="submit" class="text-xs font-semibold text-gold-600 hover:underline">{{ __('Mark Paid') }}</button>
+                                            </form>
+                                        @endif
+                                    </td>
                                     <td class="px-4 py-3 text-sm align-top text-right">
                                         <div class="relative inline-block text-left" x-data="{ open: false }">
                                             <button type="button" @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-400 hover:bg-gold-100 hover:text-gold-600 transition">
@@ -157,19 +174,21 @@
                                             </button>
                                             <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
                                                 <a href="{{ route('expenses.show', $expense) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('View') }}</a>
-                                                <a href="{{ route('expenses.edit', $expense) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</a>
-                                                <form method="post" action="{{ route('expenses.destroy', $expense) }}" onsubmit="return confirm('{{ __('Are you sure you want to remove this expense?') }}');">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
-                                                </form>
+                                                @if (auth()->user()->isDirector())
+                                                    <a href="{{ route('expenses.edit', $expense) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Edit') }}</a>
+                                                    <form method="post" action="{{ route('expenses.destroy', $expense) }}" onsubmit="return confirm('{{ __('Are you sure you want to remove this expense?') }}');">
+                                                        @csrf
+                                                        @method('delete')
+                                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">{{ __('Delete') }}</button>
+                                                    </form>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">
+                                    <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">
                                         {{ __('No expenses recorded yet.') }}
                                     </td>
                                 </tr>

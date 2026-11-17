@@ -140,6 +140,11 @@ class User extends Authenticatable
         return $this->role === 'secretary';
     }
 
+    public function isAccountant(): bool
+    {
+        return $this->role === 'accountant';
+    }
+
     /**
      * Whether this user can create/edit (but not delete) courses and
      * instructors. Secretary and Director have this; Admin does not.
@@ -147,6 +152,16 @@ class User extends Authenticatable
     public function canManageCourses(): bool
     {
         return $this->isSecretary() || $this->isDirector();
+    }
+
+    /**
+     * Whether this user can record and submit expenses. An Accountant's
+     * submission goes into the pending-approval queue; a Director's own
+     * entry is immediately effective - see ExpenseController::store().
+     */
+    public function canManageExpenses(): bool
+    {
+        return $this->isAccountant() || $this->isDirector();
     }
 
     /**

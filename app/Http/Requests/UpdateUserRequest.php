@@ -26,7 +26,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->route('user'))],
-            'role' => ['required', Rule::in(['admin', 'secretary', 'director'])],
+            'role' => ['required', Rule::in(['admin', 'secretary', 'director', 'accountant'])],
         ];
     }
 }

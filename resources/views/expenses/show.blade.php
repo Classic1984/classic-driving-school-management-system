@@ -26,7 +26,26 @@
                             <h3 class="text-2xl font-extrabold text-gray-900">₦{{ number_format($expense->amount, 2) }}</h3>
                             <p class="text-sm text-gray-500">{{ \App\Models\Expense::CATEGORIES[$expense->category] ?? $expense->category }}</p>
                         </div>
+                        <x-badge :color="match ($expense->status) {
+                            'pending' => 'amber',
+                            'approved' => 'blue',
+                            'rejected' => 'red',
+                            'paid' => 'green',
+                            default => 'gray',
+                        }">{{ __(\App\Models\Expense::STATUSES[$expense->status] ?? $expense->status) }}</x-badge>
                     </div>
+
+                    @if ($expense->requested_by)
+                        <div class="mb-6 rounded-lg bg-gray-50 p-3 text-sm text-gray-600">
+                            {{ __('Submitted by :name', ['name' => $expense->requestedBy->name]) }}
+                            @if ($expense->resolved_by)
+                                &middot; {{ __(':action by :name', ['action' => $expense->status === 'rejected' ? 'Rejected' : 'Approved', 'name' => $expense->resolvedBy->name]) }}
+                            @endif
+                            @if ($expense->rejection_reason)
+                                <p class="mt-1 text-gray-700">{{ __('Reason') }}: {{ $expense->rejection_reason }}</p>
+                            @endif
+                        </div>
+                    @endif
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2 rounded-lg bg-gray-50 p-3">
@@ -73,9 +92,18 @@
                     </div>
 
                     <div class="flex items-center gap-4 mt-6">
-                        <a href="{{ route('expenses.edit', $expense) }}">
-                            <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
-                        </a>
+                        @if ($expense->status === 'approved')
+                            <form method="post" action="{{ route('expenses.pay', $expense) }}">
+                                @csrf
+                                @method('patch')
+                                <x-primary-button type="submit">{{ __('Mark Paid') }}</x-primary-button>
+                            </form>
+                        @endif
+                        @if (auth()->user()->isDirector())
+                            <a href="{{ route('expenses.edit', $expense) }}">
+                                <x-secondary-button type="button">{{ __('Edit') }}</x-secondary-button>
+                            </a>
+                        @endif
                         <a href="{{ route('expenses.index') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-600 hover:underline">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $arrowLeftIconPath }}" /></svg>
                             {{ __('Back to list') }}

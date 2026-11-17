@@ -65,7 +65,7 @@
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $shieldCheckIconPath }}" /></svg>
                             </span>
                             <x-select id="role" name="role" class="block w-full pl-11" required>
-                                @foreach (['admin' => 'Admin (view, no deletes, no Finance)', 'secretary' => 'Secretary (day-to-day operations)', 'director' => 'Director (full access)'] as $value => $label)
+                                @foreach (['admin' => 'Admin (view, no deletes, no Finance)', 'secretary' => 'Secretary (day-to-day operations)', 'accountant' => 'Accountant (records payments/expenses, no approval power)', 'director' => 'Director (full access)'] as $value => $label)
                                     <option value="{{ $value }}" @selected(old('role', $user->role) === $value)>{{ __($label) }}</option>
                                 @endforeach
                             </x-select>
