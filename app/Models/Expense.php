@@ -3,13 +3,31 @@
 namespace App\Models;
 
 use Database\Factories\ExpenseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Expense extends Model
 {
     /** @use HasFactory<ExpenseFactory> */
     use HasFactory;
+
+    /**
+     * The expense approval/payment lifecycle. A Director's own direct
+     * entry skips straight to 'paid' (see store()/isPaidImmediately()) -
+     * only an Accountant's submission actually passes through 'pending'
+     * and 'approved' first.
+     *
+     * @var array<string, string>
+     */
+    public const STATUSES = [
+        'pending' => 'Pending Director Approval',
+        'approved' => 'Approved — Awaiting Payment',
+        'rejected' => 'Rejected',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
+    ];
 
     /**
      * The fixed set of expense categories the Director can record against.
@@ -76,6 +94,12 @@ class Expense extends Model
         'expense_date',
         'description',
         'receipt_photo_path',
+        'requested_by',
+        'status',
+        'resolved_by',
+        'resolved_at',
+        'rejection_reason',
+        'paid_at',
     ];
 
     /**
@@ -88,6 +112,44 @@ class Expense extends Model
         return [
             'amount' => 'decimal:2',
             'expense_date' => 'date:Y-m-d',
+            'resolved_at' => 'datetime',
+            'paid_at' => 'datetime',
         ];
+    }
+
+    public function requestedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'requested_by');
+    }
+
+    public function resolvedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'resolved_by');
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isPaid(): bool
+    {
+        return $this->status === 'paid';
+    }
+
+    /**
+     * Only a paid expense is a real outflow - a pending or approved one
+     * hasn't actually left the business yet, and a rejected/cancelled one
+     * never will. Every "how much have we spent" total should use this
+     * scope instead of querying the table unfiltered.
+     */
+    public function scopePaid(Builder $query): Builder
+    {
+        return $query->where('status', 'paid');
     }
 }

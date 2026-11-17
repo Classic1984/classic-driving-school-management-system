@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureUserCanManageCourses;
+use App\Http\Middleware\EnsureUserCanManageExpenses;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsDirector;
 use App\Http\Middleware\EnsureUserIsInstructor;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
             'director' => EnsureUserIsDirector::class,
             'course-manager' => EnsureUserCanManageCourses::class,
+            'expense-manager' => EnsureUserCanManageExpenses::class,
             'instructor' => EnsureUserIsInstructor::class,
             'not-instructor' => EnsureUserIsNotInstructor::class,
             'student' => EnsureUserIsStudent::class,

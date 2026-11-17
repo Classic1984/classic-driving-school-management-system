@@ -16,6 +16,7 @@
         $roleBadge = fn (string $role) => match ($role) {
             'director' => 'amber',
             'secretary' => 'blue',
+            'accountant' => 'teal',
             'instructor' => 'green',
             default => 'gray',
         };

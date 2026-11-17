@@ -10,6 +10,7 @@ use App\Models\CorporatePayment;
 use App\Models\DiscountRequest;
 use App\Models\Enrollment;
 use App\Models\EnrollmentUpgradeRequest;
+use App\Models\Expense;
 use App\Models\Instructor;
 use App\Models\Lead;
 use App\Models\Payment;
@@ -458,7 +459,8 @@ class DashboardController extends Controller
             'pending_approvals' => DiscountRequest::where('status', 'pending')->count()
                 + StudentCorrectionRequest::where('status', 'pending')->count()
                 + AssessmentRequest::where('status', 'pending')->count()
-                + EnrollmentUpgradeRequest::where('status', 'pending')->count(),
+                + EnrollmentUpgradeRequest::where('status', 'pending')->count()
+                + Expense::where('status', 'pending')->count(),
         ];
 
         // Revenue Trend widget (Director-only, same gating as $paymentTotals

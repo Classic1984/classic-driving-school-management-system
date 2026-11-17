@@ -7,6 +7,7 @@
         'red' => 'bg-red-100 text-red-700',
         'amber' => 'bg-gold-100 text-gold-800',
         'blue' => 'bg-blue-100 text-blue-700',
+        'teal' => 'bg-teal-100 text-teal-700',
     ];
     $classes = $colors[$color] ?? $colors['gray'];
 @endphp

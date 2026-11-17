@@ -23,6 +23,7 @@ use App\Http\Controllers\DiscountRequestController;
 use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\EnrollmentUpgradeRequestController;
+use App\Http\Controllers\ExpenseApprovalController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InstructorAccessController;
@@ -141,14 +142,24 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::delete('certificates/{certificate}', [CertificateController::class, 'destroy'])->name('certificates.destroy');
     });
 
-    // Finance is exclusively for the Director: not just delete-restricted like the
-    // admin-only actions above, the whole section (including viewing it) is hidden
-    // from Admin and Secretary alike.
-    Route::middleware('director')->group(function () {
+    // Finance is hidden from Admin and Secretary alike. An Accountant
+    // shares one slice of it below - recording expenses (their own
+    // submission is pending until a Director approves it, see
+    // ExpenseController::store()) and marking an approved one as paid.
+    // Everything else, including editing/deleting an expense outright and
+    // approving/rejecting a request, stays exclusively Director-only.
+    Route::middleware('expense-manager')->group(function () {
         // Registered ahead of the resource route below so "last-updated"
         // isn't swallowed by the {expense} show route's binding.
         Route::get('expenses/last-updated', [ExpenseController::class, 'lastUpdated'])->name('expenses.last-updated');
-        Route::resource('expenses', ExpenseController::class);
+        Route::resource('expenses', ExpenseController::class)->only(['index', 'create', 'store', 'show']);
+        Route::patch('expenses/{expense}/pay', [ExpenseApprovalController::class, 'pay'])->name('expenses.pay');
+    });
+
+    Route::middleware('director')->group(function () {
+        Route::resource('expenses', ExpenseController::class)->only(['edit', 'update', 'destroy']);
+        Route::patch('expenses/{expense}/approve', [ExpenseApprovalController::class, 'approve'])->name('expenses.approve');
+        Route::patch('expenses/{expense}/reject', [ExpenseApprovalController::class, 'reject'])->name('expenses.reject');
         Route::get('finance', [FinanceController::class, 'summary'])->name('finance.summary');
         Route::get('finance/export', [FinanceController::class, 'export'])->name('finance.export');
         Route::get('finance/export-pdf', [FinanceController::class, 'exportPdf'])->name('finance.export-pdf');

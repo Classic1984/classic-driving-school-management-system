@@ -11,6 +11,7 @@
             'assessment' => ['border' => 'border-blue-500', 'badge' => 'bg-blue-100 text-blue-800'],
             'correction' => ['border' => 'border-purple-500', 'badge' => 'bg-purple-100 text-purple-800'],
             'enrollment_upgrade' => ['border' => 'border-green-500', 'badge' => 'bg-green-100 text-green-800'],
+            'expense' => ['border' => 'border-teal-500', 'badge' => 'bg-teal-100 text-teal-800'],
         ];
     @endphp
 
@@ -42,6 +43,10 @@
                 <p class="mb-4 text-sm font-medium text-green-600">{{ __('Upgrade approved and applied.') }}</p>
             @elseif (session('status') === 'enrollment-upgrade-request-rejected')
                 <p class="mb-4 text-sm font-medium text-green-600">{{ __('Upgrade request rejected.') }}</p>
+            @elseif (session('status') === 'expense-request-approved')
+                <p class="mb-4 text-sm font-medium text-green-600">{{ __('Expense approved - mark it paid once the money actually goes out.') }}</p>
+            @elseif (session('status') === 'expense-request-rejected')
+                <p class="mb-4 text-sm font-medium text-green-600">{{ __('Expense request rejected.') }}</p>
             @endif
 
             @if ($errors->any())
@@ -64,7 +69,12 @@
                     @php
                         $item = $approval['model'];
                         $accent = $typeAccent[$approval['type']];
-                        $initials = collect(explode(' ', $item->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
+                        // An expense request has no student - it's a
+                        // business expense, not something raised about a
+                        // specific student's record.
+                        $initials = $approval['type'] === 'expense'
+                            ? 'EX'
+                            : collect(explode(' ', $item->student->name))->map(fn ($part) => mb_substr($part, 0, 1))->take(2)->implode('');
                     @endphp
                     <div class="rounded-xl bg-white ring-1 ring-gray-200 border-l-4 {{ $accent['border'] }} p-6 shadow-sm">
                         <div class="flex items-start justify-between gap-4">
@@ -76,6 +86,8 @@
                                         {{ __('Assessment Recommendation') }}
                                     @elseif ($approval['type'] === 'enrollment_upgrade')
                                         {{ __(':type Upgrade Request', ['type' => $item->upgrade_type === 'tier' ? 'Tier' : 'Programme']) }}
+                                    @elseif ($approval['type'] === 'expense')
+                                        {{ __('Expense Request') }}
                                     @else
                                         {{ __('Student Information Change') }}
                                     @endif
@@ -85,15 +97,19 @@
                                     <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-gold-400 text-xs font-bold">{{ $initials }}</span>
                                     <p class="text-sm font-semibold text-gray-800">
                                         {{ $index + 1 }}.
-                                        <a href="{{ route('students.show', $item->student) }}" class="text-gold-600 hover:underline">{{ $item->student->name }}</a>
-                                        @if ($approval['type'] === 'discount')
-                                            — {{ __('Discount on :course', ['course' => $item->course->name]) }}
-                                        @elseif ($approval['type'] === 'assessment')
-                                            — {{ __(':result on :course', ['result' => ucfirst($item->result), 'course' => $item->course->name]) }}
-                                        @elseif ($approval['type'] === 'enrollment_upgrade')
-                                            — {{ __(':from → :to', ['from' => $item->fromCourse->name, 'to' => $item->toCourse->name]) }}
+                                        @if ($approval['type'] === 'expense')
+                                            {{ __('Expense') }} — {{ \App\Models\Expense::CATEGORIES[$item->category] ?? $item->category }}
                                         @else
-                                            — {{ __('Change :field', ['field' => $item->fieldLabel()]) }}
+                                            <a href="{{ route('students.show', $item->student) }}" class="text-gold-600 hover:underline">{{ $item->student->name }}</a>
+                                            @if ($approval['type'] === 'discount')
+                                                — {{ __('Discount on :course', ['course' => $item->course->name]) }}
+                                            @elseif ($approval['type'] === 'assessment')
+                                                — {{ __(':result on :course', ['result' => ucfirst($item->result), 'course' => $item->course->name]) }}
+                                            @elseif ($approval['type'] === 'enrollment_upgrade')
+                                                — {{ __(':from → :to', ['from' => $item->fromCourse->name, 'to' => $item->toCourse->name]) }}
+                                            @else
+                                                — {{ __('Change :field', ['field' => $item->fieldLabel()]) }}
+                                            @endif
                                         @endif
                                     </p>
                                 </div>
@@ -131,6 +147,18 @@
                                     </p>
                                     @if ($item->amount_paid !== null)
                                         <p class="mt-1 text-sm text-gray-500">{{ __('Requested to collect now') }}: ₦{{ number_format($item->amount_paid, 2) }} ({{ __(ucfirst(str_replace('_', ' ', $item->payment_method))) }})</p>
+                                    @endif
+                                @elseif ($approval['type'] === 'expense')
+                                    <p class="mt-2 text-sm text-gray-600">
+                                        {{ __('Amount') }}: ₦{{ number_format($item->amount, 2) }}
+                                        &middot;
+                                        {{ __('Date') }}: {{ $item->expense_date->format('M j, Y') }}
+                                        @if ($item->receipt_photo_path)
+                                            &middot; <a href="{{ Storage::disk('public')->url($item->receipt_photo_path) }}" target="_blank" class="text-gold-600 hover:underline">{{ __('View Receipt') }}</a>
+                                        @endif
+                                    </p>
+                                    @if ($item->description)
+                                        <p class="mt-1 text-sm text-gray-500">{{ __('Description') }}: {{ $item->description }}</p>
                                     @endif
                                 @else
                                     <p class="mt-2 text-sm text-gray-600">
@@ -176,6 +204,17 @@
                                         <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-green-50 hover:bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-700 transition">{{ __('Approve') }}</button>
                                     </form>
                                     <form method="post" action="{{ route('enrollment-upgrade-requests.reject', $item) }}">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-600 transition">{{ __('Reject') }}</button>
+                                    </form>
+                                @elseif ($approval['type'] === 'expense')
+                                    <form method="post" action="{{ route('expenses.approve', $item) }}">
+                                        @csrf
+                                        @method('patch')
+                                        <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-green-50 hover:bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-700 transition">{{ __('Approve') }}</button>
+                                    </form>
+                                    <form method="post" action="{{ route('expenses.reject', $item) }}">
                                         @csrf
                                         @method('patch')
                                         <button type="submit" class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-600 transition">{{ __('Reject') }}</button>

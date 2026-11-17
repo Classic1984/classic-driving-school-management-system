@@ -76,7 +76,7 @@
                                 </span>
                                 <x-select id="role" name="role" class="block w-full pl-11" required>
                                     <option value="">{{ __('Select a role') }}</option>
-                                    @foreach (['admin' => 'Admin (view, no deletes, no Finance)', 'secretary' => 'Secretary (day-to-day operations)', 'director' => 'Director (full access)'] as $value => $label)
+                                    @foreach (['admin' => 'Admin (view, no deletes, no Finance)', 'secretary' => 'Secretary (day-to-day operations)', 'accountant' => 'Accountant (records payments/expenses, no approval power)', 'director' => 'Director (full access)'] as $value => $label)
                                         <option value="{{ $value }}" @selected(old('role') === $value)>{{ __($label) }}</option>
                                     @endforeach
                                 </x-select>
