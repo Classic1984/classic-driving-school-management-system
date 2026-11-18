@@ -872,11 +872,16 @@
                             <div>
                                 <div class="flex items-center justify-between mb-2">
                                     <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">{{ __('Financial Overview') }}</h3>
-                                    @if ($totalOutstanding > 0)
-                                        <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}">
-                                            <x-primary-button type="button">{{ __('Balance Payment') }}</x-primary-button>
+                                    <div class="flex items-center gap-2">
+                                        <a href="{{ route('students.statement', $student) }}">
+                                            <x-secondary-button type="button">{{ __('Download Statement') }}</x-secondary-button>
                                         </a>
-                                    @endif
+                                        @if ($totalOutstanding > 0)
+                                            <a href="{{ route('payments.record.create', ['student_id' => $student->id]) }}">
+                                                <x-primary-button type="button">{{ __('Balance Payment') }}</x-primary-button>
+                                            </a>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                                     <div class="relative overflow-hidden rounded-xl bg-navy p-4">
