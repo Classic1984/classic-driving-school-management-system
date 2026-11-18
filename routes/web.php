@@ -27,6 +27,7 @@ use App\Http\Controllers\EnrollmentUpgradeRequestController;
 use App\Http\Controllers\ExpenseApprovalController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\FinancialStatementController;
 use App\Http\Controllers\GeneralLedgerController;
 use App\Http\Controllers\InstructorAccessController;
 use App\Http\Controllers\InstructorActivityReportController;
@@ -177,6 +178,12 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
         Route::get('general-ledger/export', [GeneralLedgerController::class, 'export'])->name('general-ledger.export');
         Route::get('general-ledger/export-pdf', [GeneralLedgerController::class, 'exportPdf'])->name('general-ledger.export-pdf');
+        // The Income Statement and Balance Sheet for a year - both built
+        // entirely from the General Ledger, so there's nothing here to
+        // keep in sync with it by hand.
+        Route::get('financial-statements', [FinancialStatementController::class, 'index'])->name('financial-statements.index');
+        Route::get('financial-statements/export', [FinancialStatementController::class, 'export'])->name('financial-statements.export');
+        Route::get('financial-statements/export-pdf', [FinancialStatementController::class, 'exportPdf'])->name('financial-statements.export-pdf');
         // The salary roster, past payroll runs, and the two actions that
         // move money: generating a draft run (a snapshot, moves nothing)
         // and processing one (creates the actual paid Expense rows).
