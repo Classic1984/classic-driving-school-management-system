@@ -38,6 +38,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentCorrectionController;
 use App\Http\Controllers\PaymentReportController;
 use App\Http\Controllers\PaymentReversalController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\PaystackWebhookController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicLeadController;
@@ -175,6 +176,15 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
         Route::get('general-ledger/export', [GeneralLedgerController::class, 'export'])->name('general-ledger.export');
         Route::get('general-ledger/export-pdf', [GeneralLedgerController::class, 'exportPdf'])->name('general-ledger.export-pdf');
+        // The salary roster, past payroll runs, and the two actions that
+        // move money: generating a draft run (a snapshot, moves nothing)
+        // and processing one (creates the actual paid Expense rows).
+        Route::get('payroll', [PayrollController::class, 'index'])->name('payroll.index');
+        Route::post('payroll/salaries', [PayrollController::class, 'updateSalary'])->name('payroll.salaries.update');
+        Route::post('payroll/runs', [PayrollController::class, 'storeRun'])->name('payroll.runs.store');
+        Route::get('payroll/runs/{payrollRun}', [PayrollController::class, 'showRun'])->name('payroll.runs.show');
+        Route::post('payroll/runs/{payrollRun}/pay', [PayrollController::class, 'payRun'])->name('payroll.runs.pay');
+        Route::get('payroll/runs/{payrollRun}/items/{payrollRunItem}/payslip', [PayrollController::class, 'payslipPdf'])->name('payroll.runs.payslip');
         // A full per-student financial statement, the one money document
         // (fees, discounts, balance, payment history) a Director can hand
         // to a student or file - everything else on the student's own
