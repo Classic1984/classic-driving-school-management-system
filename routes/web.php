@@ -26,6 +26,7 @@ use App\Http\Controllers\EnrollmentUpgradeRequestController;
 use App\Http\Controllers\ExpenseApprovalController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
+use App\Http\Controllers\GeneralLedgerController;
 use App\Http\Controllers\InstructorAccessController;
 use App\Http\Controllers\InstructorActivityReportController;
 use App\Http\Controllers\InstructorController;
@@ -166,6 +167,14 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('payment-reports', [PaymentReportController::class, 'index'])->name('payment-reports.index');
         Route::get('payment-reports/export', [PaymentReportController::class, 'export'])->name('payment-reports.export');
         Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
+        // A derived double-entry record of every paid payment and paid
+        // expense, each as a balanced debit/credit entry, plus the trial
+        // balance those entries roll up into - not a separate system of
+        // record, just a formal view onto what Finance Summary and
+        // Payment Reports already show.
+        Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
+        Route::get('general-ledger/export', [GeneralLedgerController::class, 'export'])->name('general-ledger.export');
+        Route::get('general-ledger/export-pdf', [GeneralLedgerController::class, 'exportPdf'])->name('general-ledger.export-pdf');
         // A full per-student financial statement, the one money document
         // (fees, discounts, balance, payment history) a Director can hand
         // to a student or file - everything else on the student's own
