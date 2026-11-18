@@ -68,6 +68,9 @@
             <x-responsive-nav-link :href="route('payroll.index')" :active="request()->routeIs('payroll.*')">
                 {{ __('Payroll') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('bank-reconciliation.index')" :active="request()->routeIs('bank-reconciliation.*')">
+                {{ __('Bank Reconciliation') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('expenses.create', ['category' => 'investment_return'])" :active="request()->routeIs('expenses.create') && request()->query('category') === 'investment_return'">
                 {{ __('Investment Return') }}
             </x-responsive-nav-link>

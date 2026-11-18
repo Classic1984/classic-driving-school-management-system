@@ -79,6 +79,48 @@ class GeneralLedgerService
     }
 
     /**
+     * Every Cash/Bank movement between two dates (inclusive), signed for
+     * matching against a bank statement - positive for money in, negative
+     * for money out - each tagged with the Payment or Expense it came
+     * from, for Bank Reconciliation to match against.
+     *
+     * @return Collection<int, array{date: Carbon, description: string, amount: float, source_type: string, source_id: int}>
+     */
+    public static function cashMovements(Carbon $from, Carbon $to): Collection
+    {
+        $paymentMovements = Payment::where('status', 'paid')
+            ->whereBetween('payment_date', [$from->toDateString(), $to->toDateString()])
+            ->with('student')
+            ->get()
+            ->map(fn (Payment $payment) => [
+                'date' => $payment->payment_date,
+                'description' => 'Payment received — '.($payment->student->name ?? 'Unknown student'),
+                'amount' => (float) $payment->amount,
+                'source_type' => 'payment',
+                'source_id' => $payment->id,
+            ]);
+
+        $expenseMovements = Expense::paid()
+            ->whereBetween('expense_date', [$from->toDateString(), $to->toDateString()])
+            ->get()
+            ->map(function (Expense $expense) {
+                $entry = self::expenseEntry($expense);
+
+                return [
+                    'date' => $expense->expense_date,
+                    'description' => $entry['description'],
+                    'amount' => $expense->isIncome() ? (float) $expense->amount : -(float) $expense->amount,
+                    'source_type' => 'expense',
+                    'source_id' => $expense->id,
+                ];
+            });
+
+        return $paymentMovements->concat($expenseMovements)
+            ->sortBy('date')
+            ->values();
+    }
+
+    /**
      * Each account's total debits and credits across the given entries,
      * plus whether the ledger balances (total debits == total credits,
      * which it always will by construction unless a rounding error makes
