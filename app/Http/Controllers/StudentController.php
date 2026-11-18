@@ -16,8 +16,10 @@ use App\Services\AdditionalOfferService;
 use App\Services\EnrollmentService;
 use App\Services\StudentChargeResolver;
 use App\Services\TermiiSmsService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -270,6 +272,28 @@ class StudentController extends Controller
         $theoryProgress = $student->theoryProgress();
 
         return view('students.show', compact('student', 'instructors', 'vehicles', 'availableServices', 'financialOverview', 'theoryProgress'));
+    }
+
+    /**
+     * A single printable/downloadable document combining everything this
+     * student's profile page already shows about their finances - fees,
+     * discounts, outstanding balance, and full payment history - for a
+     * Director to hand to the student or file for records. Director-only,
+     * same as every other money document (Finance Summary, Payment
+     * Reports) this mirrors.
+     */
+    public function statementPdf(Student $student): Response
+    {
+        $student->load([
+            'courses',
+            'payments' => fn ($query) => $query->with(['recordedBy', 'allocations.enrollment.course', 'allocations.studentService.service'])->latest('payment_date'),
+            'studentServices.service',
+        ]);
+        $financialOverview = StudentChargeResolver::allCharges($student);
+
+        $pdf = Pdf::loadView('students.statement-pdf', compact('student', 'financialOverview'));
+
+        return $pdf->download("{$student->name}-statement.pdf");
     }
 
     /**

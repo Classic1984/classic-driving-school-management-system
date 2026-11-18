@@ -166,6 +166,12 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('payment-reports', [PaymentReportController::class, 'index'])->name('payment-reports.index');
         Route::get('payment-reports/export', [PaymentReportController::class, 'export'])->name('payment-reports.export');
         Route::get('payment-reports/export-pdf', [PaymentReportController::class, 'exportPdf'])->name('payment-reports.export-pdf');
+        // A full per-student financial statement, the one money document
+        // (fees, discounts, balance, payment history) a Director can hand
+        // to a student or file - everything else on the student's own
+        // profile page already shows this, just not as one printable
+        // document.
+        Route::get('students/{student}/statement', [StudentController::class, 'statementPdf'])->name('students.statement');
         // The full payment history/totals list (and its CSV export) is
         // Director-only; recording a new payment and viewing/printing one
         // specific receipt stay open to any staff role (see the general
