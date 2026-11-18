@@ -36,6 +36,9 @@
                 <a href="{{ route('payment-reports.index') }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-blue-300 bg-white px-4 py-2 text-sm font-semibold text-blue-700 hover:bg-blue-50 transition">
                     {{ __('Financial Reports') }}
                 </a>
+                <a href="{{ route('financial-statements.index', ['year' => $year]) }}" class="inline-flex items-center gap-2 rounded-lg ring-1 ring-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                    {{ __('Financial Statements') }}
+                </a>
             </div>
 
             <div class="bg-white shadow-sm ring-1 ring-gray-200 rounded-xl p-6">

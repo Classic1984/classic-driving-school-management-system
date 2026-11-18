@@ -107,6 +107,91 @@ class GeneralLedgerService
     }
 
     /**
+     * The year's revenue and expenses, each broken down by account, and
+     * the resulting net income - built from the same entries() the
+     * General Ledger shows, minus the Opening Balance entry (that's a
+     * prior-period position, not this year's income).
+     *
+     * @return array{revenue: Collection<string, float>, expenses: Collection<string, float>, total_revenue: float, total_expenses: float, net_income: float}
+     */
+    public static function incomeStatement(int $year): array
+    {
+        $revenue = [];
+        $expenses = [];
+
+        foreach (self::entries($year) as $entry) {
+            if ($entry['type'] === 'opening_balance') {
+                continue;
+            }
+
+            if ($entry['type'] === 'payment') {
+                $revenue[self::INCOME_ACCOUNT] = ($revenue[self::INCOME_ACCOUNT] ?? 0.0) + $entry['amount'];
+
+                continue;
+            }
+
+            // An expense entry debits Cash/Bank only when it's an income
+            // category (money coming back in, e.g. an investment return) -
+            // every other expense entry debits its own category account,
+            // which is what actually left the business this year.
+            if ($entry['debit_account'] === self::CASH_ACCOUNT) {
+                $revenue[$entry['credit_account']] = ($revenue[$entry['credit_account']] ?? 0.0) + $entry['amount'];
+            } else {
+                $expenses[$entry['debit_account']] = ($expenses[$entry['debit_account']] ?? 0.0) + $entry['amount'];
+            }
+        }
+
+        $revenue = collect($revenue)->sortKeys();
+        $expenses = collect($expenses)->sortKeys();
+
+        $totalRevenue = round((float) $revenue->sum(), 2);
+        $totalExpenses = round((float) $expenses->sum(), 2);
+
+        return [
+            'revenue' => $revenue,
+            'expenses' => $expenses,
+            'total_revenue' => $totalRevenue,
+            'total_expenses' => $totalExpenses,
+            'net_income' => round($totalRevenue - $totalExpenses, 2),
+        ];
+    }
+
+    /**
+     * The school's financial position as of the end of the given year:
+     * what it has (assets), what it owes (liabilities - this system
+     * doesn't track any, so always zero), and what that leaves the
+     * owners with (equity: the balance brought into the year, plus the
+     * year's own net income). Assets are computed independently of
+     * equity - via openingCashBalance() for the following year, a
+     * separate aggregate query rather than reusing incomeStatement()'s
+     * collection math - specifically so "balanced" is a real check, not
+     * two copies of the same arithmetic agreeing with themselves.
+     *
+     * @return array{assets: Collection<string, float>, total_assets: float, liabilities: Collection<string, float>, total_liabilities: float, equity: Collection<string, float>, total_equity: float, balanced: bool}
+     */
+    public static function balanceSheet(int $year): array
+    {
+        $openingBalance = self::openingCashBalance($year);
+        $netIncome = self::incomeStatement($year)['net_income'];
+
+        $cashAsset = self::openingCashBalance($year + 1);
+        $totalEquity = round($openingBalance + $netIncome, 2);
+
+        return [
+            'assets' => collect([self::CASH_ACCOUNT => $cashAsset]),
+            'total_assets' => $cashAsset,
+            'liabilities' => collect(),
+            'total_liabilities' => 0.0,
+            'equity' => collect([
+                self::RETAINED_EARNINGS_ACCOUNT.' (brought forward)' => $openingBalance,
+                "Net Income ({$year})" => $netIncome,
+            ]),
+            'total_equity' => $totalEquity,
+            'balanced' => abs($cashAsset - $totalEquity) < 0.01,
+        ];
+    }
+
+    /**
      * @return array{date: Carbon, type: string, reference: string, description: string, debit_account: string, credit_account: string, amount: float}
      */
     protected static function expenseEntry(Expense $expense): array

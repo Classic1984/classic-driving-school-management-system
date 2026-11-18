@@ -65,6 +65,9 @@
             <x-responsive-nav-link :href="route('general-ledger.index')" :active="request()->routeIs('general-ledger.*')">
                 {{ __('General Ledger') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('financial-statements.index')" :active="request()->routeIs('financial-statements.*')">
+                {{ __('Financial Statements') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('payroll.index')" :active="request()->routeIs('payroll.*')">
                 {{ __('Payroll') }}
             </x-responsive-nav-link>
