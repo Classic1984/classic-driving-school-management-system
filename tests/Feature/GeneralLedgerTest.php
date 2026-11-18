@@ -59,6 +59,60 @@ class GeneralLedgerTest extends TestCase
         $this->assertArrayNotHasKey('Office Rent', $accounts);
     }
 
+    public function test_a_years_ledger_has_no_opening_balance_when_nothing_predates_it(): void
+    {
+        $student = Student::factory()->create();
+        Payment::factory()->create(['student_id' => $student->id, 'amount' => 50000, 'status' => 'paid', 'payment_date' => '2026-03-10']);
+
+        $entries = GeneralLedgerService::entries(2026);
+
+        $this->assertCount(1, $entries);
+        $this->assertSame('payment', $entries->first()['type']);
+    }
+
+    public function test_a_later_years_ledger_carries_forward_the_prior_years_net_cash_position(): void
+    {
+        $student = Student::factory()->create();
+        // 2025: ₦200,000 in, ₦80,000 out — net ₦120,000 should carry into 2026.
+        Payment::factory()->create(['student_id' => $student->id, 'amount' => 200000, 'status' => 'paid', 'payment_date' => '2025-06-01']);
+        Expense::factory()->create(['category' => 'fuel', 'amount' => 80000, 'status' => 'paid', 'expense_date' => '2025-07-01']);
+        // 2026: a fresh ₦30,000 payment.
+        Payment::factory()->create(['student_id' => $student->id, 'amount' => 30000, 'status' => 'paid', 'payment_date' => '2026-02-01']);
+
+        $this->assertEquals(120000.0, GeneralLedgerService::openingCashBalance(2026));
+
+        $entries = GeneralLedgerService::entries(2026);
+        $opening = $entries->firstWhere('type', 'opening_balance');
+
+        $this->assertNotNull($opening);
+        $this->assertSame('opening_balance', $entries->first()['type']);
+        $this->assertEquals(120000.0, $opening['amount']);
+        $this->assertSame('Cash/Bank', $opening['debit_account']);
+        $this->assertSame('Retained Earnings', $opening['credit_account']);
+
+        $trialBalance = GeneralLedgerService::trialBalance($entries);
+        $this->assertTrue($trialBalance['balanced']);
+        $this->assertEquals(150000.0, $trialBalance['accounts']['Cash/Bank']['debit']);
+
+        // 2025's own ledger is untouched - no opening balance of its own.
+        $this->assertCount(2, GeneralLedgerService::entries(2025));
+    }
+
+    public function test_opening_balance_can_be_negative_if_the_school_ran_a_cumulative_deficit(): void
+    {
+        Expense::factory()->create(['category' => 'fuel', 'amount' => 90000, 'status' => 'paid', 'expense_date' => '2025-07-01']);
+
+        $this->assertEquals(-90000.0, GeneralLedgerService::openingCashBalance(2026));
+
+        $entries = GeneralLedgerService::entries(2026);
+        $opening = $entries->firstWhere('type', 'opening_balance');
+
+        $this->assertSame('Retained Earnings', $opening['debit_account']);
+        $this->assertSame('Cash/Bank', $opening['credit_account']);
+
+        $this->assertTrue(GeneralLedgerService::trialBalance($entries)['balanced']);
+    }
+
     public function test_a_director_can_view_the_general_ledger(): void
     {
         $director = User::factory()->director()->create();
