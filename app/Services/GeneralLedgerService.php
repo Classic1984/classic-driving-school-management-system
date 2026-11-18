@@ -22,7 +22,20 @@ class GeneralLedgerService
     public const INCOME_ACCOUNT = 'Student Fees Income';
 
     /**
-     * Every ledger entry for the given year, oldest first.
+     * The equity account an opening balance is credited (or, if the
+     * school somehow ran a cumulative deficit, debited) against - the
+     * standard double-entry counterpart to carrying a prior period's
+     * cash position into a new one.
+     */
+    public const RETAINED_EARNINGS_ACCOUNT = 'Retained Earnings';
+
+    /**
+     * Every ledger entry for the given year, oldest first. If any paid
+     * payment or paid expense predates this year, the very first entry
+     * is a synthetic Opening Balance - the net Cash/Bank position
+     * carried forward from every prior year - so a new year's ledger
+     * starts from where the last one actually left off instead of
+     * resetting Cash/Bank to zero.
      *
      * @return Collection<int, array{date: Carbon, type: string, reference: string, description: string, debit_account: string, credit_account: string, amount: float}>
      */
@@ -47,9 +60,50 @@ class GeneralLedgerService
             ->get()
             ->map(fn (Expense $expense) => self::expenseEntry($expense));
 
-        return $paymentEntries->concat($expenseEntries)
-            ->sortBy('date')
-            ->values();
+        $entries = $paymentEntries->concat($expenseEntries);
+
+        $openingBalance = self::openingCashBalance($year);
+
+        if (abs($openingBalance) >= 0.01) {
+            $entries->push([
+                'date' => Carbon::create($year, 1, 1),
+                'type' => 'opening_balance',
+                'reference' => 'OPENING-BALANCE',
+                'description' => 'Opening Balance brought forward from '.($year - 1).' and earlier',
+                'debit_account' => $openingBalance > 0 ? self::CASH_ACCOUNT : self::RETAINED_EARNINGS_ACCOUNT,
+                'credit_account' => $openingBalance > 0 ? self::RETAINED_EARNINGS_ACCOUNT : self::CASH_ACCOUNT,
+                'amount' => abs($openingBalance),
+            ]);
+        }
+
+        return $entries->sortBy('date')->values();
+    }
+
+    /**
+     * The net Cash/Bank position (every paid payment, plus every paid
+     * expense signed the same way cashMovements() signs them) across
+     * every year before the given one - what a new year's books should
+     * actually start from, rather than zero.
+     */
+    public static function openingCashBalance(int $year): float
+    {
+        $yearStart = Carbon::create($year, 1, 1)->toDateString();
+
+        $income = (float) Payment::where('status', 'paid')
+            ->where('payment_date', '<', $yearStart)
+            ->sum('amount');
+
+        $income += (float) Expense::paid()
+            ->where('expense_date', '<', $yearStart)
+            ->whereIn('category', Expense::INCOME_CATEGORIES)
+            ->sum('amount');
+
+        $outflow = (float) Expense::paid()
+            ->where('expense_date', '<', $yearStart)
+            ->whereNotIn('category', Expense::INCOME_CATEGORIES)
+            ->sum('amount');
+
+        return round($income - $outflow, 2);
     }
 
     /**
