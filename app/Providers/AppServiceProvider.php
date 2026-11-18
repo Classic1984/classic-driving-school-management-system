@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Expense;
 use App\Models\Instructor;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Mail;
@@ -29,14 +31,16 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        // Payroll's payee is polymorphic (a staff User or a driving
-        // Instructor) - an explicit map keeps "user"/"instructor" in the
-        // payroll_salaries/payroll_run_items tables instead of a fully
-        // qualified class name, so renaming either model later doesn't
-        // orphan every payroll row that points to it.
+        // Payroll's payee, and a bank statement line's match, are both
+        // polymorphic - an explicit map keeps a short alias
+        // ("user"/"instructor"/"payment"/"expense") in the database
+        // instead of a fully qualified class name, so renaming any of
+        // these models later doesn't orphan every row that points to it.
         Relation::enforceMorphMap([
             'user' => User::class,
             'instructor' => Instructor::class,
+            'payment' => Payment::class,
+            'expense' => Expense::class,
         ]);
 
         // Brevo's HTTP API, rather than raw SMTP, since some hosts (Railway

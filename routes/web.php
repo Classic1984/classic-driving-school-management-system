@@ -8,6 +8,7 @@ use App\Http\Controllers\AssessmentRequestController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\BankReconciliationController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateReportController;
 use App\Http\Controllers\CertificateVerificationController;
@@ -185,6 +186,18 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('payroll/runs/{payrollRun}', [PayrollController::class, 'showRun'])->name('payroll.runs.show');
         Route::post('payroll/runs/{payrollRun}/pay', [PayrollController::class, 'payRun'])->name('payroll.runs.pay');
         Route::get('payroll/runs/{payrollRun}/items/{payrollRunItem}/payslip', [PayrollController::class, 'payslipPdf'])->name('payroll.runs.payslip');
+        // Matching the bank statement against the school's own paid
+        // Payments and paid Expenses for a period - this never edits
+        // either, it only documents what was checked against the bank.
+        Route::get('bank-reconciliation', [BankReconciliationController::class, 'index'])->name('bank-reconciliation.index');
+        Route::post('bank-reconciliation', [BankReconciliationController::class, 'store'])->name('bank-reconciliation.store');
+        Route::get('bank-reconciliation/{bankReconciliation}', [BankReconciliationController::class, 'show'])->name('bank-reconciliation.show');
+        Route::post('bank-reconciliation/{bankReconciliation}/lines', [BankReconciliationController::class, 'storeLine'])->name('bank-reconciliation.lines.store');
+        Route::post('bank-reconciliation/{bankReconciliation}/upload', [BankReconciliationController::class, 'uploadCsv'])->name('bank-reconciliation.upload');
+        Route::post('bank-reconciliation/{bankReconciliation}/lines/{bankStatementLine}/match', [BankReconciliationController::class, 'matchLine'])->name('bank-reconciliation.lines.match');
+        Route::post('bank-reconciliation/{bankReconciliation}/lines/{bankStatementLine}/unmatch', [BankReconciliationController::class, 'unmatchLine'])->name('bank-reconciliation.lines.unmatch');
+        Route::post('bank-reconciliation/{bankReconciliation}/lines/{bankStatementLine}/ignore', [BankReconciliationController::class, 'ignoreLine'])->name('bank-reconciliation.lines.ignore');
+        Route::post('bank-reconciliation/{bankReconciliation}/complete', [BankReconciliationController::class, 'complete'])->name('bank-reconciliation.complete');
         // A full per-student financial statement, the one money document
         // (fees, discounts, balance, payment history) a Director can hand
         // to a student or file - everything else on the student's own
