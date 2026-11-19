@@ -160,6 +160,26 @@ class Payment extends Model
     }
 
     /**
+     * Everything a receipt for this payment needs - the relations the
+     * receipt view reads, plus the outstanding balance on each distinct
+     * charge this payment touched - shared by the printable web receipt,
+     * its PDF download, and the welcome email sent at registration, so
+     * all three always show the same figures.
+     *
+     * @return array{payment: self, balances: \Illuminate\Support\Collection<int, array{label: string, balance: float}>}
+     */
+    public function receiptData(): array
+    {
+        $this->load(['student.courses', 'course.instructors', 'recordedBy', 'allocations.enrollment.course.instructors', 'allocations.studentService.service']);
+
+        $balances = $this->allocations
+            ->unique(fn (PaymentAllocation $allocation) => $allocation->chargeKey())
+            ->map(fn (PaymentAllocation $allocation) => ['label' => $allocation->label(), 'balance' => $allocation->chargeBalance()]);
+
+        return ['payment' => $this, 'balances' => $balances];
+    }
+
+    /**
      * receipt_number is deliberately not fillable: it's a permanent,
      * system-assigned identifier derived from the row's own auto-increment
      * id (like Certificate::certificate_number), in the form

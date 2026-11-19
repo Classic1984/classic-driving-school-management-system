@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Mail\StudentReceiptMail;
 use App\Models\ActivityLog;
 use App\Models\Course;
 use App\Models\DiscountRequest;
@@ -20,6 +21,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -247,8 +250,33 @@ class StudentController extends Controller
 
         ActivityLog::record("Registered student {$student->name}");
 
+        $payment = Payment::where('student_id', $student->id)->latest()->first();
+
+        if ($payment !== null) {
+            $this->sendWelcomeReceipt($student, $payment);
+        }
+
         return Redirect::route('students.show', $student)
             ->with('status', $discountPending ? 'student-created-discount-pending' : 'student-created');
+    }
+
+    /**
+     * Email the student a thank-you note with their official receipt
+     * attached, for the initial payment (if any) recorded as part of
+     * their registration. A student with no email-deliverable payment
+     * provider configured, or any other mail failure, must not stop
+     * registration from succeeding - this is a nice-to-have on top of it,
+     * not part of the registration itself.
+     */
+    protected function sendWelcomeReceipt(Student $student, Payment $payment): void
+    {
+        try {
+            $pdfContent = Pdf::loadView('payments.receipt-pdf', $payment->receiptData())->output();
+
+            Mail::to($student->email)->send(new StudentReceiptMail($student, $payment, $pdfContent));
+        } catch (\Throwable $e) {
+            Log::warning("Failed to send welcome receipt email to student {$student->id}: {$e->getMessage()}");
+        }
     }
 
     /**
