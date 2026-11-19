@@ -382,6 +382,7 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
     // export are Director-only, registered in that group above.
     Route::get('payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
     Route::get('payments/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
+    Route::get('payments/{payment}/receipt/pdf', [PaymentController::class, 'receiptPdf'])->name('payments.receipt.pdf');
     Route::resource('certificates', CertificateController::class)->except(['destroy']);
     Route::post('certificates/{certificate}/whatsapp', [CertificateController::class, 'whatsapp'])->name('certificates.whatsapp');
     Route::post('certificates/{certificate}/whatsapp-link', [CertificateController::class, 'whatsappLink'])->name('certificates.whatsapp-link');

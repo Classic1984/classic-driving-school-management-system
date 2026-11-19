@@ -9,11 +9,12 @@ use App\Models\CorporatePayment;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Payment;
-use App\Models\PaymentAllocation;
 use App\Models\Student;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
@@ -147,13 +148,19 @@ class PaymentController extends Controller
      */
     public function receipt(Payment $payment): View
     {
-        $payment->load(['student.courses', 'course.instructors', 'recordedBy', 'allocations.enrollment.course.instructors', 'allocations.studentService.service']);
+        return view('payments.receipt', $payment->receiptData());
+    }
 
-        $balances = $payment->allocations
-            ->unique(fn (PaymentAllocation $allocation) => $allocation->chargeKey())
-            ->map(fn (PaymentAllocation $allocation) => ['label' => $allocation->label(), 'balance' => $allocation->chargeBalance()]);
+    /**
+     * Download the same receipt as a PDF - useful on its own, and reused
+     * to build the welcome email's attachment when a student's
+     * registration includes an initial payment.
+     */
+    public function receiptPdf(Payment $payment): Response
+    {
+        $pdf = Pdf::loadView('payments.receipt-pdf', $payment->receiptData());
 
-        return view('payments.receipt', compact('payment', 'balances'));
+        return $pdf->download("{$payment->receipt_number}.pdf");
     }
 
     /**

@@ -136,6 +136,9 @@
 
             <div class="mt-6 flex items-center gap-4 print:hidden">
                 <x-secondary-button type="button" onclick="window.print()">{{ __('Print') }}</x-secondary-button>
+                <a href="{{ route('payments.receipt.pdf', $payment) }}">
+                    <x-secondary-button type="button">{{ __('Download PDF') }}</x-secondary-button>
+                </a>
                 <a href="{{ route('payments.show', $payment) }}" class="text-sm text-gray-600 hover:underline">{{ __('Back to Payment') }}</a>
             </div>
         </div>
