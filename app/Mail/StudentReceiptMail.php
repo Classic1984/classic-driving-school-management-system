@@ -32,12 +32,16 @@ class StudentReceiptMail extends Mailable
 
     public function content(): Content
     {
+        $outstanding = $this->payment->receiptData()['balances']
+            ->filter(fn (array $balance) => $balance['balance'] > 0);
+
         return new Content(
             markdown: 'emails.students.welcome-receipt',
             with: [
                 'studentName' => $this->student->name,
                 'amountPaid' => number_format((float) $this->payment->amount, 2),
                 'receiptNumber' => $this->payment->receipt_number,
+                'outstanding' => $outstanding,
             ],
         );
     }

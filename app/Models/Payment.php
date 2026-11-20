@@ -166,7 +166,7 @@ class Payment extends Model
      * its PDF download, and the welcome email sent at registration, so
      * all three always show the same figures.
      *
-     * @return array{payment: self, balances: \Illuminate\Support\Collection<int, array{label: string, balance: float}>}
+     * @return array{payment: self, balances: \Illuminate\Support\Collection<int, array{label: string, balance: float, due_date: ?\Illuminate\Support\Carbon}>}
      */
     public function receiptData(): array
     {
@@ -174,7 +174,11 @@ class Payment extends Model
 
         $balances = $this->allocations
             ->unique(fn (PaymentAllocation $allocation) => $allocation->chargeKey())
-            ->map(fn (PaymentAllocation $allocation) => ['label' => $allocation->label(), 'balance' => $allocation->chargeBalance()]);
+            ->map(fn (PaymentAllocation $allocation) => [
+                'label' => $allocation->label(),
+                'balance' => $allocation->chargeBalance(),
+                'due_date' => $allocation->dueDate(),
+            ]);
 
         return ['payment' => $this, 'balances' => $balances];
     }

@@ -109,6 +109,81 @@ class PaymentReceiptTest extends TestCase
         $this->assertSame($user->id, $multiServicePayment->recorded_by);
     }
 
+    public function test_the_receipt_shows_the_training_balances_due_date(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Beginner Course']);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(10)->toDateString(),
+            'status' => 'active',
+            'fee' => 95000,
+        ]);
+
+        $payment = Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 20000,
+            'status' => 'paid',
+        ]);
+
+        $response = $this->actingAs($user)->get("/payments/{$payment->id}/receipt");
+
+        $response->assertOk();
+        $response->assertSee('Due by '.now()->addDays(10)->format('M j, Y'));
+    }
+
+    public function test_the_receipt_does_not_show_a_due_date_once_the_charge_is_fully_paid(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $course = Course::factory()->create(['name' => 'Beginner Course']);
+        $student->courses()->attach($course->id, [
+            'enrolled_at' => now(),
+            'due_date' => now()->addDays(10)->toDateString(),
+            'status' => 'active',
+            'fee' => 20000,
+        ]);
+
+        $payment = Payment::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'amount' => 20000,
+            'status' => 'paid',
+        ]);
+
+        $response = $this->actingAs($user)->get("/payments/{$payment->id}/receipt");
+
+        $response->assertOk();
+        $response->assertDontSee('Due by');
+    }
+
+    public function test_a_flat_service_charge_has_no_due_date(): void
+    {
+        $user = User::factory()->create();
+        $student = Student::factory()->create();
+        $service = Service::factory()->create(['name' => "Learner's Permit", 'price' => 6000]);
+        $studentService = $student->studentServices()->create(['service_id' => $service->id, 'price' => 6000]);
+
+        $this->actingAs($user)->post('/payments/record', [
+            'student_id' => $student->id,
+            'amount' => 3000,
+            'payment_date' => now()->toDateString(),
+            'payment_method' => 'cash',
+            'allocations' => [
+                ['type' => 'service', 'id' => $studentService->id, 'amount' => 3000],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $payment = Payment::whereNull('course_id')->firstOrFail();
+
+        $response = $this->actingAs($user)->get("/payments/{$payment->id}/receipt");
+
+        $response->assertOk();
+        $response->assertDontSee('Due by');
+    }
+
     public function test_a_receipt_still_renders_for_a_legacy_single_course_payment(): void
     {
         $user = User::factory()->create();

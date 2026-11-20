@@ -45,6 +45,36 @@ class StudentWelcomeReceiptTest extends TestCase
         });
     }
 
+    public function test_the_welcome_email_shows_the_outstanding_balances_due_date(): void
+    {
+        Mail::fake();
+
+        $user = User::factory()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $this->actingAs($user)->post('/students', [
+            'name' => 'Due Date Student',
+            'email' => 'due.date.student@example.com',
+            'phone' => '555-0100',
+            'date_of_birth' => '2000-01-15',
+            'course_type' => 'manual',
+            'enrollment_date' => now()->toDateString(),
+            'course_id' => $course->id,
+            'amount_paid' => 50000,
+            'payment_method' => 'cash',
+        ])->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'due.date.student@example.com')->firstOrFail();
+        $enrollment = $student->courses()->firstOrFail()->pivot;
+
+        Mail::assertSent(StudentReceiptMail::class, function (StudentReceiptMail $mail) use ($enrollment) {
+            $html = $mail->render();
+
+            return str_contains($html, '45,000.00')
+                && str_contains($html, $enrollment->due_date->format('M j, Y'));
+        });
+    }
+
     public function test_registering_without_an_initial_payment_sends_no_email(): void
     {
         Mail::fake();

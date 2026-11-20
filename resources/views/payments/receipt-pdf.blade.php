@@ -58,17 +58,21 @@
 
     <h3>Current Balance</h3>
     <table>
+        <thead>
+            <tr><th>Charge</th><th>Due By</th><th class="text-right">Balance</th></tr>
+        </thead>
         <tbody>
             @foreach ($balances as $balance)
                 <tr>
                     <td>{{ $balance['label'] }} Balance</td>
+                    <td>{{ $balance['balance'] > 0 && $balance['due_date'] ? $balance['due_date']->format('M j, Y') : '—' }}</td>
                     <td class="text-right">₦{{ number_format($balance['balance'], 2) }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <td>Total Outstanding</td>
+                <td colspan="2">Total Outstanding</td>
                 <td class="text-right">₦{{ number_format($balances->sum('balance'), 2) }}</td>
             </tr>
         </tfoot>

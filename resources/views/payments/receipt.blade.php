@@ -98,7 +98,12 @@
                             <tbody class="divide-y divide-gray-100">
                                 @foreach ($balances as $balance)
                                     <tr>
-                                        <td class="px-4 py-2 text-sm">{{ $balance['label'] }} {{ __('Balance') }}</td>
+                                        <td class="px-4 py-2 text-sm">
+                                            {{ $balance['label'] }} {{ __('Balance') }}
+                                            @if ($balance['balance'] > 0 && $balance['due_date'])
+                                                <span class="block text-xs text-gray-500">{{ __('Due by :date', ['date' => $balance['due_date']->format('M j, Y')]) }}</span>
+                                            @endif
+                                        </td>
                                         <td class="px-4 py-2 text-sm text-right font-mono">₦{{ number_format($balance['balance'], 2) }}</td>
                                     </tr>
                                 @endforeach
