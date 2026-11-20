@@ -403,7 +403,7 @@ class DashboardTest extends TestCase
         $response->assertSee('500.00');
     }
 
-    public function test_a_secretary_does_not_see_a_locked_students_balance_but_still_sees_the_locked_count(): void
+    public function test_a_secretary_sees_a_locked_students_balance_and_the_locked_count(): void
     {
         $secretary = User::factory()->secretary()->create();
         $student = Student::factory()->create();
@@ -419,13 +419,12 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Locked');
-        // The locked-students modal itself redacts the per-enrollment
-        // balance for a secretary either way, but this also isn't counted
-        // into the Pending Payments total - a locked balance is already
-        // represented by the Locked Balance tile, so it shouldn't surface
-        // here too.
-        $response->assertDontSee('Locked Course · ₦6,543.00');
-        $response->assertDontSee('6,543.00');
+        // A secretary sees the same locked-enrollment balance a director
+        // does, same as the Locked Balance hero tile itself - but this
+        // still isn't counted into the Pending Payments total, since a
+        // locked balance is already represented by the Locked Balance
+        // tile, not Pending Payments.
+        $response->assertSee('Locked Course · ₦6,543.00');
     }
 
     public function test_a_locked_enrollments_balance_is_excluded_from_pending_payments(): void
@@ -1361,18 +1360,17 @@ class DashboardTest extends TestCase
         $response->assertSee('lg:grid-cols-4', false);
     }
 
-    public function test_a_secretarys_six_hero_tiles_fill_one_even_row(): void
+    public function test_a_secretarys_seven_hero_tiles_fill_a_row_of_four(): void
     {
         $secretary = User::factory()->secretary()->create();
 
         $response = $this->actingAs($secretary)->get('/dashboard');
 
         $response->assertOk();
-        // A secretary doesn't get Locked Balance or Pending Approvals, so
-        // their 6 tiles fit a single row exactly. (Not asserting the
-        // absence of lg:grid-cols-4 here - that class is legitimately
-        // reused elsewhere on the page for unrelated grids.)
-        $response->assertSee('lg:grid-cols-6', false);
+        // A secretary sees Locked Balance (same as a director) but not
+        // Pending Approvals, so their 7 tiles land on the same 4-column
+        // layout a director's 8 do.
+        $response->assertSee('lg:grid-cols-4', false);
     }
 
     public function test_a_director_sees_the_pending_approvals_hero_tile(): void
@@ -1465,7 +1463,7 @@ class DashboardTest extends TestCase
         $this->assertStringNotContainsString('Expired Student', $modalHtml);
     }
 
-    public function test_a_secretary_does_not_see_the_locked_balance_hero_tile(): void
+    public function test_a_secretary_sees_the_locked_balance_hero_tile(): void
     {
         $secretary = User::factory()->secretary()->create();
         $course = Course::factory()->create(['fee' => 100, 'duration_weeks' => 4]);
@@ -1480,7 +1478,8 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($secretary)->get('/dashboard');
 
         $response->assertOk();
-        $response->assertDontSee('Locked Balance');
+        $response->assertSee('Locked Balance');
+        $response->assertSee('₦100.00', false);
     }
 
     public function test_the_training_expired_hero_tile_counts_only_expired_training_period_locks(): void

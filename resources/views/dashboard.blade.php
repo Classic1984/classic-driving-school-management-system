@@ -161,25 +161,23 @@
             </div>
 
             @php
-                // Director-only, same restriction as every other individual
-                // student balance figure on this page (see the comment above
-                // $showUpcomingPaymentsCard below) - a secretary still sees
-                // the locked-student count further down, just never the ₦
-                // total.
+                // Shown to everyone, same as the Training Expired tile below
+                // it - a secretary needs to see which students are locked
+                // out for an overdue balance (and how much) just as much as
+                // a director does, since they're the one at the front desk
+                // fielding "why can't I train today" questions.
                 $heroCards = [];
-                if (auth()->user()->isDirector()) {
-                    // Only count students locked for an overdue balance -
-                    // not ones locked because their training period
-                    // expired, since this tile is specifically about money
-                    // owed, not every reason a student can be locked out.
-                    $lockedForBalanceEnrollments = $lockedEnrollments->where('locked_reason', 'overdue_balance');
-                    $heroCards[] = [
-                        'title' => 'Locked Balance', 'value' => '₦'.number_format($lockedForBalanceEnrollments->sum(fn (\App\Models\Enrollment $enrollment) => $enrollment->balance()), 2), 'color' => 'red',
-                        'icon' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
-                        'sub' => $lockedForBalanceEnrollments->isNotEmpty() ? trans_choice('{1} student locked out for balance|[2,*] :count students locked out for balance', $lockedForBalanceEnrollments->count(), ['count' => $lockedForBalanceEnrollments->count()]) : __('No students locked out for balance'),
-                        'modal' => 'locked-balance-modal',
-                    ];
-                }
+                // Only count students locked for an overdue balance - not
+                // ones locked because their training period expired, since
+                // this tile is specifically about money owed, not every
+                // reason a student can be locked out.
+                $lockedForBalanceEnrollments = $lockedEnrollments->where('locked_reason', 'overdue_balance');
+                $heroCards[] = [
+                    'title' => 'Locked Balance', 'value' => '₦'.number_format($lockedForBalanceEnrollments->sum(fn (\App\Models\Enrollment $enrollment) => $enrollment->balance()), 2), 'color' => 'red',
+                    'icon' => 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z',
+                    'sub' => $lockedForBalanceEnrollments->isNotEmpty() ? trans_choice('{1} student locked out for balance|[2,*] :count students locked out for balance', $lockedForBalanceEnrollments->count(), ['count' => $lockedForBalanceEnrollments->count()]) : __('No students locked out for balance'),
+                    'modal' => 'locked-balance-modal',
+                ];
                 // Not money, so not Director-gated - everyone who sees the
                 // locked-student count further down can see this tile too.
                 $trainingExpiredEnrollments = $lockedEnrollments->where('locked_reason', 'training_period_expired');
@@ -1166,23 +1164,23 @@
                     </x-modal>
                 @endif
 
-                @if (auth()->user()->isDirector())
-                    <x-modal name="locked-balance-modal">
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Balance') }}</h3>
-                            @if ($lockedForBalanceEnrollments->isEmpty())
-                                <p class="text-sm text-gray-500">{{ __('No students locked out for balance.') }}</p>
-                            @else
-                                <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
-                                    @include('partials.dashboard.locked-enrollments-list', ['enrollments' => $lockedForBalanceEnrollments])
-                                </div>
-                            @endif
-                            <div class="mt-4 text-right">
-                                <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-balance-modal')">{{ __('Close') }}</x-secondary-button>
+                {{-- Not Director-gated, matching the Locked Balance tile
+                itself - everyone who can see the tile can open this. --}}
+                <x-modal name="locked-balance-modal">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🔒 {{ __('Locked Balance') }}</h3>
+                        @if ($lockedForBalanceEnrollments->isEmpty())
+                            <p class="text-sm text-gray-500">{{ __('No students locked out for balance.') }}</p>
+                        @else
+                            <div class="max-h-96 overflow-y-auto divide-y divide-gray-100">
+                                @include('partials.dashboard.locked-enrollments-list', ['enrollments' => $lockedForBalanceEnrollments])
                             </div>
+                        @endif
+                        <div class="mt-4 text-right">
+                            <x-secondary-button x-on:click="$dispatch('close-modal', 'locked-balance-modal')">{{ __('Close') }}</x-secondary-button>
                         </div>
-                    </x-modal>
-                @endif
+                    </div>
+                </x-modal>
 
                 {{-- Not Director-gated, matching the Training Expired tile
                 itself - everyone who can see the tile can open this. --}}
