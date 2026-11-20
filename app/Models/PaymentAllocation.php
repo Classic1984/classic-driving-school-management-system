@@ -6,6 +6,7 @@ use Database\Factories\PaymentAllocationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * One line of a payment: the portion of a payment applied to a single
@@ -122,6 +123,17 @@ class PaymentAllocation extends Model
             'service' => $this->studentService->balance(),
             default => 0.0,
         };
+    }
+
+    /**
+     * The grace-period deadline for this allocation's remaining balance,
+     * if it has one - only an enrollment-linked charge (training, either
+     * certificate fee, a reactivation fee) carries a due date at all; a
+     * flat catalog service does not.
+     */
+    public function dueDate(): ?Carbon
+    {
+        return $this->enrollment?->due_date;
     }
 
     /**
