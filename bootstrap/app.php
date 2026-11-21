@@ -34,9 +34,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // can never carry a CSRF token - CORS + rate limiting guard it instead.
         // The Paystack webhook is server-to-server (no browser, no session,
         // no CSRF token possible either) - its HMAC signature is the guard.
+        // The desk-station ping is the same shape - an on-site script, not a
+        // browser - guarded by the per-station token in the URL instead.
         $middleware->validateCsrfTokens(except: [
             'public/leads',
             'public/payments/paystack/webhook',
+            'public/desk-stations/*/ping',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

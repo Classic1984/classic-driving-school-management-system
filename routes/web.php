@@ -20,6 +20,8 @@ use App\Http\Controllers\CorporatePaymentController;
 use App\Http\Controllers\CorporateQuotationController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeskStationController;
+use App\Http\Controllers\DeskStationPingController;
 use App\Http\Controllers\DiscountRequestController;
 use App\Http\Controllers\EnrolledTraineeController;
 use App\Http\Controllers\EnrollmentController;
@@ -84,6 +86,14 @@ Route::post('/public/leads', [PublicLeadController::class, 'store'])
 // succeeds - no browser, no session, verified by HMAC signature instead.
 Route::post('/public/payments/paystack/webhook', [PaystackWebhookController::class, 'handle'])
     ->name('public-payments.paystack-webhook');
+
+// The on-site desk-monitoring agent calls this every so often from each
+// camera's PC to report whether that desk currently has someone at it -
+// no browser, no session, authenticated by the station's own token in
+// the URL instead of a login.
+Route::post('/public/desk-stations/{token}/ping', [DeskStationPingController::class, 'update'])
+    ->middleware('throttle:60,1')
+    ->name('public-desk-stations.ping');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'not-instructor', 'not-student'])
@@ -239,6 +249,13 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::post('backups/send', [BackupController::class, 'send'])->name('backups.send');
         Route::get('message-log', [MessageLogController::class, 'index'])->name('message-log.index');
         Route::get('message-log/export', [MessageLogController::class, 'export'])->name('message-log.export');
+        // Camera-monitored desks (front desk, secretary's office, ...) -
+        // each station's on-site agent is the only thing that ever writes
+        // to it, via the public ping route above; everything here is just
+        // Director-facing management and the live status it reports.
+        Route::get('desk-stations/status', [DeskStationController::class, 'status'])->name('desk-stations.status');
+        Route::resource('desk-stations', DeskStationController::class)->only(['index', 'create', 'store', 'destroy']);
+        Route::post('desk-stations/{deskStation}/regenerate-token', [DeskStationController::class, 'regenerateToken'])->name('desk-stations.regenerate-token');
         Route::post('reminders/{type}/send', [ReminderController::class, 'send'])
             ->whereIn('type', ['balance_reminder', 'theory_class_reminder', 'lead_follow_up', 'absence_check_in'])
             ->name('reminders.send');
