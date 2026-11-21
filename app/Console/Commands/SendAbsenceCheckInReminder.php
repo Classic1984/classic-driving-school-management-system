@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\AbsenceCheckInMail;
 use App\Models\MessageLog;
 use App\Models\Student;
 use App\Services\TermiiSmsService;
 use App\Services\WhatsAppService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class SendAbsenceCheckInReminder extends Command
 {
@@ -93,11 +95,26 @@ class SendAbsenceCheckInReminder extends Command
                     'message' => $message,
                 ]);
 
-                if ($channel !== null) {
+                $emailed = $this->sendEmail($student);
+
+                MessageLog::create([
+                    'recipient_type' => 'student',
+                    'recipient_id' => $student->id,
+                    'recipient_name' => $student->name,
+                    'recipient_phone' => $student->phone,
+                    'purpose' => 'absence_check_in',
+                    'channel' => 'email',
+                    'status' => $emailed ? 'sent' : 'failed',
+                    'message' => $message,
+                ]);
+
+                $delivered = $channel !== null || $emailed;
+
+                if ($delivered) {
                     $student->update(['last_absence_reminder_sent_at' => now()]);
                 }
 
-                return $channel !== null;
+                return $delivered;
             } catch (\Throwable $e) {
                 // One student's check-in failing outright must not stop
                 // every student after them in this run from being checked
@@ -111,5 +128,28 @@ class SendAbsenceCheckInReminder extends Command
         $this->info("Absence check-in sent to {$sent} of {$due->count()} student(s).");
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Email the same check-in to the student, independently of whether
+     * the SMS/WhatsApp attempt above succeeded - a failure here (bad
+     * address, mail server down) must not be mistaken for the phone
+     * channel having failed too, so it's caught and reported on its own.
+     */
+    protected function sendEmail(Student $student): bool
+    {
+        if (! $student->email) {
+            return false;
+        }
+
+        try {
+            Mail::to($student->email)->send(new AbsenceCheckInMail($student));
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::error("Failed to email absence check-in to student #{$student->id}: {$e->getMessage()}", ['exception' => $e]);
+
+            return false;
+        }
     }
 }
