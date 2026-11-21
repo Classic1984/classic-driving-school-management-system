@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\AbsenceCheckInMail;
 use App\Models\Attendance;
 use App\Models\Course;
 use App\Models\Student;
@@ -9,6 +10,7 @@ use App\Services\TermiiSmsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AbsenceCheckInReminderTest extends TestCase
@@ -46,6 +48,52 @@ class AbsenceCheckInReminderTest extends TestCase
             'purpose' => 'absence_check_in',
             'channel' => 'sms',
             'status' => 'sent',
+        ]);
+    }
+
+    public function test_it_also_emails_the_student_the_absence_check_in(): void
+    {
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message_id' => '1'], 200)]);
+        Mail::fake();
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['email' => 'quiet.student@example.com', 'enrollment_date' => now()->subDays(10)]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now()->subDays(10), 'status' => 'active']);
+
+        $this->artisan('app:send-absence-check-in-reminder')->assertExitCode(0);
+
+        Mail::assertSent(AbsenceCheckInMail::class, fn (AbsenceCheckInMail $mail) => $mail->hasTo('quiet.student@example.com')
+            && $mail->student->is($student));
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'absence_check_in',
+            'channel' => 'email',
+            'status' => 'sent',
+        ]);
+    }
+
+    public function test_it_still_marks_the_student_reminded_via_email_alone_when_every_phone_channel_fails(): void
+    {
+        Http::fake(['api.ng.termii.com/*' => Http::response(['message' => 'blocked'], 401)]);
+        Mail::fake();
+
+        $course = Course::factory()->create();
+        $student = Student::factory()->create(['enrollment_date' => now()->subDays(10)]);
+        $student->courses()->attach($course->id, ['enrolled_at' => now()->subDays(10), 'status' => 'active']);
+
+        $this->artisan('app:send-absence-check-in-reminder')->assertExitCode(0);
+
+        Mail::assertSent(AbsenceCheckInMail::class);
+        $this->assertNotNull($student->fresh()->last_absence_reminder_sent_at);
+
+        $this->assertDatabaseHas('message_logs', [
+            'recipient_type' => 'student',
+            'recipient_id' => $student->id,
+            'purpose' => 'absence_check_in',
+            'channel' => null,
+            'status' => 'failed',
         ]);
     }
 
