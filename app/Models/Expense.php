@@ -53,6 +53,8 @@ class Expense extends Model
         'clothes_shoes' => 'Clothes & Shoes',
         'house_materials' => 'House Materials',
         'kids' => 'Kids',
+        'hospital' => 'Hospital',
+        'laboratory' => 'Laboratory',
         'debt' => 'Debt',
         'dssp_payment' => 'DSSP Payment',
         'laundry' => 'Laundry',
