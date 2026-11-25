@@ -493,6 +493,8 @@
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Upgrade request submitted - a Director will need to approve it before it takes effect.') }}</p>
                             @elseif (session('status') === 'assessment-saved')
                                 <p class="mb-2 text-sm font-medium text-green-600">{{ __('Assessment saved.') }}</p>
+                            @elseif (session('status') === 'discount-request-approved')
+                                <p class="mb-2 text-sm font-medium text-green-600">{{ __('Discount approved and applied.') }}</p>
                             @endif
                             <x-input-error class="mb-2" :messages="$errors->get('enrollment')" />
 
@@ -562,6 +564,16 @@
                                                         @endif
                                                         @if ($enrolledCourse->pivot->isLockedForExpiredTrainingPeriod() && auth()->user()->isDirector())
                                                             <a href="{{ route('enrollments.reactivate.create', $enrolledCourse->pivot->id) }}" class="text-sm text-gold-600 hover:underline">{{ __('Reactivate') }}</a>
+                                                        @endif
+                                                        @if (auth()->user()->isDirector())
+                                                            @php $rejectedDiscountRequest = $enrolledCourse->pivot->rejectedDiscountRequest(); @endphp
+                                                            @if ($rejectedDiscountRequest)
+                                                                <form method="post" action="{{ route('discount-requests.approve', $rejectedDiscountRequest) }}" class="inline" onsubmit="return confirm('{{ __('Approve this previously rejected discount after all?') }}');">
+                                                                    @csrf
+                                                                    @method('patch')
+                                                                    <button type="submit" class="text-sm text-gold-600 hover:underline">{{ __('Approve Discount Anyway') }}</button>
+                                                                </form>
+                                                            @endif
                                                         @endif
                                                         @php $pendingUpgradeRequest = $enrolledCourse->pivot->pendingUpgradeRequest(); @endphp
                                                         @if ($pendingUpgradeRequest)

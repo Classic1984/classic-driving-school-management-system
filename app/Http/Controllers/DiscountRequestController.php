@@ -52,7 +52,11 @@ class DiscountRequestController extends Controller
 
         ActivityLog::record('Approved a ₦'.number_format((float) $discountRequest->discount_amount, 2)." discount for {$discountRequest->student->name}'s enrollment in {$discountRequest->course->name}");
 
-        return Redirect::route('approvals.index')->with('status', 'discount-request-approved');
+        // Reached either from the Approval Centre (a pending request) or
+        // from the student's own profile (reconsidering one already
+        // rejected) - send the Director back to wherever they came from,
+        // falling back to the Approval Centre if that can't be determined.
+        return Redirect::back(fallback: route('approvals.index'))->with('status', 'discount-request-approved');
     }
 
     /**
