@@ -138,6 +138,72 @@ class DiscountApprovalTest extends TestCase
         $this->assertDatabaseHas('discount_requests', ['id' => $discountRequest->id, 'status' => 'rejected', 'resolved_by' => $director->id]);
     }
 
+    public function test_a_director_can_approve_a_previously_rejected_discount_request_after_all(): void
+    {
+        $secretary = User::factory()->secretary()->create();
+        $director = User::factory()->director()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $this->actingAs($secretary)->post('/students', $this->registrationData([
+            'course_id' => $course->id,
+            'discount_choice' => '5000',
+            'discount_reason' => 'promotional_offer',
+        ]))->assertSessionHasNoErrors();
+
+        $student = Student::where('email', 'jane.doe@example.com')->firstOrFail();
+        $discountRequest = DiscountRequest::where('student_id', $student->id)->firstOrFail();
+
+        $this->actingAs($director)->patch("/discount-requests/{$discountRequest->id}/reject")
+            ->assertRedirect(route('approvals.index'));
+
+        $enrollment = $student->courses->first()->pivot;
+        $this->assertSame($discountRequest->id, $enrollment->rejectedDiscountRequest()?->id);
+
+        // The Director changes their mind - reconsidering it from the
+        // student's own profile page, not the Approval Centre (it's no
+        // longer pending, so it isn't listed there any more).
+        $response = $this->actingAs($director)
+            ->from("/students/{$student->id}")
+            ->patch("/discount-requests/{$discountRequest->id}/approve");
+
+        $response->assertRedirect("/students/{$student->id}");
+
+        $enrollment = $enrollment->fresh();
+        $this->assertSame(90000.0, $enrollment->fee());
+        $this->assertTrue($enrollment->hasDiscount());
+        $this->assertNull($enrollment->rejectedDiscountRequest());
+
+        $this->assertDatabaseHas('discount_requests', ['id' => $discountRequest->id, 'status' => 'approved', 'resolved_by' => $director->id]);
+        $this->assertDatabaseHas('discount_audit_logs', [
+            'student_id' => $student->id,
+            'applied_by' => $director->id,
+            'discount_amount' => 5000,
+        ]);
+    }
+
+    public function test_a_rejected_discount_request_no_longer_shows_once_a_discount_is_actually_applied(): void
+    {
+        $director = User::factory()->director()->create();
+        $course = Course::factory()->create(['fee' => 95000]);
+
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 95000]);
+        $enrollment = $student->courses->first()->pivot;
+
+        DiscountRequest::factory()->create([
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'enrollment_id' => $enrollment->id,
+            'status' => 'rejected',
+        ]);
+
+        $this->assertNotNull($enrollment->rejectedDiscountRequest());
+
+        $enrollment->forceFill(['discount_amount' => 1000, 'discount_percentage' => 1])->save();
+
+        $this->assertNull($enrollment->fresh()->rejectedDiscountRequest());
+    }
+
     public function test_a_secretary_cannot_approve_a_discount_request(): void
     {
         $secretary = User::factory()->secretary()->create();

@@ -489,6 +489,26 @@ class Enrollment extends Pivot
     }
 
     /**
+     * This enrollment's most recently rejected discount request, if it
+     * still has no discount applied - a Director changing their mind
+     * after rejecting one can approve it after all from here, rather
+     * than the student having to raise a fresh request. Null once a
+     * discount is actually on the enrollment (whether from this request
+     * or another), since there's nothing left to reconsider at that point.
+     */
+    public function rejectedDiscountRequest(): ?DiscountRequest
+    {
+        if ($this->hasDiscount()) {
+            return null;
+        }
+
+        return DiscountRequest::where('enrollment_id', $this->id)
+            ->where('status', 'rejected')
+            ->latest('resolved_at')
+            ->first();
+    }
+
+    /**
      * The Director/staff-facing label for this enrollment's upgrade
      * eligibility, per the Programme Upgrade Policy's staff view.
      */
