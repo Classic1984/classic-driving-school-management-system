@@ -60,6 +60,7 @@ use App\Http\Controllers\StudentServiceController;
 use App\Http\Controllers\TheoryClassAttendanceController;
 use App\Http\Controllers\TheoryClassCancellationController;
 use App\Http\Controllers\TheoryClassController;
+use App\Http\Controllers\TrainingCheckInController;
 use App\Http\Controllers\TrainingProgressController;
 use App\Http\Controllers\TrainingReportController;
 use App\Http\Controllers\UserController;
@@ -94,6 +95,14 @@ Route::post('/public/payments/paystack/webhook', [PaystackWebhookController::cla
 Route::post('/public/desk-stations/{token}/ping', [DeskStationPingController::class, 'update'])
     ->middleware('throttle:60,1')
     ->name('public-desk-stations.ping');
+
+// What a student's printed scan code actually links to - a plain GET, so
+// any QR scanner or phone camera that follows it logs today's training,
+// no login or app required. Authenticated by the token itself, the same
+// pattern as the certificate verification link above.
+Route::get('/public/training-check-in/{token}', [TrainingCheckInController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('public-training.check-in');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'not-instructor', 'not-student'])
@@ -322,11 +331,20 @@ Route::middleware(['auth', 'not-instructor', 'not-student'])->group(function () 
         Route::get('corporate-quotations/{corporateQuotation}/pdf', [CorporateQuotationController::class, 'pdf'])->name('corporate-quotations.pdf');
         Route::post('corporate-quotations/{corporateQuotation}/email', [CorporateQuotationController::class, 'email'])->name('corporate-quotations.email');
         Route::post('corporate-quotations/{corporateQuotation}/whatsapp', [CorporateQuotationController::class, 'whatsapp'])->name('corporate-quotations.whatsapp');
+
+        // Rotating a student's scan code token - e.g. if a printed card is
+        // lost or the code needs to stop working for some other reason.
+        Route::post('students/{student}/scan-code/regenerate-token', [StudentController::class, 'regenerateScanToken'])->name('students.scan-code.regenerate-token');
     });
 
     Route::resource('leads', LeadController::class)->except(['show']);
     Route::get('enrolled-trainees', [EnrolledTraineeController::class, 'index'])->name('enrolled-trainees.index');
     Route::get('students/{student}/training-record', [StudentController::class, 'trainingRecord'])->name('students.training-record');
+    // The printed scan code staff hand to a student at registration -
+    // open to any staff role, same as recording a payment, since front
+    // desk/Secretary is who actually prints it.
+    Route::get('students/{student}/scan-code', [StudentController::class, 'scanCard'])->name('students.scan-code');
+    Route::get('students/{student}/scan-code/pdf', [StudentController::class, 'scanCardPdf'])->name('students.scan-code.pdf');
     Route::get('students/{student}/correction-requests/create', [StudentCorrectionRequestController::class, 'create'])->name('student-correction-requests.create');
     Route::post('students/{student}/correction-requests', [StudentCorrectionRequestController::class, 'store'])->name('student-correction-requests.store');
 
