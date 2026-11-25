@@ -41,9 +41,15 @@
             <div class="bg-white shadow-sm ring-1 ring-gray-200 sm:rounded-xl overflow-hidden">
                 <div class="p-4 sm:p-8 space-y-4">
                 @if (session('status') === 'student-created')
-                    <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
+                    <p class="text-sm font-medium text-green-600">
+                        {{ __('Student registered successfully.') }}
+                        <a href="{{ route('students.scan-code', $student) }}" class="font-semibold underline">{{ __('Print their training scan code') }}</a>
+                    </p>
                 @elseif (session('status') === 'student-created-discount-pending')
-                    <p class="text-sm font-medium text-green-600">{{ __('Student registered successfully.') }}</p>
+                    <p class="text-sm font-medium text-green-600">
+                        {{ __('Student registered successfully.') }}
+                        <a href="{{ route('students.scan-code', $student) }}" class="font-semibold underline">{{ __('Print their training scan code') }}</a>
+                    </p>
                     <p class="text-sm font-medium text-gold-600">{{ __('The requested discount is pending Director approval - the student is enrolled at the full fee until then.') }}</p>
                     <script>alert({!! json_encode(__('Student registered successfully. The requested discount still needs Director approval before it applies - the student is currently enrolled at the full course fee.')) !!});</script>
                 @elseif (session('status') === 'student-updated')
@@ -1257,6 +1263,7 @@
                     </button>
                     <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-gray-200 py-1 z-10">
                         <a href="{{ route('students.edit', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Edit Student') }}</a>
+                        <a href="{{ route('students.scan-code', $student) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Training Scan Code') }}</a>
                         <a href="{{ route('students.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">{{ __('Back to List') }}</a>
                     </div>
                 </div>

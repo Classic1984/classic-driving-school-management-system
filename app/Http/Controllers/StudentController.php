@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class StudentController extends Controller
@@ -322,6 +323,43 @@ class StudentController extends Controller
         $pdf = Pdf::loadView('students.statement-pdf', compact('student', 'financialOverview'));
 
         return $pdf->download("{$student->name}-statement.pdf");
+    }
+
+    /**
+     * The printable scan code card: a QR code of this student's training
+     * check-in link, handed to them at registration (and reprinted any
+     * time after) so they can log their own training by having it
+     * scanned, instead of staff finding them in the Student Login
+     * Training list and filling the form by hand every day.
+     */
+    public function scanCard(Student $student): View
+    {
+        return view('students.scan-card', compact('student'));
+    }
+
+    /**
+     * The same scan code card as a downloadable PDF, for printing outside
+     * the browser's own print dialog.
+     */
+    public function scanCardPdf(Student $student): Response
+    {
+        $pdf = Pdf::loadView('students.scan-card-pdf', compact('student'));
+
+        return $pdf->download("{$student->name}-scan-code.pdf");
+    }
+
+    /**
+     * Rotate a student's scan code token - e.g. a lost or damaged printed
+     * card. Director-only: this silently invalidates whatever code is
+     * currently printed and in the student's hands.
+     */
+    public function regenerateScanToken(Student $student): RedirectResponse
+    {
+        $student->forceFill(['training_scan_token' => Str::random(40)])->save();
+
+        ActivityLog::record("Regenerated the training scan code for {$student->name}");
+
+        return Redirect::back()->with('status', 'scan-code-regenerated');
     }
 
     /**

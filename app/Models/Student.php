@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class Student extends Model
 {
@@ -79,8 +80,37 @@ class Student extends Model
         static::created(function (Student $student) {
             $student->forceFill([
                 'student_id_number' => 'CDS-'.str_pad((string) $student->id, 5, '0', STR_PAD_LEFT),
+                // The secret behind the printed training scan code - a
+                // random token rather than anything derived from the
+                // student's id, since (unlike student_id_number) this one
+                // grants an action to whoever has it, so it must not be
+                // guessable.
+                'training_scan_token' => Str::random(40),
             ])->save();
         });
+    }
+
+    /**
+     * The public URL this student's printed scan code encodes - opening
+     * it (via any QR scanner or a plain phone camera) logs today's
+     * training for them, the same as TrainingCheckInController does.
+     */
+    public function trainingCheckInUrl(): string
+    {
+        return route('public-training.check-in', $this->training_scan_token);
+    }
+
+    /**
+     * This student's currently active enrollments - the candidates a
+     * scanned check-in can log training against. Locked/completed/
+     * registered enrollments don't count, the same as logging training
+     * manually already requires an active enrollment.
+     *
+     * @return Collection<int, Course>
+     */
+    public function activeCourseEnrollments(): Collection
+    {
+        return $this->courses()->wherePivot('status', 'active')->get();
     }
 
     /**
