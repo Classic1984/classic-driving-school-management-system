@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Attendance;
+use App\Models\Instructor;
 use App\Models\Student;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -66,9 +68,29 @@ class TrainingCheckInController extends Controller
             ]);
         }
 
+        // Which instructor/vehicle actually ran today's session varies day
+        // to day - there's nothing to infer it from, so a front-desk staff
+        // member picks it in this one extra step rather than it being
+        // silently left blank on every scan-logged attendance.
+        if (! $request->boolean('confirmed')) {
+            return view('training-check-in.show', [
+                'result' => 'choose-session-details',
+                'student' => $student,
+                'course' => $course,
+                'token' => $token,
+                'instructors' => Instructor::orderBy('name')->get(),
+                'vehicles' => Vehicle::where('status', 'active')->orderBy('name')->get(),
+            ]);
+        }
+
+        $instructor = Instructor::find($request->query('instructor_id'));
+        $vehicle = Vehicle::find($request->query('vehicle_id'));
+
         Attendance::create([
             'student_id' => $student->id,
             'course_id' => $course->id,
+            'instructor_id' => $instructor?->id,
+            'vehicle_id' => $vehicle?->id,
             'date' => $today,
             'status' => 'present',
             'notes' => 'Logged via training scan code.',
@@ -82,6 +104,8 @@ class TrainingCheckInController extends Controller
             'result' => 'logged',
             'student' => $student,
             'course' => $course,
+            'instructor' => $instructor,
+            'vehicle' => $vehicle,
         ]);
     }
 }
