@@ -3,8 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Course;
+use App\Models\Instructor;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,24 +21,83 @@ class TrainingCheckInTest extends TestCase
         $this->assertNotEmpty($student->training_scan_token);
     }
 
-    public function test_scanning_a_students_code_logs_todays_training(): void
+    public function test_a_bare_scan_asks_for_instructor_and_vehicle_before_logging(): void
     {
         $course = Course::factory()->create();
         $student = Student::factory()->create();
         $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+        $instructor = Instructor::factory()->create(['name' => 'Mr. Bello']);
+        $vehicle = Vehicle::factory()->create(['name' => 'Toyota Corolla', 'status' => 'active']);
 
         $response = $this->get($student->trainingCheckInUrl());
+
+        $response->assertOk();
+        $response->assertSee('One more thing');
+        $response->assertSee('Mr. Bello');
+        $response->assertSee('Toyota Corolla');
+
+        $this->assertDatabaseCount('attendances', 0);
+    }
+
+    public function test_confirming_with_an_instructor_and_vehicle_logs_todays_training_with_them(): void
+    {
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+        $instructor = Instructor::factory()->create(['name' => 'Mr. Bello']);
+        $vehicle = Vehicle::factory()->create(['name' => 'Toyota Corolla', 'status' => 'active']);
+
+        $response = $this->get($student->trainingCheckInUrl().'?confirmed=1&instructor_id='.$instructor->id.'&vehicle_id='.$vehicle->id);
 
         $response->assertOk();
         $response->assertSee('Training Logged');
         $response->assertSee($student->name);
         $response->assertSee($course->name);
+        $response->assertSee('Mr. Bello');
+        $response->assertSee('Toyota Corolla');
 
         $this->assertDatabaseHas('attendances', [
             'student_id' => $student->id,
             'course_id' => $course->id,
+            'instructor_id' => $instructor->id,
+            'vehicle_id' => $vehicle->id,
             'date' => now()->toDateString(),
             'status' => 'present',
+        ]);
+    }
+
+    public function test_confirming_with_neither_specified_leaves_them_blank(): void
+    {
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+
+        $this->get($student->trainingCheckInUrl().'?confirmed=1')->assertSee('Training Logged');
+
+        $this->assertDatabaseHas('attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'instructor_id' => null,
+            'vehicle_id' => null,
+        ]);
+    }
+
+    public function test_an_unknown_instructor_or_vehicle_id_is_ignored_rather_than_erroring(): void
+    {
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+
+        $response = $this->get($student->trainingCheckInUrl().'?confirmed=1&instructor_id=999999&vehicle_id=999999');
+
+        $response->assertOk();
+        $response->assertSee('Training Logged');
+
+        $this->assertDatabaseHas('attendances', [
+            'student_id' => $student->id,
+            'course_id' => $course->id,
+            'instructor_id' => null,
+            'vehicle_id' => null,
         ]);
     }
 
@@ -46,13 +107,28 @@ class TrainingCheckInTest extends TestCase
         $student = Student::factory()->create();
         $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
 
-        $this->get($student->trainingCheckInUrl())->assertSee('Training Logged');
+        $this->get($student->trainingCheckInUrl().'?confirmed=1')->assertSee('Training Logged');
         $response = $this->get($student->trainingCheckInUrl());
 
         $response->assertOk();
         $response->assertSee('Already Logged');
 
         $this->assertDatabaseCount('attendances', 1);
+    }
+
+    public function test_an_already_logged_student_is_not_asked_for_instructor_and_vehicle_again(): void
+    {
+        $course = Course::factory()->create();
+        $student = Student::factory()->create();
+        $student->courses()->attach($course->id, ['enrolled_at' => now(), 'status' => 'active', 'fee' => 50000]);
+
+        $this->get($student->trainingCheckInUrl().'?confirmed=1')->assertSee('Training Logged');
+
+        $response = $this->get($student->trainingCheckInUrl());
+
+        $response->assertOk();
+        $response->assertSee('Already Logged');
+        $response->assertDontSee('One more thing');
     }
 
     public function test_an_unrecognized_token_shows_invalid_code_instead_of_a_bare_404(): void
@@ -110,6 +186,9 @@ class TrainingCheckInTest extends TestCase
         $this->assertDatabaseCount('attendances', 0);
 
         $this->get($student->trainingCheckInUrl().'?course_id='.$courseA->id)
+            ->assertSee('One more thing');
+
+        $this->get($student->trainingCheckInUrl().'?course_id='.$courseA->id.'&confirmed=1')
             ->assertSee('Training Logged');
 
         $this->assertDatabaseHas('attendances', ['student_id' => $student->id, 'course_id' => $courseA->id]);
@@ -131,7 +210,7 @@ class TrainingCheckInTest extends TestCase
             'fee' => 50000,
         ]);
 
-        $this->get($student->trainingCheckInUrl())->assertSee('Training Logged');
+        $this->get($student->trainingCheckInUrl().'?confirmed=1')->assertSee('Training Logged');
 
         $enrollment = $student->courses()->first()->pivot;
         $this->assertSame('locked', $enrollment->status);

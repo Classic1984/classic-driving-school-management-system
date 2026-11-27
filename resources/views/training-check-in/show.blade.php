@@ -22,7 +22,52 @@
                 <dt class="text-gray-500">{{ __('Date') }}</dt>
                 <dd class="text-gray-900">{{ now()->format('l, M j, Y') }}</dd>
             </div>
+            @if ($instructor)
+                <div>
+                    <dt class="text-gray-500">{{ __('Instructor') }}</dt>
+                    <dd class="text-gray-900">{{ $instructor->name }}</dd>
+                </div>
+            @endif
+            @if ($vehicle)
+                <div>
+                    <dt class="text-gray-500">{{ __('Vehicle') }}</dt>
+                    <dd class="text-gray-900">{{ $vehicle->name }}</dd>
+                </div>
+            @endif
         </dl>
+    @elseif ($result === 'choose-session-details')
+        <div class="mt-6 rounded-lg border-2 border-gold-500 bg-gold-50 p-4 text-center">
+            <p class="text-lg font-bold text-gold-700">{{ __('One more thing') }}</p>
+            <p class="text-sm text-gold-600">{{ __('Who trained :name today, and in which vehicle? Leave either blank if not applicable.', ['name' => $student->name]) }}</p>
+        </div>
+        <form method="get" action="{{ route('public-training.check-in', $token) }}" class="mt-4 space-y-4">
+            <input type="hidden" name="course_id" value="{{ $course->id }}">
+            <input type="hidden" name="confirmed" value="1">
+
+            <div>
+                <label for="instructor_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">{{ __('Instructor') }}</label>
+                <select id="instructor_id" name="instructor_id" class="block w-full rounded-md border-0 bg-white ring-1 ring-gray-300 focus:ring-gold-500 text-sm">
+                    <option value="">{{ __('— Not specified —') }}</option>
+                    @foreach ($instructors as $instructor)
+                        <option value="{{ $instructor->id }}">{{ $instructor->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="vehicle_id" class="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">{{ __('Vehicle') }}</label>
+                <select id="vehicle_id" name="vehicle_id" class="block w-full rounded-md border-0 bg-white ring-1 ring-gray-300 focus:ring-gold-500 text-sm">
+                    <option value="">{{ __('— Not specified —') }}</option>
+                    @foreach ($vehicles as $vehicle)
+                        <option value="{{ $vehicle->id }}">{{ $vehicle->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <button type="submit" class="w-full rounded-lg bg-navy hover:bg-navy-700 px-5 py-3 text-sm font-bold text-gold-400 transition">
+                {{ __('Log Training') }}
+            </button>
+        </form>
     @elseif ($result === 'already-logged')
         <div class="mt-6 rounded-lg border-2 border-blue-500 bg-blue-50 p-4 text-center">
             <p class="text-lg font-bold text-blue-700">{{ __('Already Logged') }}</p>
